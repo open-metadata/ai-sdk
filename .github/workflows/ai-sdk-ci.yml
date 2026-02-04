@@ -54,7 +54,7 @@ jobs:
 
       - name: Install Python dependencies
         working-directory: python
-        run: pip install -e ".[dev]"
+        run: pip install -e ".[dev,langchain]"
 
       - name: Install TypeScript dependencies
         working-directory: typescript

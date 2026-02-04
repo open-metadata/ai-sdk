@@ -161,7 +161,8 @@ $RECYCLE.BIN/
 .env.*.local
 *.pem
 *.key
-credentials
+credentials/
+!n8n-nodes-metadata/credentials/
 secrets.json
 
 # =============================================================================
