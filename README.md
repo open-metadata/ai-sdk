@@ -134,4 +134,4 @@ METADATA_HOST=https://... METADATA_TOKEN=... make test-integration
 
 ## License
 
-Apache 2.0
+Collate Community License 1.0
