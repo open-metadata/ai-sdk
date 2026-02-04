@@ -89,16 +89,6 @@ jobs:
           submodules: 'recursive'
           fetch-depth: '0'
 
-      - name: Checkout AI Platform
-        uses: actions/checkout@v4
-        with:
-          repository: open-metadata/ai-platform
-          ref: 'main'
-          token: ${{ steps.generate_token.outputs.token }}
-          path: ai-platform
-          show-progress: false
-          fetch-depth: '0'
-
       - name: Install Ubuntu dependencies
         run: |
           sudo apt-get update && sudo apt-get install -y curl unzip make jq librdkafka-dev unixodbc-dev libpython3.12-dev python3.12-dev python3-venv librdkafka-dev gcc libsasl2-dev build-essential libssl-dev libffi-dev \
@@ -203,14 +193,14 @@ jobs:
           mvn -DskipTests -DonlyBackend clean install
 
       - name: Build AI Platform
-        working-directory: ai-platform
+        working-directory: collate/ai-platform
         env:
           MAVEN_OPTS: "-Xmx3000m"
         run: |
           mvn clean install -DskipTests
 
       - name: Start AI Platform
-        working-directory: ai-platform
+        working-directory: collate/ai-platform
         run: |
           docker build -f docker/Dockerfile-ci -t ai-platform:latest .
           docker run -d -p 9595:9595 -p 9596:9596 -p 50051:50051 \
@@ -296,6 +286,8 @@ jobs:
           cd collate/OpenMetadata
           make install_dev generate
           cd ingestion && metadata ingest -c pipelines/sample_data.yaml
+          # Then clean the environment
+          rm -rf venv
 
       - name: Check Setup Prerequisites
         id: check-prerequisites
@@ -316,6 +308,7 @@ jobs:
 
       - name: Install Python SDK
         run: |
+          python -m venv venv
           source venv/bin/activate
           pip install -e "./python[dev]"
 
