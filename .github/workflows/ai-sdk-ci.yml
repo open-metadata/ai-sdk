@@ -187,9 +187,6 @@ jobs:
     needs: changes
     if: needs.changes.outputs.n8n == 'true' || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: n8n-nodes-metadata
 
     steps:
       - name: Checkout code
@@ -202,10 +199,21 @@ jobs:
           cache: 'npm'
           cache-dependency-path: n8n-nodes-metadata/package.json
 
+      # Build TypeScript SDK first (n8n depends on it via file:../typescript)
+      - name: Install TypeScript SDK dependencies
+        working-directory: typescript
+        run: npm ci
+
+      - name: Build TypeScript SDK
+        working-directory: typescript
+        run: npm run build
+
       - name: Install dependencies
+        working-directory: n8n-nodes-metadata
         run: npm install
 
       - name: Build
+        working-directory: n8n-nodes-metadata
         run: npm run build
 
   # ==================== Integration Tests ====================

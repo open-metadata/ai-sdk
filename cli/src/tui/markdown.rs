@@ -116,7 +116,7 @@ pub fn render_markdown(text: &str, width: usize) -> Vec<Line<'static>> {
             Event::Code(code) => {
                 // Inline code
                 current_spans.push(Span::styled(
-                    format!(" {} ", code),
+                    format!(" {code} "),
                     Style::default().bg(Color::DarkGray).fg(Color::White),
                 ));
             }

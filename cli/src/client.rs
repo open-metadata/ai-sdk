@@ -328,7 +328,7 @@ impl MetadataClient {
     ) -> CliResult<String> {
         let status = response.status().as_u16();
 
-        if status >= 200 && status < 300 {
+        if (200..300).contains(&status) {
             response
                 .text()
                 .await
@@ -354,8 +354,8 @@ impl MetadataClient {
 
         loop {
             let url = match &after {
-                Some(cursor) => self.api_url(&format!("?limit={}&after={}", PAGE_SIZE, cursor)),
-                None => self.api_url(&format!("?limit={}", PAGE_SIZE)),
+                Some(cursor) => self.api_url(&format!("?limit={PAGE_SIZE}&after={cursor}")),
+                None => self.api_url(&format!("?limit={PAGE_SIZE}")),
             };
 
             let response = self
@@ -396,7 +396,7 @@ impl MetadataClient {
         let encoded_name = encode(name);
         let response = self
             .client
-            .get(self.api_url(&format!("/{}", encoded_name)))
+            .get(self.api_url(&format!("/{encoded_name}")))
             .header("Authorization", self.auth_header())
             .send()
             .await
@@ -423,7 +423,7 @@ impl MetadataClient {
 
         let response = self
             .client
-            .post(self.api_url(&format!("/{}/invoke", encoded_name)))
+            .post(self.api_url(&format!("/{encoded_name}/invoke")))
             .header("Authorization", self.auth_header())
             .header("Content-Type", "application/json")
             .json(&request)
@@ -453,7 +453,7 @@ impl MetadataClient {
 
         let response = self
             .client
-            .post(self.api_url(&format!("/{}/stream", encoded_name)))
+            .post(self.api_url(&format!("/{encoded_name}/stream")))
             .header("Authorization", self.auth_header())
             .header("Content-Type", "application/json")
             .header("Accept", "text/event-stream")
@@ -463,7 +463,7 @@ impl MetadataClient {
             .map_err(|e| CliError::NetworkError(e.to_string()))?;
 
         let status = response.status().as_u16();
-        if status >= 200 && status < 300 {
+        if (200..300).contains(&status) {
             Ok(response)
         } else {
             let body = response.text().await.unwrap_or_default();
@@ -493,8 +493,8 @@ impl MetadataClient {
 
         loop {
             let url = match &after {
-                Some(cursor) => self.bots_url(&format!("?limit={}&after={}", PAGE_SIZE, cursor)),
-                None => self.bots_url(&format!("?limit={}", PAGE_SIZE)),
+                Some(cursor) => self.bots_url(&format!("?limit={PAGE_SIZE}&after={cursor}")),
+                None => self.bots_url(&format!("?limit={PAGE_SIZE}")),
             };
 
             let response = self
@@ -576,10 +576,8 @@ impl MetadataClient {
 
         loop {
             let url = match &after {
-                Some(cursor) => {
-                    self.personas_url(&format!("?limit={}&after={}", PAGE_SIZE, cursor))
-                }
-                None => self.personas_url(&format!("?limit={}", PAGE_SIZE)),
+                Some(cursor) => self.personas_url(&format!("?limit={PAGE_SIZE}&after={cursor}")),
+                None => self.personas_url(&format!("?limit={PAGE_SIZE}")),
             };
 
             let response = self
@@ -668,10 +666,8 @@ impl MetadataClient {
 
         loop {
             let url = match &after {
-                Some(cursor) => {
-                    self.abilities_url(&format!("?limit={}&after={}", PAGE_SIZE, cursor))
-                }
-                None => self.abilities_url(&format!("?limit={}", PAGE_SIZE)),
+                Some(cursor) => self.abilities_url(&format!("?limit={PAGE_SIZE}&after={cursor}")),
+                None => self.abilities_url(&format!("?limit={PAGE_SIZE}")),
             };
 
             let response = self

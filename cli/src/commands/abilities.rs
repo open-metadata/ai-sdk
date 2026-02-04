@@ -102,7 +102,7 @@ pub async fn run_get(name: &str, json: bool) -> CliResult<()> {
     if !ability.tools.is_empty() {
         println!("  {}", "Tools:".cyan());
         for tool in &ability.tools {
-            println!("    - {}", tool);
+            println!("    - {tool}");
         }
     }
 

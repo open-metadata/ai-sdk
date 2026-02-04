@@ -87,7 +87,7 @@ pub fn run_set(key: &str, value: &str) -> CliResult<()> {
 /// Get a specific configuration value.
 pub fn run_get(key: &str) -> CliResult<()> {
     match get_config_value(key)? {
-        Some(value) => println!("{}", value),
+        Some(value) => println!("{value}"),
         None => println!("(not set)"),
     }
     Ok(())

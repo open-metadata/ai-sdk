@@ -242,6 +242,7 @@ export class MetadataAI {
     const results: U[] = [];
     let after: string | undefined = undefined;
 
+    // eslint-disable-next-line no-constant-condition
     while (true) {
       const params: Record<string, string | number> = { limit: pageSize };
       if (after) {

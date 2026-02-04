@@ -181,29 +181,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "c3e64b0cc0439b12df2fa678eae89a1c56a529fd067a9115f7827f1fffd22b32"
 
 [[package]]
-name = "collate-ai"
-version = "0.1.0"
-dependencies = [
- "anyhow",
- "clap",
- "colored",
- "crossterm",
- "dirs",
- "futures-util",
- "pulldown-cmark",
- "ratatui",
- "reqwest",
- "serde",
- "serde_json",
- "syntect",
- "thiserror 1.0.69",
- "tokio",
- "toml",
- "urlencoding",
- "uuid",
-]
-
-[[package]]
 name = "colorchoice"
 version = "1.0.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -889,6 +866,29 @@ name = "memchr"
 version = "2.7.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "f52b00d39961fc5b2736ea853c9cc86238e165017a493d1d5c8eac6bdc4cc273"
+
+[[package]]
+name = "metadata-ai"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "clap",
+ "colored",
+ "crossterm",
+ "dirs",
+ "futures-util",
+ "pulldown-cmark",
+ "ratatui",
+ "reqwest",
+ "serde",
+ "serde_json",
+ "syntect",
+ "thiserror 1.0.69",
+ "tokio",
+ "toml",
+ "urlencoding",
+ "uuid",
+]
 
 [[package]]
 name = "mime"

@@ -113,7 +113,7 @@ pub async fn run_stream(
 
                         let text = message.text_content();
                         if !text.is_empty() {
-                            print!("{}", text);
+                            print!("{text}");
                             let _ = io::stdout().flush();
                         }
 
@@ -176,6 +176,6 @@ fn print_response(response: &InvokeResponse) {
 fn print_json(response: &InvokeResponse) -> CliResult<()> {
     let json = serde_json::to_string_pretty(response)
         .map_err(|e| crate::error::CliError::ParseError(e.to_string()))?;
-    println!("{}", json);
+    println!("{json}");
     Ok(())
 }

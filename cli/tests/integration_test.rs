@@ -34,7 +34,7 @@ fn streaming_enabled() -> bool {
 fn cli_binary() -> String {
     // Use cargo's target directory
     let target_dir = env::var("CARGO_TARGET_DIR").unwrap_or_else(|_| "target".to_string());
-    format!("{}/debug/metadata-ai", target_dir)
+    format!("{target_dir}/debug/metadata-ai")
 }
 
 /// Generate a unique name for test entities
@@ -80,11 +80,9 @@ fn get_test_agent() -> Option<String> {
             // Format should be like: [{"name":"persona-name",...}]
             let persona_name = if let Some(start) = stdout.find("\"name\":\"") {
                 let start = start + 8;
-                if let Some(end) = stdout[start..].find('"') {
-                    Some(stdout[start..start + end].to_string())
-                } else {
-                    None
-                }
+                stdout[start..]
+                    .find('"')
+                    .map(|end| stdout[start..start + end].to_string())
             } else {
                 None
             };
@@ -115,11 +113,11 @@ fn get_test_agent() -> Option<String> {
             ]);
 
             if output.status.success() {
-                eprintln!("Created test agent: {}", agent_name);
+                eprintln!("Created test agent: {agent_name}");
                 Some(agent_name)
             } else {
                 let stderr = String::from_utf8_lossy(&output.stderr);
-                eprintln!("Failed to create test agent: {}", stderr);
+                eprintln!("Failed to create test agent: {stderr}");
                 None
             }
         })
@@ -186,8 +184,7 @@ fn test_invalid_token_rejected() {
             || stderr.to_lowercase().contains("401")
             || stderr.to_lowercase().contains("unauthorized")
             || stderr.to_lowercase().contains("token"),
-        "Expected auth error message, got: {}",
-        stderr
+        "Expected auth error message, got: {stderr}"
     );
 }
 
@@ -205,11 +202,11 @@ fn test_list_agents() {
     // Should succeed (may have 0 agents but shouldn't error)
     if !output.status.success() {
         let stderr = String::from_utf8_lossy(&output.stderr);
-        panic!("agents list failed: {}", stderr);
+        panic!("agents list failed: {stderr}");
     }
 
     let stdout = String::from_utf8_lossy(&output.stdout);
-    println!("Agents list output:\n{}", stdout);
+    println!("Agents list output:\n{stdout}");
 }
 
 #[test]
@@ -224,7 +221,7 @@ fn test_list_agents_json() {
 
     if !output.status.success() {
         let stderr = String::from_utf8_lossy(&output.stderr);
-        panic!("agents list failed: {}", stderr);
+        panic!("agents list failed: {stderr}");
     }
 
     let stdout = String::from_utf8_lossy(&output.stdout);
@@ -250,12 +247,12 @@ fn test_agent_info() {
 
     if !output.status.success() {
         let stderr = String::from_utf8_lossy(&output.stderr);
-        panic!("agents info failed: {}", stderr);
+        panic!("agents info failed: {stderr}");
     }
 
     let stdout = String::from_utf8_lossy(&output.stdout);
     assert!(stdout.contains(&agent_name));
-    println!("Agent info:\n{}", stdout);
+    println!("Agent info:\n{stdout}");
 }
 
 #[test]
@@ -281,7 +278,7 @@ fn test_invoke_agent() {
 
     if !output.status.success() {
         let stderr = String::from_utf8_lossy(&output.stderr);
-        panic!("invoke failed: {}", stderr);
+        panic!("invoke failed: {stderr}");
     }
 
     let stdout = String::from_utf8_lossy(&output.stdout);
@@ -325,7 +322,7 @@ fn test_stream_agent() {
 
     if !output.status.success() {
         let stderr = String::from_utf8_lossy(&output.stderr);
-        panic!("stream invoke failed: {}", stderr);
+        panic!("stream invoke failed: {stderr}");
     }
 
     let stdout = String::from_utf8_lossy(&output.stdout);
@@ -349,11 +346,11 @@ fn test_list_personas() {
 
     if !output.status.success() {
         let stderr = String::from_utf8_lossy(&output.stderr);
-        panic!("personas list failed: {}", stderr);
+        panic!("personas list failed: {stderr}");
     }
 
     let stdout = String::from_utf8_lossy(&output.stdout);
-    println!("Personas list output:\n{}", stdout);
+    println!("Personas list output:\n{stdout}");
 }
 
 #[test]
@@ -367,15 +364,14 @@ fn test_list_personas_json() {
 
     if !output.status.success() {
         let stderr = String::from_utf8_lossy(&output.stderr);
-        panic!("personas list --json failed: {}", stderr);
+        panic!("personas list --json failed: {stderr}");
     }
 
     let stdout = String::from_utf8_lossy(&output.stdout);
     let trimmed = stdout.trim();
     assert!(
         trimmed.starts_with('[') || trimmed.starts_with('{'),
-        "Expected JSON output, got: {}",
-        trimmed
+        "Expected JSON output, got: {trimmed}"
     );
 }
 
@@ -406,16 +402,15 @@ fn test_get_persona() {
 
             if !output.status.success() {
                 let stderr = String::from_utf8_lossy(&output.stderr);
-                panic!("personas get failed: {}", stderr);
+                panic!("personas get failed: {stderr}");
             }
 
             let stdout = String::from_utf8_lossy(&output.stdout);
             assert!(
                 stdout.contains(name),
-                "Expected persona name in output: {}",
-                stdout
+                "Expected persona name in output: {stdout}"
             );
-            println!("Persona info:\n{}", stdout);
+            println!("Persona info:\n{stdout}");
         }
     }
 }
@@ -443,16 +438,15 @@ fn test_create_persona() {
 
     if !output.status.success() {
         let stderr = String::from_utf8_lossy(&output.stderr);
-        panic!("personas create failed: {}", stderr);
+        panic!("personas create failed: {stderr}");
     }
 
     let stdout = String::from_utf8_lossy(&output.stdout);
     assert!(
         stdout.to_lowercase().contains("success") || stdout.contains(&persona_name),
-        "Expected success or persona name in output: {}",
-        stdout
+        "Expected success or persona name in output: {stdout}"
     );
-    println!("Created persona:\n{}", stdout);
+    println!("Created persona:\n{stdout}");
 }
 
 // ==================== Bot Operations Tests ====================
@@ -468,11 +462,11 @@ fn test_list_bots() {
 
     if !output.status.success() {
         let stderr = String::from_utf8_lossy(&output.stderr);
-        panic!("bots list failed: {}", stderr);
+        panic!("bots list failed: {stderr}");
     }
 
     let stdout = String::from_utf8_lossy(&output.stdout);
-    println!("Bots list output:\n{}", stdout);
+    println!("Bots list output:\n{stdout}");
 }
 
 #[test]
@@ -486,15 +480,14 @@ fn test_list_bots_json() {
 
     if !output.status.success() {
         let stderr = String::from_utf8_lossy(&output.stderr);
-        panic!("bots list --json failed: {}", stderr);
+        panic!("bots list --json failed: {stderr}");
     }
 
     let stdout = String::from_utf8_lossy(&output.stdout);
     let trimmed = stdout.trim();
     assert!(
         trimmed.starts_with('[') || trimmed.starts_with('{'),
-        "Expected JSON output, got: {}",
-        trimmed
+        "Expected JSON output, got: {trimmed}"
     );
 }
 
@@ -524,16 +517,15 @@ fn test_get_bot() {
 
             if !output.status.success() {
                 let stderr = String::from_utf8_lossy(&output.stderr);
-                panic!("bots get failed: {}", stderr);
+                panic!("bots get failed: {stderr}");
             }
 
             let stdout = String::from_utf8_lossy(&output.stdout);
             assert!(
                 stdout.contains(name),
-                "Expected bot name in output: {}",
-                stdout
+                "Expected bot name in output: {stdout}"
             );
-            println!("Bot info:\n{}", stdout);
+            println!("Bot info:\n{stdout}");
         }
     }
 }
@@ -551,11 +543,11 @@ fn test_list_abilities() {
 
     if !output.status.success() {
         let stderr = String::from_utf8_lossy(&output.stderr);
-        panic!("abilities list failed: {}", stderr);
+        panic!("abilities list failed: {stderr}");
     }
 
     let stdout = String::from_utf8_lossy(&output.stdout);
-    println!("Abilities list output:\n{}", stdout);
+    println!("Abilities list output:\n{stdout}");
 }
 
 #[test]
@@ -569,15 +561,14 @@ fn test_list_abilities_json() {
 
     if !output.status.success() {
         let stderr = String::from_utf8_lossy(&output.stderr);
-        panic!("abilities list --json failed: {}", stderr);
+        panic!("abilities list --json failed: {stderr}");
     }
 
     let stdout = String::from_utf8_lossy(&output.stdout);
     let trimmed = stdout.trim();
     assert!(
         trimmed.starts_with('[') || trimmed.starts_with('{'),
-        "Expected JSON output, got: {}",
-        trimmed
+        "Expected JSON output, got: {trimmed}"
     );
 }
 
@@ -607,16 +598,15 @@ fn test_get_ability() {
 
             if !output.status.success() {
                 let stderr = String::from_utf8_lossy(&output.stderr);
-                panic!("abilities get failed: {}", stderr);
+                panic!("abilities get failed: {stderr}");
             }
 
             let stdout = String::from_utf8_lossy(&output.stdout);
             assert!(
                 stdout.contains(name),
-                "Expected ability name in output: {}",
-                stdout
+                "Expected ability name in output: {stdout}"
             );
-            println!("Ability info:\n{}", stdout);
+            println!("Ability info:\n{stdout}");
         }
     }
 }
@@ -661,16 +651,15 @@ fn test_create_agent() {
 
             if !output.status.success() {
                 let stderr = String::from_utf8_lossy(&output.stderr);
-                panic!("agents create failed: {}", stderr);
+                panic!("agents create failed: {stderr}");
             }
 
             let stdout = String::from_utf8_lossy(&output.stdout);
             assert!(
                 stdout.to_lowercase().contains("success") || stdout.contains(&agent_name),
-                "Expected success or agent name in output: {}",
-                stdout
+                "Expected success or agent name in output: {stdout}"
             );
-            println!("Created agent:\n{}", stdout);
+            println!("Created agent:\n{stdout}");
         }
     }
 }

@@ -109,7 +109,7 @@ pub async fn run_create(
     let persona_info = client.get_persona(persona).await?;
     let persona_id = persona_info
         .id
-        .ok_or_else(|| crate::error::CliError::Other(format!("Persona '{}' has no ID", persona)))?;
+        .ok_or_else(|| crate::error::CliError::Other(format!("Persona '{persona}' has no ID")))?;
 
     // Build ability references if provided
     let ability_refs = if let Some(ability_names) = abilities {
@@ -117,7 +117,7 @@ pub async fn run_create(
         for ability_name in ability_names {
             let ability_info = client.get_ability(&ability_name).await?;
             let ability_id = ability_info.id.ok_or_else(|| {
-                crate::error::CliError::Other(format!("Ability '{}' has no ID", ability_name))
+                crate::error::CliError::Other(format!("Ability '{ability_name}' has no ID"))
             })?;
             refs.push(EntityReference {
                 id: Some(ability_id),

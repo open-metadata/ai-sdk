@@ -455,17 +455,17 @@ async fn run_wizard_loop(
                                     wizard.handle_right();
                                 }
                                 KeyCode::Up => {
-                                    if wizard.step == Step::BasicDetails {
-                                        if wizard.basic_focus == BasicDetailsFocus::Description {
-                                            wizard.toggle_basic_focus();
-                                        }
+                                    if wizard.step == Step::BasicDetails
+                                        && wizard.basic_focus == BasicDetailsFocus::Description
+                                    {
+                                        wizard.toggle_basic_focus();
                                     }
                                 }
                                 KeyCode::Down => {
-                                    if wizard.step == Step::BasicDetails {
-                                        if wizard.basic_focus == BasicDetailsFocus::Name {
-                                            wizard.toggle_basic_focus();
-                                        }
+                                    if wizard.step == Step::BasicDetails
+                                        && wizard.basic_focus == BasicDetailsFocus::Name
+                                    {
+                                        wizard.toggle_basic_focus();
                                     }
                                 }
                                 KeyCode::Char(c) => {
@@ -598,7 +598,7 @@ fn render_basic_details(frame: &mut Frame, wizard: &CreatePersonaWizard, area: R
     if !wizard.name_input.value.is_empty() {
         if let Err(e) = wizard.validate_name() {
             let hint = Line::from(Span::styled(
-                format!("  {}", e),
+                format!("  {e}"),
                 Style::default().fg(Color::Red),
             ));
             let hint_area = Rect::new(

@@ -198,7 +198,7 @@ where
             if let Some((event_type, payload)) = parse_event(&event_str) {
                 event_count += 1;
                 if debug {
-                    eprintln!("[DEBUG] Event #{}: {:?}", event_count, event_type);
+                    eprintln!("[DEBUG] Event #{event_count}: {event_type:?}");
                 }
 
                 // Capture conversation ID from any event
@@ -232,7 +232,7 @@ where
         if let Some((event_type, payload)) = parse_event(&buffer) {
             event_count += 1;
             if debug {
-                eprintln!("[DEBUG] Final Event #{}: {:?}", event_count, event_type);
+                eprintln!("[DEBUG] Final Event #{event_count}: {event_type:?}");
             }
 
             if let Some(id) = &payload.conversation_id {
@@ -256,10 +256,7 @@ where
     }
 
     if debug {
-        eprintln!(
-            "[DEBUG] Stream complete: {} events, {} messages",
-            event_count, message_count
-        );
+        eprintln!("[DEBUG] Stream complete: {event_count} events, {message_count} messages");
     }
 
     Ok(conversation_id)

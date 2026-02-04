@@ -133,7 +133,7 @@ pub fn load_config() -> CliResult<Config> {
 
     let content = fs::read_to_string(&path)?;
     toml::from_str(&content)
-        .map_err(|e| CliError::InvalidConfig(format!("Failed to parse config: {}", e)))
+        .map_err(|e| CliError::InvalidConfig(format!("Failed to parse config: {e}")))
 }
 
 /// Load credentials from file.
@@ -145,7 +145,7 @@ pub fn load_credentials() -> CliResult<Credentials> {
 
     let content = fs::read_to_string(&path)?;
     toml::from_str(&content)
-        .map_err(|e| CliError::InvalidConfig(format!("Failed to parse credentials: {}", e)))
+        .map_err(|e| CliError::InvalidConfig(format!("Failed to parse credentials: {e}")))
 }
 
 /// Save configuration to file.
@@ -155,7 +155,7 @@ pub fn save_config(config: &Config) -> CliResult<()> {
 
     let path = config_path()?;
     let content = toml::to_string_pretty(config)
-        .map_err(|e| CliError::InvalidConfig(format!("Failed to serialize config: {}", e)))?;
+        .map_err(|e| CliError::InvalidConfig(format!("Failed to serialize config: {e}")))?;
 
     fs::write(&path, content)?;
     Ok(())
@@ -168,7 +168,7 @@ pub fn save_credentials(credentials: &Credentials) -> CliResult<()> {
 
     let path = credentials_path()?;
     let content = toml::to_string_pretty(credentials)
-        .map_err(|e| CliError::InvalidConfig(format!("Failed to serialize credentials: {}", e)))?;
+        .map_err(|e| CliError::InvalidConfig(format!("Failed to serialize credentials: {e}")))?;
 
     fs::write(&path, &content)?;
 
@@ -193,7 +193,7 @@ pub fn get_config_value(key: &str) -> CliResult<Option<String>> {
         "host" => Ok(config.default.host),
         "timeout" => Ok(Some(config.default.timeout.to_string())),
         "token" => Ok(credentials.default.token.map(|t| mask_token(&t))),
-        _ => Err(CliError::InvalidConfig(format!("Unknown key: {}", key))),
+        _ => Err(CliError::InvalidConfig(format!("Unknown key: {key}"))),
     }
 }
 
@@ -218,7 +218,7 @@ pub fn set_config_value(key: &str, value: &str) -> CliResult<()> {
             credentials.default.token = Some(value.to_string());
             save_credentials(&credentials)
         }
-        _ => Err(CliError::InvalidConfig(format!("Unknown key: {}", key))),
+        _ => Err(CliError::InvalidConfig(format!("Unknown key: {key}"))),
     }
 }
 
@@ -243,7 +243,7 @@ pub fn list_config() -> CliResult<Vec<(String, String)>> {
 
     // Host
     let host_value = env_host
-        .map(|h| format!("{} (from env)", h))
+        .map(|h| format!("{h} (from env)"))
         .or_else(|| config.default.host.clone())
         .unwrap_or_else(|| "(not set)".to_string());
     values.push(("host".to_string(), host_value));

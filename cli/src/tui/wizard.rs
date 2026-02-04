@@ -15,9 +15,10 @@ use ratatui::{
 };
 
 /// Status of a wizard operation.
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Default)]
 pub enum WizardStatus {
     /// Wizard is idle, waiting for user input.
+    #[default]
     Idle,
     /// Wizard is loading data (e.g., fetching options).
     Loading(String),
@@ -25,12 +26,6 @@ pub enum WizardStatus {
     Submitting,
     /// Wizard encountered an error.
     Error(String),
-}
-
-impl Default for WizardStatus {
-    fn default() -> Self {
-        Self::Idle
-    }
 }
 
 impl WizardStatus {
@@ -572,7 +567,7 @@ impl SingleSelect {
             let below = total_items.saturating_sub(visible_end);
 
             if above > 0 {
-                let indicator = format!("▲ {} more", above);
+                let indicator = format!("▲ {above} more");
                 frame.render_widget(
                     Paragraph::new(Span::styled(
                         indicator,
@@ -587,7 +582,7 @@ impl SingleSelect {
                 );
             }
             if below > 0 {
-                let indicator = format!("▼ {} more", below);
+                let indicator = format!("▼ {below} more");
                 let y = list_area.y + list_area.height.saturating_sub(1);
                 frame.render_widget(
                     Paragraph::new(Span::styled(
@@ -918,7 +913,7 @@ impl MultiSelect {
             let below = total_items.saturating_sub(visible_end);
 
             if above > 0 {
-                let indicator = format!("▲ {} more", above);
+                let indicator = format!("▲ {above} more");
                 frame.render_widget(
                     Paragraph::new(Span::styled(
                         indicator,
@@ -933,7 +928,7 @@ impl MultiSelect {
                 );
             }
             if below > 0 {
-                let indicator = format!("▼ {} more", below);
+                let indicator = format!("▼ {below} more");
                 let y = list_area.y + list_area.height.saturating_sub(1);
                 frame.render_widget(
                     Paragraph::new(Span::styled(
@@ -961,8 +956,8 @@ impl MultiSelect {
 /// The header is rendered as:
 /// `--- Title ------------------- Step N/M ---`
 pub fn render_wizard_header(frame: &mut Frame, area: Rect, title: &str, step: usize, total: usize) {
-    let step_text = format!("Step {}/{}", step, total);
-    let title_text = format!(" {} ", title);
+    let step_text = format!("Step {step}/{total}");
+    let title_text = format!(" {title} ");
 
     // Calculate padding
     let fixed_width = title_text.len() + step_text.len() + 6; // 6 for decorations
@@ -1026,7 +1021,7 @@ pub fn render_wizard_footer(
     for (key, action) in extra_hints {
         spans.push(Span::styled(*key, Style::default().fg(Color::Yellow)));
         spans.push(Span::styled(
-            format!(" {}", action),
+            format!(" {action}"),
             Style::default().fg(Color::DarkGray),
         ));
         spans.push(Span::styled("  ", Style::default()));
@@ -1059,7 +1054,7 @@ pub fn render_loading(frame: &mut Frame, area: Rect, message: &str, spinner_fram
     const SPINNER_FRAMES: &[char] = &['|', '/', '-', '\\', '|', '/', '-', '\\'];
     let spinner = SPINNER_FRAMES[spinner_frame % SPINNER_FRAMES.len()];
 
-    let text = format!("{} {}", spinner, message);
+    let text = format!("{spinner} {message}");
     let line = Line::from(Span::styled(text, Style::default().fg(Color::Yellow)));
 
     let paragraph = Paragraph::new(line)

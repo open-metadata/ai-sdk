@@ -78,7 +78,7 @@ pub async fn run_tui(agent_name: Option<&str>, conversation_id: Option<String>) 
                 }
             }
             Err(e) => {
-                app.set_error(format!("Failed to fetch agents: {}", e));
+                app.set_error(format!("Failed to fetch agents: {e}"));
             }
         }
     }
@@ -128,7 +128,7 @@ async fn run_main_loop(
                                 app.set_streaming_stage("Responding...");
                             }
                             StreamEvent::ToolUse(tool) => {
-                                app.set_streaming_stage(&format!("Using {}...", tool));
+                                app.set_streaming_stage(&format!("Using {tool}..."));
                             }
                             StreamEvent::Thinking(thought) => {
                                 app.append_thinking_content(&thought);
@@ -221,7 +221,7 @@ async fn run_main_loop(
                                         _ => {
                                             // Unknown command - show as system message
                                             app.messages.push(DisplayMessage::system(
-                                                format!("Unknown command: {}. Try /agents, /clear, or /quit", trimmed)
+                                                format!("Unknown command: {trimmed}. Try /agents, /clear, or /quit")
                                             ));
                                         }
                                     }
@@ -417,7 +417,7 @@ fn render_chat(frame: &mut Frame, app: &mut App, area: Rect) {
             )));
             for line in thinking.lines() {
                 all_lines.push(Line::from(Span::styled(
-                    format!("  {}", line),
+                    format!("  {line}"),
                     Style::default().fg(Color::DarkGray),
                 )));
             }
@@ -457,7 +457,7 @@ fn render_chat(frame: &mut Frame, app: &mut App, area: Rect) {
             // Render thinking in grey
             for line in app.thinking_content.lines() {
                 all_lines.push(Line::from(Span::styled(
-                    format!("  {}", line),
+                    format!("  {line}"),
                     Style::default().fg(Color::DarkGray),
                 )));
             }
