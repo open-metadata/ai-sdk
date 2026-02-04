@@ -263,9 +263,7 @@ fn test_invoke_agent() {
     }
 
     if !chat_tests_enabled() {
-        println!(
-            "Skipping: Chat tests disabled (set METADATA_RUN_CHAT_TESTS=true to enable)"
-        );
+        println!("Skipping: Chat tests disabled (set METADATA_RUN_CHAT_TESTS=true to enable)");
         return;
     }
 
@@ -304,9 +302,7 @@ fn test_stream_agent() {
     }
 
     if !chat_tests_enabled() {
-        println!(
-            "Skipping: Chat tests disabled (set METADATA_RUN_CHAT_TESTS=true to enable)"
-        );
+        println!("Skipping: Chat tests disabled (set METADATA_RUN_CHAT_TESTS=true to enable)");
         return;
     }
 
