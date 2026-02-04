@@ -27,15 +27,14 @@ export METADATA_TOKEN=your-jwt-token
 metadata-ai abilities list
 
 # Get details on specific abilities
-metadata-ai abilities get getLineage
-metadata-ai abilities get getTableDetails
+metadata-ai abilities get dataLineageAndExploration
+metadata-ai abilities get dataQualityAndTesting
 ```
 
 The agent needs these abilities:
-- **getLineage** - Traverse upstream/downstream dependencies
-- **getTableDetails** - Fetch table metadata, owners, descriptions
-- **searchAssets** - Find related tables and assets
-- **getTestResults** - View DQ test history and definitions
+- **dataLineageAndExploration** - Traverse upstream/downstream dependencies, get entity details
+- **dataQualityAndTesting** - DQ assessment, test case generation, root cause analysis
+- **discoveryAndSearch** - Find assets, search metadata, list entities
 
 ### Step 2: Check Available Personas
 
@@ -51,7 +50,7 @@ If you need a custom persona, create one:
 
 ```bash
 metadata-ai personas create \
-  --name DQAnalystPersona \
+  --name DQAnalyst \
   --description "Data Quality analysis specialist" \
   --prompt "You are a Data Quality analyst. When analyzing test failures, you:
 1. Identify the affected table and understand its purpose
@@ -67,8 +66,8 @@ metadata-ai personas create \
 metadata-ai agents create \
   --name DataQualityAnalyzer \
   --description "Analyzes DQ test failures, explores lineage impact, and suggests remediation steps" \
-  --persona DataAnalyst \
-  --abilities getLineage,getTableDetails,searchAssets,getTestResults \
+  --persona DQAnalyst \
+  --abilities dataLineageAndExploration,dataQualityAndTesting,discoveryAndSearch \
   --api-enabled true
 ```
 
@@ -96,10 +95,9 @@ You can also create the agent through the Collate web interface:
    - **Description:** Analyzes DQ test failures, explores lineage impact, and suggests remediation steps
    - **Persona:** Select `DataAnalyst` or create a custom one
    - **Abilities:** Select:
-     - getLineage
-     - getTableDetails
-     - searchAssets
-     - getTestResults
+     - Data Lineage and Exploration
+     - Data Quality and Testing
+     - Discovery and Search
    - **API Enabled:** Toggle ON
 4. Click **Save**
 
@@ -118,7 +116,7 @@ agent = client.create_agent(
     name="DataQualityAnalyzer",
     description="Analyzes DQ test failures, explores lineage impact, and suggests remediation steps",
     persona="DataAnalyst",
-    abilities=["getLineage", "getTableDetails", "searchAssets", "getTestResults"],
+    abilities=["dataLineageAndExploration", "dataQualityAndTesting", "discoveryAndSearch"],
     api_enabled=True
 )
 
@@ -139,7 +137,7 @@ const agent = await client.createAgent({
   name: 'DataQualityAnalyzer',
   description: 'Analyzes DQ test failures, explores lineage impact, and suggests remediation steps',
   persona: 'DataAnalyst',
-  abilities: ['getLineage', 'getTableDetails', 'searchAssets', 'getTestResults'],
+  abilities: ['dataLineageAndExploration', 'dataQualityAndTesting', 'discoveryAndSearch'],
   apiEnabled: true
 });
 
@@ -161,7 +159,7 @@ CreateAgentRequest request = CreateAgentRequest.builder()
     .name("DataQualityAnalyzer")
     .description("Analyzes DQ test failures, explores lineage impact, and suggests remediation steps")
     .persona("DataAnalyst")
-    .abilities(List.of("getLineage", "getTableDetails", "searchAssets", "getTestResults"))
+    .abilities(List.of("dataLineageAndExploration", "dataQualityAndTesting", "discoveryAndSearch"))
     .apiEnabled(true)
     .build();
 
@@ -212,7 +210,7 @@ metadata-ai agents info DataQualityAnalyzer
 # Should show:
 # Name: DataQualityAnalyzer
 # API Enabled: true
-# Abilities: getLineage, getTableDetails, searchAssets, getTestResults
+# Abilities: dataLineageAndExploration, dataQualityAndTesting, discoveryAndSearch
 ```
 
 If `API Enabled` is `false`, update the agent:

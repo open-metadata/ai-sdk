@@ -48,8 +48,8 @@ metadata-ai abilities list
 metadata-ai agents create \
   --name DataQualityAnalyzer \
   --description "Analyzes DQ test failures, explores lineage impact, and suggests remediation" \
-  --persona DataAnalyst \
-  --abilities getLineage,getTableDetails,searchAssets,getTestResults \
+  --persona DQAnalyst \
+  --abilities dataLineageAndExploration,dataQualityAndTesting,discoveryAndSearch \
   --api-enabled true
 ```
 
