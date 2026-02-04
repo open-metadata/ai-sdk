@@ -282,7 +282,7 @@ class TestCreateAgent:
 
         # Get the POST request (second request, after persona GET)
         requests = httpx_mock.get_requests()
-        post_request = [r for r in requests if r.method == "POST"][0]
+        post_request = next(r for r in requests if r.method == "POST")
 
         import json
         body = json.loads(post_request.content)

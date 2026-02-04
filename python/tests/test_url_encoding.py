@@ -1,7 +1,7 @@
 """Test URL encoding for name-based endpoints."""
 
-import pytest
 from unittest.mock import MagicMock
+
 from metadata_ai.client import MetadataAI
 
 
