@@ -91,3 +91,24 @@ class TestToolCallResult:
         assert result.success is False
         assert result.data is None
         assert result.error == "Tool execution failed"
+
+
+class TestMCPExceptions:
+    """Tests for MCP-specific exceptions."""
+
+    def test_mcp_error_base(self):
+        """MCPError is base exception."""
+        from metadata_ai.exceptions import MCPError
+
+        error = MCPError("Something went wrong")
+        assert str(error) == "Something went wrong"
+        assert error.status_code is None
+
+    def test_mcp_tool_execution_error(self):
+        """MCPToolExecutionError includes tool name."""
+        from metadata_ai.exceptions import MCPToolExecutionError
+
+        error = MCPToolExecutionError(MCPTool.SEARCH_METADATA, "Connection failed")
+        assert "search_metadata" in str(error)
+        assert "Connection failed" in str(error)
+        assert error.tool == MCPTool.SEARCH_METADATA
