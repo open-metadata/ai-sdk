@@ -1,0 +1,223 @@
+# Agent Configuration: DataQualityAnalyzer
+
+This guide shows how to create the `DataQualityAnalyzer` agent required for the DQ failure workflow.
+
+## Using the CLI (Recommended)
+
+The `metadata-ai` CLI provides the fastest way to set up the agent.
+
+### Prerequisites
+
+```bash
+# Install the CLI
+cargo install metadata-ai
+
+# Or build from source
+cd cli && cargo build --release
+
+# Configure environment
+export METADATA_HOST=https://your-instance.getcollate.io
+export METADATA_TOKEN=your-jwt-token
+```
+
+### Step 1: Explore Available Abilities
+
+```bash
+# List all abilities
+metadata-ai abilities list
+
+# Get details on specific abilities
+metadata-ai abilities get getLineage
+metadata-ai abilities get getTableDetails
+```
+
+The agent needs these abilities:
+- **getLineage** - Traverse upstream/downstream dependencies
+- **getTableDetails** - Fetch table metadata, owners, descriptions
+- **searchAssets** - Find related tables and assets
+- **getTestResults** - View DQ test history and definitions
+
+### Step 2: Check Available Personas
+
+```bash
+# List personas
+metadata-ai personas list
+
+# Get persona details
+metadata-ai personas get DataAnalyst
+```
+
+If you need a custom persona, create one:
+
+```bash
+metadata-ai personas create \
+  --name DQAnalystPersona \
+  --description "Data Quality analysis specialist" \
+  --prompt "You are a Data Quality analyst. When analyzing test failures, you:
+1. Identify the affected table and understand its purpose
+2. Explore downstream lineage to assess impact on dependent assets
+3. Check upstream lineage for potential root causes
+4. Review test definition and historical results
+5. Provide concise summaries with actionable recommendations"
+```
+
+### Step 3: Create the Agent
+
+```bash
+metadata-ai agents create \
+  --name DataQualityAnalyzer \
+  --description "Analyzes DQ test failures, explores lineage impact, and suggests remediation steps" \
+  --persona DataAnalyst \
+  --abilities getLineage,getTableDetails,searchAssets,getTestResults \
+  --api-enabled true
+```
+
+### Step 4: Verify the Agent
+
+```bash
+# Check agent was created
+metadata-ai agents list
+
+# Get agent details
+metadata-ai agents info DataQualityAnalyzer
+
+# Test with a sample query
+metadata-ai invoke DataQualityAnalyzer "What tables depend on warehouse.analytics.orders?"
+```
+
+## Using the Collate UI
+
+You can also create the agent through the Collate web interface:
+
+1. Go to **Settings → Dynamic Agents**
+2. Click **Create Agent**
+3. Fill in:
+   - **Name:** `DataQualityAnalyzer`
+   - **Description:** Analyzes DQ test failures, explores lineage impact, and suggests remediation steps
+   - **Persona:** Select `DataAnalyst` or create a custom one
+   - **Abilities:** Select:
+     - getLineage
+     - getTableDetails
+     - searchAssets
+     - getTestResults
+   - **API Enabled:** Toggle ON
+4. Click **Save**
+
+## Using the Python SDK
+
+```python
+from metadata_ai import MetadataAI
+
+client = MetadataAI(
+    host="https://your-instance.getcollate.io",
+    token="your-jwt-token"
+)
+
+# Create the agent
+agent = client.create_agent(
+    name="DataQualityAnalyzer",
+    description="Analyzes DQ test failures, explores lineage impact, and suggests remediation steps",
+    persona="DataAnalyst",
+    abilities=["getLineage", "getTableDetails", "searchAssets", "getTestResults"],
+    api_enabled=True
+)
+
+print(f"Created agent: {agent.name}")
+```
+
+## Using the TypeScript SDK
+
+```typescript
+import { MetadataAI } from '@openmetadata/ai-sdk';
+
+const client = new MetadataAI({
+  host: 'https://your-instance.getcollate.io',
+  token: 'your-jwt-token'
+});
+
+const agent = await client.createAgent({
+  name: 'DataQualityAnalyzer',
+  description: 'Analyzes DQ test failures, explores lineage impact, and suggests remediation steps',
+  persona: 'DataAnalyst',
+  abilities: ['getLineage', 'getTableDetails', 'searchAssets', 'getTestResults'],
+  apiEnabled: true
+});
+
+console.log(`Created agent: ${agent.name}`);
+```
+
+## Using the Java SDK
+
+```java
+import io.metadata.ai.MetadataAI;
+import io.metadata.ai.models.CreateAgentRequest;
+
+MetadataAI client = new MetadataAI(
+    "https://your-instance.getcollate.io",
+    "your-jwt-token"
+);
+
+CreateAgentRequest request = CreateAgentRequest.builder()
+    .name("DataQualityAnalyzer")
+    .description("Analyzes DQ test failures, explores lineage impact, and suggests remediation steps")
+    .persona("DataAnalyst")
+    .abilities(List.of("getLineage", "getTableDetails", "searchAssets", "getTestResults"))
+    .apiEnabled(true)
+    .build();
+
+Agent agent = client.createAgent(request);
+System.out.println("Created agent: " + agent.getName());
+```
+
+## System Prompt Customization
+
+For more control over the agent's behavior, customize the persona's system prompt:
+
+```
+You are a Data Quality analyst specializing in root cause analysis.
+
+When given a test failure:
+
+1. **Identify the Issue**
+   - What table is affected?
+   - What test failed and why?
+   - How severe is the failure (% of rows affected)?
+
+2. **Assess Impact**
+   - What downstream tables/dashboards consume this data?
+   - Who are the data owners that should be notified?
+   - What business processes might be affected?
+
+3. **Investigate Root Cause**
+   - What upstream sources feed this table?
+   - When was the data last updated?
+   - Are there related test failures?
+
+4. **Recommend Actions**
+   - Immediate steps to mitigate impact
+   - Investigation steps for root cause
+   - Preventive measures for the future
+
+Keep responses concise and actionable. Prioritize impact over technical details.
+```
+
+## Verifying API Access
+
+After creating the agent, verify it's accessible via API:
+
+```bash
+# Using CLI
+metadata-ai agents info DataQualityAnalyzer
+
+# Should show:
+# Name: DataQualityAnalyzer
+# API Enabled: true
+# Abilities: getLineage, getTableDetails, searchAssets, getTestResults
+```
+
+If `API Enabled` is `false`, update the agent:
+
+```bash
+# Via CLI (if update command available)
+# Or via UI: Settings → Dynamic Agents → DataQualityAnalyzer → Enable API toggle
+```

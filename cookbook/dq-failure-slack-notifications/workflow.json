@@ -1,0 +1,121 @@
+{
+  "name": "DQ Failure Slack Notifications",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "dq-failure",
+        "options": {}
+      },
+      "id": "webhook-trigger",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [250, 300],
+      "webhookId": "dq-failure-webhook"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Extract relevant fields from Collate ChangeEvent\nconst event = $input.first().json;\n\nconst fieldUpdate = event.changeDescription?.fieldsUpdated?.find(\n  f => f.name === 'testCaseResult'\n);\n\nif (!fieldUpdate) {\n  return []; // Not a test result update\n}\n\nconst result = fieldUpdate.newValue;\n\n// Only process failures\nif (result.testCaseStatus !== 'Failed') {\n  return [];\n}\n\n// Parse table FQN from test case FQN\n// Format: database.schema.table.test_name\nconst fqnParts = event.entityFullyQualifiedName.split('.');\nconst tableFqn = fqnParts.slice(0, -1).join('.');\nconst testName = fqnParts[fqnParts.length - 1];\n\nreturn [{\n  json: {\n    tableFqn,\n    testName,\n    testCaseFqn: result.testCaseFQN,\n    status: result.testCaseStatus,\n    failureMessage: result.result,\n    failedRows: result.failedRows,\n    failedRowsPercentage: result.failedRowsPercentage,\n    sampleData: result.sampleData,\n    timestamp: result.timestamp,\n    incidentId: result.incidentId\n  }\n}];"
+      },
+      "id": "extract-fields",
+      "name": "Extract Fields",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [470, 300]
+    },
+    {
+      "parameters": {
+        "agentName": "DataQualityAnalyzer",
+        "message": "=Data Quality test \"{{ $json.tableFqn }}.{{ $json.testName }}\" has FAILED.\n\nFailure details:\n- Table: {{ $json.tableFqn }}\n- Test: {{ $json.testName }}\n- Result: {{ $json.failureMessage }}\n- Failed rows: {{ $json.failedRows }} ({{ $json.failedRowsPercentage }}%)\n\nPlease:\n1. Identify the affected table and its purpose\n2. Explore downstream lineage to find impacted assets\n3. Check upstream lineage for potential root causes\n4. Summarize the impact and recommend next steps"
+      },
+      "id": "metadata-agent",
+      "name": "Metadata Agent",
+      "type": "n8n-nodes-metadata.metadataAgent",
+      "typeVersion": 1,
+      "position": [690, 300],
+      "credentials": {
+        "metadataApi": {
+          "id": "CONFIGURE_ME",
+          "name": "Metadata API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "CONFIGURE_ME"
+        },
+        "text": "=:rotating_light: *Data Quality Alert*\n\n*Table:* `{{ $('Extract Fields').item.json.tableFqn }}`\n*Test:* {{ $('Extract Fields').item.json.testName }}\n*Status:* Failed\n*Failed Rows:* {{ $('Extract Fields').item.json.failedRows }} ({{ $('Extract Fields').item.json.failedRowsPercentage }}%)\n\n---\n\n*Analysis:*\n{{ $json.response }}\n\n---\n\n:bar_chart: <https://your-collate-instance/test/{{ $('Extract Fields').item.json.testCaseFqn }}|View Test Details>",
+        "otherOptions": {}
+      },
+      "id": "slack-send",
+      "name": "Slack",
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.2,
+      "position": [910, 300],
+      "credentials": {
+        "slackApi": {
+          "id": "CONFIGURE_ME",
+          "name": "Slack API"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Extract Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Fields": {
+      "main": [
+        [
+          {
+            "node": "Metadata Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Metadata Agent": {
+      "main": [
+        [
+          {
+            "node": "Slack",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "tags": [
+    {
+      "name": "data-quality"
+    },
+    {
+      "name": "metadata-ai"
+    }
+  ],
+  "triggerCount": 0,
+  "meta": {
+    "templateCredsSetupCompleted": false,
+    "instanceId": ""
+  }
+}
