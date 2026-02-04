@@ -233,7 +233,9 @@ class HTTPClient:
             break
 
         assert last_response is not None  # Loop always runs at least once
-        _handle_error(last_response, agent_name=agent_name, bot_name=bot_name, request_id=request_id)
+        _handle_error(
+            last_response, agent_name=agent_name, bot_name=bot_name, request_id=request_id
+        )
         return {}  # Never reached, _handle_error always raises
 
     def post(
@@ -468,7 +470,9 @@ class AsyncHTTPClient:
             break
 
         assert last_response is not None  # Loop always runs at least once
-        _handle_error(last_response, agent_name=agent_name, bot_name=bot_name, request_id=request_id)
+        _handle_error(
+            last_response, agent_name=agent_name, bot_name=bot_name, request_id=request_id
+        )
         return {}  # Never reached
 
     async def post(

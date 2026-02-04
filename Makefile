@@ -17,7 +17,7 @@
 # Version file paths
 VERSION_FILE := VERSION
 CLI_CARGO := cli/Cargo.toml
-PYTHON_PYPROJECT := pyproject.toml
+PYTHON_PYPROJECT := python/pyproject.toml
 TS_PACKAGE := typescript/package.json
 JAVA_POM := java/pom.xml
 N8N_PACKAGE := n8n-nodes-metadata/package.json
@@ -152,7 +152,10 @@ tag-n8n:  ## Create git tag for n8n release
 	@git tag -a "n8n-v$(CURRENT_VERSION)" -m "n8n node release $(CURRENT_VERSION)"
 
 # Development helpers
-.PHONY: build-all test-all test-integration install-cli
+.PHONY: build-all test-all test-integration install-cli \
+        lint lint-python lint-rust lint-typescript lint-java lint-n8n \
+        format format-python format-rust format-typescript format-java format-n8n \
+        install-hooks
 
 install-cli:  ## Build CLI (release) and install to ~/.local/bin
 	@echo "Building CLI in release mode..."
@@ -176,7 +179,7 @@ install-cli:  ## Build CLI (release) and install to ~/.local/bin
 build-all:  ## Build all SDKs
 	@echo "Building all SDKs..."
 	cd cli && cargo build
-	pip install -e . -q
+	pip install -e python/ -q
 	cd typescript && npm install --silent && npm run build
 	cd java && mvn package -q -DskipTests
 	cd n8n-nodes-metadata && npm install --silent && npm run build
@@ -185,7 +188,7 @@ build-all:  ## Build all SDKs
 test-all:  ## Run unit tests for all SDKs
 	@echo "Running unit tests for all SDKs..."
 	cd cli && cargo test
-	pytest -q --ignore=tests/integration
+	cd python && pytest -q --ignore=tests/integration
 	cd typescript && npm test
 	cd java && mvn test -q
 	@echo "All unit tests completed"
@@ -199,7 +202,7 @@ test-integration:  ## Run integration tests (requires METADATA_HOST and METADATA
 	@echo "Running integration tests against $(METADATA_HOST)..."
 	@echo ""
 	@echo "=== Python SDK ==="
-	pytest tests/integration/ -v --tb=short
+	cd python && pytest tests/integration/ -v --tb=short
 	@echo ""
 	@echo "=== TypeScript SDK ==="
 	cd typescript && npm run test:integration
@@ -214,3 +217,67 @@ test-integration:  ## Run integration tests (requires METADATA_HOST and METADATA
 	cd n8n-nodes-metadata && npm run test:integration
 	@echo ""
 	@echo "All integration tests completed"
+
+# =============================================================================
+# Linting
+# =============================================================================
+
+lint: lint-python lint-rust lint-typescript lint-java lint-n8n  ## Run linters for all SDKs
+	@echo "All linters passed!"
+
+lint-python:  ## Lint Python SDK
+	@echo "Linting Python SDK..."
+	cd python && ruff check src tests && ruff format --check src tests && ty check src
+
+lint-rust:  ## Lint Rust CLI
+	@echo "Linting Rust CLI..."
+	cd cli && cargo fmt --check && cargo clippy -- -D warnings
+
+lint-typescript:  ## Lint TypeScript SDK
+	@echo "Linting TypeScript SDK..."
+	cd typescript && npm run lint
+
+lint-java:  ## Lint Java SDK
+	@echo "Linting Java SDK..."
+	cd java && mvn spotless:check -q
+
+lint-n8n:  ## Lint n8n node
+	@echo "Linting n8n node..."
+	cd n8n-nodes-metadata && npm run lint
+
+# =============================================================================
+# Formatting
+# =============================================================================
+
+format: format-python format-rust format-typescript format-java format-n8n  ## Format all SDKs
+	@echo "All SDKs formatted!"
+
+format-python:  ## Format Python SDK
+	@echo "Formatting Python SDK..."
+	cd python && ruff format src tests && ruff check --fix src tests
+
+format-rust:  ## Format Rust CLI
+	@echo "Formatting Rust CLI..."
+	cd cli && cargo fmt
+
+format-typescript:  ## Format TypeScript SDK
+	@echo "Formatting TypeScript SDK..."
+	cd typescript && npm run lint -- --fix
+
+format-java:  ## Format Java SDK
+	@echo "Formatting Java SDK..."
+	cd java && mvn spotless:apply -q
+
+format-n8n:  ## Format n8n node
+	@echo "Formatting n8n node..."
+	cd n8n-nodes-metadata && npm run lint:fix
+
+# =============================================================================
+# Git Hooks
+# =============================================================================
+
+install-hooks:  ## Install git pre-commit hooks
+	@echo "Installing git hooks..."
+	@cp scripts/pre-commit .git/hooks/pre-commit
+	@chmod +x .git/hooks/pre-commit
+	@echo "Pre-commit hook installed!"

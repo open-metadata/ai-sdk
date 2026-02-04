@@ -95,6 +95,24 @@
                     </execution>
                 </executions>
             </plugin>
+            <!-- Code formatting with Spotless -->
+            <plugin>
+                <groupId>com.diffplug.spotless</groupId>
+                <artifactId>spotless-maven-plugin</artifactId>
+                <version>2.43.0</version>
+                <configuration>
+                    <java>
+                        <googleJavaFormat>
+                            <version>1.19.2</version>
+                            <style>GOOGLE</style>
+                        </googleJavaFormat>
+                        <removeUnusedImports/>
+                        <importOrder>
+                            <order>java,javax,org,com,io</order>
+                        </importOrder>
+                    </java>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 </project>

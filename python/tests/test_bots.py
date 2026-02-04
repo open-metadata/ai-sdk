@@ -72,7 +72,7 @@ class TestListBots:
     ):
         """list_bots returns list of BotInfo objects."""
         httpx_mock.add_response(
-            url="https://metadata.example.com/api/v1/bots/?limit=10",
+            url="https://metadata.example.com/api/v1/bots/?limit=100",
             json=sample_bots_list_response,
         )
 
@@ -84,22 +84,23 @@ class TestListBots:
         assert bots[0].display_name == "Ingestion Bot"
         assert bots[1].name == "dq-bot"
 
-    def test_list_bots_with_limit(self, client, httpx_mock: HTTPXMock):
-        """list_bots passes limit param to API."""
+    def test_list_bots_with_limit(self, client, httpx_mock: HTTPXMock, sample_bots_list_response):
+        """list_bots respects user limit parameter."""
         httpx_mock.add_response(
-            url="https://metadata.example.com/api/v1/bots/?limit=5",
-            json={"data": []},
+            url="https://metadata.example.com/api/v1/bots/?limit=100",
+            json=sample_bots_list_response,
         )
 
-        client.list_bots(limit=5)
+        # Request only 1 bot, even though API returns 2
+        bots = client.list_bots(limit=1)
 
-        request = httpx_mock.get_request()
-        assert "limit=5" in str(request.url)
+        assert len(bots) == 1
+        assert bots[0].name == "ingestion-bot"
 
     def test_list_bots_empty_response(self, client, httpx_mock: HTTPXMock):
         """list_bots handles empty response."""
         httpx_mock.add_response(
-            url="https://metadata.example.com/api/v1/bots/?limit=10",
+            url="https://metadata.example.com/api/v1/bots/?limit=100",
             json={"data": []},
         )
 
@@ -111,9 +112,7 @@ class TestListBots:
 class TestGetBot:
     """Tests for MetadataAI.get_bot() method."""
 
-    def test_get_bot_returns_bot_info(
-        self, client, httpx_mock: HTTPXMock, sample_bot_info_dict
-    ):
+    def test_get_bot_returns_bot_info(self, client, httpx_mock: HTTPXMock, sample_bot_info_dict):
         """get_bot returns BotInfo object."""
         httpx_mock.add_response(
             url="https://metadata.example.com/api/v1/bots/name/ingestion-bot",
@@ -152,7 +151,7 @@ class TestAsyncListBots:
     ):
         """alist_bots returns list of BotInfo objects."""
         httpx_mock.add_response(
-            url="https://metadata.example.com/api/v1/bots/?limit=10",
+            url="https://metadata.example.com/api/v1/bots/?limit=100",
             json=sample_bots_list_response,
         )
 
@@ -163,9 +162,7 @@ class TestAsyncListBots:
         assert bots[0].name == "ingestion-bot"
 
     @pytest.mark.asyncio
-    async def test_alist_bots_without_async_enabled(
-        self, client, httpx_mock: HTTPXMock
-    ):
+    async def test_alist_bots_without_async_enabled(self, client, httpx_mock: HTTPXMock):
         """alist_bots raises RuntimeError when async not enabled."""
         with pytest.raises(RuntimeError) as exc_info:
             await client.alist_bots()
@@ -206,9 +203,7 @@ class TestAsyncGetBot:
         assert exc_info.value.bot_name == "nonexistent-bot"
 
     @pytest.mark.asyncio
-    async def test_aget_bot_without_async_enabled(
-        self, client, httpx_mock: HTTPXMock
-    ):
+    async def test_aget_bot_without_async_enabled(self, client, httpx_mock: HTTPXMock):
         """aget_bot raises RuntimeError when async not enabled."""
         with pytest.raises(RuntimeError) as exc_info:
             await client.aget_bot("any-bot")

@@ -1,7 +1,9 @@
 """Test that async streaming works correctly."""
 
-import pytest
 from unittest.mock import MagicMock
+
+import pytest
+
 from metadata_ai.agent import AgentHandle
 
 

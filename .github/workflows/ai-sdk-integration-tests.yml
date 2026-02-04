@@ -12,6 +12,12 @@
 name: Integration Tests
 
 on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
   workflow_dispatch:
     inputs:
       COLLATE_BRANCH:
@@ -39,7 +45,7 @@ jobs:
   integration-tests:
     runs-on:
       group: collate-x86
-    environment: benchmarking
+    environment: test
     env:
       AWS_BEDROCK_REGION: "us-east-2"
 
@@ -83,16 +89,6 @@ jobs:
           submodules: 'recursive'
           fetch-depth: '0'
 
-      - name: Checkout AI Platform
-        uses: actions/checkout@v4
-        with:
-          repository: open-metadata/ai-platform
-          ref: 'main'
-          token: ${{ steps.generate_token.outputs.token }}
-          path: ai-platform
-          show-progress: false
-          fetch-depth: '0'
-
       - name: Install Ubuntu dependencies
         run: |
           sudo apt-get update && sudo apt-get install -y curl unzip make jq librdkafka-dev unixodbc-dev libpython3.12-dev python3.12-dev python3-venv librdkafka-dev gcc libsasl2-dev build-essential libssl-dev libffi-dev \
@@ -112,8 +108,8 @@ jobs:
             <servers>
             <server>
               <id>github</id>
-              <username>${env.GITHUB_ACTOR}</username>
-              <password>${env.GITHUB_TOKEN}</password>
+              <username>$${env.GITHUB_ACTOR}</username>
+              <password>$${env.GITHUB_TOKEN}</password>
             </server>
           </servers>
           <mirrors>
@@ -197,14 +193,14 @@ jobs:
           mvn -DskipTests -DonlyBackend clean install
 
       - name: Build AI Platform
-        working-directory: ai-platform
+        working-directory: collate/ai-platform
         env:
           MAVEN_OPTS: "-Xmx3000m"
         run: |
           mvn clean install -DskipTests
 
       - name: Start AI Platform
-        working-directory: ai-platform
+        working-directory: collate/ai-platform
         run: |
           docker build -f docker/Dockerfile-ci -t ai-platform:latest .
           docker run -d -p 9595:9595 -p 9596:9596 -p 50051:50051 \
@@ -290,6 +286,8 @@ jobs:
           cd collate/OpenMetadata
           make install_dev generate
           cd ingestion && metadata ingest -c pipelines/sample_data.yaml
+          # Then clean the environment
+          rm -rf venv
 
       - name: Check Setup Prerequisites
         id: check-prerequisites
@@ -310,16 +308,18 @@ jobs:
 
       - name: Install Python SDK
         run: |
+          python -m venv venv
           source venv/bin/activate
           pip install -e "./python[dev]"
 
       - name: Run Python SDK Integration Tests
         id: python-integration
+        continue-on-error: true
         env:
           METADATA_HOST: "http://localhost:8585"
           METADATA_TOKEN: ${{ secrets.CHAT_API_TOKEN }}
           METADATA_TEST_AGENT: "CHAT"
-          METADATA_RUN_CHAT_TESTS: ${{ inputs.run_chat_tests }}
+          METADATA_RUN_CHAT_TESTS: ${{ inputs.run_chat_tests || 'false' }}
         run: |
           source venv/bin/activate
           cd python
@@ -333,11 +333,12 @@ jobs:
 
       - name: Run TypeScript SDK Integration Tests
         id: typescript-integration
+        continue-on-error: true
         env:
           METADATA_HOST: "http://localhost:8585"
           METADATA_TOKEN: ${{ secrets.CHAT_API_TOKEN }}
           METADATA_TEST_AGENT: "CHAT"
-          METADATA_RUN_CHAT_TESTS: ${{ inputs.run_chat_tests }}
+          METADATA_RUN_CHAT_TESTS: ${{ inputs.run_chat_tests || 'false' }}
         run: |
           cd typescript
           npm run test:integration
@@ -350,11 +351,12 @@ jobs:
 
       - name: Run Java SDK Integration Tests
         id: java-integration
+        continue-on-error: true
         env:
           METADATA_HOST: "http://localhost:8585"
           METADATA_TOKEN: ${{ secrets.CHAT_API_TOKEN }}
           METADATA_TEST_AGENT: "CHAT"
-          METADATA_RUN_CHAT_TESTS: ${{ inputs.run_chat_tests }}
+          METADATA_RUN_CHAT_TESTS: ${{ inputs.run_chat_tests || 'false' }}
         run: |
           cd java
           mvn test -Dtest=IntegrationTest -q
@@ -364,11 +366,12 @@ jobs:
 
       - name: Run CLI Integration Tests
         id: cli-integration
+        continue-on-error: true
         env:
           METADATA_HOST: "http://localhost:8585"
           METADATA_TOKEN: ${{ secrets.CHAT_API_TOKEN }}
           METADATA_TEST_AGENT: "CHAT"
-          METADATA_RUN_CHAT_TESTS: ${{ inputs.run_chat_tests }}
+          METADATA_RUN_CHAT_TESTS: ${{ inputs.run_chat_tests || 'false' }}
         run: |
           cd cli
           cargo build
@@ -382,26 +385,17 @@ jobs:
 
       - name: Run n8n Integration Tests
         id: n8n-integration
+        continue-on-error: true
         env:
           METADATA_HOST: "http://localhost:8585"
           METADATA_TOKEN: ${{ secrets.CHAT_API_TOKEN }}
           METADATA_TEST_AGENT: "CHAT"
-          METADATA_RUN_CHAT_TESTS: ${{ inputs.run_chat_tests }}
+          METADATA_RUN_CHAT_TESTS: ${{ inputs.run_chat_tests || 'false' }}
         run: |
           cd n8n-nodes-metadata
           npm run test:integration
 
       # ==================== Cleanup and Reporting ====================
-
-      - name: Integration Tests Summary
-        if: always()
-        run: |
-          echo "=== Integration Tests Summary ==="
-          echo "Python: ${{ steps.python-integration.outcome }}"
-          echo "TypeScript: ${{ steps.typescript-integration.outcome }}"
-          echo "Java: ${{ steps.java-integration.outcome }}"
-          echo "CLI: ${{ steps.cli-integration.outcome }}"
-          echo "n8n: ${{ steps.n8n-integration.outcome }}"
 
       - name: Get Collate Server logs on Failure
         if: always() && steps.check-prerequisites.outcome != 'success'
@@ -416,21 +410,38 @@ jobs:
           echo "=== AI Platform (CAIP) Logs ==="
           docker logs ai-platform 2>&1 || echo "No AI Platform logs found"
 
-      - name: Force failure if any integration test failed
+      - name: Check Results
         if: always()
         run: |
+          echo "## Integration Tests Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| SDK | Status |" >> $GITHUB_STEP_SUMMARY
+          echo "|-----|--------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Python | ${{ steps.python-integration.outcome == 'success' && '✅ Pass' || '❌ Fail' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| TypeScript | ${{ steps.typescript-integration.outcome == 'success' && '✅ Pass' || '❌ Fail' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Java | ${{ steps.java-integration.outcome == 'success' && '✅ Pass' || '❌ Fail' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Rust CLI | ${{ steps.cli-integration.outcome == 'success' && '✅ Pass' || '❌ Fail' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| n8n | ${{ steps.n8n-integration.outcome == 'success' && '✅ Pass' || '❌ Fail' }} |" >> $GITHUB_STEP_SUMMARY
+
+          # Check prerequisites first
           if [ "${{ steps.check-prerequisites.outcome }}" != "success" ]; then
-            echo "Prerequisites failed"
+            echo ""
+            echo "❌ Prerequisites failed - Collate/AI Platform setup did not complete"
             exit 1
           fi
 
-          if [ "${{ steps.python-integration.outcome }}" == "failure" ] || \
-             [ "${{ steps.typescript-integration.outcome }}" == "failure" ] || \
-             [ "${{ steps.java-integration.outcome }}" == "failure" ] || \
-             [ "${{ steps.cli-integration.outcome }}" == "failure" ] || \
-             [ "${{ steps.n8n-integration.outcome }}" == "failure" ]; then
-            echo "One or more integration tests failed"
+          # Fail if any integration test failed
+          FAILED=0
+          if [ "${{ steps.python-integration.outcome }}" != "success" ]; then echo "❌ Python integration tests failed"; FAILED=1; fi
+          if [ "${{ steps.typescript-integration.outcome }}" != "success" ]; then echo "❌ TypeScript integration tests failed"; FAILED=1; fi
+          if [ "${{ steps.java-integration.outcome }}" != "success" ]; then echo "❌ Java integration tests failed"; FAILED=1; fi
+          if [ "${{ steps.cli-integration.outcome }}" != "success" ]; then echo "❌ CLI integration tests failed"; FAILED=1; fi
+          if [ "${{ steps.n8n-integration.outcome }}" != "success" ]; then echo "❌ n8n integration tests failed"; FAILED=1; fi
+
+          if [ $FAILED -eq 1 ]; then
+            echo ""
+            echo "One or more integration tests failed. See details above."
             exit 1
           fi
 
-          echo "All integration tests passed"
+          echo "✅ All integration tests passed!"

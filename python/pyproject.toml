@@ -100,6 +100,10 @@ docstring-code-format = true
 [tool.ty.environment]
 python-version = "3.10"
 
+[tool.ty.rules]
+# Ignore unresolved imports for external packages (they're installed but ty can't find them in CI)
+unresolved-import = "ignore"
+
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
 testpaths = ["tests"]

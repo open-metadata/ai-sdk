@@ -17,6 +17,7 @@ jobs:
   build-and-publish:
     name: Build and Publish to PyPI
     runs-on: ubuntu-latest
+    environment: release
     defaults:
       run:
         working-directory: python

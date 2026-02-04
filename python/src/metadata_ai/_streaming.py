@@ -50,27 +50,24 @@ def _parse_event(event_str: str) -> StreamEvent | None:
     tool_name = None
     conversation_id = payload.get("conversationId")
 
-    if "data" in payload and payload["data"]:
-        message_data = payload["data"]
-        if "message" in message_data and message_data["message"]:
-            message = message_data["message"]
+    if message_data := payload.get("data"):
+        if message := message_data.get("message"):
             # Get conversation ID from message if not at top level
             if not conversation_id:
                 conversation_id = message.get("conversationId")
             # Extract text content from content blocks
-            if "content" in message and message["content"]:
+            if content_blocks := message.get("content"):
                 text_parts = []
-                for block in message["content"]:
+                for block in content_blocks:
                     # Extract text message
-                    if "textMessage" in block and block["textMessage"]:
-                        text_msg = block["textMessage"]
+                    if text_msg := block.get("textMessage"):
                         if isinstance(text_msg, dict) and "message" in text_msg:
                             text_parts.append(text_msg["message"])
                         elif isinstance(text_msg, str):
                             text_parts.append(text_msg)
                     # Extract tool names
-                    if "tools" in block and block["tools"]:
-                        for tool in block["tools"]:
+                    if tools := block.get("tools"):
+                        for tool in tools:
                             if isinstance(tool, dict) and "name" in tool:
                                 tool_name = tool["name"]
                 if text_parts:
@@ -78,6 +75,10 @@ def _parse_event(event_str: str) -> StreamEvent | None:
     elif "content" in payload:
         # Fallback to direct content field
         content = payload.get("content")
+
+    # Fallback for simple format toolName
+    if tool_name is None:
+        tool_name = payload.get("toolName")
 
     return StreamEvent(
         type=mapped_type,

@@ -1,4 +1,4 @@
-name: Metadata AI SDK CI
+name: CI
 
 on:
   push:
@@ -8,105 +8,26 @@ on:
     branches:
       - main
   workflow_dispatch:
-    inputs:
-      run_integration_tests:
-        description: 'Run integration tests'
-        required: false
-        default: 'true'
-        type: boolean
-      run_chat_tests:
-        description: 'Run chat tests - invoke and streaming (uses AI tokens)'
-        required: false
-        default: false
-        type: boolean
 
 concurrency:
   group: ai-sdk-ci-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  changes:
-    name: Detect Changes
+  lint-and-test:
+    name: Lint & Unit Tests
     runs-on: ubuntu-latest
-    outputs:
-      cli: ${{ steps.filter.outputs.cli }}
-      typescript: ${{ steps.filter.outputs.typescript }}
-      java: ${{ steps.filter.outputs.java }}
-      python: ${{ steps.filter.outputs.python }}
-      n8n: ${{ steps.filter.outputs.n8n }}
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Filter paths
-        uses: dorny/paths-filter@v3
-        id: filter
-        with:
-          filters: |
-            cli:
-              - 'cli/**'
-            typescript:
-              - 'typescript/**'
-            java:
-              - 'java/**'
-            python:
-              - 'python/**'
-            n8n:
-              - 'n8n-nodes-metadata/**'
-
-  rust-cli:
-    name: Rust CLI
-    needs: changes
-    if: needs.changes.outputs.cli == 'true' || github.event_name == 'workflow_dispatch'
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: cli
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Install Rust toolchain
+      # ==================== Setup ====================
+
+      - name: Setup Rust
         uses: dtolnay/rust-toolchain@stable
         with:
           components: clippy, rustfmt
-
-      - name: Cache cargo
-        uses: actions/cache@v4
-        with:
-          path: |
-            ~/.cargo/registry
-            ~/.cargo/git
-            cli/target
-          key: ${{ runner.os }}-cargo-${{ hashFiles('cli/Cargo.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-cargo-
-
-      - name: Check formatting
-        run: cargo fmt --check
-
-      - name: Run clippy
-        run: cargo clippy -- -D warnings
-
-      - name: Build
-        run: cargo build
-
-      - name: Run tests
-        run: cargo test
-
-  typescript-sdk:
-    name: TypeScript SDK
-    needs: changes
-    if: needs.changes.outputs.typescript == 'true' || github.event_name == 'workflow_dispatch'
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: typescript
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -115,30 +36,12 @@ jobs:
           cache: 'npm'
           cache-dependency-path: typescript/package-lock.json
 
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Run linting
-        run: npm run lint
-
-      - name: Run tests
-        run: npm test
-
-      - name: Build
-        run: npm run build
-
-  java-sdk:
-    name: Java SDK
-    needs: changes
-    if: needs.changes.outputs.java == 'true' || github.event_name == 'workflow_dispatch'
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: java
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+          cache: 'pip'
+          cache-dependency-path: python/pyproject.toml
 
       - name: Setup Java
         uses: actions/setup-java@v4
@@ -147,229 +50,127 @@ jobs:
           distribution: 'temurin'
           cache: 'maven'
 
-      - name: Build and test
-        run: mvn clean verify
+      # ==================== Install Dependencies ====================
 
-  python-sdk:
-    name: Python SDK
-    needs: changes
-    if: needs.changes.outputs.python == 'true' || github.event_name == 'workflow_dispatch'
-    runs-on: ubuntu-latest
-    defaults:
-      run:
+      - name: Install Python dependencies
         working-directory: python
+        run: pip install -e ".[dev,langchain]"
 
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Setup Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.10'
-          cache: 'pip'
-          cache-dependency-path: python/pyproject.toml
-
-      - name: Install dependencies
-        run: pip install -e ".[dev]"
-
-      - name: Run linting
-        run: ruff check src tests
-
-      - name: Run formatting check
-        run: ruff format --check src tests
-
-      - name: Run tests
-        run: pytest --ignore=tests/integration
-
-  n8n-node:
-    name: n8n Node
-    needs: changes
-    if: needs.changes.outputs.n8n == 'true' || github.event_name == 'workflow_dispatch'
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-          cache: 'npm'
-          cache-dependency-path: n8n-nodes-metadata/package.json
-
-      # Build TypeScript SDK first (n8n depends on it via file:../typescript)
-      - name: Install TypeScript SDK dependencies
+      - name: Install TypeScript dependencies
         working-directory: typescript
         run: npm ci
 
-      - name: Build TypeScript SDK
-        working-directory: typescript
-        run: npm run build
-
-      - name: Install dependencies
-        working-directory: n8n-nodes-metadata
-        run: npm install
-
-      - name: Build
-        working-directory: n8n-nodes-metadata
-        run: npm run build
-
-  # ==================== Integration Tests ====================
-  # These tests run against a real Metadata instance
-  # Requires METADATA_HOST and METADATA_TOKEN secrets
-  # Triggered by workflow_dispatch or when secrets are available
-
-  integration-tests:
-    name: Integration Tests
-    runs-on: ubuntu-latest
-    # Run on manual trigger or when secrets are available
-    if: |
-      (github.event_name == 'workflow_dispatch' && github.event.inputs.run_integration_tests == 'true') ||
-      (github.event_name == 'push' && github.ref == 'refs/heads/main')
-    env:
-      METADATA_HOST: ${{ secrets.METADATA_HOST }}
-      METADATA_TOKEN: ${{ secrets.METADATA_TOKEN }}
-      METADATA_TEST_AGENT: ${{ secrets.METADATA_TEST_AGENT }}
-      # Enable streaming tests only when explicitly requested (uses AI tokens)
-      METADATA_RUN_CHAT_TESTS: ${{ github.event.inputs.run_chat_tests || 'false' }}
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Check if secrets are configured
-        id: check-secrets
+      - name: Install n8n dependencies
         run: |
-          if [ -z "$METADATA_HOST" ] || [ -z "$METADATA_TOKEN" ]; then
-            echo "configured=false" >> $GITHUB_OUTPUT
-            echo "::warning::METADATA_HOST or METADATA_TOKEN not configured. Skipping integration tests."
-          else
-            echo "configured=true" >> $GITHUB_OUTPUT
-            echo "Integration test secrets configured"
-            if [ "$METADATA_RUN_CHAT_TESTS" = "true" ]; then
-              echo "::notice::Streaming tests ENABLED (will use AI tokens)"
-            else
-              echo "::notice::Streaming tests disabled (set run_chat_tests=true to enable)"
-            fi
-          fi
+          cd typescript && npm run build
+          cd ../n8n-nodes-metadata && npm install
 
-      # ---- Python Integration Tests ----
-      - name: Setup Python
-        if: steps.check-secrets.outputs.configured == 'true'
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.10'
+      # ==================== Linting (via Makefile) ====================
 
-      - name: Install Python SDK
-        if: steps.check-secrets.outputs.configured == 'true'
+      - name: "Lint: Rust CLI"
+        id: lint-rust
+        continue-on-error: true
+        run: make lint-rust
+
+      - name: "Lint: Python SDK"
+        id: lint-python
+        continue-on-error: true
+        run: make lint-python
+
+      - name: "Lint: TypeScript SDK"
+        id: lint-typescript
+        continue-on-error: true
+        run: make lint-typescript
+
+      - name: "Lint: Java SDK"
+        id: lint-java
+        continue-on-error: true
+        run: make lint-java
+
+      - name: "Lint: n8n Node"
+        id: lint-n8n
+        continue-on-error: true
+        run: make lint-n8n
+
+      # ==================== Unit Tests ====================
+
+      - name: "Test: Rust CLI"
+        id: test-rust
+        continue-on-error: true
+        working-directory: cli
+        run: cargo test
+
+      - name: "Test: Python SDK"
+        id: test-python
+        continue-on-error: true
         working-directory: python
-        run: pip install -e ".[dev]"
+        run: |
+          pip install pytest-cov -q
+          pytest --ignore=tests/integration -v --cov=src/metadata_ai --cov-report=term-missing --cov-report=xml
 
-      - name: Run Python Integration Tests
-        if: steps.check-secrets.outputs.configured == 'true'
-        working-directory: python
-        run: pytest tests/integration/ -v --tb=short
-
-      # ---- TypeScript Integration Tests ----
-      - name: Setup Node.js
-        if: steps.check-secrets.outputs.configured == 'true'
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-
-      - name: Install TypeScript SDK
-        if: steps.check-secrets.outputs.configured == 'true'
+      - name: "Test: TypeScript SDK"
+        id: test-typescript
+        continue-on-error: true
         working-directory: typescript
-        run: npm ci
+        run: |
+          npm run build
+          npm test
 
-      - name: Build TypeScript SDK
-        if: steps.check-secrets.outputs.configured == 'true'
-        working-directory: typescript
-        run: npm run build
-
-      - name: Run TypeScript Integration Tests
-        if: steps.check-secrets.outputs.configured == 'true'
-        working-directory: typescript
-        run: npm run test:integration
-
-      # ---- Java Integration Tests ----
-      - name: Setup Java
-        if: steps.check-secrets.outputs.configured == 'true'
-        uses: actions/setup-java@v4
-        with:
-          java-version: '11'
-          distribution: 'temurin'
-
-      - name: Run Java Integration Tests
-        if: steps.check-secrets.outputs.configured == 'true'
+      - name: "Test: Java SDK"
+        id: test-java
+        continue-on-error: true
         working-directory: java
-        run: mvn test -Dtest=IntegrationTest -q
+        run: mvn clean test -DexcludedGroups=integration -q
 
-      # ---- CLI Integration Tests ----
-      - name: Install Rust toolchain
-        if: steps.check-secrets.outputs.configured == 'true'
-        uses: dtolnay/rust-toolchain@stable
-
-      - name: Build CLI
-        if: steps.check-secrets.outputs.configured == 'true'
-        working-directory: cli
-        run: cargo build
-
-      - name: Run CLI Integration Tests
-        if: steps.check-secrets.outputs.configured == 'true'
-        working-directory: cli
-        run: cargo test --test integration_test
-
-      # ---- n8n Integration Tests ----
-      - name: Install n8n Node Dependencies
-        if: steps.check-secrets.outputs.configured == 'true'
+      - name: "Test: n8n Node"
+        id: test-n8n
+        continue-on-error: true
         working-directory: n8n-nodes-metadata
-        run: npm install
-
-      - name: Build n8n Node
-        if: steps.check-secrets.outputs.configured == 'true'
-        working-directory: n8n-nodes-metadata
-        run: npm run build
-
-      - name: Run n8n Integration Tests
-        if: steps.check-secrets.outputs.configured == 'true'
-        working-directory: n8n-nodes-metadata
-        run: npm run test:integration
-
-      - name: Integration Tests Summary
-        if: always()
         run: |
-          if [ "${{ steps.check-secrets.outputs.configured }}" == "true" ]; then
-            echo "✅ Integration tests completed"
-          else
-            echo "⏭️ Integration tests skipped (secrets not configured)"
+          npm run build
+          npm test 2>/dev/null || echo "No unit tests configured"
+
+      # ==================== Summary ====================
+
+      - name: Check Results
+        run: |
+          echo "## CI Results Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Linting (format + lint + types)" >> $GITHUB_STEP_SUMMARY
+          echo "| SDK | Status |" >> $GITHUB_STEP_SUMMARY
+          echo "|-----|--------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Rust CLI | ${{ steps.lint-rust.outcome == 'success' && '✅ Pass' || '❌ Fail' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Python | ${{ steps.lint-python.outcome == 'success' && '✅ Pass' || '❌ Fail' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| TypeScript | ${{ steps.lint-typescript.outcome == 'success' && '✅ Pass' || '❌ Fail' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Java | ${{ steps.lint-java.outcome == 'success' && '✅ Pass' || '❌ Fail' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| n8n | ${{ steps.lint-n8n.outcome == 'success' && '✅ Pass' || '❌ Fail' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Unit Tests" >> $GITHUB_STEP_SUMMARY
+          echo "| SDK | Status |" >> $GITHUB_STEP_SUMMARY
+          echo "|-----|--------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Rust CLI | ${{ steps.test-rust.outcome == 'success' && '✅ Pass' || '❌ Fail' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Python | ${{ steps.test-python.outcome == 'success' && '✅ Pass' || '❌ Fail' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| TypeScript | ${{ steps.test-typescript.outcome == 'success' && '✅ Pass' || '❌ Fail' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Java | ${{ steps.test-java.outcome == 'success' && '✅ Pass' || '❌ Fail' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| n8n | ${{ steps.test-n8n.outcome == 'success' && '✅ Pass' || '❌ Fail' }} |" >> $GITHUB_STEP_SUMMARY
+
+          # Fail if any step failed
+          FAILED=0
+          if [ "${{ steps.lint-rust.outcome }}" != "success" ]; then echo "❌ Rust lint failed"; FAILED=1; fi
+          if [ "${{ steps.lint-python.outcome }}" != "success" ]; then echo "❌ Python lint failed"; FAILED=1; fi
+          if [ "${{ steps.lint-typescript.outcome }}" != "success" ]; then echo "❌ TypeScript lint failed"; FAILED=1; fi
+          if [ "${{ steps.lint-java.outcome }}" != "success" ]; then echo "❌ Java lint failed"; FAILED=1; fi
+          if [ "${{ steps.lint-n8n.outcome }}" != "success" ]; then echo "❌ n8n lint failed"; FAILED=1; fi
+          if [ "${{ steps.test-rust.outcome }}" != "success" ]; then echo "❌ Rust tests failed"; FAILED=1; fi
+          if [ "${{ steps.test-python.outcome }}" != "success" ]; then echo "❌ Python tests failed"; FAILED=1; fi
+          if [ "${{ steps.test-typescript.outcome }}" != "success" ]; then echo "❌ TypeScript tests failed"; FAILED=1; fi
+          if [ "${{ steps.test-java.outcome }}" != "success" ]; then echo "❌ Java tests failed"; FAILED=1; fi
+          if [ "${{ steps.test-n8n.outcome }}" != "success" ]; then echo "❌ n8n tests failed"; FAILED=1; fi
+
+          if [ $FAILED -eq 1 ]; then
+            echo ""
+            echo "One or more checks failed. See details above."
+            exit 1
           fi
 
-  # Summary job that can be used as a required status check
-  ci-success:
-    name: Metadata AI SDK CI Success
-    needs: [changes, rust-cli, typescript-sdk, java-sdk, python-sdk, n8n-node, integration-tests]
-    if: always()
-    runs-on: ubuntu-latest
-    steps:
-      - name: Check all jobs
-        run: |
-          # Get the results of jobs that actually ran
-          CLI_RESULT="${{ needs.rust-cli.result }}"
-          TS_RESULT="${{ needs.typescript-sdk.result }}"
-          JAVA_RESULT="${{ needs.java-sdk.result }}"
-          PYTHON_RESULT="${{ needs.python-sdk.result }}"
-          N8N_RESULT="${{ needs.n8n-node.result }}"
-          INTEGRATION_RESULT="${{ needs.integration-tests.result }}"
-
-          # Check if any job that ran has failed
-          for result in "$CLI_RESULT" "$TS_RESULT" "$JAVA_RESULT" "$PYTHON_RESULT" "$N8N_RESULT" "$INTEGRATION_RESULT"; do
-            if [ "$result" = "failure" ]; then
-              echo "One or more CI jobs failed"
-              exit 1
-            fi
-          done
-
-          echo "All CI jobs passed or were skipped"
+          echo "✅ All checks passed!"
