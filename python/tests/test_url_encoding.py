@@ -37,7 +37,11 @@ def test_get_persona_encodes_name_with_special_chars():
     """Test that persona names with special chars are URL-encoded."""
     client = MetadataAI(host="https://test.com", token="test-token")
     client._personas_http = MagicMock()
-    client._personas_http.get.return_value = {"id": "123", "name": "test&persona", "provider": "user"}
+    client._personas_http.get.return_value = {
+        "id": "123",
+        "name": "test&persona",
+        "provider": "user",
+    }
 
     client.get_persona("test&persona")
 

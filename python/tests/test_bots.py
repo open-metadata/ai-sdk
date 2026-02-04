@@ -111,9 +111,7 @@ class TestListBots:
 class TestGetBot:
     """Tests for MetadataAI.get_bot() method."""
 
-    def test_get_bot_returns_bot_info(
-        self, client, httpx_mock: HTTPXMock, sample_bot_info_dict
-    ):
+    def test_get_bot_returns_bot_info(self, client, httpx_mock: HTTPXMock, sample_bot_info_dict):
         """get_bot returns BotInfo object."""
         httpx_mock.add_response(
             url="https://metadata.example.com/api/v1/bots/name/ingestion-bot",
@@ -163,9 +161,7 @@ class TestAsyncListBots:
         assert bots[0].name == "ingestion-bot"
 
     @pytest.mark.asyncio
-    async def test_alist_bots_without_async_enabled(
-        self, client, httpx_mock: HTTPXMock
-    ):
+    async def test_alist_bots_without_async_enabled(self, client, httpx_mock: HTTPXMock):
         """alist_bots raises RuntimeError when async not enabled."""
         with pytest.raises(RuntimeError) as exc_info:
             await client.alist_bots()
@@ -206,9 +202,7 @@ class TestAsyncGetBot:
         assert exc_info.value.bot_name == "nonexistent-bot"
 
     @pytest.mark.asyncio
-    async def test_aget_bot_without_async_enabled(
-        self, client, httpx_mock: HTTPXMock
-    ):
+    async def test_aget_bot_without_async_enabled(self, client, httpx_mock: HTTPXMock):
         """aget_bot raises RuntimeError when async not enabled."""
         with pytest.raises(RuntimeError) as exc_info:
             await client.aget_bot("any-bot")

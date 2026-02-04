@@ -116,7 +116,10 @@ class TestCreateAgentRequest:
 
         assert api_dict["name"] == "MyAgent"
         assert api_dict["description"] == "A test agent"
-        assert api_dict["persona"] == {"name": "DataAnalyst", "type": "persona"}  # EntityReference format
+        assert api_dict["persona"] == {
+            "name": "DataAnalyst",
+            "type": "persona",
+        }  # EntityReference format
         assert api_dict["mode"] == "chat"
         assert api_dict["apiEnabled"] is False
         assert api_dict["provider"] == "user"
@@ -158,9 +161,7 @@ class TestCreateAgentRequest:
 class TestCreateAgent:
     """Tests for MetadataAI.create_agent() method."""
 
-    def test_create_agent_minimal(
-        self, client, httpx_mock: HTTPXMock, sample_agent_response
-    ):
+    def test_create_agent_minimal(self, client, httpx_mock: HTTPXMock, sample_agent_response):
         """create_agent works with minimal fields."""
         # Mock persona resolution
         httpx_mock.add_response(
@@ -285,6 +286,7 @@ class TestCreateAgent:
         post_request = next(r for r in requests if r.method == "POST")
 
         import json
+
         body = json.loads(post_request.content)
         assert body["name"] == "TestAgent"
         assert body["description"] == "Test description"
@@ -298,9 +300,7 @@ class TestAsyncCreateAgent:
     """Tests for MetadataAI.acreate_agent() method."""
 
     @pytest.mark.asyncio
-    async def test_acreate_agent(
-        self, async_client, httpx_mock: HTTPXMock, sample_agent_response
-    ):
+    async def test_acreate_agent(self, async_client, httpx_mock: HTTPXMock, sample_agent_response):
         """acreate_agent works correctly."""
         # Mock persona resolution
         httpx_mock.add_response(

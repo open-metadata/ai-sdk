@@ -162,9 +162,7 @@ class TestGetPersona:
         assert persona.name == "DataAnalyst"
 
     @pytest.mark.asyncio
-    async def test_aget_persona_not_found_raises_error(
-        self, async_client, httpx_mock: HTTPXMock
-    ):
+    async def test_aget_persona_not_found_raises_error(self, async_client, httpx_mock: HTTPXMock):
         """aget_persona raises PersonaNotFoundError on 404."""
         httpx_mock.add_response(
             url="https://metadata.example.com/api/v1/agents/personas/name/NonExistentPersona",

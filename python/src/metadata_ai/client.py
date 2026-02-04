@@ -2,12 +2,12 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, Callable
+from collections.abc import Callable
+from typing import TYPE_CHECKING, Any
 from urllib.parse import quote
 
 if TYPE_CHECKING:
-    from metadata_ai._http import AsyncHTTPClient as AsyncHttpClient
-    from metadata_ai._http import HTTPClient as HttpClient
+    from metadata_ai._http import AsyncHTTPClient as AsyncHttpClient, HTTPClient as HttpClient
     from metadata_ai.config import MetadataConfig
 
 from metadata_ai._http import AsyncHTTPClient, HTTPClient
@@ -15,7 +15,6 @@ from metadata_ai.agent import AgentHandle
 from metadata_ai.auth import TokenAuth
 from metadata_ai.exceptions import (
     AbilityNotFoundError,
-    BotNotFoundError,
     MetadataError,
     PersonaNotFoundError,
 )
@@ -233,9 +232,9 @@ class MetadataAI:
 
     def _paginate_list(
         self,
-        http: "HttpClient",
+        http: HttpClient,
         path: str,
-        mapper: "Callable[[dict], Any]",
+        mapper: Callable[[dict], Any],
         limit: int | None = None,
         page_size: int = 100,
     ) -> list:
@@ -278,9 +277,9 @@ class MetadataAI:
 
     async def _apaginate_list(
         self,
-        http: "AsyncHttpClient",
+        http: AsyncHttpClient,
         path: str,
-        mapper: "Callable[[dict], Any]",
+        mapper: Callable[[dict], Any],
         limit: int | None = None,
         page_size: int = 100,
     ) -> list:
