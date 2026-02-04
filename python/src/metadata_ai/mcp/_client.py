@@ -166,3 +166,26 @@ class MCPClient:
         from metadata_ai.mcp._openai import create_tool_executor
 
         return create_tool_executor(self)
+
+    def as_langchain_tools(
+        self,
+        include: list[MCPTool] | None = None,
+        exclude: list[MCPTool] | None = None,
+    ) -> list:
+        """
+        Get tools formatted for LangChain.
+
+        Requires: pip install metadata-ai[langchain]
+
+        Args:
+            include: Only include these tools (allowlist)
+            exclude: Exclude these tools (blocklist)
+
+        Returns:
+            List of LangChain BaseTool instances
+        """
+        from metadata_ai.mcp._langchain import build_langchain_tools
+
+        tools = self.list_tools()
+        filtered = _filter_tools(tools, include, exclude)
+        return build_langchain_tools(self, filtered)
