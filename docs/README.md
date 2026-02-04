@@ -1,10 +1,42 @@
 # Metadata AI SDK Documentation
 
-Python SDK for Metadata AI Agents - Semantic Intelligence for AI builders.
+Python SDK for invoking Dynamic Agents from [OpenMetadata](https://open-metadata.org/) / [Collate](https://www.getcollate.io/).
 
-## Overview
+## What is this SDK?
 
-The Metadata AI SDK provides a simple, Pythonic interface to invoke Metadata Dynamic Agents from your AI applications. Use it standalone or integrate with frameworks like LangChain.
+The Metadata AI SDK lets you programmatically invoke **Dynamic Agents** - AI-powered assistants that can analyze your data catalog, generate SQL queries, plan data quality tests, explore lineage, and more. These agents run on your OpenMetadata or Collate instance and have full access to your metadata context.
+
+**Use cases:**
+- Automate data quality test generation
+- Build chatbots that understand your data catalog
+- Integrate metadata intelligence into your data pipelines
+- Create LangChain tools backed by your metadata context
+
+## Prerequisites
+
+Before using this SDK, you need:
+
+1. **An OpenMetadata or Collate instance** with Dynamic Agents enabled
+2. **A Bot with a JWT token** for API authentication
+
+### Getting Your Credentials
+
+#### 1. Find your host URL
+
+Your `METADATA_HOST` is your OpenMetadata/Collate server URL:
+- **Collate Cloud**: `https://your-org.getcollate.io`
+- **Self-hosted OpenMetadata**: `https://your-openmetadata-server.com`
+
+#### 2. Create a Bot and get the JWT token
+
+1. Log into your OpenMetadata/Collate instance as an admin
+2. Go to **Settings** > **Bots**
+3. Click **Add Bot** (or use an existing bot)
+4. Give it a name (e.g., `sdk-bot`) and appropriate permissions
+5. Under **Token**, click **Generate Token** or copy the existing JWT token
+6. This JWT token is your `METADATA_TOKEN`
+
+**Security tip:** Treat this token like a password. Don't commit it to version control.
 
 ## Guides
 
@@ -14,7 +46,8 @@ The Metadata AI SDK provides a simple, Pythonic interface to invoke Metadata Dyn
 | [Standalone Usage](standalone.md) | Complete standalone documentation |
 | [Async Usage](async.md) | Async patterns and best practices |
 | [Error Handling](error-handling.md) | Exception handling patterns |
-| [LangChain Integration](langchain.md) | Use with LangChain |
+| [LangChain Integration](langchain.md) | Use Dynamic Agents with LangChain |
+| [MCP Tools](mcp.md) | Use MCP tools with LangChain/OpenAI |
 
 ## Installation
 
@@ -31,23 +64,35 @@ pip install metadata-ai[all]
 
 ## Quick Example
 
+First, set your environment variables:
+
+```bash
+# Your OpenMetadata/Collate server URL
+export METADATA_HOST="https://your-org.getcollate.io"
+
+# Your bot's JWT token (from Settings > Bots)
+export METADATA_TOKEN="eyJhbGciOiJSUzI1NiIs..."
+```
+
+Then use the SDK:
+
 ```python
 from metadata_ai import MetadataAI, MetadataConfig, Conversation
 
-# Create client
+# Create client (reads METADATA_HOST and METADATA_TOKEN from environment)
 config = MetadataConfig.from_env()
 client = MetadataAI.from_config(config)
 
-# Simple call
+# Invoke an agent
 response = client.agent("DataQualityPlannerAgent").call(
-    "What tests should I add?"
+    "What tests should I add for the customers table?"
 )
 print(response.response)
 
-# Multi-turn conversation
+# Multi-turn conversation (agent remembers context)
 conv = Conversation(client.agent("DataQualityPlannerAgent"))
 print(conv.send("Analyze the customers table"))
-print(conv.send("Create tests for the issues"))
+print(conv.send("Create tests for the issues you found"))
 
 client.close()
 ```
@@ -71,7 +116,7 @@ client.close()
 
 ## Links
 
-- [Examples](../examples/)
-- [API Reference](https://docs.open-metadata.org/sdk)
 - [GitHub](https://github.com/open-metadata/metadata-ai-sdk)
 - [PyPI](https://pypi.org/project/metadata-ai/)
+- [OpenMetadata Documentation](https://docs.open-metadata.org/)
+- [Collate Documentation](https://docs.getcollate.io/)
