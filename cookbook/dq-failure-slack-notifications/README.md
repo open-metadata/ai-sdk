@@ -41,10 +41,18 @@ See [agent-config.md](./agent-config.md) for detailed setup instructions using t
 **Quick setup with CLI:**
 
 ```bash
-# List available abilities
-metadata-ai abilities list
+# Create the Persona
+metadata-ai personas create \
+  --name DQAnalyst \
+  --description "Data Quality analysis specialist" \
+  --prompt "You are a Data Quality analyst. When analyzing test failures, you:
+1. Identify the affected table and understand its purpose
+2. Explore downstream lineage to assess impact on dependent assets
+3. Check upstream lineage for potential root causes
+4. Review test definition and historical results
+5. Provide concise summaries with actionable recommendations"
 
-# Create the agent
+# Create the Agent
 metadata-ai agents create \
   --name DataQualityAnalyzer \
   --description "Analyzes DQ test failures, explores lineage impact, and suggests remediation" \
@@ -95,7 +103,8 @@ Set up Collate to send DQ failure events to your n8n webhook.
 
 ```javascript
 // Extract relevant fields from Collate ChangeEvent
-const event = $input.first().json;
+// n8n wraps the webhook payload in a body property
+const event = $input.first().json.body;
 
 const fieldUpdate = event.changeDescription?.fieldsUpdated?.find(
   f => f.name === 'testCaseResult'
@@ -113,7 +122,7 @@ if (result.testCaseStatus !== 'Failed') {
 }
 
 // Parse table FQN from test case FQN
-// Format: database.schema.table.test_name
+// Format: service.database.schema.table.test_name
 const fqnParts = event.entityFullyQualifiedName.split('.');
 const tableFqn = fqnParts.slice(0, -1).join('.');
 const testName = fqnParts[fqnParts.length - 1];
