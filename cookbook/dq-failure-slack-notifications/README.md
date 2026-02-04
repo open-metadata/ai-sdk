@@ -196,9 +196,41 @@ Please:
 ## Step 4: Configure Slack
 
 1. Go to [Slack API](https://api.slack.com/apps) and create an app
-2. Add **Incoming Webhooks** feature
-3. Create a webhook for your alerts channel
-4. In n8n, add Slack credentials with the webhook URL
+2. Add **OAuth & Permissions** → Add scopes: `chat:write`, `channels:read`
+3. Install the app to your workspace
+4. Copy the **Bot User OAuth Token** (`xoxb-...`)
+5. **Invite the bot to your channel**: In Slack, go to the channel and type `/invite @YourBotName`
+6. In n8n, add Slack credentials with the bot token
+
+### Test Slack Integration
+
+Before running the full workflow, verify the bot can post to your channel:
+
+```bash
+# Test posting a message
+curl -X POST https://slack.com/api/chat.postMessage \
+  -H "Authorization: Bearer xoxb-YOUR-BOT-TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "channel": "your-channel-name",
+    "text": "Test message from n8n integration"
+  }'
+```
+
+Expected response: `{"ok":true,...}`
+
+**Common errors:**
+| Error | Solution |
+|-------|----------|
+| `channel_not_found` | Invite the bot to the channel: `/invite @YourBotName` |
+| `not_in_channel` | Bot needs to be added to the channel |
+| `invalid_auth` | Check bot token is correct |
+
+To list channels the bot can access:
+```bash
+curl -s "https://slack.com/api/conversations.list?types=public_channel,private_channel" \
+  -H "Authorization: Bearer xoxb-YOUR-BOT-TOKEN" | jq '.channels[] | {name, id}'
+```
 
 ## Step 5: Test the Integration
 
