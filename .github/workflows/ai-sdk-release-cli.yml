@@ -1,0 +1,206 @@
+name: Release Metadata AI SDK CLI
+
+on:
+  push:
+    tags:
+      - 'cli-v*'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release-cli-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  build:
+    name: Build ${{ matrix.target }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - target: x86_64-apple-darwin
+            os: macos-latest
+            artifact_name: metadata-ai
+            asset_name: metadata-ai-macos-x86_64
+          - target: aarch64-apple-darwin
+            os: macos-latest
+            artifact_name: metadata-ai
+            asset_name: metadata-ai-macos-aarch64
+          - target: x86_64-unknown-linux-gnu
+            os: ubuntu-latest
+            artifact_name: metadata-ai
+            asset_name: metadata-ai-linux-x86_64
+          - target: aarch64-unknown-linux-gnu
+            os: ubuntu-latest
+            artifact_name: metadata-ai
+            asset_name: metadata-ai-linux-aarch64
+          - target: x86_64-pc-windows-msvc
+            os: windows-latest
+            artifact_name: metadata-ai.exe
+            asset_name: metadata-ai-windows-x86_64
+          - target: aarch64-pc-windows-msvc
+            os: windows-latest
+            artifact_name: metadata-ai.exe
+            asset_name: metadata-ai-windows-aarch64
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.target }}
+
+      - name: Install cross-compilation tools (Linux ARM)
+        if: matrix.target == 'aarch64-unknown-linux-gnu'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y gcc-aarch64-linux-gnu g++-aarch64-linux-gnu
+          echo "CARGO_TARGET_AARCH64_UNKNOWN_LINUX_GNU_LINKER=aarch64-linux-gnu-gcc" >> $GITHUB_ENV
+
+      - name: Cache cargo registry
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            cli/target
+          key: ${{ runner.os }}-cargo-${{ matrix.target }}-${{ hashFiles('cli/Cargo.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-cargo-${{ matrix.target }}-
+
+      - name: Build release binary
+        working-directory: cli
+        run: cargo build --release --target ${{ matrix.target }}
+
+      - name: Package binary (Unix)
+        if: runner.os != 'Windows'
+        run: |
+          cd cli/target/${{ matrix.target }}/release
+          tar -czvf ${{ matrix.asset_name }}.tar.gz ${{ matrix.artifact_name }}
+          mv ${{ matrix.asset_name }}.tar.gz ../../../../
+
+      - name: Package binary (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          cd cli/target/${{ matrix.target }}/release
+          Compress-Archive -Path ${{ matrix.artifact_name }} -DestinationPath ${{ matrix.asset_name }}.zip
+          Move-Item ${{ matrix.asset_name }}.zip ../../../../
+
+      - name: Upload artifact (Unix)
+        if: runner.os != 'Windows'
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.asset_name }}
+          path: ${{ matrix.asset_name }}.tar.gz
+          retention-days: 1
+
+      - name: Upload artifact (Windows)
+        if: runner.os == 'Windows'
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.asset_name }}
+          path: ${{ matrix.asset_name }}.zip
+          retention-days: 1
+
+  release:
+    name: Create GitHub Release
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+
+      - name: Generate changelog
+        id: changelog
+        run: |
+          # Get the previous tag
+          PREV_TAG=$(git describe --tags --abbrev=0 HEAD^ 2>/dev/null || echo "")
+
+          # Generate changelog
+          if [ -n "$PREV_TAG" ]; then
+            CHANGELOG=$(git log --pretty=format:"- %s (%h)" $PREV_TAG..HEAD -- cli/)
+          else
+            CHANGELOG=$(git log --pretty=format:"- %s (%h)" -- cli/ | head -20)
+          fi
+
+          # Handle multiline output
+          echo "changelog<<EOF" >> $GITHUB_OUTPUT
+          echo "$CHANGELOG" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      - name: Extract version from tag
+        id: version
+        run: echo "version=${GITHUB_REF#refs/tags/cli-v}" >> $GITHUB_OUTPUT
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: CLI v${{ steps.version.outputs.version }}
+          body: |
+            ## Metadata AI CLI v${{ steps.version.outputs.version }}
+
+            ### Installation
+
+            Download the appropriate binary for your platform and extract it:
+
+            **macOS (Intel)**
+            ```bash
+            tar -xzf metadata-ai-macos-x86_64.tar.gz
+            sudo mv metadata-ai /usr/local/bin/
+            ```
+
+            **macOS (Apple Silicon)**
+            ```bash
+            tar -xzf metadata-ai-macos-aarch64.tar.gz
+            sudo mv metadata-ai /usr/local/bin/
+            ```
+
+            **Linux (x86_64)**
+            ```bash
+            tar -xzf metadata-ai-linux-x86_64.tar.gz
+            sudo mv metadata-ai /usr/local/bin/
+            ```
+
+            **Linux (ARM64)**
+            ```bash
+            tar -xzf metadata-ai-linux-aarch64.tar.gz
+            sudo mv metadata-ai /usr/local/bin/
+            ```
+
+            **Windows (x86_64)**
+            ```powershell
+            Expand-Archive metadata-ai-windows-x86_64.zip -DestinationPath .
+            # Move metadata-ai.exe to a directory in your PATH
+            ```
+
+            **Windows (ARM64)**
+            ```powershell
+            Expand-Archive metadata-ai-windows-aarch64.zip -DestinationPath .
+            # Move metadata-ai.exe to a directory in your PATH
+            ```
+
+            ### Changes
+
+            ${{ steps.changelog.outputs.changelog }}
+          files: |
+            artifacts/**/*.tar.gz
+            artifacts/**/*.zip
+          draft: false
+          prerelease: ${{ contains(github.ref, '-alpha') || contains(github.ref, '-beta') || contains(github.ref, '-rc') }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
