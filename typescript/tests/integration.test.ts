@@ -1,12 +1,12 @@
 /**
  * Integration tests for Metadata AI TypeScript SDK.
  *
- * These tests run against a real OpenMetadata instance and require:
- * - OPENMETADATA_HOST: Base URL of the OpenMetadata instance
- * - OPENMETADATA_TOKEN: JWT authentication token
+ * These tests run against a real Metadata instance and require:
+ * - METADATA_HOST: Base URL of the Metadata instance
+ * - METADATA_TOKEN: JWT authentication token
  *
  * Optional:
- * - OPENMETADATA_RUN_STREAMING_TESTS: Set to "true" to run streaming tests (uses tokens)
+ * - METADATA_RUN_CHAT_TESTS: Set to "true" to run chat tests - invoke and streaming (uses AI tokens)
  *
  * Run with: npm run test:integration
  */
@@ -21,13 +21,13 @@ import {
 } from '../src';
 
 // Skip tests if credentials not configured
-const OPENMETADATA_HOST = process.env.OPENMETADATA_HOST;
-const OPENMETADATA_TOKEN = process.env.OPENMETADATA_TOKEN;
+const METADATA_HOST = process.env.METADATA_HOST;
+const METADATA_TOKEN = process.env.METADATA_TOKEN;
 
-const shouldRun = OPENMETADATA_HOST && OPENMETADATA_TOKEN;
+const shouldRun = METADATA_HOST && METADATA_TOKEN;
 
-// Check if streaming tests should run (they use tokens)
-const STREAMING_TESTS_ENABLED = process.env.OPENMETADATA_RUN_STREAMING_TESTS?.toLowerCase() === 'true';
+// Check if chat tests should run (invoke + streaming - they use AI tokens)
+const CHAT_TESTS_ENABLED = process.env.METADATA_RUN_CHAT_TESTS?.toLowerCase() === 'true';
 
 /** Generate a unique name for test entities */
 function uniqueName(prefix: string): string {
@@ -40,8 +40,8 @@ describe.skipIf(!shouldRun)('Integration Tests', () => {
 
   beforeAll(async () => {
     client = new MetadataAI({
-      host: OPENMETADATA_HOST!,
-      token: OPENMETADATA_TOKEN!,
+      host: METADATA_HOST!,
+      token: METADATA_TOKEN!,
     });
 
     // Create a test agent with discoveryAndSearch ability for proper streaming tests
@@ -72,7 +72,7 @@ describe.skipIf(!shouldRun)('Integration Tests', () => {
   describe('Connection', () => {
     it('should create client with valid credentials', () => {
       expect(client).toBeDefined();
-      expect(client.host).toBe(OPENMETADATA_HOST!.replace(/\/$/, ''));
+      expect(client.host).toBe(METADATA_HOST!.replace(/\/$/, ''));
     });
 
     it('should list agents successfully', async () => {
@@ -83,7 +83,7 @@ describe.skipIf(!shouldRun)('Integration Tests', () => {
 
     it('should reject invalid token', async () => {
       const badClient = new MetadataAI({
-        host: OPENMETADATA_HOST!,
+        host: METADATA_HOST!,
         token: 'invalid-token-12345',
       });
 
@@ -106,7 +106,7 @@ describe.skipIf(!shouldRun)('Integration Tests', () => {
       console.log(`Agent '${testAgentName}' info: ${info.description || 'No description'}`);
     });
 
-    it('should invoke agent with simple message', async () => {
+    it.skipIf(!CHAT_TESTS_ENABLED)('should invoke agent with simple message', async () => {
       if (!testAgentName) {
         console.log('Skipping: No test agent available');
         return;
@@ -121,7 +121,7 @@ describe.skipIf(!shouldRun)('Integration Tests', () => {
       console.log(`Agent response: ${response.response.substring(0, 200)}...`);
     });
 
-    it.skipIf(!STREAMING_TESTS_ENABLED)('should stream agent response', async () => {
+    it.skipIf(!CHAT_TESTS_ENABLED)('should stream agent response', async () => {
       if (!testAgentName) {
         console.log('Skipping: No test agent available');
         return;

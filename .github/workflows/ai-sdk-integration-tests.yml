@@ -1,0 +1,436 @@
+#  Copyright 2021 Collate
+#  Licensed under the Apache License, Version 2.0 (the "License");
+#  you may not use this file except in compliance with the License.
+#  You may obtain a copy of the License at
+#  http://www.apache.org/licenses/LICENSE-2.0
+#  Unless required by applicable law or agreed to in writing, software
+#  distributed under the License is distributed on an "AS IS" BASIS,
+#  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#  See the License for the specific language governing permissions and
+#  limitations under the License.
+
+name: Integration Tests
+
+on:
+  workflow_dispatch:
+    inputs:
+      COLLATE_BRANCH:
+        description: 'Branch or tag to use from openmetadata-collate repository'
+        required: false
+        type: string
+        default: 'main'
+      run_chat_tests:
+        description: 'Run chat tests - agent invoke and SSE streaming (uses AI tokens)'
+        required: false
+        default: false
+        type: boolean
+
+permissions:
+  id-token: write
+  contents: read
+  checks: write
+  statuses: write
+
+concurrency:
+  group: ai-sdk-integration-tests-${{ github.head_ref || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  integration-tests:
+    runs-on:
+      group: collate-x86
+    environment: benchmarking
+    env:
+      AWS_BEDROCK_REGION: "us-east-2"
+
+    steps:
+      - name: Install build applications
+        run: sudo apt -q update && sudo apt -q install -y git curl jq wget make
+
+      - name: Checkout SDK repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+
+      - name: Set up Maven
+        uses: stCarolas/setup-maven@v5
+        with:
+          maven-version: 3.8.2
+
+      - name: Generate a token able to checkout the Collate repo
+        id: generate_token
+        uses: actions/create-github-app-token@v2
+        with:
+          app-id: ${{ secrets.GH_BOT_ID }}
+          private-key: ${{ secrets.GH_BOT_PK }}
+          owner: ${{ github.repository_owner }}
+          repositories: openmetadata-collate,ai-platform
+
+      - name: Checkout Collate
+        uses: actions/checkout@v4
+        with:
+          repository: open-metadata/openmetadata-collate
+          ref: ${{ inputs.COLLATE_BRANCH || 'main' }}
+          token: ${{ steps.generate_token.outputs.token }}
+          path: collate
+          show-progress: false
+          submodules: 'recursive'
+          fetch-depth: '0'
+
+      - name: Checkout AI Platform
+        uses: actions/checkout@v4
+        with:
+          repository: open-metadata/ai-platform
+          ref: 'main'
+          token: ${{ steps.generate_token.outputs.token }}
+          path: ai-platform
+          show-progress: false
+          fetch-depth: '0'
+
+      - name: Install Ubuntu dependencies
+        run: |
+          sudo apt-get update && sudo apt-get install -y curl unzip make jq librdkafka-dev unixodbc-dev libpython3.12-dev python3.12-dev python3-venv librdkafka-dev gcc libsasl2-dev build-essential libssl-dev libffi-dev \
+          unixodbc-dev libevent-dev libkrb5-dev pkg-config libmysqlclient-dev gettext-base
+
+      - name: Update Git SubModules
+        working-directory: collate
+        run: |
+          git submodule sync
+          git submodule update --init --remote --recursive
+
+      - name: Create mvn settings for Pulp
+        run: |
+          mkdir -p ~/.m2
+          cat << EOF > ~/.m2/settings.xml
+          <settings>
+            <servers>
+            <server>
+              <id>github</id>
+              <username>${env.GITHUB_ACTOR}</username>
+              <password>${env.GITHUB_TOKEN}</password>
+            </server>
+          </servers>
+          <mirrors>
+            <mirror>
+              <id>pulp-maven-central</id>
+              <name>Local Maven Central mirror </name>
+              <url>http://pulp-web-svc.pulp-operator:24880/pulp/content/maven-central</url>
+              <mirrorOf>central</mirrorOf>
+            </mirror>
+          </mirrors>
+          <profiles>
+            <profile>
+            <id>pulp</id>
+            <!--Enable snapshots for the built in central repo to direct -->
+            <!--all requests to nexus via the mirror -->
+            <repositories>
+                <repository>
+                <id>central</id>
+                <url>http://central</url>
+                <releases><enabled>true</enabled></releases>
+                <snapshots><enabled>true</enabled></snapshots>
+                </repository>
+            </repositories>
+            <pluginRepositories>
+                <pluginRepository>
+                <id>central</id>
+                <url>http://central</url>
+                <releases><enabled>true</enabled></releases>
+                <snapshots><enabled>true</enabled></snapshots>
+                </pluginRepository>
+            </pluginRepositories>
+            </profile>
+          </profiles>
+          <activeProfiles>
+            <!--make the profile active all the time -->
+            <activeProfile>pulp</activeProfile>
+          </activeProfiles>
+          </settings>
+          EOF
+
+      - name: Configure Maven Settings
+        working-directory: collate
+        run: |
+          sudo ln -sf $(which java) /usr/bin/java
+          sed -i '75s/&//' ./OpenMetadata/openmetadata-ui/src/main/resources/ui/json2ts.sh # Remove bg process
+          sed -i '78s/&//' ./collate-ui/src/main/resources/ui/json2ts.sh # Remove bg process
+          sed -i '/"build":/ s/webpack --config/sed -i '\''\/enableWorkerThreads\/d'\'' node_modules\/terser-webpack-plugin\/dist\/index.js \&\& webpack --config/' ./collate-ui/src/main/resources/ui//package.json # Remove enableWorkerThreads for saving memory here
+          sudo make install_antlr_cli
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: 'collate/collate-ui/src/main/resources/ui/.nvmrc'
+
+      - name: Install yarn
+        run: npm install -g yarn
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@main
+        with:
+          role-to-assume: ${{ secrets.AWS_ARN_ROLE }}
+          aws-region: ${{ env.AWS_BEDROCK_REGION }}
+          role-duration-seconds: 7200
+
+      - name: Install Compose
+        uses: ndeloof/install-compose-action@v0.0.1
+
+      - name: Get Docker Host IP
+        id: docker-host
+        run: |
+          # Get the host's primary IP address (accessible from all containers)
+          HOST_IP=$(hostname -I | awk '{print $1}')
+          echo "HOST_IP=${HOST_IP}" >> $GITHUB_OUTPUT
+          echo "Docker host IP: ${HOST_IP}"
+
+      - name: Build OpenMetadata
+        working-directory: collate/OpenMetadata
+        env:
+          MAVEN_OPTS: "-Xmx3000m"
+        run: |
+          mvn -DskipTests -DonlyBackend clean install
+
+      - name: Build AI Platform
+        working-directory: ai-platform
+        env:
+          MAVEN_OPTS: "-Xmx3000m"
+        run: |
+          mvn clean install -DskipTests
+
+      - name: Start AI Platform
+        working-directory: ai-platform
+        run: |
+          docker build -f docker/Dockerfile-ci -t ai-platform:latest .
+          docker run -d -p 9595:9595 -p 9596:9596 -p 50051:50051 \
+            -e AWS_ACCESS_KEY_ID \
+            -e AWS_SECRET_ACCESS_KEY \
+            -e AWS_SESSION_TOKEN \
+            -e AWS_DEFAULT_REGION \
+            -e LLM_PROVIDER_MODEL_TYPE \
+            -e COLLATE_SERVER_HOST_AND_PORT \
+            --name ai-platform ai-platform:latest
+        env:
+          AWS_ACCESS_KEY_ID: ${{ env.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ env.AWS_SECRET_ACCESS_KEY }}
+          AWS_SESSION_TOKEN: ${{ env.AWS_SESSION_TOKEN }}
+          AWS_DEFAULT_REGION: ${{ env.AWS_DEFAULT_REGION }}
+          LLM_PROVIDER_MODEL_TYPE: "anthropic.claude-haiku-4-5-20251001-v1:0"
+          COLLATE_SERVER_HOST_AND_PORT: "http://${{ steps.docker-host.outputs.HOST_IP }}:8585"
+
+      - name: Build Collate & Start Server
+        id: build-collate-server
+        uses: nick-fields/retry@v2.8.3
+        continue-on-error: true
+        env:
+          INGESTION_DEPENDENCY: "mysql,elasticsearch"
+          AWS_ACCESS_KEY_ID: ${{ env.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ env.AWS_SECRET_ACCESS_KEY }}
+          AWS_SESSION_TOKEN: ${{ env.AWS_SESSION_TOKEN }}
+          AWS_DEFAULT_REGION: ${{ env.AWS_DEFAULT_REGION }}
+          AWS_REGION: ${{ env.AWS_REGION }}
+          AI_PLATFORM_HOST: ${{ steps.docker-host.outputs.HOST_IP }}
+          AI_PLATFORM_GRPC_PORT: "50051"
+        with:
+          timeout_minutes: 30
+          max_attempts: 2
+          retry_on: error
+          command: |
+            cd collate
+            ./docker/run_local_docker.sh -d postgresql -v true
+
+      - name: Validate Collate Server is Running
+        id: validate-collate
+        run: |
+          echo "Waiting for Collate server to be ready..."
+          for i in {1..30}; do
+            if curl -s -o /dev/null -w "%{http_code}" http://localhost:8585/api/v1/system/version | grep -q "200"; then
+              echo "Collate server is ready"
+              break
+            fi
+            echo "Waiting... ($i/30)"
+            sleep 10
+          done
+
+          # Verify the server is actually responding
+          curl -s http://localhost:8585/api/v1/system/version
+
+      - name: Validate AI Platform is Running
+        id: validate-ai-platform
+        run: |
+          echo "Checking AI Platform health..."
+          docker logs ai-platform 2>&1 | tail -20
+
+          # Wait for AI Platform to be ready
+          for i in {1..12}; do
+            if curl -s -o /dev/null -w "%{http_code}" http://localhost:9595/health 2>/dev/null | grep -q "200"; then
+              echo "AI Platform is ready"
+              break
+            fi
+            echo "Waiting for AI Platform... ($i/12)"
+            sleep 5
+          done
+
+      - name: Set up Python 3.10
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Install Python Prerequisites & Run Sample Data
+        id: setup-sample-data
+        continue-on-error: true
+        run: |
+          python -m venv venv
+          source venv/bin/activate
+          cd collate/OpenMetadata
+          make install_dev generate
+          cd ingestion && metadata ingest -c pipelines/sample_data.yaml
+
+      - name: Check Setup Prerequisites
+        id: check-prerequisites
+        run: |
+          if [ "${{ steps.build-collate-server.outcome }}" != "success" ]; then
+            echo "setup_failed=true" >> $GITHUB_OUTPUT
+            echo "failure_step=Build Collate & Start Server" >> $GITHUB_OUTPUT
+            exit 1
+          elif [ "${{ steps.setup-sample-data.outcome }}" != "success" ]; then
+            echo "setup_failed=true" >> $GITHUB_OUTPUT
+            echo "failure_step=Install Python Prerequisites & Run Sample Data" >> $GITHUB_OUTPUT
+            exit 1
+          else
+            echo "setup_failed=false" >> $GITHUB_OUTPUT
+          fi
+
+      # ==================== SDK Integration Tests ====================
+
+      - name: Install Python SDK
+        run: |
+          source venv/bin/activate
+          pip install -e "./python[dev]"
+
+      - name: Run Python SDK Integration Tests
+        id: python-integration
+        env:
+          METADATA_HOST: "http://localhost:8585"
+          METADATA_TOKEN: ${{ secrets.CHAT_API_TOKEN }}
+          METADATA_TEST_AGENT: "CHAT"
+          METADATA_RUN_CHAT_TESTS: ${{ inputs.run_chat_tests }}
+        run: |
+          source venv/bin/activate
+          cd python
+          pytest tests/integration/ -v --tb=short
+
+      - name: Install TypeScript SDK
+        run: |
+          cd typescript
+          npm ci
+          npm run build
+
+      - name: Run TypeScript SDK Integration Tests
+        id: typescript-integration
+        env:
+          METADATA_HOST: "http://localhost:8585"
+          METADATA_TOKEN: ${{ secrets.CHAT_API_TOKEN }}
+          METADATA_TEST_AGENT: "CHAT"
+          METADATA_RUN_CHAT_TESTS: ${{ inputs.run_chat_tests }}
+        run: |
+          cd typescript
+          npm run test:integration
+
+      - name: Setup Java 11 for SDK
+        uses: actions/setup-java@v4
+        with:
+          java-version: '11'
+          distribution: 'temurin'
+
+      - name: Run Java SDK Integration Tests
+        id: java-integration
+        env:
+          METADATA_HOST: "http://localhost:8585"
+          METADATA_TOKEN: ${{ secrets.CHAT_API_TOKEN }}
+          METADATA_TEST_AGENT: "CHAT"
+          METADATA_RUN_CHAT_TESTS: ${{ inputs.run_chat_tests }}
+        run: |
+          cd java
+          mvn test -Dtest=IntegrationTest -q
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Run CLI Integration Tests
+        id: cli-integration
+        env:
+          METADATA_HOST: "http://localhost:8585"
+          METADATA_TOKEN: ${{ secrets.CHAT_API_TOKEN }}
+          METADATA_TEST_AGENT: "CHAT"
+          METADATA_RUN_CHAT_TESTS: ${{ inputs.run_chat_tests }}
+        run: |
+          cd cli
+          cargo build
+          cargo test --test integration_test
+
+      - name: Install n8n Node Dependencies
+        run: |
+          cd n8n-nodes-metadata
+          npm install
+          npm run build
+
+      - name: Run n8n Integration Tests
+        id: n8n-integration
+        env:
+          METADATA_HOST: "http://localhost:8585"
+          METADATA_TOKEN: ${{ secrets.CHAT_API_TOKEN }}
+          METADATA_TEST_AGENT: "CHAT"
+          METADATA_RUN_CHAT_TESTS: ${{ inputs.run_chat_tests }}
+        run: |
+          cd n8n-nodes-metadata
+          npm run test:integration
+
+      # ==================== Cleanup and Reporting ====================
+
+      - name: Integration Tests Summary
+        if: always()
+        run: |
+          echo "=== Integration Tests Summary ==="
+          echo "Python: ${{ steps.python-integration.outcome }}"
+          echo "TypeScript: ${{ steps.typescript-integration.outcome }}"
+          echo "Java: ${{ steps.java-integration.outcome }}"
+          echo "CLI: ${{ steps.cli-integration.outcome }}"
+          echo "n8n: ${{ steps.n8n-integration.outcome }}"
+
+      - name: Get Collate Server logs on Failure
+        if: always() && steps.check-prerequisites.outcome != 'success'
+        working-directory: collate
+        run: |
+          echo "=== Collate Server Logs ==="
+          docker compose -f docker/development/docker-compose-postgres.yml logs --no-log-prefix --timestamps collate-server
+
+      - name: Get AI Platform logs on Failure
+        if: always() && (steps.validate-ai-platform.outcome != 'success' || steps.python-integration.outcome != 'success' || steps.typescript-integration.outcome != 'success')
+        run: |
+          echo "=== AI Platform (CAIP) Logs ==="
+          docker logs ai-platform 2>&1 || echo "No AI Platform logs found"
+
+      - name: Force failure if any integration test failed
+        if: always()
+        run: |
+          if [ "${{ steps.check-prerequisites.outcome }}" != "success" ]; then
+            echo "Prerequisites failed"
+            exit 1
+          fi
+
+          if [ "${{ steps.python-integration.outcome }}" == "failure" ] || \
+             [ "${{ steps.typescript-integration.outcome }}" == "failure" ] || \
+             [ "${{ steps.java-integration.outcome }}" == "failure" ] || \
+             [ "${{ steps.cli-integration.outcome }}" == "failure" ] || \
+             [ "${{ steps.n8n-integration.outcome }}" == "failure" ]; then
+            echo "One or more integration tests failed"
+            exit 1
+          fi
+
+          echo "All integration tests passed"

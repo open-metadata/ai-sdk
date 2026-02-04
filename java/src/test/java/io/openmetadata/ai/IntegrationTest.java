@@ -27,7 +27,7 @@ import static org.junit.jupiter.api.Assertions.*;
  *
  * Optional:
  * - METADATA_TEST_AGENT: Name of an agent to test invocation (defaults to first available)
- * - METADATA_RUN_STREAMING_TESTS: Set to "true" to run streaming tests (uses tokens)
+ * - METADATA_RUN_CHAT_TESTS: Set to "true" to run chat tests - invoke and streaming (uses AI tokens)
  *
  * Run with: mvn test -Dtest=IntegrationTest
  */
@@ -38,9 +38,9 @@ public class IntegrationTest {
     private static MetadataAI client;
     private static String testAgentName;
     
-    /** Check if streaming tests should run (they use tokens) */
-    private static boolean isStreamingEnabled() {
-        String enabled = System.getenv("METADATA_RUN_STREAMING_TESTS");
+    /** Check if chat tests should run (invoke + streaming - they use AI tokens) */
+    private static boolean isChatTestsEnabled() {
+        String enabled = System.getenv("METADATA_RUN_CHAT_TESTS");
         return "true".equalsIgnoreCase(enabled);
     }
 
@@ -153,6 +153,10 @@ public class IntegrationTest {
         @Test
         @DisplayName("Invoke agent returns response")
         void testInvokeAgent() {
+            if (!isChatTestsEnabled()) {
+                System.out.println("Skipping: Chat tests disabled (set METADATA_RUN_CHAT_TESTS=true to enable)");
+                return;
+            }
             if (testAgentName == null) {
                 System.out.println("Skipping: No test agent available");
                 return;
@@ -171,8 +175,8 @@ public class IntegrationTest {
         @Test
         @DisplayName("Stream agent returns chunks")
         void testStreamAgent() {
-            if (!isStreamingEnabled()) {
-                System.out.println("Skipping: Streaming tests disabled (set METADATA_RUN_STREAMING_TESTS=true to enable)");
+            if (!isChatTestsEnabled()) {
+                System.out.println("Skipping: Chat tests disabled (set METADATA_RUN_CHAT_TESTS=true to enable)");
                 return;
             }
             if (testAgentName == null || testAgentName.isEmpty()) {
@@ -198,8 +202,8 @@ public class IntegrationTest {
         @Test
         @DisplayName("Stream iterator returns chunks")
         void testStreamIterator() {
-            if (!isStreamingEnabled()) {
-                System.out.println("Skipping: Streaming tests disabled (set METADATA_RUN_STREAMING_TESTS=true to enable)");
+            if (!isChatTestsEnabled()) {
+                System.out.println("Skipping: Chat tests disabled (set METADATA_RUN_CHAT_TESTS=true to enable)");
                 return;
             }
             if (testAgentName == null || testAgentName.isEmpty()) {

@@ -14,10 +14,10 @@ on:
         required: false
         default: 'true'
         type: boolean
-      run_streaming_tests:
-        description: 'Run streaming tests (uses AI tokens)'
+      run_chat_tests:
+        description: 'Run chat tests - invoke and streaming (uses AI tokens)'
         required: false
-        default: 'false'
+        default: false
         type: boolean
 
 concurrency:
@@ -233,7 +233,7 @@ jobs:
       METADATA_TOKEN: ${{ secrets.METADATA_TOKEN }}
       METADATA_TEST_AGENT: ${{ secrets.METADATA_TEST_AGENT }}
       # Enable streaming tests only when explicitly requested (uses AI tokens)
-      METADATA_RUN_STREAMING_TESTS: ${{ github.event.inputs.run_streaming_tests || 'false' }}
+      METADATA_RUN_CHAT_TESTS: ${{ github.event.inputs.run_chat_tests || 'false' }}
 
     steps:
       - name: Checkout code
@@ -248,10 +248,10 @@ jobs:
           else
             echo "configured=true" >> $GITHUB_OUTPUT
             echo "Integration test secrets configured"
-            if [ "$METADATA_RUN_STREAMING_TESTS" = "true" ]; then
+            if [ "$METADATA_RUN_CHAT_TESTS" = "true" ]; then
               echo "::notice::Streaming tests ENABLED (will use AI tokens)"
             else
-              echo "::notice::Streaming tests disabled (set run_streaming_tests=true to enable)"
+              echo "::notice::Streaming tests disabled (set run_chat_tests=true to enable)"
             fi
           fi
 

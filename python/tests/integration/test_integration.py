@@ -6,7 +6,7 @@ These tests run against a real Metadata instance and require:
 - METADATA_TOKEN: JWT authentication token
 
 Optional:
-- METADATA_RUN_STREAMING_TESTS: Set to "true" to run streaming tests (uses tokens)
+- METADATA_RUN_CHAT_TESTS: Set to "true" to run chat tests - invoke and streaming (uses AI tokens)
 
 Run with: pytest tests/integration/ -v
 """
@@ -18,13 +18,10 @@ import pytest
 
 from metadata_ai import MetadataAI
 from metadata_ai.exceptions import (
-    AgentNotFoundError,
     AuthenticationError,
-    MetadataError,
     PersonaNotFoundError,
 )
 from metadata_ai.models import CreateAgentRequest, CreatePersonaRequest
-
 
 # Skip all tests if credentials not configured
 pytestmark = pytest.mark.skipif(
@@ -32,11 +29,11 @@ pytestmark = pytest.mark.skipif(
     reason="Integration tests require METADATA_HOST and METADATA_TOKEN environment variables",
 )
 
-# Check if streaming tests should run (they use tokens)
-STREAMING_TESTS_ENABLED = os.getenv("METADATA_RUN_STREAMING_TESTS", "").lower() == "true"
-skip_streaming = pytest.mark.skipif(
-    not STREAMING_TESTS_ENABLED,
-    reason="Streaming tests disabled (set METADATA_RUN_STREAMING_TESTS=true to enable)",
+# Check if chat tests should run (invoke + streaming - they use AI tokens)
+CHAT_TESTS_ENABLED = os.getenv("METADATA_RUN_CHAT_TESTS", "").lower() == "true"
+skip_chat = pytest.mark.skipif(
+    not CHAT_TESTS_ENABLED,
+    reason="Chat tests disabled (set METADATA_RUN_CHAT_TESTS=true to enable)",
 )
 
 
@@ -67,19 +64,19 @@ def async_client() -> MetadataAI:
 @pytest.fixture
 def test_agent_name(client: MetadataAI) -> str | None:
     """Get or create a test agent for invoke/stream tests.
-    
+
     Creates a new agent using an existing persona so it has LLM backend configured.
     Includes the discoveryAndSearch ability for proper testing.
     """
     # First check if there's a manually specified test agent
     if name := os.getenv("METADATA_TEST_AGENT"):
         return name
-    
+
     # Get an existing persona to use (they have LLM configured)
     personas = client.list_personas()
     if not personas:
         return None
-    
+
     # Create a test agent with this persona and discoveryAndSearch ability
     agent_name = unique_name("invoke-test-agent")
     try:
@@ -142,6 +139,7 @@ class TestAgentOperations:
         assert info.name == test_agent_name
         print(f"Agent '{test_agent_name}' info: {info.description or 'No description'}")
 
+    @skip_chat
     def test_invoke_agent(self, client: MetadataAI, test_agent_name: str | None) -> None:
         """Test invoking an agent with a simple message."""
         if not test_agent_name:
@@ -155,7 +153,7 @@ class TestAgentOperations:
         assert len(response.response) > 0
         print(f"Agent response: {response.response[:200]}...")
 
-    @skip_streaming
+    @skip_chat
     def test_stream_agent(self, client: MetadataAI, test_agent_name: str | None) -> None:
         """Test streaming response from an agent."""
         if not test_agent_name:
@@ -183,6 +181,7 @@ class TestAsyncOperations:
         agents = await async_client.alist_agents()
         assert isinstance(agents, list)
 
+    @skip_chat
     @pytest.mark.asyncio
     async def test_async_invoke(
         self, async_client: MetadataAI, test_agent_name: str | None
@@ -197,7 +196,7 @@ class TestAsyncOperations:
         assert response is not None
         assert response.response is not None
 
-    @skip_streaming
+    @skip_chat
     @pytest.mark.asyncio
     async def test_async_stream(
         self, async_client: MetadataAI, test_agent_name: str | None
