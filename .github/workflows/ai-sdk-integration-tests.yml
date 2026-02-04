@@ -314,6 +314,7 @@ jobs:
 
       - name: Run Python SDK Integration Tests
         id: python-integration
+        continue-on-error: true
         env:
           METADATA_HOST: "http://localhost:8585"
           METADATA_TOKEN: ${{ secrets.CHAT_API_TOKEN }}
@@ -332,6 +333,7 @@ jobs:
 
       - name: Run TypeScript SDK Integration Tests
         id: typescript-integration
+        continue-on-error: true
         env:
           METADATA_HOST: "http://localhost:8585"
           METADATA_TOKEN: ${{ secrets.CHAT_API_TOKEN }}
@@ -349,6 +351,7 @@ jobs:
 
       - name: Run Java SDK Integration Tests
         id: java-integration
+        continue-on-error: true
         env:
           METADATA_HOST: "http://localhost:8585"
           METADATA_TOKEN: ${{ secrets.CHAT_API_TOKEN }}
@@ -363,6 +366,7 @@ jobs:
 
       - name: Run CLI Integration Tests
         id: cli-integration
+        continue-on-error: true
         env:
           METADATA_HOST: "http://localhost:8585"
           METADATA_TOKEN: ${{ secrets.CHAT_API_TOKEN }}
@@ -381,6 +385,7 @@ jobs:
 
       - name: Run n8n Integration Tests
         id: n8n-integration
+        continue-on-error: true
         env:
           METADATA_HOST: "http://localhost:8585"
           METADATA_TOKEN: ${{ secrets.CHAT_API_TOKEN }}
@@ -391,16 +396,6 @@ jobs:
           npm run test:integration
 
       # ==================== Cleanup and Reporting ====================
-
-      - name: Integration Tests Summary
-        if: always()
-        run: |
-          echo "=== Integration Tests Summary ==="
-          echo "Python: ${{ steps.python-integration.outcome }}"
-          echo "TypeScript: ${{ steps.typescript-integration.outcome }}"
-          echo "Java: ${{ steps.java-integration.outcome }}"
-          echo "CLI: ${{ steps.cli-integration.outcome }}"
-          echo "n8n: ${{ steps.n8n-integration.outcome }}"
 
       - name: Get Collate Server logs on Failure
         if: always() && steps.check-prerequisites.outcome != 'success'
@@ -415,21 +410,38 @@ jobs:
           echo "=== AI Platform (CAIP) Logs ==="
           docker logs ai-platform 2>&1 || echo "No AI Platform logs found"
 
-      - name: Force failure if any integration test failed
+      - name: Check Results
         if: always()
         run: |
+          echo "## Integration Tests Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| SDK | Status |" >> $GITHUB_STEP_SUMMARY
+          echo "|-----|--------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Python | ${{ steps.python-integration.outcome == 'success' && '✅ Pass' || '❌ Fail' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| TypeScript | ${{ steps.typescript-integration.outcome == 'success' && '✅ Pass' || '❌ Fail' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Java | ${{ steps.java-integration.outcome == 'success' && '✅ Pass' || '❌ Fail' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Rust CLI | ${{ steps.cli-integration.outcome == 'success' && '✅ Pass' || '❌ Fail' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| n8n | ${{ steps.n8n-integration.outcome == 'success' && '✅ Pass' || '❌ Fail' }} |" >> $GITHUB_STEP_SUMMARY
+
+          # Check prerequisites first
           if [ "${{ steps.check-prerequisites.outcome }}" != "success" ]; then
-            echo "Prerequisites failed"
+            echo ""
+            echo "❌ Prerequisites failed - Collate/AI Platform setup did not complete"
             exit 1
           fi
 
-          if [ "${{ steps.python-integration.outcome }}" == "failure" ] || \
-             [ "${{ steps.typescript-integration.outcome }}" == "failure" ] || \
-             [ "${{ steps.java-integration.outcome }}" == "failure" ] || \
-             [ "${{ steps.cli-integration.outcome }}" == "failure" ] || \
-             [ "${{ steps.n8n-integration.outcome }}" == "failure" ]; then
-            echo "One or more integration tests failed"
+          # Fail if any integration test failed
+          FAILED=0
+          if [ "${{ steps.python-integration.outcome }}" != "success" ]; then echo "❌ Python integration tests failed"; FAILED=1; fi
+          if [ "${{ steps.typescript-integration.outcome }}" != "success" ]; then echo "❌ TypeScript integration tests failed"; FAILED=1; fi
+          if [ "${{ steps.java-integration.outcome }}" != "success" ]; then echo "❌ Java integration tests failed"; FAILED=1; fi
+          if [ "${{ steps.cli-integration.outcome }}" != "success" ]; then echo "❌ CLI integration tests failed"; FAILED=1; fi
+          if [ "${{ steps.n8n-integration.outcome }}" != "success" ]; then echo "❌ n8n integration tests failed"; FAILED=1; fi
+
+          if [ $FAILED -eq 1 ]; then
+            echo ""
+            echo "One or more integration tests failed. See details above."
             exit 1
           fi
 
-          echo "All integration tests passed"
+          echo "✅ All integration tests passed!"
