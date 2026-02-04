@@ -134,3 +134,35 @@ class MCPClient:
             )
 
         return parameters
+
+    def as_openai_tools(
+        self,
+        include: list[MCPTool] | None = None,
+        exclude: list[MCPTool] | None = None,
+    ) -> list[dict]:
+        """
+        Get tools formatted for OpenAI function calling.
+
+        Args:
+            include: Only include these tools (allowlist)
+            exclude: Exclude these tools (blocklist)
+
+        Returns:
+            List of dicts in OpenAI function calling schema format
+        """
+        from metadata_ai.mcp._openai import build_openai_tools
+
+        tools = self.list_tools()
+        filtered = _filter_tools(tools, include, exclude)
+        return build_openai_tools(filtered)
+
+    def create_tool_executor(self):
+        """
+        Create executor function for OpenAI tool calls.
+
+        Returns:
+            Callable[[str, dict], dict] that executes tool calls
+        """
+        from metadata_ai.mcp._openai import create_tool_executor
+
+        return create_tool_executor(self)
