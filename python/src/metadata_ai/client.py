@@ -18,6 +18,7 @@ from metadata_ai.exceptions import (
     MetadataError,
     PersonaNotFoundError,
 )
+from metadata_ai.mcp._client import MCPClient
 from metadata_ai.models import (
     AbilityInfo,
     AgentInfo,
@@ -226,6 +227,8 @@ class MetadataAI:
                 user_agent=user_agent,
             )
 
+        self._mcp_client: MCPClient | None = None
+
     # -------------------------------------------------------------------------
     # Pagination Helpers
     # -------------------------------------------------------------------------
@@ -342,6 +345,26 @@ class MetadataAI:
             http=self._http,
             async_http=self._async_http,
         )
+
+    @property
+    def mcp(self) -> MCPClient:
+        """
+        Get the MCP client for tool operations.
+
+        Returns:
+            MCPClient instance for interacting with OpenMetadata's MCP server
+
+        Example:
+            tools = client.mcp.list_tools()
+            result = client.mcp.call_tool(MCPTool.SEARCH_METADATA, {"query": "customer"})
+        """
+        if self._mcp_client is None:
+            self._mcp_client = MCPClient(
+                host=self._host,
+                auth=self._auth,
+                http=self._http,
+            )
+        return self._mcp_client
 
     def list_agents(
         self,

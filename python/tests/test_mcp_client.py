@@ -116,3 +116,18 @@ class TestMCPClientCallTool:
             mcp.call_tool(MCPTool.SEARCH_METADATA, {"query": "test"})
 
         assert "Tool execution failed" in str(exc_info.value)
+
+
+class TestMetadataAIMCPProperty:
+    """Tests for MetadataAI.mcp property."""
+
+    def test_mcp_property_returns_mcp_client(self, client):
+        """MetadataAI.mcp returns MCPClient instance."""
+        mcp = client.mcp
+        assert isinstance(mcp, MCPClient)
+
+    def test_mcp_property_is_cached(self, client):
+        """MetadataAI.mcp returns same instance on repeated access."""
+        mcp1 = client.mcp
+        mcp2 = client.mcp
+        assert mcp1 is mcp2
