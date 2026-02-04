@@ -190,7 +190,7 @@ class TestCreateMetadataTools:
     def test_creates_tools_for_api_enabled_agents_only(self, client, httpx_mock: HTTPXMock):
         """create_metadata_tools with None fetches only API-enabled agents."""
         httpx_mock.add_response(
-            url="https://metadata.example.com/api/v1/api/agents/?limit=100&offset=0",
+            url="https://metadata.example.com/api/v1/api/agents/?limit=100",
             json={
                 "data": [
                     {"name": "EnabledAgent", "apiEnabled": True},

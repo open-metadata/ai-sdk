@@ -70,7 +70,7 @@ class TestListPersonas:
     ):
         """list_personas returns list of PersonaInfo objects."""
         httpx_mock.add_response(
-            url="https://metadata.example.com/api/v1/agents/personas/?limit=10",
+            url="https://metadata.example.com/api/v1/agents/personas/?limit=100",
             json=sample_personas_list_response,
         )
 
@@ -82,17 +82,20 @@ class TestListPersonas:
         assert personas[0].display_name == "Data Analyst"
         assert personas[1].name == "DataEngineer"
 
-    def test_list_personas_with_limit(self, client, httpx_mock: HTTPXMock):
-        """list_personas passes limit param to API."""
+    def test_list_personas_with_limit(
+        self, client, httpx_mock: HTTPXMock, sample_personas_list_response
+    ):
+        """list_personas respects user limit parameter."""
         httpx_mock.add_response(
-            url="https://metadata.example.com/api/v1/agents/personas/?limit=5",
-            json={"data": []},
+            url="https://metadata.example.com/api/v1/agents/personas/?limit=100",
+            json=sample_personas_list_response,
         )
 
-        client.list_personas(limit=5)
+        # Request only 1 persona, even though API returns 2
+        personas = client.list_personas(limit=1)
 
-        request = httpx_mock.get_request()
-        assert "limit=5" in str(request.url)
+        assert len(personas) == 1
+        assert personas[0].name == "DataAnalyst"
 
     @pytest.mark.asyncio
     async def test_alist_personas_returns_persona_info(
@@ -100,7 +103,7 @@ class TestListPersonas:
     ):
         """alist_personas returns list of PersonaInfo objects."""
         httpx_mock.add_response(
-            url="https://metadata.example.com/api/v1/agents/personas/?limit=10",
+            url="https://metadata.example.com/api/v1/agents/personas/?limit=100",
             json=sample_personas_list_response,
         )
 

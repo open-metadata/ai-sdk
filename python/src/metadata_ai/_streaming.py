@@ -76,6 +76,10 @@ def _parse_event(event_str: str) -> StreamEvent | None:
         # Fallback to direct content field
         content = payload.get("content")
 
+    # Fallback for simple format toolName
+    if tool_name is None:
+        tool_name = payload.get("toolName")
+
     return StreamEvent(
         type=mapped_type,
         content=content,

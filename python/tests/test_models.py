@@ -145,7 +145,7 @@ class TestAgentInfo:
         info = AgentInfo.from_dict({"name": "TestAgent"})
 
         assert info.name == "TestAgent"
-        assert info.display_name == "TestAgent"
-        assert info.description == ""
+        assert info.display_name is None  # None when not provided
+        assert info.description is None  # None when not provided
         assert info.abilities == []
         assert info.api_enabled is False

@@ -98,7 +98,7 @@ jobs:
         id: test-rust
         continue-on-error: true
         working-directory: cli
-        run: cargo test --lib
+        run: cargo test
 
       - name: "Test: Python SDK"
         id: test-python

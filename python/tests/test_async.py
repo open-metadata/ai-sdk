@@ -143,7 +143,7 @@ class TestAsyncListAgents:
     ):
         """alist_agents returns list of AgentInfo."""
         httpx_mock.add_response(
-            url="https://metadata.example.com/api/v1/api/agents/?limit=10&offset=0",
+            url="https://metadata.example.com/api/v1/api/agents/?limit=100",
             json=sample_agents_list_response,
         )
 

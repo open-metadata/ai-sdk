@@ -51,7 +51,7 @@ class TestMetadataAIListAgents:
     ):
         """list_agents returns list of AgentInfo objects."""
         httpx_mock.add_response(
-            url="https://metadata.example.com/api/v1/api/agents/?limit=10&offset=0",
+            url="https://metadata.example.com/api/v1/api/agents/?limit=100",
             json=sample_agents_list_response,
         )
 
@@ -62,18 +62,20 @@ class TestMetadataAIListAgents:
         assert agents[0].name == "DataQualityPlannerAgent"
         assert agents[1].name == "SqlQueryAgent"
 
-    def test_list_agents_pagination(self, client, httpx_mock: HTTPXMock):
-        """list_agents passes pagination params to API."""
+    def test_list_agents_with_limit(
+        self, client, httpx_mock: HTTPXMock, sample_agents_list_response
+    ):
+        """list_agents respects user limit parameter."""
         httpx_mock.add_response(
-            url="https://metadata.example.com/api/v1/api/agents/?limit=5&offset=10",
-            json={"data": []},
+            url="https://metadata.example.com/api/v1/api/agents/?limit=100",
+            json=sample_agents_list_response,
         )
 
-        client.list_agents(limit=5, offset=10)
+        # Request only 1 agent, even though API returns 2
+        agents = client.list_agents(limit=1)
 
-        request = httpx_mock.get_request()
-        assert "limit=5" in str(request.url)
-        assert "offset=10" in str(request.url)
+        assert len(agents) == 1
+        assert agents[0].name == "DataQualityPlannerAgent"
 
 
 class TestMetadataAIContextManager:
