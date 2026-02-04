@@ -1,0 +1,50 @@
+{
+  "name": "@openmetadata/ai-sdk",
+  "version": "0.1.0",
+  "description": "OpenMetadata AI SDK for Node.js - Interact with OpenMetadata Dynamic Agents",
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "test": "vitest run --exclude '**/integration*'",
+    "test:integration": "vitest run tests/integration.test.ts",
+    "test:all": "vitest run",
+    "test:watch": "vitest",
+    "lint": "eslint src",
+    "clean": "rm -rf dist",
+    "prepublishOnly": "npm run clean && npm run build"
+  },
+  "keywords": [
+    "openmetadata",
+    "ai",
+    "agents",
+    "metadata",
+    "data-catalog",
+    "openmetadata"
+  ],
+  "author": "OpenMetadata",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/open-metadata/metadata-ai-sdk"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "^5.0.0",
+    "vitest": "^1.0.0"
+  }
+}
