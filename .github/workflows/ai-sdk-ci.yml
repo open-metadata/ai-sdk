@@ -147,6 +147,9 @@ jobs:
           distribution: 'temurin'
           cache: 'maven'
 
+      - name: Check code formatting
+        run: mvn spotless:check -q
+
       - name: Build and test
         run: mvn clean verify
 
@@ -211,6 +214,10 @@ jobs:
       - name: Install dependencies
         working-directory: n8n-nodes-metadata
         run: npm install
+
+      - name: Run linting
+        working-directory: n8n-nodes-metadata
+        run: npm run lint
 
       - name: Build
         working-directory: n8n-nodes-metadata

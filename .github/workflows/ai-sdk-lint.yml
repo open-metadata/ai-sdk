@@ -153,8 +153,8 @@ jobs:
           distribution: 'temurin'
           cache: 'maven'
 
-      - name: Check code style with Checkstyle
-        run: mvn checkstyle:check -q || echo "Checkstyle not configured, skipping"
+      - name: Check code formatting with Spotless
+        run: mvn spotless:check -q
 
   n8n-lint:
     name: n8n Node Lint
@@ -188,7 +188,7 @@ jobs:
 
       - name: Run linting
         working-directory: n8n-nodes-metadata
-        run: npm run lint || echo "Lint script not configured, skipping"
+        run: npm run lint
 
   lint-success:
     name: Lint Success
