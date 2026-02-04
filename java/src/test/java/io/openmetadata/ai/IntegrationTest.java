@@ -425,7 +425,7 @@ public class IntegrationTest {
             List<String> abilityNames = abilities.stream()
                     .limit(2)
                     .map(AbilityInfo::getName)
-                    .toList();
+                    .collect(java.util.stream.Collectors.toList());
 
             CreateAgentRequest.Builder builder = CreateAgentRequest.builder()
                     .name(agentName)

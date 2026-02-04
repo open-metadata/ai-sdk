@@ -1,6 +1,6 @@
 //! Persona management commands.
 
-use crate::client::{MetadataClient, CreatePersonaRequest};
+use crate::client::{CreatePersonaRequest, MetadataClient};
 use crate::config::ResolvedConfig;
 use crate::error::CliResult;
 use colored::Colorize;

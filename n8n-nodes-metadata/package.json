@@ -18,7 +18,7 @@
   "main": "dist/index.js",
   "scripts": {
     "build": "tsc && npm run copy:icons",
-    "copy:icons": "find nodes \\( -name '*.svg' -o -name '*.png' \\) -exec cp {} dist/nodes/MetadataAgent/ \;",
+    "copy:icons": "find nodes \\( -name '*.svg' -o -name '*.png' \\) -exec cp {} dist/nodes/MetadataAgent/ \\;",
     "dev": "tsc --watch",
     "lint": "eslint nodes credentials --ext .ts",
     "lint:fix": "eslint nodes credentials --ext .ts --fix",

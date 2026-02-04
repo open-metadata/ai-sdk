@@ -114,9 +114,8 @@ impl<'de> Deserialize<'de> for AbilityRef {
             where
                 M: MapAccess<'de>,
             {
-                let entity_ref = EntityReference::deserialize(
-                    de::value::MapAccessDeserializer::new(map),
-                )?;
+                let entity_ref =
+                    EntityReference::deserialize(de::value::MapAccessDeserializer::new(map))?;
                 Ok(AbilityRef::Reference(entity_ref))
             }
         }
@@ -567,7 +566,10 @@ impl MetadataClient {
 
     /// List personas with optional limit.
     /// Automatically paginates through all results.
-    pub async fn list_personas_with_limit(&self, limit: Option<u32>) -> CliResult<Vec<PersonaInfo>> {
+    pub async fn list_personas_with_limit(
+        &self,
+        limit: Option<u32>,
+    ) -> CliResult<Vec<PersonaInfo>> {
         const PAGE_SIZE: u32 = 100;
         let mut results = Vec::new();
         let mut after: Option<String> = None;
@@ -656,7 +658,10 @@ impl MetadataClient {
 
     /// List abilities with optional limit.
     /// Automatically paginates through all results.
-    pub async fn list_abilities_with_limit(&self, limit: Option<u32>) -> CliResult<Vec<AbilityInfo>> {
+    pub async fn list_abilities_with_limit(
+        &self,
+        limit: Option<u32>,
+    ) -> CliResult<Vec<AbilityInfo>> {
         const PAGE_SIZE: u32 = 100;
         let mut results = Vec::new();
         let mut after: Option<String> = None;

@@ -1,6 +1,6 @@
 //! Agent discovery and management commands.
 
-use crate::client::{MetadataClient, CreateAgentRequest, EntityReference};
+use crate::client::{CreateAgentRequest, EntityReference, MetadataClient};
 use crate::config::ResolvedConfig;
 use crate::error::CliResult;
 use colored::Colorize;
@@ -107,9 +107,9 @@ pub async fn run_create(
 
     // Look up the persona by name to get its ID (required by the API schema)
     let persona_info = client.get_persona(persona).await?;
-    let persona_id = persona_info.id.ok_or_else(|| {
-        crate::error::CliError::Other(format!("Persona '{}' has no ID", persona))
-    })?;
+    let persona_id = persona_info
+        .id
+        .ok_or_else(|| crate::error::CliError::Other(format!("Persona '{}' has no ID", persona)))?;
 
     // Build ability references if provided
     let ability_refs = if let Some(ability_names) = abilities {

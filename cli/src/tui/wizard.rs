@@ -519,7 +519,11 @@ impl SingleSelect {
 
         // Get item count and calculate lines per item (needs a quick scan)
         let total_items = self.filtered_items().len();
-        let has_descriptions = self.items.first().map(|i| i.description.is_some()).unwrap_or(false);
+        let has_descriptions = self
+            .items
+            .first()
+            .map(|i| i.description.is_some())
+            .unwrap_or(false);
         let lines_per_item = if has_descriptions { 2usize } else { 1usize };
         let visible_items = (list_area.height as usize) / lines_per_item.max(1);
 
@@ -570,15 +574,26 @@ impl SingleSelect {
             if above > 0 {
                 let indicator = format!("▲ {} more", above);
                 frame.render_widget(
-                    Paragraph::new(Span::styled(indicator, Style::default().fg(Color::DarkGray))),
-                    Rect::new(list_area.x + list_area.width.saturating_sub(12), list_area.y, 12, 1),
+                    Paragraph::new(Span::styled(
+                        indicator,
+                        Style::default().fg(Color::DarkGray),
+                    )),
+                    Rect::new(
+                        list_area.x + list_area.width.saturating_sub(12),
+                        list_area.y,
+                        12,
+                        1,
+                    ),
                 );
             }
             if below > 0 {
                 let indicator = format!("▼ {} more", below);
                 let y = list_area.y + list_area.height.saturating_sub(1);
                 frame.render_widget(
-                    Paragraph::new(Span::styled(indicator, Style::default().fg(Color::DarkGray))),
+                    Paragraph::new(Span::styled(
+                        indicator,
+                        Style::default().fg(Color::DarkGray),
+                    )),
                     Rect::new(list_area.x + list_area.width.saturating_sub(12), y, 12, 1),
                 );
             }
@@ -837,7 +852,11 @@ impl MultiSelect {
 
         // Get item count and calculate lines per item (needs a quick scan)
         let total_items = self.filtered_items().len();
-        let has_descriptions = self.items.first().map(|i| i.description.is_some()).unwrap_or(false);
+        let has_descriptions = self
+            .items
+            .first()
+            .map(|i| i.description.is_some())
+            .unwrap_or(false);
         let lines_per_item = if has_descriptions { 2usize } else { 1usize };
         let visible_items = (list_area.height as usize) / lines_per_item.max(1);
 
@@ -901,15 +920,26 @@ impl MultiSelect {
             if above > 0 {
                 let indicator = format!("▲ {} more", above);
                 frame.render_widget(
-                    Paragraph::new(Span::styled(indicator, Style::default().fg(Color::DarkGray))),
-                    Rect::new(list_area.x + list_area.width.saturating_sub(12), list_area.y, 12, 1),
+                    Paragraph::new(Span::styled(
+                        indicator,
+                        Style::default().fg(Color::DarkGray),
+                    )),
+                    Rect::new(
+                        list_area.x + list_area.width.saturating_sub(12),
+                        list_area.y,
+                        12,
+                        1,
+                    ),
                 );
             }
             if below > 0 {
                 let indicator = format!("▼ {} more", below);
                 let y = list_area.y + list_area.height.saturating_sub(1);
                 frame.render_widget(
-                    Paragraph::new(Span::styled(indicator, Style::default().fg(Color::DarkGray))),
+                    Paragraph::new(Span::styled(
+                        indicator,
+                        Style::default().fg(Color::DarkGray),
+                    )),
                     Rect::new(list_area.x + list_area.width.saturating_sub(12), y, 12, 1),
                 );
             }

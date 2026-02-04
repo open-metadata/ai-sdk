@@ -1,6 +1,6 @@
 //! Agent invocation commands.
 
-use crate::client::{MetadataClient, InvokeResponse};
+use crate::client::{InvokeResponse, MetadataClient};
 use crate::config::ResolvedConfig;
 use crate::error::CliResult;
 use crate::streaming::{process_stream_with_debug, Sender};

@@ -46,7 +46,10 @@ fn unique_name(prefix: &str) -> String {
 fn run_cli(args: &[&str]) -> std::process::Output {
     Command::new(cli_binary())
         .args(args)
-        .env("METADATA_HOST", env::var("METADATA_HOST").unwrap_or_default())
+        .env(
+            "METADATA_HOST",
+            env::var("METADATA_HOST").unwrap_or_default(),
+        )
         .env(
             "METADATA_TOKEN",
             env::var("METADATA_TOKEN").unwrap_or_default(),
@@ -61,58 +64,66 @@ fn get_test_agent() -> Option<String> {
     if let Ok(name) = env::var("METADATA_TEST_AGENT") {
         return Some(name);
     }
-    
+
     // Use the cached value if already created
-    TEST_AGENT.get_or_init(|| {
-        // Get the first persona name
-        let output = run_cli(&["personas", "list", "--json"]);
-        if !output.status.success() {
-            eprintln!("Failed to list personas for test agent creation");
-            return None;
-        }
-        
-        let stdout = String::from_utf8_lossy(&output.stdout);
-        // Try to parse the first persona name from JSON output
-        // Format should be like: [{"name":"persona-name",...}]
-        let persona_name = if let Some(start) = stdout.find("\"name\":\"") {
-            let start = start + 8;
-            if let Some(end) = stdout[start..].find('"') {
-                Some(stdout[start..start + end].to_string())
-            } else {
-                None
-            }
-        } else {
-            None
-        };
-        
-        let persona = match persona_name {
-            Some(p) => p,
-            None => {
-                eprintln!("No personas found for test agent creation");
+    TEST_AGENT
+        .get_or_init(|| {
+            // Get the first persona name
+            let output = run_cli(&["personas", "list", "--json"]);
+            if !output.status.success() {
+                eprintln!("Failed to list personas for test agent creation");
                 return None;
             }
-        };
-        
-        // Create a test agent with discoveryAndSearch ability
-        let agent_name = unique_name("cli-invoke-test-agent");
-        let output = run_cli(&[
-            "agents", "create",
-            "--name", &agent_name,
-            "--persona", &persona,
-            "--description", "Auto-created agent for CLI integration testing",
-            "--abilities", "discoveryAndSearch",
-            "--api-enabled", "true",
-        ]);
-        
-        if output.status.success() {
-            eprintln!("Created test agent: {}", agent_name);
-            Some(agent_name)
-        } else {
-            let stderr = String::from_utf8_lossy(&output.stderr);
-            eprintln!("Failed to create test agent: {}", stderr);
-            None
-        }
-    }).clone()
+
+            let stdout = String::from_utf8_lossy(&output.stdout);
+            // Try to parse the first persona name from JSON output
+            // Format should be like: [{"name":"persona-name",...}]
+            let persona_name = if let Some(start) = stdout.find("\"name\":\"") {
+                let start = start + 8;
+                if let Some(end) = stdout[start..].find('"') {
+                    Some(stdout[start..start + end].to_string())
+                } else {
+                    None
+                }
+            } else {
+                None
+            };
+
+            let persona = match persona_name {
+                Some(p) => p,
+                None => {
+                    eprintln!("No personas found for test agent creation");
+                    return None;
+                }
+            };
+
+            // Create a test agent with discoveryAndSearch ability
+            let agent_name = unique_name("cli-invoke-test-agent");
+            let output = run_cli(&[
+                "agents",
+                "create",
+                "--name",
+                &agent_name,
+                "--persona",
+                &persona,
+                "--description",
+                "Auto-created agent for CLI integration testing",
+                "--abilities",
+                "discoveryAndSearch",
+                "--api-enabled",
+                "true",
+            ]);
+
+            if output.status.success() {
+                eprintln!("Created test agent: {}", agent_name);
+                Some(agent_name)
+            } else {
+                let stderr = String::from_utf8_lossy(&output.stderr);
+                eprintln!("Failed to create test agent: {}", stderr);
+                None
+            }
+        })
+        .clone()
 }
 
 // ==================== Basic CLI Tests ====================
@@ -289,7 +300,9 @@ fn test_stream_agent() {
     }
 
     if !streaming_enabled() {
-        println!("Skipping: Streaming tests disabled (set METADATA_RUN_STREAMING_TESTS=true to enable)");
+        println!(
+            "Skipping: Streaming tests disabled (set METADATA_RUN_STREAMING_TESTS=true to enable)"
+        );
         return;
     }
 
