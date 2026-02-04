@@ -16,6 +16,7 @@ jobs:
   build-and-publish:
     name: Build and Publish to Maven Central
     runs-on: ubuntu-latest
+    environment: release
     defaults:
       run:
         working-directory: java

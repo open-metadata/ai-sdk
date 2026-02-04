@@ -17,6 +17,7 @@ jobs:
   build-and-publish:
     name: Build and Publish to npm
     runs-on: ubuntu-latest
+    environment: release
     defaults:
       run:
         working-directory: typescript

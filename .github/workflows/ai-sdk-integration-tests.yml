@@ -45,7 +45,7 @@ jobs:
   integration-tests:
     runs-on:
       group: collate-x86
-    environment: benchmarking
+    environment: test
     env:
       AWS_BEDROCK_REGION: "us-east-2"
 
