@@ -35,11 +35,8 @@ pip install metadata-ai[langchain]
 ## Set Environment Variables
 
 ```bash
-# Your OpenMetadata/Collate server URL
-# Examples:
-#   Collate Cloud: https://your-org.getcollate.io
-#   Self-hosted:   https://openmetadata.yourcompany.com
-export METADATA_HOST="https://your-org.getcollate.io"
+# Your OpenMetadata server URL
+export METADATA_HOST="https://your-openmetadata.com"
 
 # Your bot's JWT token (from Settings > Bots in your instance)
 export METADATA_TOKEN="eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9..."
@@ -335,7 +332,7 @@ except MCPToolExecutionError as e:
 ### "MCP request failed" with 401 error
 
 Your JWT token is invalid or expired:
-1. Go to Settings > Bots in your OpenMetadata/Collate instance
+1. Go to Settings > Bots in your OpenMetadata instance
 2. Regenerate the token for your bot
 3. Update your `METADATA_TOKEN` environment variable
 
