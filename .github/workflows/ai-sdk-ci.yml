@@ -65,49 +65,32 @@ jobs:
           cd typescript && npm run build
           cd ../n8n-nodes-metadata && npm install
 
-      # ==================== Linting ====================
+      # ==================== Linting (via Makefile) ====================
 
       - name: "Lint: Rust CLI"
         id: lint-rust
         continue-on-error: true
-        working-directory: cli
-        run: |
-          echo "::group::cargo fmt --check"
-          cargo fmt --check
-          echo "::endgroup::"
-          echo "::group::cargo clippy"
-          cargo clippy -- -D warnings
-          echo "::endgroup::"
+        run: make lint-rust
 
       - name: "Lint: Python SDK"
         id: lint-python
         continue-on-error: true
-        working-directory: python
-        run: |
-          echo "::group::ruff check"
-          ruff check src tests
-          echo "::endgroup::"
-          echo "::group::ruff format --check"
-          ruff format --check src tests
-          echo "::endgroup::"
+        run: make lint-python
 
       - name: "Lint: TypeScript SDK"
         id: lint-typescript
         continue-on-error: true
-        working-directory: typescript
-        run: npm run lint
+        run: make lint-typescript
 
       - name: "Lint: Java SDK"
         id: lint-java
         continue-on-error: true
-        working-directory: java
-        run: mvn spotless:check -q
+        run: make lint-java
 
       - name: "Lint: n8n Node"
         id: lint-n8n
         continue-on-error: true
-        working-directory: n8n-nodes-metadata
-        run: npm run lint
+        run: make lint-n8n
 
       # ==================== Unit Tests ====================
 
@@ -121,7 +104,9 @@ jobs:
         id: test-python
         continue-on-error: true
         working-directory: python
-        run: pytest --ignore=tests/integration -v
+        run: |
+          pip install pytest-cov -q
+          pytest --ignore=tests/integration -v --cov=src/metadata_ai --cov-report=term-missing --cov-report=xml
 
       - name: "Test: TypeScript SDK"
         id: test-typescript
@@ -151,7 +136,7 @@ jobs:
         run: |
           echo "## CI Results Summary" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "### Linting" >> $GITHUB_STEP_SUMMARY
+          echo "### Linting (format + lint + types)" >> $GITHUB_STEP_SUMMARY
           echo "| SDK | Status |" >> $GITHUB_STEP_SUMMARY
           echo "|-----|--------|" >> $GITHUB_STEP_SUMMARY
           echo "| Rust CLI | ${{ steps.lint-rust.outcome == 'success' && '✅ Pass' || '❌ Fail' }} |" >> $GITHUB_STEP_SUMMARY

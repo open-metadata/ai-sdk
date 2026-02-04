@@ -227,7 +227,7 @@ lint: lint-python lint-rust lint-typescript lint-java lint-n8n  ## Run linters f
 
 lint-python:  ## Lint Python SDK
 	@echo "Linting Python SDK..."
-	cd python && ruff check src tests && ruff format --check src tests
+	cd python && ruff check src tests && ruff format --check src tests && ty check src
 
 lint-rust:  ## Lint Rust CLI
 	@echo "Linting Rust CLI..."

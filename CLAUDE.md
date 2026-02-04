@@ -7,80 +7,216 @@ This repository contains SDKs and CLI for invoking Metadata Dynamic Agents.
 ```
 metadata-ai-sdk/
 ├── cli/                    # Rust CLI (metadata-ai)
-├── python/                 # Python SDK (metadata-ai on PyPI) - NOTE: in root as pyproject.toml
+├── python/                 # Python SDK (metadata-ai on PyPI)
+│   ├── src/metadata_ai/    # Source code
+│   ├── tests/              # Unit and integration tests
+│   └── pyproject.toml      # Package config
 ├── typescript/             # TypeScript SDK (@openmetadata/ai-sdk on npm)
 ├── java/                   # Java SDK (io.openmetadata:metadata-ai-sdk)
-├── n8n-nodes-metadata/     # n8n community node
+├── n8n-nodes-metadata/     # n8n community node (depends on TypeScript SDK)
+├── scripts/                # Development scripts (pre-commit hooks)
+├── .claude/skills/         # Claude Code skills for this repo
 ├── VERSION                 # Single source of truth for version
-├── Makefile                # Version management across all SDKs
-└── pyproject.toml          # Python SDK config (at root level)
+└── Makefile                # Cross-SDK commands (single source of truth)
 ```
 
-## Version Management
-
-All SDKs share a single version from the `VERSION` file:
+## Quick Commands
 
 ```bash
-make version          # Show current version
-make check-versions   # Verify all SDKs have same version
-make bump-version V=0.2.0  # Update all SDKs to new version
+# Linting & Formatting
+make lint              # Check all SDKs (CI equivalent)
+make format            # Fix all SDKs (pre-commit equivalent)
+
+# Testing
+make test-all          # Run all unit tests
+make test-integration  # Run integration tests (requires METADATA_HOST, METADATA_TOKEN)
+
+# Building
+make build-all         # Build all SDKs
+
+# Version Management
+make version           # Show current version
+make bump-version V=X.Y.Z  # Update all SDKs
+
+# Git Hooks
+make install-hooks     # Install pre-commit hooks
 ```
 
-## Building
+## Architecture
 
+### Design Principles
+
+1. **Multi-SDK Consistency** - All SDKs implement the same API surface with language-idiomatic patterns
+2. **Zero/Minimal Dependencies** - TypeScript has zero runtime deps; others minimize external deps
+3. **Streaming First** - SSE streaming is a primary use case, not an afterthought
+4. **Typed Errors** - Structured error hierarchy for proper error handling
+
+### API Pattern (All SDKs)
+
+```
+client = MetadataAI(host, token)
+response = client.agent("agent-name").invoke("message")
+
+# Streaming
+for event in client.agent("agent-name").stream("message"):
+    handle(event)
+```
+
+### Event Types (Streaming)
+- `message` - Partial response content
+- `tool_call` - Agent calling a tool
+- `tool_result` - Tool result
+- `error` - Error occurred
+- `done` - Stream complete
+
+### Error Hierarchy
+```
+MetadataError (base)
+├── AuthenticationError (401)
+├── AuthorizationError (403)
+├── NotFoundError (404)
+├── ValidationError (400)
+├── RateLimitError (429)
+└── ServerError (5xx)
+```
+
+## SDK Development
+
+### Naming Conventions
+
+| Concept | Python | TypeScript | Java | Rust |
+|---------|--------|------------|------|------|
+| Methods | `snake_case` | `camelCase` | `camelCase` | `snake_case` |
+| Classes | `PascalCase` | `PascalCase` | `PascalCase` | `PascalCase` |
+| Files | `snake_case.py` | `camelCase.ts` | `PascalCase.java` | `snake_case.rs` |
+
+### Adding a New Method
+
+When adding functionality, update ALL SDKs:
+
+1. **Python** (`python/src/metadata_ai/`)
+   - Add to `_client.py` or `_agent.py`
+   - Add types to models
+   - Add tests in `python/tests/`
+
+2. **TypeScript** (`typescript/src/`)
+   - Add to `agent.ts`
+   - Add interfaces to `models.ts`
+   - Add tests in `typescript/tests/`
+
+3. **Java** (`java/src/main/java/io/metadata/ai/`)
+   - Add to `AgentHandle.java`
+   - Add model classes in `models/`
+   - Add tests in `java/src/test/`
+
+4. **Rust CLI** (`cli/src/`)
+   - Add subcommand in `main.rs`
+   - Add tests
+
+5. **Verify**
+   ```bash
+   make lint && make test-all
+   ```
+
+### Testing
+
+**Unit Tests** - Mock HTTP responses, no real API calls:
 ```bash
-# Build all SDKs
-make build-all
-
-# Build individual components
-cd cli && cargo build
-pip install -e .
-cd typescript && npm install && npm run build
-cd java && mvn package -DskipTests
-cd n8n-nodes-metadata && npm install && npm run build
+cd python && pytest --ignore=tests/integration
+cd typescript && npm test
+cd java && mvn test -DexcludedGroups=integration
+cd cli && cargo test --lib
 ```
 
-## Testing
-
+**Integration Tests** - Real API calls (requires credentials):
 ```bash
-# Unit tests
-make test-all
+export METADATA_HOST=https://your-instance.getcollate.io
+export METADATA_TOKEN=your-jwt-token
+export METADATA_TEST_AGENT=agent-name  # optional
 
-# Integration tests (requires credentials)
-METADATA_HOST=https://... METADATA_TOKEN=... make test-integration
+make test-integration
 ```
 
-## SDK-Specific Development
+## Code Quality
 
-### CLI (Rust)
-- Entry point: `cli/src/main.rs`
-- Config location: `~/.metadata/`
-- Binary name: `metadata-ai`
+### Linting Tools
 
-### Python SDK
-- Package: `metadata_ai`
-- Main class: `MetadataAI`
-- Config class: `MetadataConfig`
-- pyproject.toml at repository root
+| SDK | Formatter | Linter | Type Checker |
+|-----|-----------|--------|--------------|
+| Python | `ruff format` | `ruff check` | `ty` |
+| Rust | `cargo fmt` | `cargo clippy` | (built-in) |
+| TypeScript | ESLint | ESLint | `tsc` |
+| Java | Spotless | Spotless | `javac` |
 
-### TypeScript SDK
-- Package: `@openmetadata/ai-sdk`
-- Main class: `MetadataAI`
-- Located in `typescript/`
+### Pre-commit Hook
 
-### Java SDK
-- Package: `io.openmetadata.ai`
-- Main class: `MetadataAI`
-- Located in `java/`
+Install with `make install-hooks`. Runs on staged files:
+1. Detects which SDKs have changes
+2. Runs formatter (auto-fixes)
+3. Runs linter
+4. Runs type checker (Python)
+5. Re-stages fixed files
 
-### n8n Integration
-- Package: `n8n-nodes-metadata`
-- Node: `MetadataAgent`
-- Credential: `MetadataApi`
-- Located in `n8n-nodes-metadata/`
+### CI Pipeline
+
+Every PR runs:
+- Linting (format check + lint + types)
+- Unit tests with coverage
+- Security scanning (CodeQL, dependency audit)
+
+## Available Skills
+
+Use these with `/skill-name` in Claude Code:
+
+- `/add-sdk-method` - Add a method across all SDKs
+- `/add-test` - Add unit or integration tests
+- `/run-integration` - Run integration tests
+- `/debug-ci` - Diagnose CI failures
+
+## Key Architecture Decisions
+
+**Why multiple SDKs in one repo?**
+- Users work in different languages (Python for data engineers, TypeScript for web, Java for enterprise)
+- Single repo ensures version consistency and coordinated releases
+- Every feature must be implemented in ALL SDKs - no partial implementations
+
+**Why zero runtime dependencies (TypeScript)?**
+- Minimal bundle size (~10KB)
+- Works everywhere: Node.js 18+, browsers, Deno, Bun, edge runtimes
+- No dependency vulnerabilities to track
+- Native `fetch` API is sufficient; SSE parsing is simple enough to implement
+
+**Why SSE streaming over WebSockets?**
+- Simpler protocol, one-way communication is sufficient
+- Better HTTP/2 support
+- Each SDK exposes streaming idiomatically: async generators (Python), async iterators (TypeScript), callbacks/streams (Java)
+
+**Why typed error hierarchy?**
+- Users can catch specific errors (AuthenticationError vs NotFoundError)
+- Enables proper error handling (refresh token on 401, retry on 429)
+- Consistent across all SDKs
+
+**Why single VERSION file?**
+- One source of truth prevents version drift
+- `make bump-version V=X.Y.Z` updates all SDKs atomically
+- CI validates all versions match
 
 ## DO NOT
 
-- Edit files in `src/metadata_ai/generated/` (auto-generated from JSON schemas)
+- Edit files in `python/src/metadata_ai/generated/` (auto-generated)
 - Change version numbers manually (use `make bump-version`)
-- Mix up package naming conventions between SDKs
+- Add a method to only one SDK (all must be updated)
+- Add dependencies without strong justification
+- Skip tests for new functionality
+- Use different naming conventions than established patterns
+- Commit without running `make lint`
+
+## Common Issues
+
+| Issue | Solution |
+|-------|----------|
+| Pre-commit fails | Run `make format` then commit |
+| Type errors (Python) | Check type annotations, run `ty check src` |
+| Import errors | Check `__init__.py` exports |
+| n8n build fails | Build TypeScript SDK first: `cd typescript && npm run build` |
+| Integration tests skip | Set `METADATA_HOST` and `METADATA_TOKEN` env vars |
