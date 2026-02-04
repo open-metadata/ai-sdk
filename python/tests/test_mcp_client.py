@@ -6,7 +6,7 @@ from pytest_httpx import HTTPXMock
 from metadata_ai.client import MetadataAI
 from metadata_ai.exceptions import MCPError
 from metadata_ai.mcp._client import MCPClient
-from metadata_ai.mcp._models import MCPTool
+from metadata_ai.mcp._models import MCPTool, ToolInfo
 
 
 @pytest.fixture
@@ -131,3 +131,63 @@ class TestMetadataAIMCPProperty:
         mcp1 = client.mcp
         mcp2 = client.mcp
         assert mcp1 is mcp2
+
+
+class TestMCPClientFiltering:
+    """Tests for tool filtering."""
+
+    @pytest.fixture
+    def sample_tools(self):
+        """Sample ToolInfo list."""
+        return [
+            ToolInfo(
+                name=MCPTool.SEARCH_METADATA,
+                description="Search",
+                parameters=[],
+            ),
+            ToolInfo(
+                name=MCPTool.GET_ENTITY_DETAILS,
+                description="Get entity",
+                parameters=[],
+            ),
+            ToolInfo(
+                name=MCPTool.PATCH_ENTITY,
+                description="Patch entity",
+                parameters=[],
+            ),
+        ]
+
+    def test_filter_tools_include(self, sample_tools):
+        """filter_tools with include returns only specified tools."""
+        from metadata_ai.mcp._client import _filter_tools
+
+        filtered = _filter_tools(
+            sample_tools,
+            include=[MCPTool.SEARCH_METADATA],
+            exclude=None,
+        )
+
+        assert len(filtered) == 1
+        assert filtered[0].name == MCPTool.SEARCH_METADATA
+
+    def test_filter_tools_exclude(self, sample_tools):
+        """filter_tools with exclude removes specified tools."""
+        from metadata_ai.mcp._client import _filter_tools
+
+        filtered = _filter_tools(
+            sample_tools,
+            include=None,
+            exclude=[MCPTool.PATCH_ENTITY],
+        )
+
+        assert len(filtered) == 2
+        tool_names = [t.name for t in filtered]
+        assert MCPTool.PATCH_ENTITY not in tool_names
+
+    def test_filter_tools_none_returns_all(self, sample_tools):
+        """filter_tools with no filters returns all tools."""
+        from metadata_ai.mcp._client import _filter_tools
+
+        filtered = _filter_tools(sample_tools, include=None, exclude=None)
+
+        assert len(filtered) == 3

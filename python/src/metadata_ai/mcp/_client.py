@@ -14,6 +14,33 @@ from metadata_ai.exceptions import MCPError
 from metadata_ai.mcp._models import MCPTool, ToolCallResult, ToolInfo, ToolParameter
 
 
+def _filter_tools(
+    tools: list[ToolInfo],
+    include: list[MCPTool] | None,
+    exclude: list[MCPTool] | None,
+) -> list[ToolInfo]:
+    """
+    Filter tools by include/exclude lists.
+
+    Args:
+        tools: List of ToolInfo to filter
+        include: If provided, only include these tools
+        exclude: If provided, exclude these tools
+
+    Returns:
+        Filtered list of ToolInfo
+    """
+    if include is not None:
+        include_set = set(include)
+        tools = [t for t in tools if t.name in include_set]
+
+    if exclude is not None:
+        exclude_set = set(exclude)
+        tools = [t for t in tools if t.name not in exclude_set]
+
+    return tools
+
+
 class MCPClient:
     """Client for OpenMetadata's MCP server."""
 
