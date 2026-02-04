@@ -12,6 +12,12 @@
 name: Integration Tests
 
 on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
   workflow_dispatch:
     inputs:
       COLLATE_BRANCH:
@@ -319,7 +325,7 @@ jobs:
           METADATA_HOST: "http://localhost:8585"
           METADATA_TOKEN: ${{ secrets.CHAT_API_TOKEN }}
           METADATA_TEST_AGENT: "CHAT"
-          METADATA_RUN_CHAT_TESTS: ${{ inputs.run_chat_tests }}
+          METADATA_RUN_CHAT_TESTS: ${{ inputs.run_chat_tests || 'false' }}
         run: |
           source venv/bin/activate
           cd python
@@ -337,7 +343,7 @@ jobs:
           METADATA_HOST: "http://localhost:8585"
           METADATA_TOKEN: ${{ secrets.CHAT_API_TOKEN }}
           METADATA_TEST_AGENT: "CHAT"
-          METADATA_RUN_CHAT_TESTS: ${{ inputs.run_chat_tests }}
+          METADATA_RUN_CHAT_TESTS: ${{ inputs.run_chat_tests || 'false' }}
         run: |
           cd typescript
           npm run test:integration
@@ -354,7 +360,7 @@ jobs:
           METADATA_HOST: "http://localhost:8585"
           METADATA_TOKEN: ${{ secrets.CHAT_API_TOKEN }}
           METADATA_TEST_AGENT: "CHAT"
-          METADATA_RUN_CHAT_TESTS: ${{ inputs.run_chat_tests }}
+          METADATA_RUN_CHAT_TESTS: ${{ inputs.run_chat_tests || 'false' }}
         run: |
           cd java
           mvn test -Dtest=IntegrationTest -q
@@ -368,7 +374,7 @@ jobs:
           METADATA_HOST: "http://localhost:8585"
           METADATA_TOKEN: ${{ secrets.CHAT_API_TOKEN }}
           METADATA_TEST_AGENT: "CHAT"
-          METADATA_RUN_CHAT_TESTS: ${{ inputs.run_chat_tests }}
+          METADATA_RUN_CHAT_TESTS: ${{ inputs.run_chat_tests || 'false' }}
         run: |
           cd cli
           cargo build
@@ -386,7 +392,7 @@ jobs:
           METADATA_HOST: "http://localhost:8585"
           METADATA_TOKEN: ${{ secrets.CHAT_API_TOKEN }}
           METADATA_TEST_AGENT: "CHAT"
-          METADATA_RUN_CHAT_TESTS: ${{ inputs.run_chat_tests }}
+          METADATA_RUN_CHAT_TESTS: ${{ inputs.run_chat_tests || 'false' }}
         run: |
           cd n8n-nodes-metadata
           npm run test:integration
