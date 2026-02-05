@@ -43,6 +43,7 @@ def _create_langchain_tool(mcp_client: MCPClient, info: ToolInfo) -> BaseTool:
         name: str = tool_name_str
         description: str = tool_description
         args_schema: type[BaseModel] = tool_args_schema
+        handle_tool_error: bool = True
 
         _mcp_client: MCPClient
         _tool_name: MCPTool
@@ -57,7 +58,8 @@ def _create_langchain_tool(mcp_client: MCPClient, info: ToolInfo) -> BaseTool:
             run_manager: CallbackManagerForToolRun | None = None,
             **kwargs: Any,
         ) -> str:
-            result = self._mcp_client.call_tool(self._tool_name, kwargs)
+            arguments = {k: v for k, v in kwargs.items() if v is not None}
+            result = self._mcp_client.call_tool(self._tool_name, arguments)
             if not result.success:
                 raise ToolException(result.error or "Tool execution failed")
             return json.dumps(result.data)

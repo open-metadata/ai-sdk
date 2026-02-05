@@ -24,7 +24,7 @@ Automate impact analysis for schema changes using OpenMetadata's MCP tools. This
 ## Installation
 
 ```bash
-pip install metadata-ai[langchain]
+pip install metadata-ai[langchain] langchain langchain-openai
 ```
 
 ## Environment Setup
@@ -36,6 +36,9 @@ export METADATA_TOKEN="your-jwt-token"
 
 # LLM API key
 export OPENAI_API_KEY="your-openai-key"
+
+# (Optional) Slack integration for deprecation notices
+export SLACK_WEBHOOK_URL="https://hooks.slack.com/services/T00/B00/xxxx"
 ```
 
 ## The Impact Analysis Agent
@@ -48,7 +51,11 @@ The interactive agent is implemented in [`impact_analyzer.py`](./impact_analyzer
 
 3. **LangChain agent loop** - The tools and prompt are wired into a LangChain `AgentExecutor` with `max_iterations=10`, giving the LLM enough room to chain multiple tool calls (e.g., search for a table, get its details, then traverse its lineage).
 
-4. **Interactive REPL** - The `main()` function provides a terminal loop where you describe a planned change in plain English and receive a structured impact report.
+4. **Entity links** - The system prompt is configured with your `METADATA_HOST` so every entity in the report is a clickable link back to OpenMetadata (e.g., `[dim_customers](https://your-host/table/jaffle_shop.public.dim_customers)`).
+
+5. **Interactive REPL** - The `main()` function provides a terminal loop where you describe a planned change in plain English and receive a structured impact report.
+
+6. **Slack integration** - After each report, the tool asks whether to send a deprecation notice to Slack. If you confirm, it posts a formatted message via an Incoming Webhook so the right people are pinged and the conversation starts in your organization.
 
 Run it with:
 
@@ -278,7 +285,7 @@ jobs:
           python-version: '3.11'
 
       - name: Install dependencies
-        run: pip install metadata-ai[langchain]
+        run: pip install metadata-ai[langchain] langchain langchain-openai
 
       - name: Get changed files
         run: |
@@ -354,6 +361,72 @@ When analyzing changes, pay special attention to:
 
 {base_instructions}
 """
+```
+
+## Slack Integration
+
+After each impact analysis report, the tool asks:
+
+```
+Send deprecation notice to Slack? [y/N]
+```
+
+If you confirm, it posts a formatted deprecation notice to the Slack channel configured by your webhook. The message includes:
+
+- A **Deprecation Notice** header
+- The proposed change description
+- The full impact analysis with clickable OpenMetadata links
+- Owner names so the right people are brought into the conversation
+
+### Setting Up a Slack Webhook
+
+1. Go to [Slack Apps](https://api.slack.com/apps) and create a new app (or use an existing one).
+2. Under **Incoming Webhooks**, toggle it on and click **Add New Webhook to Workspace**.
+3. Choose the channel where deprecation notices should be posted (e.g., `#data-changes`).
+4. Copy the webhook URL and set it as an environment variable:
+
+```bash
+export SLACK_WEBHOOK_URL="https://hooks.slack.com/services/T00/B00/xxxx"
+```
+
+### Example Slack Message
+
+When you confirm sending, the tool posts a message like this:
+
+```
+┌──────────────────────────────────────────────────┐
+│  Deprecation Notice — Impact Analysis            │
+├──────────────────────────────────────────────────┤
+│  Proposed change: Remove the ssn_last_four       │
+│  column from raw_jaffle_shop.customers           │
+├──────────────────────────────────────────────────┤
+│  *Impact Summary*                                │
+│  Removing ssn_last_four from                     │
+│  <https://host/table/...|raw_jaffle_shop.customers>│
+│  affects 3 downstream assets...                  │
+│                                                  │
+│  *Affected Assets*                               │
+│  • <https://host/table/...|stg_jaffle_shop__customers> │
+│    Owner: data-engineering@jaffle.shop            │
+│  • <https://host/table/...|dim_customers>         │
+│    Owner: analytics@jaffle.shop                  │
+│                                                  │
+│  *Recommended Actions*                           │
+│  1. Notify: data-engineering@jaffle.shop         │
+│  2. Update staging model                         │
+├──────────────────────────────────────────────────┤
+│  Sent by the Data Change Impact Analyzer         │
+└──────────────────────────────────────────────────┘
+```
+
+Entity names are clickable links that open directly in OpenMetadata, making it easy for stakeholders to inspect the affected assets.
+
+### Disabling Slack
+
+If `SLACK_WEBHOOK_URL` is not set, the tool skips the Slack prompt entirely. You'll see this at startup:
+
+```
+Slack integration: disabled (set SLACK_WEBHOOK_URL to enable)
 ```
 
 ## Next Steps

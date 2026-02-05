@@ -65,7 +65,7 @@ client.close()
 
 ```python
 from metadata_ai import MetadataAI, MetadataConfig
-from metadata_ai.mcp import MCPTool
+from metadata_ai.mcp._models import MCPTool
 
 config = MetadataConfig.from_env()
 client = MetadataAI.from_config(config)
@@ -128,7 +128,7 @@ client.close()
 Include only specific tools:
 
 ```python
-from metadata_ai.mcp import MCPTool
+from metadata_ai.mcp._models import MCPTool
 
 # Only include read-only tools
 tools = client.mcp.as_langchain_tools(
@@ -193,7 +193,7 @@ om_client.close()
 Same filtering works for OpenAI format:
 
 ```python
-from metadata_ai.mcp import MCPTool
+from metadata_ai.mcp._models import MCPTool
 
 # Only read-only tools
 tools = om_client.mcp.as_openai_tools(
@@ -212,7 +212,7 @@ A complete example building a metadata exploration assistant:
 
 ```python
 from metadata_ai import MetadataAI, MetadataConfig
-from metadata_ai.mcp import MCPTool
+from metadata_ai.mcp._models import MCPTool
 from langchain_openai import ChatOpenAI
 from langchain.agents import AgentExecutor, create_tool_calling_agent
 from langchain_core.prompts import ChatPromptTemplate
@@ -271,7 +271,7 @@ client.close()
 ### MCPTool Enum
 
 ```python
-from metadata_ai.mcp import MCPTool
+from metadata_ai.mcp._models import MCPTool
 
 class MCPTool(StrEnum):
     SEARCH_METADATA = "search_metadata"

@@ -200,6 +200,29 @@ The YAML configs are in `ingestion/` and can be customized individually:
 | `ingestion/postgres_lineage.yaml` | Query-based lineage |
 | `ingestion/metabase.yaml` | Dashboard metadata |
 
+### Seeding Glossaries, Metrics, Users, Domains & Ownership
+
+After ingestion, seed business metadata:
+
+```bash
+cd cookbook/resources/demo-database
+
+# Glossaries and metrics
+python scripts/create_glossaries_and_metrics.py
+
+# Users, domains, and table ownership
+python scripts/create_owners_and_domains.py
+```
+
+The ownership script creates 5 users, 4 domains, and assigns every table to an owner and domain:
+
+| Domain | Schemas | Owner |
+|--------|---------|-------|
+| Finance | `marts_finance`, `raw_stripe` | Bob Smith (Finance Analyst) |
+| Marketing | `marts_marketing`, `raw_marketing` | Carol Williams (Marketing Analyst) |
+| Sales | `marts_core`, `raw_jaffle_shop`, `raw_inventory`, `raw_support` | Eve Davis (Product Analyst) / Dave Brown (raw) |
+| Data Engineering | `staging`, `intermediate` | Alice Johnson (DE Lead) |
+
 After ingestion, you should see:
 - **6 raw schemas** with source tables
 - **Analytics views** with computed metrics
@@ -258,7 +281,9 @@ demo-database/
 │   ├── dbt.yaml                # dbt metadata ingestion config
 │   └── metabase.yaml           # Metabase dashboard ingestion config
 ├── scripts/
-│   ├── setup_metabase.sh       # Automated Metabase chart setup
-│   └── ingest_metadata.sh      # Run all OpenMetadata ingestion workflows
+│   ├── setup_metabase.sh                  # Automated Metabase chart setup
+│   ├── ingest_metadata.sh                 # Run all OpenMetadata ingestion workflows
+│   ├── create_glossaries_and_metrics.py   # Seed glossaries, terms, and metrics
+│   └── create_owners_and_domains.py       # Seed users, domains, and table ownership
 └── README.md
 ```

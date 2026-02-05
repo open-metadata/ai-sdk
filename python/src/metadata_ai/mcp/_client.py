@@ -67,7 +67,10 @@ class MCPClient:
             "params": params or {},
         }
 
-        headers = {"Authorization": f"Bearer {self._auth.token}"}
+        headers = {
+            "Authorization": f"Bearer {self._auth.token}",
+            "Accept": "application/json, text/event-stream",
+        }
         response = httpx.post(
             self._mcp_endpoint,
             json=payload,
@@ -88,7 +91,8 @@ class MCPClient:
         """Fetch available tools from MCP server."""
         result = self._make_jsonrpc_request("tools/list")
         tools_data = result.get("tools", [])
-        return [self._parse_tool_info(t) for t in tools_data]
+        parsed = [self._parse_tool_info(t) for t in tools_data]
+        return [t for t in parsed if t is not None]
 
     def call_tool(self, name: MCPTool, arguments: dict) -> ToolCallResult:
         """Execute a tool via MCP protocol."""
@@ -97,19 +101,34 @@ class MCPClient:
             {"name": name.value, "arguments": arguments},
         )
 
+        is_error = result.get("isError", False)
         content = result.get("content", [])
-        if content and len(content) > 0:
+
+        text = ""
+        if content:
             first_content = content[0]
             if first_content.get("type") == "text":
-                text = first_content.get("text", "{}")
-                data = json.loads(text) if text.startswith("{") else {"text": text}
-                return ToolCallResult(success=True, data=data, error=None)
+                text = first_content.get("text", "")
+
+        if is_error:
+            return ToolCallResult(success=False, data=None, error=text or "Tool execution failed")
+
+        if text:
+            data = json.loads(text) if text.startswith("{") else {"text": text}
+            return ToolCallResult(success=True, data=data, error=None)
 
         return ToolCallResult(success=True, data={}, error=None)
 
-    def _parse_tool_info(self, data: dict) -> ToolInfo:
-        """Parse tool info from MCP response."""
-        name = MCPTool(data["name"])
+    def _parse_tool_info(self, data: dict) -> ToolInfo | None:
+        """Parse tool info from MCP response.
+
+        Returns None for tools not recognized by the SDK, allowing
+        graceful handling of new server-side tools.
+        """
+        try:
+            name = MCPTool(data["name"])
+        except ValueError:
+            return None
         description = data.get("description", "")
         parameters = self._parse_parameters(data.get("inputSchema", {}))
         return ToolInfo(name=name, description=description, parameters=parameters)

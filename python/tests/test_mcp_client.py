@@ -72,6 +72,49 @@ class TestMCPClientListTools:
         assert tools[0].parameters[0].name == "query"
         assert tools[0].parameters[0].required is True
 
+    def test_list_tools_skips_unknown_tools(self, client, httpx_mock: HTTPXMock):
+        """list_tools gracefully skips tools not in MCPTool enum."""
+        httpx_mock.add_response(
+            url="https://metadata.example.com/mcp",
+            method="POST",
+            json={
+                "jsonrpc": "2.0",
+                "id": "test-id",
+                "result": {
+                    "tools": [
+                        {
+                            "name": "search_metadata",
+                            "description": "Search for metadata",
+                            "inputSchema": {
+                                "type": "object",
+                                "properties": {
+                                    "query": {
+                                        "type": "string",
+                                        "description": "Search query",
+                                    },
+                                },
+                                "required": ["query"],
+                            },
+                        },
+                        {
+                            "name": "some_future_tool",
+                            "description": "A tool the SDK does not know about yet",
+                            "inputSchema": {
+                                "type": "object",
+                                "properties": {},
+                            },
+                        },
+                    ]
+                },
+            },
+        )
+
+        mcp = MCPClient(client._host, client._auth, client._http)
+        tools = mcp.list_tools()
+
+        assert len(tools) == 1
+        assert tools[0].name == MCPTool.SEARCH_METADATA
+
 
 class TestMCPClientCallTool:
     """Tests for MCPClient.call_tool()."""
@@ -94,6 +137,28 @@ class TestMCPClientCallTool:
         assert result.success is True
         assert result.data is not None
         assert result.error is None
+
+    def test_call_tool_returns_failure_on_is_error(self, client, httpx_mock: HTTPXMock):
+        """call_tool returns success=False when server sets isError."""
+        httpx_mock.add_response(
+            url="https://metadata.example.com/mcp",
+            method="POST",
+            json={
+                "jsonrpc": "2.0",
+                "id": "test-id",
+                "result": {
+                    "content": [{"type": "text", "text": 'argument "content" is null'}],
+                    "isError": True,
+                },
+            },
+        )
+
+        mcp = MCPClient(client._host, client._auth, client._http)
+        result = mcp.call_tool(MCPTool.SEARCH_METADATA, {"query": "customer"})
+
+        assert result.success is False
+        assert result.data is None
+        assert result.error == 'argument "content" is null'
 
     def test_call_tool_handles_error(self, client, httpx_mock: HTTPXMock):
         """call_tool raises MCPError on failure."""

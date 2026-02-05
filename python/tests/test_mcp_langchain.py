@@ -105,6 +105,105 @@ class TestAsLangChainTools:
 
         assert "customers" in result
 
+    def test_tool_invocation_strips_none_arguments(self, client, httpx_mock: HTTPXMock):
+        """LangChain tool strips None values from arguments before calling MCP."""
+        # Mock list_tools with optional params
+        httpx_mock.add_response(
+            url="https://metadata.example.com/mcp",
+            method="POST",
+            json={
+                "jsonrpc": "2.0",
+                "id": "test",
+                "result": {
+                    "tools": [
+                        {
+                            "name": "search_metadata",
+                            "description": "Search",
+                            "inputSchema": {
+                                "type": "object",
+                                "properties": {
+                                    "query": {"type": "string", "description": "Query"},
+                                    "entityType": {"type": "string", "description": "Entity type"},
+                                    "queryFilter": {"type": "string", "description": "Filter"},
+                                },
+                                "required": ["query"],
+                            },
+                        },
+                    ]
+                },
+            },
+        )
+        # Mock tool call
+        httpx_mock.add_response(
+            url="https://metadata.example.com/mcp",
+            method="POST",
+            json={
+                "jsonrpc": "2.0",
+                "id": "test",
+                "result": {"content": [{"type": "text", "text": '{"results": []}'}]},
+            },
+        )
+
+        tools = client.mcp.as_langchain_tools()
+        # Invoke with optional params as None (how Pydantic defaults work)
+        tools[0].invoke({"query": "customer", "entityType": None, "queryFilter": None})
+
+        # Verify the tool call request doesn't include None values
+        requests = httpx_mock.get_requests()
+        import json
+
+        tool_call_body = json.loads(requests[-1].content)
+        arguments = tool_call_body["params"]["arguments"]
+        assert "query" in arguments
+        assert "entityType" not in arguments
+        assert "queryFilter" not in arguments
+
+    def test_tool_error_is_handled_not_raised(self, client, httpx_mock: HTTPXMock):
+        """LangChain tool returns error string instead of raising on server error."""
+        # Mock list_tools
+        httpx_mock.add_response(
+            url="https://metadata.example.com/mcp",
+            method="POST",
+            json={
+                "jsonrpc": "2.0",
+                "id": "test",
+                "result": {
+                    "tools": [
+                        {
+                            "name": "search_metadata",
+                            "description": "Search",
+                            "inputSchema": {
+                                "type": "object",
+                                "properties": {
+                                    "query": {"type": "string", "description": "Query"},
+                                },
+                                "required": ["query"],
+                            },
+                        },
+                    ]
+                },
+            },
+        )
+        # Mock tool call with isError
+        httpx_mock.add_response(
+            url="https://metadata.example.com/mcp",
+            method="POST",
+            json={
+                "jsonrpc": "2.0",
+                "id": "test",
+                "result": {
+                    "content": [{"type": "text", "text": 'argument "content" is null'}],
+                    "isError": True,
+                },
+            },
+        )
+
+        tools = client.mcp.as_langchain_tools()
+        result = tools[0].invoke({"query": "customer"})
+
+        assert "content" in result
+        assert "null" in result
+
     def test_filters_with_exclude(self, client, httpx_mock: HTTPXMock):
         """as_langchain_tools filters with exclude parameter."""
         httpx_mock.add_response(

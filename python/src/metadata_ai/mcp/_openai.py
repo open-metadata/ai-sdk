@@ -47,7 +47,8 @@ def create_tool_executor(mcp_client: MCPClient):
 
     def execute(tool_name: str, arguments: dict) -> dict:
         tool = MCPTool(tool_name)
-        result = mcp_client.call_tool(tool, arguments)
+        cleaned = {k: v for k, v in arguments.items() if v is not None}
+        result = mcp_client.call_tool(tool, cleaned)
         if not result.success:
             return {"error": result.error}
         return result.data or {}

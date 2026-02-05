@@ -255,6 +255,10 @@ cd cookbook/resources/demo-database/docker && docker-compose down -v
 - `make bump-version V=X.Y.Z` updates all SDKs atomically
 - CI validates all versions match
 
+## MANDATORY Skills
+
+- **Python files**: You MUST invoke `/dignified-python` before writing, reviewing, or refactoring ANY Python file (`.py`). This is non-negotiable — no Python code changes without loading the skill first.
+
 ## DO NOT
 
 - Edit files in `python/src/metadata_ai/generated/` (auto-generated)

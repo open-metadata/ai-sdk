@@ -13,6 +13,7 @@ class TestMCPToolEnum:
         assert MCPTool.GET_ENTITY_LINEAGE == "get_entity_lineage"
         assert MCPTool.CREATE_GLOSSARY == "create_glossary"
         assert MCPTool.CREATE_GLOSSARY_TERM == "create_glossary_term"
+        assert MCPTool.CREATE_LINEAGE == "create_lineage"
         assert MCPTool.PATCH_ENTITY == "patch_entity"
 
     def test_enum_is_str_enum(self):

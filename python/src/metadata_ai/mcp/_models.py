@@ -22,6 +22,7 @@ class MCPTool(StrEnum):
     GET_ENTITY_LINEAGE = "get_entity_lineage"
     CREATE_GLOSSARY = "create_glossary"
     CREATE_GLOSSARY_TERM = "create_glossary_term"
+    CREATE_LINEAGE = "create_lineage"
     PATCH_ENTITY = "patch_entity"
 
 
