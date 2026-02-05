@@ -172,6 +172,7 @@ Use these with `/skill-name` in Claude Code:
 - `/add-test` - Add unit or integration tests
 - `/run-integration` - Run integration tests
 - `/debug-ci` - Diagnose CI failures
+- `/validate-docs` - Validate documentation for clarity and completeness
 
 ## Key Architecture Decisions
 

@@ -1,3 +1,10 @@
+---
+name: add-sdk-method
+description: Use when adding a new method, function, or API endpoint to the SDK.
+  Ensures consistent implementation across all SDKs (Python, TypeScript, Java, Rust CLI)
+  with proper types, tests, and naming conventions.
+---
+
 # Add SDK Method
 
 Adds a new method to all SDKs (Python, TypeScript, Java, Rust CLI) with consistent implementation.

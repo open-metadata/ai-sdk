@@ -1,3 +1,9 @@
+---
+name: debug-ci
+description: Use when CI/CD pipeline fails. Provides systematic diagnosis for lint,
+  type, test, and build failures across Python, TypeScript, Java, Rust, and n8n SDKs.
+---
+
 # Debug CI Failures
 
 Systematically diagnose and fix CI failures across all SDKs.

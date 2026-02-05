@@ -157,7 +157,6 @@ Failure details:
 - Table: ${tableFqn}
 - Test: ${testName}
 - Result: ${failureMessage}
-- Failed rows: ${failedRows} (${failedRowsPercentage}%)
 
 Please:
 1. Identify the affected table and its purpose
@@ -181,7 +180,6 @@ Please:
 *Table:* `{{ $('Extract Fields').item.json.tableFqn }}`
 *Test:* {{ $('Extract Fields').item.json.testName }}
 *Status:* Failed
-*Failed Rows:* {{ $('Extract Fields').item.json.failedRows }} ({{ $('Extract Fields').item.json.failedRowsPercentage }}%)
 
 ---
 
@@ -248,7 +246,6 @@ curl -s "https://slack.com/api/conversations.list?types=public_channel,private_c
 Table: warehouse.analytics.customer_orders
 Test: columnValuesToBeBetween
 Status: Failed
-Failed Rows: 100 (10.0%)
 
 ---
 

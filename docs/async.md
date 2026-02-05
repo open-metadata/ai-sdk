@@ -2,6 +2,8 @@
 
 This guide covers async patterns for the Metadata AI SDK.
 
+**Prerequisites:** You need `METADATA_HOST` and `METADATA_TOKEN` configured. See [Getting Your Credentials](README.md#getting-your-credentials) if you haven't set these up.
+
 ## Enabling Async
 
 Async must be explicitly enabled when creating the client:

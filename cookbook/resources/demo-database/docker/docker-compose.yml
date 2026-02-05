@@ -1,0 +1,48 @@
+version: "3.9"
+
+services:
+  postgres:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: jaffle_postgres
+    environment:
+      POSTGRES_USER: jaffle_user
+      POSTGRES_PASSWORD: jaffle_pass
+      POSTGRES_DB: jaffle_shop
+    ports:
+      - "5432:5432"
+    volumes:
+      - jaffle_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U jaffle_user -d jaffle_shop"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - jaffle_network
+
+  metabase:
+    image: metabase/metabase:latest
+    container_name: jaffle_metabase
+    environment:
+      MB_DB_TYPE: postgres
+      MB_DB_DBNAME: metabase
+      MB_DB_PORT: 5432
+      MB_DB_USER: jaffle_user
+      MB_DB_PASS: jaffle_pass
+      MB_DB_HOST: postgres
+    ports:
+      - "3000:3000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - jaffle_network
+
+volumes:
+  jaffle_data:
+
+networks:
+  jaffle_network:
+    driver: bridge

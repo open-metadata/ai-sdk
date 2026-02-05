@@ -19,7 +19,7 @@
     },
     {
       "parameters": {
-        "jsCode": "// Extract relevant fields from Collate ChangeEvent\n// n8n wraps the webhook payload in a body property\nconst event = $input.first().json.body;\n\nconst fieldUpdate = event.changeDescription?.fieldsUpdated?.find(\n  f => f.name === 'testCaseResult'\n);\n\nif (!fieldUpdate) {\n  return []; // Not a test result update\n}\n\nconst result = fieldUpdate.newValue;\n\n// Only process failures\nif (result.testCaseStatus !== 'Failed') {\n  return [];\n}\n\n// Parse table FQN from test case FQN\n// Format: database.schema.table.test_name\nconst fqnParts = event.entityFullyQualifiedName.split('.');\nconst tableFqn = fqnParts.slice(0, -1).join('.');\nconst testName = fqnParts[fqnParts.length - 1];\n\nreturn [{\n  json: {\n    tableFqn,\n    testName,\n    testCaseFqn: result.testCaseFQN,\n    status: result.testCaseStatus,\n    failureMessage: result.result,\n    failedRows: result.failedRows,\n    failedRowsPercentage: result.failedRowsPercentage,\n    sampleData: result.sampleData,\n    timestamp: result.timestamp,\n    incidentId: result.incidentId\n  }\n}];"
+        "jsCode": "// Extract relevant fields from Collate ChangeEvent\n  // n8n wraps the webhook payload in a body property\n  const event = $input.first().json.body;\n\n  const fieldUpdate = event.changeDescription?.fieldsUpdated?.find(\n    f => f.name === 'testCaseResult'\n  );\n\n  if (!fieldUpdate) {\n    return []; // Not a test result update\n  }\n\n  const result = fieldUpdate.newValue;\n\n  // Only process failures\n  if (result.testCaseStatus !== 'Failed') {\n    return [];\n  }\n\n  // Parse table FQN from test case FQN\n  // Format: service.database.schema.table.test_name\n  const fqnParts = event.entityFullyQualifiedName.split('.');\n  const tableFqn = fqnParts.slice(0, -1).join('.');\n  const testName = fqnParts[fqnParts.length - 1];\n\n  return [{\n    json: {\n      tableFqn,\n      testName,\n      testCaseFqn: result.testCaseFQN,\n      status: result.testCaseStatus,\n      failureMessage: result.result,\n      failedRows: result.failedRows,\n      failedRowsPercentage: result.failedRowsPercentage,\n      sampleData: result.sampleData,\n      timestamp: result.timestamp,\n      incidentId: result.incidentId\n    }\n  }];"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -28,12 +28,12 @@
         0
       ],
       "id": "1415733e-0b8b-4a90-b619-55749e667a35",
-      "name": "Code in JavaScript"
+      "name": "Extract Fields"
     },
     {
       "parameters": {
         "agentName": "DataQualityAnalyzer",
-        "message": "=Data Quality test \"{{ $json.tableFqn }}.{{ $json.testName }}\" has FAILED.\n\nFailure details:\n- Table: {{ $json.tableFqn }}\n- Test: {{ $json.testName }}\n- Result: {{ $json.failureMessage }}\n- Failed rows: {{ $json.failedRows }} ({{ $json.failedRowsPercentage }}%)\n\nPlease:\n1. Identify the affected table and its purpose\n2. Explore downstream lineage to find impacted assets\n3. Check upstream lineage for potential root causes\n4. Summarize the impact and recommend next steps"
+        "message": "=Data Quality test \"{{ $json.tableFqn }}.{{ $json.testName }}\" has FAILED.\n\nFailure details:\n- Table: {{ $json.tableFqn }}\n- Test: {{ $json.testName }}\n- Result: {{ $json.failureMessage }}\n\nPlease:\n1. Identify the affected table and its purpose\n2. Explore downstream lineage to find impacted assets\n3. Check upstream lineage for potential root causes\n4. Summarize the impact and recommend next steps"
       },
       "type": "CUSTOM.metadataAgent",
       "typeVersion": 1,
@@ -58,7 +58,7 @@
           "value": "CONFIGURE_ME",
           "mode": "name"
         },
-        "text": "=:rotating_light: *Data Quality Alert*\n\n*Table:* `{{ $('Code in JavaScript').item.json.tableFqn }}`\n*Test:* {{ $('Code in JavaScript').item.json.testName }}\n*Status:* Failed\n*Failed Rows:* {{ $('Code in JavaScript').item.json.failedRows }} ({{ $('Code in JavaScript').item.json.failedRowsPercentage }}%)\n\n---\n\n*Analysis:*\n{{ $json.response }}\n\n---\n\n:bar_chart: <https://your-collate-instance/test/{{ $('Code in JavaScript').item.json.testCaseFqn }}|View Test Details>",
+        "text": "=:rotating_light: *Data Quality Alert*\n\n*Table:* `{{ $('Extract Fields').item.json.tableFqn }}`\n*Test:* {{ $('Extract Fields').item.json.testName }}\n*Status:* Failed\n\n---\n\n*Analysis:*\n{{ $json.response }}\n\n---\n\n:bar_chart: <https://your-collate-instance/test/{{ $('Extract Fields').item.json.testCaseFqn }}|View Test Details>",
         "otherOptions": {}
       },
       "type": "n8n-nodes-base.slack",
@@ -84,14 +84,14 @@
       "main": [
         [
           {
-            "node": "Code in JavaScript",
+            "node": "Extract Fields",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Code in JavaScript": {
+    "Extract Fields": {
       "main": [
         [
           {

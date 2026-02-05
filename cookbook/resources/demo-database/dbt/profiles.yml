@@ -1,0 +1,15 @@
+# This file should be placed in ~/.dbt/profiles.yml
+# Or use DBT_PROFILES_DIR environment variable
+
+jaffle_shop:
+  target: dev
+  outputs:
+    dev:
+      type: postgres
+      host: localhost
+      port: 5432
+      user: jaffle_user
+      password: jaffle_pass
+      dbname: jaffle_shop
+      schema: public
+      threads: 4

@@ -2,6 +2,8 @@
 
 This guide covers using Metadata AI agents as tools in LangChain pipelines.
 
+**Prerequisites:** You need `METADATA_HOST` and `METADATA_TOKEN` configured. See [Getting Your Credentials](README.md#getting-your-credentials) if you haven't set these up.
+
 ## Installation
 
 Install the SDK with LangChain support:

@@ -298,7 +298,7 @@ impl MetadataClient {
         let client = Client::builder()
             .timeout(Duration::from_secs(config.timeout))
             .build()
-            .map_err(|e| CliError::NetworkError(e.to_string()))?;
+            .map_err(CliError::from_reqwest)?;
 
         // Normalize base URL (remove trailing slash)
         let base_url = config.host.trim_end_matches('/').to_string();
@@ -329,10 +329,7 @@ impl MetadataClient {
         let status = response.status().as_u16();
 
         if (200..300).contains(&status) {
-            response
-                .text()
-                .await
-                .map_err(|e| CliError::NetworkError(e.to_string()))
+            response.text().await.map_err(CliError::from_reqwest)
         } else {
             let body = response.text().await.unwrap_or_default();
             Err(CliError::from_status(status, &body, agent_name))
@@ -364,7 +361,7 @@ impl MetadataClient {
                 .header("Authorization", self.auth_header())
                 .send()
                 .await
-                .map_err(|e| CliError::NetworkError(e.to_string()))?;
+                .map_err(CliError::from_reqwest)?;
 
             let body = self.handle_response(response, None).await?;
 
@@ -392,6 +389,7 @@ impl MetadataClient {
     }
 
     /// Get agent information by name.
+    /// Note: This endpoint returns minimal info; use `get_dynamic_agent` for full details.
     pub async fn get_agent(&self, name: &str) -> CliResult<AgentInfo> {
         let encoded_name = encode(name);
         let response = self
@@ -400,7 +398,7 @@ impl MetadataClient {
             .header("Authorization", self.auth_header())
             .send()
             .await
-            .map_err(|e| CliError::NetworkError(e.to_string()))?;
+            .map_err(CliError::from_reqwest)?;
 
         let body = self.handle_response(response, Some(name)).await?;
 
@@ -429,7 +427,7 @@ impl MetadataClient {
             .json(&request)
             .send()
             .await
-            .map_err(|e| CliError::NetworkError(e.to_string()))?;
+            .map_err(CliError::from_reqwest)?;
 
         let body = self.handle_response(response, Some(agent_name)).await?;
 
@@ -460,7 +458,7 @@ impl MetadataClient {
             .json(&request)
             .send()
             .await
-            .map_err(|e| CliError::NetworkError(e.to_string()))?;
+            .map_err(CliError::from_reqwest)?;
 
         let status = response.status().as_u16();
         if (200..300).contains(&status) {
@@ -503,7 +501,7 @@ impl MetadataClient {
                 .header("Authorization", self.auth_header())
                 .send()
                 .await
-                .map_err(|e| CliError::NetworkError(e.to_string()))?;
+                .map_err(CliError::from_reqwest)?;
 
             let body = self.handle_response(response, None).await?;
 
@@ -539,7 +537,7 @@ impl MetadataClient {
             .header("Authorization", self.auth_header())
             .send()
             .await
-            .map_err(|e| CliError::NetworkError(e.to_string()))?;
+            .map_err(CliError::from_reqwest)?;
 
         let body = self.handle_response(response, None).await?;
 
@@ -586,7 +584,7 @@ impl MetadataClient {
                 .header("Authorization", self.auth_header())
                 .send()
                 .await
-                .map_err(|e| CliError::NetworkError(e.to_string()))?;
+                .map_err(CliError::from_reqwest)?;
 
             let body = self.handle_response(response, None).await?;
 
@@ -622,7 +620,7 @@ impl MetadataClient {
             .header("Authorization", self.auth_header())
             .send()
             .await
-            .map_err(|e| CliError::NetworkError(e.to_string()))?;
+            .map_err(CliError::from_reqwest)?;
 
         let body = self.handle_response(response, None).await?;
 
@@ -639,7 +637,7 @@ impl MetadataClient {
             .json(&request)
             .send()
             .await
-            .map_err(|e| CliError::NetworkError(e.to_string()))?;
+            .map_err(CliError::from_reqwest)?;
 
         let body = self.handle_response(response, None).await?;
 
@@ -676,7 +674,7 @@ impl MetadataClient {
                 .header("Authorization", self.auth_header())
                 .send()
                 .await
-                .map_err(|e| CliError::NetworkError(e.to_string()))?;
+                .map_err(CliError::from_reqwest)?;
 
             let body = self.handle_response(response, None).await?;
 
@@ -712,7 +710,7 @@ impl MetadataClient {
             .header("Authorization", self.auth_header())
             .send()
             .await
-            .map_err(|e| CliError::NetworkError(e.to_string()))?;
+            .map_err(CliError::from_reqwest)?;
 
         let body = self.handle_response(response, None).await?;
 
@@ -726,6 +724,24 @@ impl MetadataClient {
         format!("{}/api/v1/agents/dynamic{}", self.base_url, path)
     }
 
+    /// Get full agent details from the dynamic agents endpoint (includes persona, abilities).
+    pub async fn get_dynamic_agent(&self, name: &str) -> CliResult<AgentInfo> {
+        let encoded_name = encode(name);
+        let response = self
+            .client
+            .get(self.dynamic_agents_url(&format!(
+                "/name/{encoded_name}?fields=persona,bot,abilities"
+            )))
+            .header("Authorization", self.auth_header())
+            .send()
+            .await
+            .map_err(CliError::from_reqwest)?;
+
+        let body = self.handle_response(response, Some(name)).await?;
+
+        serde_json::from_str(&body).map_err(|e| CliError::ParseError(e.to_string()))
+    }
+
     /// Create a new dynamic agent.
     pub async fn create_agent(&self, request: CreateAgentRequest) -> CliResult<AgentInfo> {
         let response = self
@@ -736,7 +752,7 @@ impl MetadataClient {
             .json(&request)
             .send()
             .await
-            .map_err(|e| CliError::NetworkError(e.to_string()))?;
+            .map_err(CliError::from_reqwest)?;
 
         let body = self.handle_response(response, None).await?;
 
