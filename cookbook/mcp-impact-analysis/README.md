@@ -24,7 +24,7 @@ Automate impact analysis for schema changes using OpenMetadata's MCP tools. This
 ## Installation
 
 ```bash
-pip install metadata-ai[langchain] langchain-openai
+pip install metadata-ai[langchain]
 ```
 
 ## Environment Setup
@@ -40,146 +40,20 @@ export OPENAI_API_KEY="your-openai-key"
 
 ## The Impact Analysis Agent
 
-### impact_analyzer.py
+The interactive agent is implemented in [`impact_analyzer.py`](./impact_analyzer.py). Here's how it works:
 
-```python
-"""
-Data Change Impact Analyzer
+1. **MCP tool selection** - It initializes a `MetadataAI` client and loads only the read-only MCP tools (`search_metadata`, `get_entity_details`, `get_entity_lineage`). Mutation tools are excluded so the agent can never modify your catalog during analysis.
 
-An AI agent that helps assess the impact of schema changes
-before they're made, using OpenMetadata's MCP tools.
-"""
+2. **System prompt** - A structured prompt instructs the LLM to follow a repeatable workflow: find the asset, trace lineage, identify owners, assess risk, and summarize the impact. The prompt also enforces a consistent output format with sections for affected assets, risk assessment, and recommended actions.
 
-from metadata_ai import MetadataAI, MetadataConfig
-from metadata_ai.mcp import MCPTool
-from langchain_openai import ChatOpenAI
-from langchain.agents import AgentExecutor, create_tool_calling_agent
-from langchain_core.prompts import ChatPromptTemplate
+3. **LangChain agent loop** - The tools and prompt are wired into a LangChain `AgentExecutor` with `max_iterations=10`, giving the LLM enough room to chain multiple tool calls (e.g., search for a table, get its details, then traverse its lineage).
 
+4. **Interactive REPL** - The `main()` function provides a terminal loop where you describe a planned change in plain English and receive a structured impact report.
 
-SYSTEM_PROMPT = """You are a Data Impact Analyst assistant. Your job is to help
-data engineers understand the downstream impact of schema changes before they make them.
+Run it with:
 
-When analyzing a change, you should:
-
-1. **Find the asset** - Search for the table/column being modified
-2. **Trace lineage** - Get downstream dependencies (tables, views, dashboards)
-3. **Identify owners** - Find who owns affected assets
-4. **Assess risk** - Consider data quality tests, PII implications, SLAs
-5. **Summarize impact** - Provide a clear, actionable report
-
-Always structure your response as:
-
-## Impact Summary
-Brief overview of the change and its scope.
-
-## Affected Assets
-List of downstream tables, views, and dashboards with their owners.
-
-## Risk Assessment
-- Data Quality: Tests that may fail
-- Compliance: PII/sensitive data implications
-- Business: Dashboards or reports affected
-
-## Recommended Actions
-1. Notify these stakeholders: [list]
-2. Update these assets: [list]
-3. Consider these alternatives: [if any]
-
-Use the available tools to gather accurate, real-time metadata.
-"""
-
-
-def create_impact_analyzer():
-    """Create an impact analysis agent with MCP tools."""
-
-    # Initialize Metadata client
-    config = MetadataConfig.from_env()
-    client = MetadataAI.from_config(config)
-
-    # Use read-only MCP tools for safety
-    tools = client.mcp.as_langchain_tools(
-        include=[
-            MCPTool.SEARCH_METADATA,
-            MCPTool.GET_ENTITY_DETAILS,
-            MCPTool.GET_ENTITY_LINEAGE,
-        ]
-    )
-
-    # Configure LLM
-    llm = ChatOpenAI(
-        model="gpt-4",
-        temperature=0,  # Deterministic for consistency
-    )
-
-    # Build prompt
-    prompt = ChatPromptTemplate.from_messages([
-        ("system", SYSTEM_PROMPT),
-        ("human", "{input}"),
-        ("placeholder", "{agent_scratchpad}"),
-    ])
-
-    # Create agent
-    agent = create_tool_calling_agent(llm, tools, prompt)
-    executor = AgentExecutor(
-        agent=agent,
-        tools=tools,
-        verbose=True,
-        max_iterations=10,  # Allow thorough exploration
-        return_intermediate_steps=True,
-    )
-
-    return executor, client
-
-
-def analyze_change(executor, change_description: str) -> dict:
-    """Analyze the impact of a proposed change."""
-    result = executor.invoke({"input": change_description})
-    return {
-        "analysis": result["output"],
-        "steps": len(result.get("intermediate_steps", [])),
-    }
-
-
-def main():
-    """Interactive impact analysis session."""
-    print("=" * 60)
-    print("Data Change Impact Analyzer")
-    print("=" * 60)
-    print("\nThis tool helps you understand the impact of schema changes")
-    print("before you make them. Describe your planned change and I'll")
-    print("analyze the downstream dependencies.\n")
-    print("Type 'quit' to exit.\n")
-
-    executor, client = create_impact_analyzer()
-
-    try:
-        while True:
-            print("-" * 60)
-            change = input("\nDescribe your planned change:\n> ").strip()
-
-            if change.lower() in ("quit", "exit", "q"):
-                print("\nGoodbye!")
-                break
-
-            if not change:
-                continue
-
-            print("\nAnalyzing impact...\n")
-            result = analyze_change(executor, change)
-
-            print("\n" + "=" * 60)
-            print("IMPACT ANALYSIS REPORT")
-            print("=" * 60)
-            print(result["analysis"])
-            print(f"\n[Analysis completed in {result['steps']} steps]")
-
-    finally:
-        client.close()
-
-
-if __name__ == "__main__":
-    main()
+```bash
+python impact_analyzer.py
 ```
 
 ## Example Interactions
@@ -193,6 +67,8 @@ What's the impact?
 ```
 
 **Expected Response:**
+
+The agent will call `search_metadata` to locate the table, then `get_entity_lineage` to walk the downstream graph, and finally `get_entity_details` on each affected node. A typical report looks like:
 
 ```markdown
 ## Impact Summary
@@ -248,6 +124,8 @@ payments_transactions and payments_methods. What will break?
 ```
 
 **Expected Response:**
+
+Because `raw_stripe.payments` sits at the root of the finance lineage chain, the agent will discover a deep dependency graph. It calls `get_entity_lineage` on the payments table, then iterates through each downstream node with `get_entity_details` to check for owners, DQ tests, and PII tags.
 
 ```markdown
 ## Impact Summary
@@ -309,6 +187,8 @@ What do I need to update?
 
 **Expected Response:**
 
+Additive changes produce a different kind of report. The agent finds no downstream breakage but identifies opportunities to propagate the new attribute.
+
 ```markdown
 ## Impact Summary
 Adding `loyalty_tier` to `dim_customers` is a **low-risk** additive change.
@@ -357,172 +237,20 @@ Assets that could benefit from `loyalty_tier`:
    - Update data dictionary documentation
 ```
 
-## Tool Response Examples
+## Batch Impact Analysis for CI/CD
 
-Understanding what each MCP tool returns helps you interpret the agent's analysis.
+The [`batch_analyzer.py`](./batch_analyzer.py) script extends the interactive agent for automated use in pull requests. It:
 
-### search_metadata Response
+1. Reads a `git diff` file and extracts every changed `.sql` file under a `models/` directory.
+2. Spins up the same agent from `impact_analyzer.py`.
+3. Iterates over each changed model and asks the agent for its downstream impact.
+4. Prints a combined Markdown report suitable for posting as a PR comment.
 
-```json
-{
-  "hits": [
-    {
-      "id": "d4e5f6...",
-      "name": "customers",
-      "fullyQualifiedName": "jaffle-shop-postgres.jaffle_shop.raw_jaffle_shop.customers",
-      "entityType": "table",
-      "description": "Raw customer data from the Jaffle Shop application",
-      "owner": {
-        "name": "data-engineering",
-        "type": "team"
-      },
-      "tags": ["PII", "Tier1"]
-    }
-  ],
-  "total": 1
-}
-```
+Run it locally:
 
-### get_entity_details Response
-
-```json
-{
-  "id": "d4e5f6...",
-  "name": "customers",
-  "fullyQualifiedName": "jaffle-shop-postgres.jaffle_shop.raw_jaffle_shop.customers",
-  "columns": [
-    {
-      "name": "id",
-      "dataType": "INT",
-      "constraint": "PRIMARY_KEY"
-    },
-    {
-      "name": "email",
-      "dataType": "VARCHAR",
-      "tags": [{"tagFQN": "PII.Email"}],
-      "description": "Customer email address - PII"
-    },
-    {
-      "name": "ssn_last_four",
-      "dataType": "VARCHAR",
-      "tags": [{"tagFQN": "PII.SSN"}],
-      "description": "Last 4 digits of SSN - Sensitive PII"
-    }
-  ],
-  "owner": {
-    "name": "data-engineering",
-    "type": "team"
-  },
-  "dataQualityTests": [
-    {"name": "email_not_null", "status": "Success"},
-    {"name": "id_unique", "status": "Success"}
-  ]
-}
-```
-
-### get_entity_lineage Response
-
-```json
-{
-  "entity": {
-    "id": "d4e5f6...",
-    "name": "customers",
-    "type": "table"
-  },
-  "upstreamEdges": [],
-  "downstreamEdges": [
-    {
-      "fromEntity": "raw_jaffle_shop.customers",
-      "toEntity": "staging.stg_jaffle_shop__customers",
-      "lineageType": "VIEW"
-    },
-    {
-      "fromEntity": "staging.stg_jaffle_shop__customers",
-      "toEntity": "marts_core.dim_customers",
-      "lineageType": "TRANSFORM"
-    }
-  ],
-  "nodes": [
-    {
-      "id": "...",
-      "name": "stg_jaffle_shop__customers",
-      "type": "table",
-      "owner": {"name": "data-engineering"}
-    },
-    {
-      "id": "...",
-      "name": "dim_customers",
-      "type": "table",
-      "owner": {"name": "analytics"}
-    }
-  ]
-}
-```
-
-## Advanced: Batch Impact Analysis
-
-For CI/CD integration, analyze multiple changes in a PR:
-
-### batch_analyzer.py
-
-```python
-"""Analyze impact of all changes in a dbt PR."""
-
-import sys
-from pathlib import Path
-from impact_analyzer import create_impact_analyzer, analyze_change
-
-
-def get_changed_models(diff_output: str) -> list[str]:
-    """Extract changed dbt model names from git diff."""
-    models = []
-    for line in diff_output.split("\n"):
-        if line.startswith("+++ b/") and line.endswith(".sql"):
-            # Extract model name from path
-            path = Path(line.replace("+++ b/", ""))
-            if "models" in path.parts:
-                models.append(path.stem)
-    return models
-
-
-def main():
-    if len(sys.argv) < 2:
-        print("Usage: python batch_analyzer.py <git-diff-output>")
-        sys.exit(1)
-
-    diff_file = sys.argv[1]
-    with open(diff_file) as f:
-        diff_output = f.read()
-
-    changed_models = get_changed_models(diff_output)
-
-    if not changed_models:
-        print("No dbt model changes detected.")
-        sys.exit(0)
-
-    print(f"Analyzing impact of {len(changed_models)} changed models...")
-
-    executor, client = create_impact_analyzer()
-
-    try:
-        for model in changed_models:
-            print(f"\n{'='*60}")
-            print(f"Analyzing: {model}")
-            print("="*60)
-
-            result = analyze_change(
-                executor,
-                f"The dbt model '{model}' has been modified. "
-                f"What downstream assets are affected?"
-            )
-            print(result["analysis"])
-
-    finally:
-        client.close()
-
-
-if __name__ == "__main__":
-    main()
+```bash
+git diff origin/main...HEAD > changes.diff
+python batch_analyzer.py changes.diff
 ```
 
 ### GitHub Actions Integration
@@ -550,7 +278,7 @@ jobs:
           python-version: '3.11'
 
       - name: Install dependencies
-        run: pip install metadata-ai[langchain] langchain-openai
+        run: pip install metadata-ai[langchain]
 
       - name: Get changed files
         run: |
@@ -580,6 +308,8 @@ jobs:
 ## Configuration Options
 
 ### Using Different LLMs
+
+The agent uses LangChain, so you can swap in any compatible LLM by replacing the `ChatOpenAI` call in `impact_analyzer.py`:
 
 ```python
 # Claude (via Amazon Bedrock)

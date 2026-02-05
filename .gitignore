@@ -176,5 +176,11 @@ secrets.json
 *.bak
 *.backup
 
+# dbt
+dbt_packages/
+target/
+logs/
+.user.yml
+
 # Lock files (uv)
 uv.lock

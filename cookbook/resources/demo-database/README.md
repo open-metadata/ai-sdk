@@ -14,18 +14,18 @@ A comprehensive PostgreSQL + dbt + Metabase setup for demonstrating OpenMetadata
 ### 1. Start the Database and Metabase
 
 ```bash
-cd cookbook/demo-database/docker
+cd cookbook/resources/demo-database/docker
 docker-compose up -d
 ```
 
 This starts:
-- **PostgreSQL** on `localhost:5432`
+- **PostgreSQL** on `localhost:5433`
 - **Metabase** on `localhost:3000`
 
 ### 2. Run dbt Models
 
 ```bash
-cd cookbook/demo-database/dbt
+cd cookbook/resources/demo-database/dbt
 
 # Install dbt-postgres if needed
 pip install dbt-postgres
@@ -43,18 +43,25 @@ dbt run
 dbt test
 ```
 
-### 3. Setup Metabase (Manual)
+### 3. Setup Metabase
 
 1. Open http://localhost:3000
 2. Complete the setup wizard:
    - Email: `admin@jaffle.shop`
    - Password: `JaffleAdmin123!`
-3. Add PostgreSQL database:
-   - **Host**: `postgres` (if using Docker network) or `localhost`
+3. Add PostgreSQL database during the wizard:
+   - **Name**: `jaffle_shop`
+   - **Host**: `postgres`
    - **Port**: `5432`
    - **Database**: `jaffle_shop`
    - **Username**: `jaffle_user`
    - **Password**: `jaffle_pass`
+4. Run the setup script to create pre-built charts and dashboards:
+
+```bash
+cd cookbook/resources/demo-database
+./scripts/setup_metabase.sh
+```
 
 ## Database Schema
 
@@ -103,73 +110,15 @@ models/
         └── fct_channel_performance  # Channel aggregations
 ```
 
-## Sample Metabase Charts
+## Metabase Charts
 
-After running dbt models, create these charts in Metabase:
+The setup script (`scripts/setup_metabase.sh`) creates the following charts in a "Jaffle Shop Analytics" collection:
 
-### 1. Monthly Revenue Trend (Line Chart)
-
-```sql
-SELECT
-    order_month,
-    net_revenue,
-    revenue_growth_pct
-FROM marts_finance.fct_monthly_revenue
-ORDER BY order_month
-```
-
-### 2. Customer Value Segments (Pie Chart)
-
-```sql
-SELECT
-    value_segment,
-    COUNT(*) as customer_count,
-    SUM(lifetime_value) as total_ltv
-FROM marts_core.dim_customers
-GROUP BY value_segment
-ORDER BY total_ltv DESC
-```
-
-### 3. Top Products by Revenue (Bar Chart)
-
-```sql
-SELECT
-    product_name,
-    category,
-    total_revenue,
-    units_sold,
-    avg_rating
-FROM marts_core.dim_products
-WHERE total_revenue > 0
-ORDER BY total_revenue DESC
-LIMIT 10
-```
-
-### 4. Marketing Channel Performance (Table)
-
-```sql
-SELECT
-    channel,
-    total_campaigns,
-    total_spend,
-    total_conversions,
-    overall_ctr,
-    avg_cpa
-FROM marts_marketing.fct_channel_performance
-ORDER BY total_spend DESC
-```
-
-### 5. Daily Order Trends (Area Chart)
-
-```sql
-SELECT
-    order_date,
-    total_orders,
-    unique_customers,
-    net_revenue
-FROM marts_finance.fct_daily_revenue
-ORDER BY order_date
-```
+1. **Monthly Revenue Trend** (Line) — `marts_finance.fct_monthly_revenue`
+2. **Customer Value Segments** (Pie) — `marts_core.dim_customers`
+3. **Top Products by Revenue** (Bar) — `marts_core.dim_products`
+4. **Marketing Campaign ROI** (Table) — `marts_marketing.fct_campaign_performance`
+5. **Daily Order Volume** (Line) — `marts_finance.fct_daily_revenue`
 
 ## Data Quality Scenarios
 
@@ -220,71 +169,43 @@ Both users have:
 
 ### Ingesting Metadata
 
-#### Step 1: Create PostgreSQL Service
+A single script runs all ingestion workflows (PostgreSQL metadata, dbt, lineage, and Metabase):
 
-In OpenMetadata UI, go to **Settings > Services > Databases > Add New Service**:
+```bash
+# Install the ingestion package with required plugins
+pip install "openmetadata-ingestion[postgres,dbt]"
 
-```yaml
-Service Type: Postgres
-Service Name: jaffle-shop-postgres
+# Set your OpenMetadata credentials
+export METADATA_HOST=https://your-instance.getcollate.io
+export METADATA_TOKEN=your-jwt-token
 
-Connection Details:
-  Host: localhost          # Use 'host.docker.internal' if OM runs in Docker
-  Port: 5432
-  Database: jaffle_shop
-  Username: openmetadata_user
-  Password: openmetadata_pass
-
-  # For query lineage via pg_stat_statements
-  SSL Mode: disable        # For local dev; use 'require' in production
+# Run all ingestion workflows
+cd cookbook/resources/demo-database
+./scripts/ingest_metadata.sh
 ```
 
-#### Step 2: Configure Ingestion
+This runs 4 workflows in order:
 
-Create a metadata ingestion workflow:
+1. **PostgreSQL Metadata** — tables, views, and schemas from all raw/staging/marts schemas
+2. **dbt Metadata** — model descriptions, tags, and lineage from dbt artifacts
+3. **PostgreSQL Lineage** — query-based lineage from `pg_stat_statements`
+4. **Metabase Dashboards** — charts and dashboard metadata with lineage to PostgreSQL tables
 
-```yaml
-Source:
-  Include Views: true
-  Include Tables: true
-  Schema Filter Pattern:
-    includes:
-      - raw_jaffle_shop
-      - raw_stripe
-      - raw_inventory
-      - raw_marketing
-      - raw_support
-      - analytics
-      - staging
-      - intermediate
-      - marts_core
-      - marts_finance
-      - marts_marketing
+The YAML configs are in `ingestion/` and can be customized individually:
 
-# Enable lineage from pg_stat_statements
-Query Log Lineage:
-  Enabled: true
-```
+| File | Workflow |
+|------|----------|
+| `ingestion/postgres.yaml` | Database metadata ingestion |
+| `ingestion/dbt.yaml` | dbt model metadata |
+| `ingestion/postgres_lineage.yaml` | Query-based lineage |
+| `ingestion/metabase.yaml` | Dashboard metadata |
 
-#### Step 3: Run Ingestion
-
-After running the ingestion, you should see:
+After ingestion, you should see:
 - **6 raw schemas** with source tables
 - **Analytics views** with computed metrics
 - **dbt schemas** (staging, intermediate, marts_*)
-- **Automatic lineage** from query logs
-
-#### Step 4: Verify Lineage
-
-Run some queries to populate `pg_stat_statements`:
-
-```sql
--- Connect as jaffle_user and run analytics queries
-SELECT * FROM marts_finance.fct_monthly_revenue;
-SELECT * FROM marts_core.dim_customers WHERE value_segment = 'High Value';
-```
-
-Then re-run lineage ingestion to capture query-based lineage.
+- **Automatic lineage** from dbt models and query logs
+- **Metabase dashboards** linked to PostgreSQL tables
 
 ### Testing Cookbook Features
 
@@ -312,8 +233,8 @@ docker-compose down -v
 
 | Service | Host | Port | User | Password | Purpose |
 |---------|------|------|------|----------|---------|
-| PostgreSQL | localhost | 5432 | `jaffle_user` | `jaffle_pass` | dbt, applications |
-| PostgreSQL | localhost | 5432 | `openmetadata_user` | `openmetadata_pass` | OpenMetadata ingestion |
+| PostgreSQL | localhost | 5433 | `jaffle_user` | `jaffle_pass` | dbt, applications |
+| PostgreSQL | localhost | 5433 | `openmetadata_user` | `openmetadata_pass` | OpenMetadata ingestion |
 | Metabase | localhost | 3000 | `admin@jaffle.shop` | `JaffleAdmin123!` | BI dashboards |
 
 ## File Structure
@@ -331,7 +252,13 @@ demo-database/
 │       ├── staging/          # Source data cleaning
 │       ├── intermediate/     # Business transformations
 │       └── marts/            # Analytics tables
+├── ingestion/
+│   ├── postgres.yaml           # PostgreSQL metadata ingestion config
+│   ├── postgres_lineage.yaml   # PostgreSQL lineage ingestion config
+│   ├── dbt.yaml                # dbt metadata ingestion config
+│   └── metabase.yaml           # Metabase dashboard ingestion config
 ├── scripts/
-│   └── setup_metabase.sh     # Automated Metabase setup (optional)
+│   ├── setup_metabase.sh       # Automated Metabase chart setup
+│   └── ingest_metadata.sh      # Run all OpenMetadata ingestion workflows
 └── README.md
 ```

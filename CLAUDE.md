@@ -14,6 +14,11 @@ metadata-ai-sdk/
 ├── typescript/             # TypeScript SDK (@openmetadata/ai-sdk on npm)
 ├── java/                   # Java SDK (io.openmetadata:metadata-ai-sdk)
 ├── n8n-nodes-metadata/     # n8n community node (depends on TypeScript SDK)
+├── cookbook/                # Guides, scripts, and resources for common use cases
+│   └── resources/
+│       └── demo-database/  # Jaffle Shop demo (PostgreSQL + Metabase + dbt)
+│           ├── docker/     # docker-compose.yml, Dockerfile, init.sql
+│           └── dbt/        # dbt project (models, profiles, tests)
 ├── scripts/                # Development scripts (pre-commit hooks)
 ├── .claude/skills/         # Claude Code skills for this repo
 ├── VERSION                 # Single source of truth for version
@@ -37,6 +42,15 @@ make build-all         # Build all SDKs
 # Version Management
 make version           # Show current version
 make bump-version V=X.Y.Z  # Update all SDKs
+
+# Local Development
+make install-local       # Install Python SDK in editable mode (all extras)
+
+# Demo Database
+make install-dbt         # Install dbt-postgres for the demo
+make demo-database       # Start PostgreSQL (port 5433) + Metabase (port 3000)
+make demo-database-stop  # Stop demo database containers
+make demo-dbt            # Run dbt models and tests against the demo database
 
 # Git Hooks
 make install-hooks     # Install pre-commit hooks
@@ -173,6 +187,45 @@ Use these with `/skill-name` in Claude Code:
 - `/run-integration` - Run integration tests
 - `/debug-ci` - Diagnose CI failures
 - `/validate-docs` - Validate documentation for clarity and completeness
+
+## Demo Database (Jaffle Shop)
+
+A local PostgreSQL + Metabase + dbt setup at `cookbook/resources/demo-database/` for testing cookbook features (DQ, lineage, PII classification, etc.).
+
+### Setup
+
+```bash
+# 1. Start containers (requires Docker)
+make demo-database
+
+# 2. Run dbt models (requires dbt-postgres: pip install dbt-postgres)
+make demo-dbt
+```
+
+### Connection Details
+
+| Service    | Host      | Port | User                | Password            |
+|------------|-----------|------|---------------------|---------------------|
+| PostgreSQL | localhost | 5433 | `jaffle_user`       | `jaffle_pass`       |
+| PostgreSQL | localhost | 5433 | `openmetadata_user` | `openmetadata_pass` |
+| Metabase   | localhost | 3000 | `admin@jaffle.shop` | `JaffleAdmin123!`   |
+
+**Port 5433** is used intentionally to avoid conflicts with a local PostgreSQL on the default 5432.
+
+### Key Files
+
+- `docker/docker-compose.yml` — PostgreSQL (port 5433) and Metabase services
+- `docker/init.sql` — Schema creation, seed data, analytics views, user grants
+- `dbt/profiles.yml` — dbt connection profile (points to localhost:5433)
+- `dbt/models/` — staging, intermediate, and marts models
+
+### Teardown
+
+```bash
+make demo-database-stop            # Stop containers
+# To also remove data volumes:
+cd cookbook/resources/demo-database/docker && docker-compose down -v
+```
 
 ## Key Architecture Decisions
 

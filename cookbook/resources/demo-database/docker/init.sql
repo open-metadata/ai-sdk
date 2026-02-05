@@ -452,8 +452,8 @@ SELECT
         ELSE 4.99 + RANDOM() * 3
     END as unit_price
 FROM raw_jaffle_shop.orders o
-WHERE o.id > 25 AND o.id <= 60
-CROSS JOIN generate_series(1, 2);
+CROSS JOIN generate_series(1, 2)
+WHERE o.id > 25 AND o.id <= 60;
 
 -- =============================================================================
 -- SEED DATA: Payments
@@ -546,8 +546,7 @@ SELECT
         WHEN 'paid_search' THEN CASE (RANDOM() * 1)::INT WHEN 0 THEN 'Google Ads' ELSE 'Bing Ads' END
     END
 FROM raw_marketing.campaigns c
-CROSS JOIN generate_series(c.start_date, COALESCE(c.end_date, CURRENT_DATE), '1 day'::INTERVAL) d
-WHERE d <= CURRENT_DATE;
+CROSS JOIN generate_series(c.start_date, COALESCE(c.end_date, CURRENT_DATE), '1 day'::INTERVAL) d;
 
 -- =============================================================================
 -- SEED DATA: User Sessions
@@ -711,7 +710,7 @@ GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA raw_inventory TO jaffle_user;
 GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA raw_marketing TO jaffle_user;
 GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA raw_support TO jaffle_user;
 GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA analytics TO jaffle_user;
-GRANT USAGE ON ALL SCHEMAS TO jaffle_user;
+GRANT USAGE ON SCHEMA raw_jaffle_shop, raw_stripe, raw_inventory, raw_marketing, raw_support, analytics TO jaffle_user;
 
 -- Grant permissions for OpenMetadata lineage extraction
 -- pg_stat_statements requires pg_read_all_stats role for non-superusers

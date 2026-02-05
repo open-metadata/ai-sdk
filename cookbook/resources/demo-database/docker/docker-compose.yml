@@ -11,7 +11,7 @@ services:
       POSTGRES_PASSWORD: jaffle_pass
       POSTGRES_DB: jaffle_shop
     ports:
-      - "5432:5432"
+      - "5433:5432"
     volumes:
       - jaffle_data:/var/lib/postgresql/data
     healthcheck:

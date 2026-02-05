@@ -7,7 +7,7 @@ jaffle_shop:
     dev:
       type: postgres
       host: localhost
-      port: 5432
+      port: 5433
       user: jaffle_user
       password: jaffle_pass
       dbname: jaffle_shop

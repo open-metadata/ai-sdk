@@ -155,7 +155,39 @@ tag-n8n:  ## Create git tag for n8n release
 .PHONY: build-all test-all test-integration install-cli \
         lint lint-python lint-rust lint-typescript lint-java lint-n8n \
         format format-python format-rust format-typescript format-java format-n8n \
-        install-hooks
+        install-hooks install-local install-dbt demo-database demo-database-stop demo-dbt
+
+install-local:  ## Install Python SDK locally in editable mode (for development)
+	@echo "Installing Python SDK (editable, all extras)..."
+	pip install -e "python/[all]"
+	@echo "Python SDK installed"
+
+install-dbt:  ## Install dbt-postgres for the demo database
+	@echo "Installing dbt-postgres..."
+	pip install dbt-postgres
+	@echo "dbt-postgres installed"
+
+demo-database:  ## Start the demo Jaffle Shop database (PostgreSQL + Metabase)
+	@echo "Starting demo database..."
+	cd cookbook/resources/demo-database/docker && docker-compose up -d
+	@echo ""
+	@echo "Services started:"
+	@echo "  PostgreSQL: localhost:5433 (user: jaffle_user / jaffle_pass)"
+	@echo "  Metabase:   localhost:3000"
+
+demo-database-stop:  ## Stop the demo database
+	@echo "Stopping demo database..."
+	cd cookbook/resources/demo-database/docker && docker-compose down
+	@echo "Demo database stopped"
+
+demo-dbt:  ## Run dbt models against the demo database
+	@echo "Running dbt against Jaffle Shop database..."
+	cd cookbook/resources/demo-database/dbt && DBT_PROFILES_DIR=$$(pwd) dbt run
+	@echo ""
+	@echo "Running dbt tests..."
+	cd cookbook/resources/demo-database/dbt && DBT_PROFILES_DIR=$$(pwd) dbt test
+	@echo ""
+	@echo "dbt models and tests completed"
 
 install-cli:  ## Build CLI (release) and install to ~/.local/bin
 	@echo "Building CLI in release mode..."
