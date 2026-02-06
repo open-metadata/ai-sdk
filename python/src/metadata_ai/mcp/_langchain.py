@@ -21,7 +21,8 @@ except ImportError as e:
         "Install with: pip install metadata-ai[langchain]"
     ) from e
 
-from metadata_ai.mcp._models import MCPTool, ToolInfo
+from metadata_ai.exceptions import MCPToolExecutionError
+from metadata_ai.mcp.models import MCPTool, ToolInfo
 
 
 def build_langchain_tools(
@@ -59,9 +60,10 @@ def _create_langchain_tool(mcp_client: MCPClient, info: ToolInfo) -> BaseTool:
             **kwargs: Any,
         ) -> str:
             arguments = {k: v for k, v in kwargs.items() if v is not None}
-            result = self._mcp_client.call_tool(self._tool_name, arguments)
-            if not result.success:
-                raise ToolException(result.error or "Tool execution failed")
+            try:
+                result = self._mcp_client.call_tool(self._tool_name, arguments)
+            except MCPToolExecutionError as exc:
+                raise ToolException(str(exc)) from exc
             return json.dumps(result.data)
 
     return MCPToolWrapper(mcp_client=mcp_client, tool_name=tool_name_enum)

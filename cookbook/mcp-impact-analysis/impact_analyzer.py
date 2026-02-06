@@ -24,9 +24,12 @@ import os
 import urllib.request
 import urllib.error
 
+from langchain.agents import AgentExecutor, create_tool_calling_agent
+from langchain_core.prompts import ChatPromptTemplate
+from langchain_openai import ChatOpenAI
+
 from metadata_ai import MetadataAI, MetadataConfig
-from metadata_ai.mcp._models import MCPTool
-from langchain.agents import create_agent
+from metadata_ai.mcp.models import MCPTool
 
 
 SYSTEM_PROMPT = """You are a Data Impact Analyst assistant. Your job is to help
@@ -89,21 +92,32 @@ def create_impact_analyzer():
     )
 
     # Interpolate the host URL so the agent can build entity links
-    prompt = SYSTEM_PROMPT.format(metadata_host=config.host.rstrip("/"))
+    system_prompt = SYSTEM_PROMPT.format(metadata_host=config.host.rstrip("/"))
 
-    agent = create_agent(
-        "openai:gpt-4o",
-        tools=tools,
-        system_prompt=prompt,
-    )
+    llm = ChatOpenAI(model="gpt-4o", temperature=0)
+    prompt = ChatPromptTemplate.from_messages([
+        ("system", system_prompt),
+        ("human", "{input}"),
+        ("placeholder", "{agent_scratchpad}"),
+    ])
 
-    return agent, client
+    agent = create_tool_calling_agent(llm, tools, prompt)
+    executor = AgentExecutor(agent=agent, tools=tools, verbose=True)
+
+    return executor, client
 
 
-def analyze_change(agent, change_description: str) -> str:
-    """Analyze the impact of a proposed change."""
-    result = agent.invoke({"messages": [{"role": "user", "content": change_description}]})
-    return result["messages"][-1].content
+def analyze_change(executor: AgentExecutor, change_description: str) -> dict:
+    """Analyze the impact of a proposed change.
+
+    Returns:
+        Dict with 'analysis' (str) and 'steps' (int) keys.
+    """
+    result = executor.invoke({"input": change_description})
+    return {
+        "analysis": result["output"],
+        "steps": len(result.get("intermediate_steps", [])),
+    }
 
 
 def _markdown_to_slack_mrkdwn(text: str) -> str:
@@ -212,18 +226,18 @@ def main():
                 continue
 
             print("\nAnalyzing impact...\n")
-            analysis = analyze_change(agent, change)
+            result = analyze_change(agent, change)
 
             print("\n" + "=" * 60)
             print("IMPACT ANALYSIS REPORT")
             print("=" * 60)
-            print(analysis)
+            print(result["analysis"])
 
             if slack_webhook:
                 send = input("\nSend deprecation notice to Slack? [y/N] ").strip().lower()
                 if send == "y":
                     print("Sending to Slack...")
-                    if send_to_slack(slack_webhook, analysis, change):
+                    if send_to_slack(slack_webhook, result["analysis"], change):
                         print("Deprecation notice sent to Slack.")
                     else:
                         print("Failed to send Slack message. Check your SLACK_WEBHOOK_URL.")

@@ -6,7 +6,7 @@ from pytest_httpx import HTTPXMock
 pytest.importorskip("langchain_core")
 
 from metadata_ai.client import MetadataAI
-from metadata_ai.mcp._models import MCPTool
+from metadata_ai.mcp.models import MCPTool
 
 
 @pytest.fixture
@@ -25,7 +25,7 @@ def client():
 def mock_list_tools(httpx_mock: HTTPXMock):
     """Mock list_tools response."""
     httpx_mock.add_response(
-        url="https://metadata.example.com/mcp",
+        url="https://metadata.example.com/mcp/",
         method="POST",
         json={
             "jsonrpc": "2.0",
@@ -67,7 +67,7 @@ class TestAsLangChainTools:
         """LangChain tool invocation calls MCP server."""
         # Mock list_tools
         httpx_mock.add_response(
-            url="https://metadata.example.com/mcp",
+            url="https://metadata.example.com/mcp/",
             method="POST",
             json={
                 "jsonrpc": "2.0",
@@ -91,7 +91,7 @@ class TestAsLangChainTools:
         )
         # Mock tool call
         httpx_mock.add_response(
-            url="https://metadata.example.com/mcp",
+            url="https://metadata.example.com/mcp/",
             method="POST",
             json={
                 "jsonrpc": "2.0",
@@ -109,7 +109,7 @@ class TestAsLangChainTools:
         """LangChain tool strips None values from arguments before calling MCP."""
         # Mock list_tools with optional params
         httpx_mock.add_response(
-            url="https://metadata.example.com/mcp",
+            url="https://metadata.example.com/mcp/",
             method="POST",
             json={
                 "jsonrpc": "2.0",
@@ -135,7 +135,7 @@ class TestAsLangChainTools:
         )
         # Mock tool call
         httpx_mock.add_response(
-            url="https://metadata.example.com/mcp",
+            url="https://metadata.example.com/mcp/",
             method="POST",
             json={
                 "jsonrpc": "2.0",
@@ -162,7 +162,7 @@ class TestAsLangChainTools:
         """LangChain tool returns error string instead of raising on server error."""
         # Mock list_tools
         httpx_mock.add_response(
-            url="https://metadata.example.com/mcp",
+            url="https://metadata.example.com/mcp/",
             method="POST",
             json={
                 "jsonrpc": "2.0",
@@ -186,7 +186,7 @@ class TestAsLangChainTools:
         )
         # Mock tool call with isError
         httpx_mock.add_response(
-            url="https://metadata.example.com/mcp",
+            url="https://metadata.example.com/mcp/",
             method="POST",
             json={
                 "jsonrpc": "2.0",
@@ -207,7 +207,7 @@ class TestAsLangChainTools:
     def test_filters_with_exclude(self, client, httpx_mock: HTTPXMock):
         """as_langchain_tools filters with exclude parameter."""
         httpx_mock.add_response(
-            url="https://metadata.example.com/mcp",
+            url="https://metadata.example.com/mcp/",
             method="POST",
             json={
                 "jsonrpc": "2.0",

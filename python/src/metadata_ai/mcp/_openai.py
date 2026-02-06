@@ -7,7 +7,8 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from metadata_ai.mcp._client import MCPClient
 
-from metadata_ai.mcp._models import MCPTool, ToolInfo
+from metadata_ai.exceptions import MCPToolExecutionError
+from metadata_ai.mcp.models import MCPTool, ToolInfo
 
 
 def build_openai_tools(tools: list[ToolInfo]) -> list[dict]:
@@ -48,9 +49,10 @@ def create_tool_executor(mcp_client: MCPClient):
     def execute(tool_name: str, arguments: dict) -> dict:
         tool = MCPTool(tool_name)
         cleaned = {k: v for k, v in arguments.items() if v is not None}
-        result = mcp_client.call_tool(tool, cleaned)
-        if not result.success:
-            return {"error": result.error}
+        try:
+            result = mcp_client.call_tool(tool, cleaned)
+        except MCPToolExecutionError as exc:
+            return {"error": str(exc)}
         return result.data or {}
 
     return execute

@@ -70,15 +70,11 @@ def main():
             result = analyze_change(
                 executor,
                 f"The dbt model '{model}' has been modified. "
-                f"What downstream assets are affected and who should be notified?"
+                f"What downstream assets are affected and who should be notified?",
             )
 
             print(result["analysis"])
-            all_reports.append({
-                "model": model,
-                "analysis": result["analysis"],
-                "steps": result["steps"]
-            })
+            all_reports.append({"model": model, **result})
 
         # Summary
         print("\n" + "="*60)

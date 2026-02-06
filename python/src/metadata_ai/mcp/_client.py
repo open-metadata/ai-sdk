@@ -7,11 +7,11 @@ import uuid
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from metadata_ai._http import HTTPClient
     from metadata_ai.auth import TokenAuth
 
-from metadata_ai.exceptions import MCPError
-from metadata_ai.mcp._models import MCPTool, ToolCallResult, ToolInfo, ToolParameter
+from metadata_ai._http import HTTPClient
+from metadata_ai.exceptions import MCPError, MCPToolExecutionError
+from metadata_ai.mcp.models import MCPTool, ToolCallResult, ToolInfo, ToolParameter
 
 
 def _filter_tools(
@@ -42,7 +42,11 @@ def _filter_tools(
 
 
 class MCPClient:
-    """Client for OpenMetadata's MCP server."""
+    """Client for OpenMetadata's MCP server.
+
+    Uses a dedicated HTTPClient to inherit the SDK's retry logic,
+    SSL verification, timeout, and user agent settings.
+    """
 
     def __init__(
         self,
@@ -52,13 +56,21 @@ class MCPClient:
     ) -> None:
         self._host = host.rstrip("/")
         self._auth = auth
-        self._http = http
-        self._mcp_endpoint = f"{self._host}/mcp"
+
+        # Create a dedicated HTTP client for MCP requests that inherits
+        # timeout, SSL, retry, and user-agent settings from the parent.
+        self._http = HTTPClient(
+            base_url=f"{self._host}/mcp",
+            auth=auth,
+            timeout=http._timeout,
+            verify_ssl=http._verify_ssl,
+            max_retries=http._max_retries,
+            retry_delay=http._retry_delay,
+            user_agent=http._user_agent,
+        )
 
     def _make_jsonrpc_request(self, method: str, params: dict | None = None) -> dict:
         """Make a JSON-RPC 2.0 request to the MCP server."""
-        import httpx
-
         request_id = str(uuid.uuid4())[:8]
         payload = {
             "jsonrpc": "2.0",
@@ -67,21 +79,11 @@ class MCPClient:
             "params": params or {},
         }
 
-        headers = {
-            "Authorization": f"Bearer {self._auth.token}",
-            "Accept": "application/json, text/event-stream",
-        }
-        response = httpx.post(
-            self._mcp_endpoint,
-            json=payload,
-            headers=headers,
-            timeout=30.0,
-        )
+        try:
+            result = self._http.post("", json=payload)
+        except Exception as exc:
+            raise MCPError(f"MCP request failed: {exc}") from exc
 
-        if response.status_code != 200:
-            raise MCPError(f"MCP request failed: {response.text}", status_code=response.status_code)
-
-        result = response.json()
         if "error" in result:
             raise MCPError(f"MCP error: {result['error'].get('message', 'Unknown error')}")
 
@@ -111,10 +113,16 @@ class MCPClient:
                 text = first_content.get("text", "")
 
         if is_error:
-            return ToolCallResult(success=False, data=None, error=text or "Tool execution failed")
+            raise MCPToolExecutionError(
+                tool=name.value,
+                message=text or "Tool execution failed",
+            )
 
         if text:
-            data = json.loads(text) if text.startswith("{") else {"text": text}
+            try:
+                data = json.loads(text)
+            except (json.JSONDecodeError, ValueError):
+                data = {"text": text}
             return ToolCallResult(success=True, data=data, error=None)
 
         return ToolCallResult(success=True, data={}, error=None)

@@ -4,9 +4,9 @@ import pytest
 from pytest_httpx import HTTPXMock
 
 from metadata_ai.client import MetadataAI
-from metadata_ai.exceptions import MCPError
+from metadata_ai.exceptions import MCPError, MCPToolExecutionError
 from metadata_ai.mcp._client import MCPClient
-from metadata_ai.mcp._models import MCPTool, ToolInfo
+from metadata_ai.mcp.models import MCPTool, ToolInfo
 
 
 @pytest.fixture
@@ -36,7 +36,7 @@ class TestMCPClientListTools:
     def test_list_tools_returns_tool_info_list(self, client, httpx_mock: HTTPXMock):
         """list_tools returns list of ToolInfo."""
         httpx_mock.add_response(
-            url="https://metadata.example.com/mcp",
+            url="https://metadata.example.com/mcp/",
             method="POST",
             json={
                 "jsonrpc": "2.0",
@@ -75,7 +75,7 @@ class TestMCPClientListTools:
     def test_list_tools_skips_unknown_tools(self, client, httpx_mock: HTTPXMock):
         """list_tools gracefully skips tools not in MCPTool enum."""
         httpx_mock.add_response(
-            url="https://metadata.example.com/mcp",
+            url="https://metadata.example.com/mcp/",
             method="POST",
             json={
                 "jsonrpc": "2.0",
@@ -122,7 +122,7 @@ class TestMCPClientCallTool:
     def test_call_tool_returns_result(self, client, httpx_mock: HTTPXMock):
         """call_tool returns ToolCallResult on success."""
         httpx_mock.add_response(
-            url="https://metadata.example.com/mcp",
+            url="https://metadata.example.com/mcp/",
             method="POST",
             json={
                 "jsonrpc": "2.0",
@@ -138,10 +138,10 @@ class TestMCPClientCallTool:
         assert result.data is not None
         assert result.error is None
 
-    def test_call_tool_returns_failure_on_is_error(self, client, httpx_mock: HTTPXMock):
-        """call_tool returns success=False when server sets isError."""
+    def test_call_tool_raises_on_is_error(self, client, httpx_mock: HTTPXMock):
+        """call_tool raises MCPToolExecutionError when server sets isError."""
         httpx_mock.add_response(
-            url="https://metadata.example.com/mcp",
+            url="https://metadata.example.com/mcp/",
             method="POST",
             json={
                 "jsonrpc": "2.0",
@@ -154,16 +154,17 @@ class TestMCPClientCallTool:
         )
 
         mcp = MCPClient(client._host, client._auth, client._http)
-        result = mcp.call_tool(MCPTool.SEARCH_METADATA, {"query": "customer"})
 
-        assert result.success is False
-        assert result.data is None
-        assert result.error == 'argument "content" is null'
+        with pytest.raises(MCPToolExecutionError) as exc_info:
+            mcp.call_tool(MCPTool.SEARCH_METADATA, {"query": "customer"})
+
+        assert exc_info.value.tool == "search_metadata"
+        assert 'argument "content" is null' in str(exc_info.value)
 
     def test_call_tool_handles_error(self, client, httpx_mock: HTTPXMock):
         """call_tool raises MCPError on failure."""
         httpx_mock.add_response(
-            url="https://metadata.example.com/mcp",
+            url="https://metadata.example.com/mcp/",
             method="POST",
             json={
                 "jsonrpc": "2.0",

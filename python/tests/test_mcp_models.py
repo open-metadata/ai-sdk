@@ -1,6 +1,6 @@
 """Tests for MCP models."""
 
-from metadata_ai.mcp._models import MCPTool, ToolCallResult, ToolInfo, ToolParameter
+from metadata_ai.mcp.models import MCPTool, ToolCallResult, ToolInfo, ToolParameter
 
 
 class TestMCPToolEnum:

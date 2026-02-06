@@ -22,11 +22,11 @@ import sys
 import time
 
 from metadata_ai import MetadataAI
-from metadata_ai.errors import (
+from metadata_ai.exceptions import (
+    AgentExecutionError,
     AuthenticationError,
     MetadataError,
     RateLimitError,
-    ServerError,
 )
 
 AGENT_NAME = "DBTReviewer"
@@ -86,7 +86,7 @@ def invoke_with_retry(client: MetadataAI, prompt: str, max_retries: int = 3) -> 
                 time.sleep(wait_time)
             else:
                 raise
-        except ServerError:
+        except AgentExecutionError:
             if attempt < max_retries - 1:
                 print(f"Server error, retrying in {2**attempt}s...")
                 time.sleep(2**attempt)

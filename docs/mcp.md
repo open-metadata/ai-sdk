@@ -15,6 +15,7 @@ OpenMetadata exposes an MCP server at the `/mcp` endpoint that provides tools fo
 | `get_entity_lineage` | Get lineage information for an entity |
 | `create_glossary` | Create a new glossary |
 | `create_glossary_term` | Create a new glossary term |
+| `create_lineage` | Create lineage between entities |
 | `patch_entity` | Update an entity's metadata |
 
 **When to use MCP tools vs Dynamic Agents:**
@@ -65,7 +66,7 @@ client.close()
 
 ```python
 from metadata_ai import MetadataAI, MetadataConfig
-from metadata_ai.mcp._models import MCPTool
+from metadata_ai.mcp.models import MCPTool
 
 config = MetadataConfig.from_env()
 client = MetadataAI.from_config(config)
@@ -128,7 +129,7 @@ client.close()
 Include only specific tools:
 
 ```python
-from metadata_ai.mcp._models import MCPTool
+from metadata_ai.mcp.models import MCPTool
 
 # Only include read-only tools
 tools = client.mcp.as_langchain_tools(
@@ -193,7 +194,7 @@ om_client.close()
 Same filtering works for OpenAI format:
 
 ```python
-from metadata_ai.mcp._models import MCPTool
+from metadata_ai.mcp.models import MCPTool
 
 # Only read-only tools
 tools = om_client.mcp.as_openai_tools(
@@ -212,7 +213,7 @@ A complete example building a metadata exploration assistant:
 
 ```python
 from metadata_ai import MetadataAI, MetadataConfig
-from metadata_ai.mcp._models import MCPTool
+from metadata_ai.mcp.models import MCPTool
 from langchain_openai import ChatOpenAI
 from langchain.agents import AgentExecutor, create_tool_calling_agent
 from langchain_core.prompts import ChatPromptTemplate
@@ -271,7 +272,7 @@ client.close()
 ### MCPTool Enum
 
 ```python
-from metadata_ai.mcp._models import MCPTool
+from metadata_ai.mcp.models import MCPTool
 
 class MCPTool(StrEnum):
     SEARCH_METADATA = "search_metadata"
@@ -279,6 +280,7 @@ class MCPTool(StrEnum):
     GET_ENTITY_LINEAGE = "get_entity_lineage"
     CREATE_GLOSSARY = "create_glossary"
     CREATE_GLOSSARY_TERM = "create_glossary_term"
+    CREATE_LINEAGE = "create_lineage"
     PATCH_ENTITY = "patch_entity"
 ```
 
@@ -319,12 +321,14 @@ from metadata_ai.exceptions import MCPError, MCPToolExecutionError
 
 try:
     result = client.mcp.call_tool(MCPTool.SEARCH_METADATA, {"query": "test"})
+except MCPToolExecutionError as e:
+    # Raised when a tool executes but reports an error (isError=True)
+    print(f"Tool '{e.tool}' failed: {e}")
 except MCPError as e:
+    # Raised for protocol-level errors (network, auth, server)
     print(f"MCP error: {e}")
     if e.status_code:
         print(f"Status code: {e.status_code}")
-except MCPToolExecutionError as e:
-    print(f"Tool '{e.tool}' failed: {e}")
 ```
 
 ## Troubleshooting
