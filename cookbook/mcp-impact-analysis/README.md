@@ -421,6 +421,8 @@ When you confirm sending, the tool posts a message like this:
 
 Entity names are clickable links that open directly in OpenMetadata, making it easy for stakeholders to inspect the affected assets.
 
+![img_1.png](img_1.png)
+
 ### Disabling Slack
 
 If `SLACK_WEBHOOK_URL` is not set, the tool skips the Slack prompt entirely. You'll see this at startup:
@@ -429,8 +431,105 @@ If `SLACK_WEBHOOK_URL` is not set, the tool skips the Slack prompt entirely. You
 Slack integration: disabled (set SLACK_WEBHOOK_URL to enable)
 ```
 
-## Next Steps
+## Example response for Batch Analyzer
 
-- [Demo Database Setup](../demo-database/) - Get the sample data running
-- [DQ Failure Notifications](../dq-failure-slack-notifications/) - Alert on quality issues
-- [dbt PR Review](../dbt-pr-review/) - Automated PR reviews
+❯ python cookbook/mcp-impact-analysis/batch_analyzer.py cookbook/mcp-impact-analysis/example_changes.diff
+# Impact Analysis Report
+
+Analyzing 2 changed model(s): stg_jaffle_shop__orders, stg_stripe__payments
+
+
+============================================================
+## stg_jaffle_shop__orders
+============================================================
+
+## Impact Summary
+The dbt model `stg_jaffle_shop__orders` has been modified, which affects several downstream data assets across different stages from intermediate to mart layers.
+
+## Affected Assets
+
+### Intermediate Model
+- [int_orders__enriched](http://localhost:8585/table/jaffle%20shop.jaffle_shop.intermediate.int_orders__enriched): Orders enriched with customer info, payment details, and line item aggregates.
+    - **Owner**: Alice Johnson
+
+### Core Marts
+- [dim_customers](http://localhost:8585/table/jaffle%20shop.jaffle_shop.marts_core.dim_customers): Customer dimension table with lifetime and segmentation metrics.
+    - **Owner**: Eve Davis
+- [fct_orders](http://localhost:8585/table/jaffle%20shop.jaffle_shop.marts_core.fct_orders): Order fact table with detailed order metrics.
+    - **Owner**: Eve Davis
+
+### Finance Marts
+- [fct_daily_revenue](http://localhost:8585/table/jaffle%20shop.jaffle_shop.marts_finance.fct_daily_revenue): Daily revenue aggregations used for financial reporting.
+    - **Owner**: Bob Smith
+
+## Risk Assessment
+- **Data Quality**: Possible impact on test suites related to enriched orders and financial metrics.
+    - Tests include [int_orders__enriched](http://localhost:8585/table/jaffle%20shop.jaffle_shop.intermediate.int_orders__enriched) and [dim_customers](http://localhost:8585/table/jaffle%20shop.jaffle_shop.marts_core.dim_customers).
+- **Compliance**: Potential issues with PII data as customer emails are involved in downstream transformations.
+- **Business**: Changes may affect dashboards or reports relying on advanced metrics from the `fct_orders` and `fct_daily_revenue` tables.
+
+## Recommended Actions
+1. **Notify these stakeholders**:
+    - Alice Johnson
+    - Eve Davis
+    - Bob Smith
+
+2. **Update these assets**:
+    - Review and update model logic in [int_orders__enriched](http://localhost:8585/table/jaffle%20shop.jaffle_shop.intermediate.int_orders__enriched), [fct_orders](http://localhost:8585/table/jaffle%20shop.jaffle_shop.marts_core.fct_orders), and [fct_daily_revenue](http://localhost:8585/table/jaffle%20shop.jaffle_shop.marts_finance.fct_daily_revenue) for any new schema changes.
+
+3. **Consider these alternatives**:
+    - Evaluate the necessity of changes to ensure minimal impact on data validations.
+    - Implement backward-compatible changes wherever possible.
+
+============================================================
+## stg_stripe__payments
+============================================================
+
+## Impact Summary
+The `stg_stripe__payments` dbt model has been modified. This model captures payment transactions with risk scoring and is used as a foundation for several downstream data aggregations and analyses. The change affects multiple downstream assets, including crucial tables and dashboards that rely on up-to-date financial and customer data.
+
+## Affected Assets
+1. [int_orders__enriched](http://localhost:8585/table/jaffle%20shop.jaffle_shop.intermediate.int_orders__enriched) - Orders enriched with customer info, payment details, and line item aggregates.
+    - Owner: Alice Johnson
+
+2. [dim_customers](http://localhost:8585/table/jaffle%20shop.jaffle_shop.marts_core.dim_customers) - Customer dimension table with lifetime metrics and segmentation.
+    - Owner: Eve Davis
+
+3. [fct_orders](http://localhost:8585/table/jaffle%20shop.jaffle_shop.marts_core.fct_orders) - Order fact table with details and calculated metrics.
+    - Owner: Eve Davis
+
+4. [fct_daily_revenue](http://localhost:8585/table/jaffle%20shop.jaffle_shop.marts_finance.fct_daily_revenue) - Daily revenue aggregations for financial reporting.
+    - Owner: Bob Smith
+
+## Risk Assessment
+- **Data Quality**:
+    - Tests on `stg_stripe__payments` may need adjustments if new columns or logic changes affect the current output.
+- **Compliance**:
+    - The use of PII such as `billing_email` and possibly `ip_address` needs to be reviewed in light of compliance and privacy standards.
+- **Business**:
+    - Dashboards and reports utilizing these tables for customer analysis and financial reporting will be impacted, potentially affecting key business metrics interpretation.
+
+## Recommended Actions
+1. **Notify Stakeholders**:
+    - Alice Johnson (Data Engineering Lead)
+    - Eve Davis (Product Analyst)
+    - Bob Smith (Finance Analyst)
+
+2. **Update Assets**:
+    - Review and update data models and dashboards linked to the affected tables ensuring compatibility with updated schemas.
+    - Verify all related data quality tests after making changes.
+
+3. **Consider Alternatives**:
+    - For PII concerns, consider anonymizing sensitive data where possible.
+    - Review whether additional lineage or data quality management steps are necessary to mitigate impact quickly.
+
+By following these actions, you ensure minimal disruption and maintain data accuracy and relevance in reports and dashboards.
+
+============================================================
+## Summary
+============================================================
+
+| Model | Status |
+|-------|--------|
+| stg_jaffle_shop__orders | Done |
+| stg_stripe__payments | Done |

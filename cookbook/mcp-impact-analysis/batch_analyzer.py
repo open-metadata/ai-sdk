@@ -80,10 +80,11 @@ def main():
         print("\n" + "="*60)
         print("## Summary")
         print("="*60 + "\n")
-        print(f"| Model | Analysis Steps |")
-        print(f"|-------|----------------|")
+        print(f"| Model | Status |")
+        print(f"|-------|--------|")
         for report in all_reports:
-            print(f"| {report['model']} | {report['steps']} |")
+            status = "Done" if report.get("analysis") else "No output"
+            print(f"| {report['model']} | {status} |")
 
     finally:
         client.close()
