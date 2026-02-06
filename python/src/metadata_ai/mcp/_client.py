@@ -59,14 +59,18 @@ class MCPClient:
 
         # Create a dedicated HTTP client for MCP requests that inherits
         # timeout, SSL, retry, and user-agent settings from the parent.
+        # base_url is the host root (not /mcp) so we can POST to "/mcp"
+        # directly — avoids httpx appending a trailing slash which the
+        # Java MCP transport rejects with 405.
         self._http = HTTPClient(
-            base_url=f"{self._host}/mcp",
+            base_url=self._host,
             auth=auth,
             timeout=http._timeout,
             verify_ssl=http._verify_ssl,
             max_retries=http._max_retries,
             retry_delay=http._retry_delay,
             user_agent=http._user_agent,
+            extra_headers={"Accept": "application/json, text/event-stream"},
         )
 
     def _make_jsonrpc_request(self, method: str, params: dict | None = None) -> dict:
@@ -80,7 +84,7 @@ class MCPClient:
         }
 
         try:
-            result = self._http.post("", json=payload)
+            result = self._http.post("/mcp", json=payload)
         except Exception as exc:
             raise MCPError(f"MCP request failed: {exc}") from exc
 

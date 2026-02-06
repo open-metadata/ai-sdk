@@ -465,7 +465,7 @@ describe('Request configuration', () => {
     await client.agent('TestAgent').invoke('test');
 
     const url = mockFetch.mock.calls[0][0] as string;
-    expect(url).toContain('https://openmetadata.example.com/api/v1/api/agents/TestAgent/invoke');
+    expect(url).toContain('https://openmetadata.example.com/api/v1/agents/dynamic/name/TestAgent/invoke');
   });
 });
 

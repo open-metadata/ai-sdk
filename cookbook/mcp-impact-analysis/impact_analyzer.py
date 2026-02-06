@@ -24,9 +24,7 @@ import os
 import urllib.request
 import urllib.error
 
-from langchain.agents import AgentExecutor, create_tool_calling_agent
-from langchain_core.prompts import ChatPromptTemplate
-from langchain_openai import ChatOpenAI
+from langchain.agents import create_agent
 
 from metadata_ai import MetadataAI, MetadataConfig
 from metadata_ai.mcp.models import MCPTool
@@ -94,30 +92,27 @@ def create_impact_analyzer():
     # Interpolate the host URL so the agent can build entity links
     system_prompt = SYSTEM_PROMPT.format(metadata_host=config.host.rstrip("/"))
 
-    llm = ChatOpenAI(model="gpt-4o", temperature=0)
-    prompt = ChatPromptTemplate.from_messages([
-        ("system", system_prompt),
-        ("human", "{input}"),
-        ("placeholder", "{agent_scratchpad}"),
-    ])
+    agent = create_agent(
+        model="openai:gpt-4o",
+        tools=tools,
+        system_prompt=system_prompt,
+    )
 
-    agent = create_tool_calling_agent(llm, tools, prompt)
-    executor = AgentExecutor(agent=agent, tools=tools, verbose=True)
-
-    return executor, client
+    return agent, client
 
 
-def analyze_change(executor: AgentExecutor, change_description: str) -> dict:
+def analyze_change(agent, change_description: str) -> dict:
     """Analyze the impact of a proposed change.
 
     Returns:
-        Dict with 'analysis' (str) and 'steps' (int) keys.
+        Dict with 'analysis' (str) key.
     """
-    result = executor.invoke({"input": change_description})
-    return {
-        "analysis": result["output"],
-        "steps": len(result.get("intermediate_steps", [])),
-    }
+    result = agent.invoke(
+        {"messages": [{"role": "user", "content": change_description}]}
+    )
+    # The last AI message contains the final answer
+    ai_message = result["messages"][-1]
+    return {"analysis": ai_message.content}
 
 
 def _markdown_to_slack_mrkdwn(text: str) -> str:

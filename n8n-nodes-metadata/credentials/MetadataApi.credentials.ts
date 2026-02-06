@@ -44,10 +44,11 @@ export class MetadataApi implements ICredentialType {
 	test: ICredentialTestRequest = {
 		request: {
 			baseURL: '={{$credentials.serverUrl}}',
-			url: '/api/v1/api/agents',
+			url: '/api/v1/agents/dynamic',
 			method: 'GET',
 			qs: {
 				limit: 1,
+				apiEnabled: 'true',
 			},
 		},
 	};

@@ -23,7 +23,7 @@ def client():
 def mock_list_tools(httpx_mock: HTTPXMock):
     """Mock list_tools response."""
     httpx_mock.add_response(
-        url="https://metadata.example.com/mcp/",
+        url="https://metadata.example.com/mcp",
         method="POST",
         json={
             "jsonrpc": "2.0",
@@ -68,7 +68,7 @@ class TestAsOpenAITools:
     def test_filters_tools_with_include(self, client, httpx_mock: HTTPXMock):
         """as_openai_tools filters with include parameter."""
         httpx_mock.add_response(
-            url="https://metadata.example.com/mcp/",
+            url="https://metadata.example.com/mcp",
             method="POST",
             json={
                 "jsonrpc": "2.0",

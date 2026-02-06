@@ -94,7 +94,7 @@ class AgentHandle:
         _debug(f"Request dict: {request.to_api_dict()}")
 
         data = self._http.post(
-            f"/{self._name}/invoke",
+            f"/name/{self._name}/invoke",
             json=request.to_api_dict(),
             agent_name=self._name,
         )
@@ -146,7 +146,7 @@ class AgentHandle:
             parameters=parameters or {},
         )
         data = await self._async_http.post(
-            f"/{self._name}/invoke",
+            f"/name/{self._name}/invoke",
             json=request.to_api_dict(),
             agent_name=self._name,
         )
@@ -183,7 +183,7 @@ class AgentHandle:
             parameters=parameters or {},
         )
         byte_stream = self._http.post_stream(
-            f"/{self._name}/stream",
+            f"/name/{self._name}/stream",
             json=request.to_api_dict(),
             agent_name=self._name,
         )
@@ -227,7 +227,7 @@ class AgentHandle:
             parameters=parameters or {},
         )
         byte_stream = self._async_http.post_stream(
-            f"/{self._name}/stream",
+            f"/name/{self._name}/stream",
             json=request.to_api_dict(),
             agent_name=self._name,
         )
@@ -244,7 +244,7 @@ class AgentHandle:
             AgentNotFoundError: If the agent does not exist
             AgentNotEnabledError: If the agent is not API-enabled
         """
-        data = self._http.get(f"/{self._name}", agent_name=self._name)
+        data = self._http.get(f"/name/{self._name}", agent_name=self._name)
         return AgentInfo.from_dict(data)
 
     async def aget_info(self) -> AgentInfo:
@@ -265,7 +265,7 @@ class AgentHandle:
                 "Use MetadataAI with enable_async=True for async operations."
             )
 
-        data = await self._async_http.get(f"/{self._name}", agent_name=self._name)
+        data = await self._async_http.get(f"/name/{self._name}", agent_name=self._name)
         return AgentInfo.from_dict(data)
 
     def __repr__(self) -> str:

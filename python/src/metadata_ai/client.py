@@ -115,22 +115,10 @@ class MetadataAI:
         self._auth = TokenAuth(token)
         self._enable_async = enable_async
 
-        base_url = f"{self._host}/api/v1/api/agents"
-
+        # Unified HTTP client for all agent operations (consolidated API)
+        agents_base_url = f"{self._host}/api/v1/agents/dynamic"
         self._http = HTTPClient(
-            base_url=base_url,
-            auth=self._auth,
-            timeout=timeout,
-            verify_ssl=verify_ssl,
-            max_retries=max_retries,
-            retry_delay=retry_delay,
-            user_agent=user_agent,
-        )
-
-        # HTTP client for admin operations (agent creation, etc.)
-        admin_base_url = f"{self._host}/api/v1/agents/dynamic"
-        self._admin_http = HTTPClient(
-            base_url=admin_base_url,
+            base_url=agents_base_url,
             auth=self._auth,
             timeout=timeout,
             verify_ssl=verify_ssl,
@@ -176,22 +164,12 @@ class MetadataAI:
         )
 
         self._async_http: AsyncHTTPClient | None = None
-        self._async_admin_http: AsyncHTTPClient | None = None
         self._async_personas_http: AsyncHTTPClient | None = None
         self._async_bots_http: AsyncHTTPClient | None = None
         self._async_abilities_http: AsyncHTTPClient | None = None
         if enable_async:
             self._async_http = AsyncHTTPClient(
-                base_url=base_url,
-                auth=self._auth,
-                timeout=timeout,
-                verify_ssl=verify_ssl,
-                max_retries=max_retries,
-                retry_delay=retry_delay,
-                user_agent=user_agent,
-            )
-            self._async_admin_http = AsyncHTTPClient(
-                base_url=admin_base_url,
+                base_url=agents_base_url,
                 auth=self._auth,
                 timeout=timeout,
                 verify_ssl=verify_ssl,
@@ -240,6 +218,7 @@ class MetadataAI:
         mapper: Callable[[dict], Any],
         limit: int | None = None,
         page_size: int = 100,
+        extra_params: dict[str, Any] | None = None,
     ) -> list:
         """
         Paginate through all results from a list endpoint.
@@ -250,6 +229,7 @@ class MetadataAI:
             mapper: Function to map response items to model objects
             limit: Maximum number of items to return (None for all)
             page_size: Number of items per page
+            extra_params: Additional query parameters to include in each request
 
         Returns:
             List of all items
@@ -259,6 +239,8 @@ class MetadataAI:
 
         while True:
             params: dict[str, Any] = {"limit": page_size}
+            if extra_params:
+                params.update(extra_params)
             if after:
                 params["after"] = after
 
@@ -285,6 +267,7 @@ class MetadataAI:
         mapper: Callable[[dict], Any],
         limit: int | None = None,
         page_size: int = 100,
+        extra_params: dict[str, Any] | None = None,
     ) -> list:
         """
         Paginate through all results from a list endpoint asynchronously.
@@ -295,6 +278,7 @@ class MetadataAI:
             mapper: Function to map response items to model objects
             limit: Maximum number of items to return (None for all)
             page_size: Number of items per page
+            extra_params: Additional query parameters to include in each request
 
         Returns:
             List of all items
@@ -304,6 +288,8 @@ class MetadataAI:
 
         while True:
             params: dict[str, Any] = {"limit": page_size}
+            if extra_params:
+                params.update(extra_params)
             if after:
                 params["after"] = after
 
@@ -386,6 +372,7 @@ class MetadataAI:
             "/",
             lambda a: AgentInfo.from_dict(a),
             limit=limit,
+            extra_params={"apiEnabled": "true"},
         )
 
     async def alist_agents(
@@ -417,6 +404,7 @@ class MetadataAI:
             "/",
             lambda a: AgentInfo.from_dict(a),
             limit=limit,
+            extra_params={"apiEnabled": "true"},
         )
 
     def create_agent(self, request: CreateAgentRequest) -> AgentInfo:
@@ -454,7 +442,7 @@ class MetadataAI:
                 ability_refs.append({"id": ability_info.id, "type": "ability"})
             api_dict["abilities"] = ability_refs
 
-        response = self._admin_http.post("/", json=api_dict)
+        response = self._http.post("/", json=api_dict)
         return AgentInfo.from_dict(response)
 
     async def acreate_agent(self, request: CreateAgentRequest) -> AgentInfo:
@@ -482,7 +470,7 @@ class MetadataAI:
             )
             agent_info = await client.acreate_agent(request)
         """
-        if self._async_admin_http is None:
+        if self._async_http is None:
             raise RuntimeError(
                 "Async HTTP client not available. "
                 "Use MetadataAI with enable_async=True for async operations."
@@ -501,7 +489,7 @@ class MetadataAI:
                 ability_refs.append({"id": ability_info.id, "type": "ability"})
             api_dict["abilities"] = ability_refs
 
-        response = await self._async_admin_http.post("/", json=api_dict)
+        response = await self._async_http.post("/", json=api_dict)
         return AgentInfo.from_dict(response)
 
     # -------------------------------------------------------------------------
@@ -848,7 +836,6 @@ class MetadataAI:
     def close(self) -> None:
         """Close the client and release resources."""
         self._http.close()
-        self._admin_http.close()
         self._personas_http.close()
         self._bots_http.close()
         self._abilities_http.close()
@@ -857,8 +844,6 @@ class MetadataAI:
         """Close the async client and release resources."""
         if self._async_http is not None:
             await self._async_http.close()
-        if self._async_admin_http is not None:
-            await self._async_admin_http.close()
         if self._async_personas_http is not None:
             await self._async_personas_http.close()
         if self._async_bots_http is not None:

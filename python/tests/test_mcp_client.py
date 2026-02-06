@@ -36,7 +36,7 @@ class TestMCPClientListTools:
     def test_list_tools_returns_tool_info_list(self, client, httpx_mock: HTTPXMock):
         """list_tools returns list of ToolInfo."""
         httpx_mock.add_response(
-            url="https://metadata.example.com/mcp/",
+            url="https://metadata.example.com/mcp",
             method="POST",
             json={
                 "jsonrpc": "2.0",
@@ -75,7 +75,7 @@ class TestMCPClientListTools:
     def test_list_tools_skips_unknown_tools(self, client, httpx_mock: HTTPXMock):
         """list_tools gracefully skips tools not in MCPTool enum."""
         httpx_mock.add_response(
-            url="https://metadata.example.com/mcp/",
+            url="https://metadata.example.com/mcp",
             method="POST",
             json={
                 "jsonrpc": "2.0",
@@ -122,7 +122,7 @@ class TestMCPClientCallTool:
     def test_call_tool_returns_result(self, client, httpx_mock: HTTPXMock):
         """call_tool returns ToolCallResult on success."""
         httpx_mock.add_response(
-            url="https://metadata.example.com/mcp/",
+            url="https://metadata.example.com/mcp",
             method="POST",
             json={
                 "jsonrpc": "2.0",
@@ -141,7 +141,7 @@ class TestMCPClientCallTool:
     def test_call_tool_raises_on_is_error(self, client, httpx_mock: HTTPXMock):
         """call_tool raises MCPToolExecutionError when server sets isError."""
         httpx_mock.add_response(
-            url="https://metadata.example.com/mcp/",
+            url="https://metadata.example.com/mcp",
             method="POST",
             json={
                 "jsonrpc": "2.0",
@@ -164,7 +164,7 @@ class TestMCPClientCallTool:
     def test_call_tool_handles_error(self, client, httpx_mock: HTTPXMock):
         """call_tool raises MCPError on failure."""
         httpx_mock.add_response(
-            url="https://metadata.example.com/mcp/",
+            url="https://metadata.example.com/mcp",
             method="POST",
             json={
                 "jsonrpc": "2.0",
