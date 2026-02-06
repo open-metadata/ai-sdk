@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "description": "OpenMetadata AI SDK for Node.js - Interact with OpenMetadata Dynamic Agents",
   "main": "dist/index.js",
+  "module": "dist/index.mjs",
   "types": "dist/index.d.ts",
   "exports": {
     ".": {
