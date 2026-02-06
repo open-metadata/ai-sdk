@@ -103,6 +103,8 @@ Type your Data Subject Access Request in the text area and click **Submit Reques
 
 The agent will stream its response in real-time, showing which tools it uses (searching the catalog, tracing lineage) as it builds the compliance report.
 
+![img.png](img.png)
+
 ### Example Prompts
 
 **Deletion request (recommended starting point):**
