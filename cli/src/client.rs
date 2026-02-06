@@ -310,9 +310,9 @@ impl MetadataClient {
         })
     }
 
-    /// Get the base API URL.
-    fn api_url(&self, path: &str) -> String {
-        format!("{}/api/v1/api/agents{}", self.base_url, path)
+    /// Get the base URL for dynamic agent endpoints.
+    fn agents_url(&self, path: &str) -> String {
+        format!("{}/api/v1/agents/dynamic{}", self.base_url, path)
     }
 
     /// Add authorization header to request.
@@ -351,8 +351,10 @@ impl MetadataClient {
 
         loop {
             let url = match &after {
-                Some(cursor) => self.api_url(&format!("?limit={PAGE_SIZE}&after={cursor}")),
-                None => self.api_url(&format!("?limit={PAGE_SIZE}")),
+                Some(cursor) => self.agents_url(&format!(
+                    "?apiEnabled=true&limit={PAGE_SIZE}&after={cursor}"
+                )),
+                None => self.agents_url(&format!("?apiEnabled=true&limit={PAGE_SIZE}")),
             };
 
             let response = self
@@ -394,7 +396,7 @@ impl MetadataClient {
         let encoded_name = encode(name);
         let response = self
             .client
-            .get(self.api_url(&format!("/{encoded_name}")))
+            .get(self.agents_url(&format!("/name/{encoded_name}")))
             .header("Authorization", self.auth_header())
             .send()
             .await
@@ -421,7 +423,7 @@ impl MetadataClient {
 
         let response = self
             .client
-            .post(self.api_url(&format!("/{encoded_name}/invoke")))
+            .post(self.agents_url(&format!("/name/{encoded_name}/invoke")))
             .header("Authorization", self.auth_header())
             .header("Content-Type", "application/json")
             .json(&request)
@@ -451,7 +453,7 @@ impl MetadataClient {
 
         let response = self
             .client
-            .post(self.api_url(&format!("/{encoded_name}/stream")))
+            .post(self.agents_url(&format!("/name/{encoded_name}/stream")))
             .header("Authorization", self.auth_header())
             .header("Content-Type", "application/json")
             .header("Accept", "text/event-stream")
@@ -719,17 +721,12 @@ impl MetadataClient {
 
     // ==================== Agent Operations ====================
 
-    /// Get the base URL for dynamic agent endpoints.
-    fn dynamic_agents_url(&self, path: &str) -> String {
-        format!("{}/api/v1/agents/dynamic{}", self.base_url, path)
-    }
-
     /// Get full agent details from the dynamic agents endpoint (includes persona, abilities).
     pub async fn get_dynamic_agent(&self, name: &str) -> CliResult<AgentInfo> {
         let encoded_name = encode(name);
         let response = self
             .client
-            .get(self.dynamic_agents_url(&format!(
+            .get(self.agents_url(&format!(
                 "/name/{encoded_name}?fields=persona,bot,abilities"
             )))
             .header("Authorization", self.auth_header())
@@ -746,7 +743,7 @@ impl MetadataClient {
     pub async fn create_agent(&self, request: CreateAgentRequest) -> CliResult<AgentInfo> {
         let response = self
             .client
-            .post(self.dynamic_agents_url(""))
+            .post(self.agents_url(""))
             .header("Authorization", self.auth_header())
             .header("Content-Type", "application/json")
             .json(&request)
