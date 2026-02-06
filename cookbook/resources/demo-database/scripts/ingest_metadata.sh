@@ -73,6 +73,30 @@ run_ingestion() {
     fi
 }
 
+run_classification() {
+    local name="$1"
+    local yaml_template="$2"
+
+    echo ""
+    echo "=== ${name} ==="
+
+    # Substitute env vars into a temp config file
+    local config_file
+    config_file=$(mktemp /tmp/om_ingestion_XXXXXXXXXX) && mv "${config_file}" "${config_file}.yaml" && config_file="${config_file}.yaml"
+    envsubst < "${yaml_template}" > "${config_file}"
+
+    metadata classify -c "${config_file}"
+    local status=$?
+    rm -f "${config_file}"
+
+    if [ $status -eq 0 ]; then
+        RESULTS+=("PASS  ${name}")
+    else
+        RESULTS+=("FAIL  ${name}")
+        FAILED=$((FAILED + 1))
+    fi
+}
+
 # --- Generate dbt artifacts if missing ---
 
 if [ ! -f "${DBT_TARGET_DIR}/manifest.json" ]; then
@@ -95,6 +119,9 @@ run_ingestion "PostgreSQL Lineage" "${INGESTION_DIR}/postgres_lineage.yaml"
 
 # 4. Metabase dashboards and charts
 run_ingestion "Metabase Dashboards" "${INGESTION_DIR}/metabase.yaml"
+
+# 5. Auto-classification (PII detection on raw schemas)
+run_classification "Auto Classification" "${INGESTION_DIR}/postgres_auto_classification.yaml"
 
 # --- Summary report ---
 

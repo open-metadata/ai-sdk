@@ -16,6 +16,13 @@ CREATE SCHEMA IF NOT EXISTS raw_inventory;
 CREATE SCHEMA IF NOT EXISTS raw_support;
 CREATE SCHEMA IF NOT EXISTS analytics;
 
+-- dbt-managed schemas (pre-created so permissions can be granted upfront)
+CREATE SCHEMA IF NOT EXISTS staging;
+CREATE SCHEMA IF NOT EXISTS intermediate;
+CREATE SCHEMA IF NOT EXISTS marts_core;
+CREATE SCHEMA IF NOT EXISTS marts_finance;
+CREATE SCHEMA IF NOT EXISTS marts_marketing;
+
 -- =============================================================================
 -- RAW_JAFFLE_SHOP: Core customer and order data
 -- =============================================================================
@@ -712,6 +719,9 @@ GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA raw_support TO jaffle_user;
 GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA analytics TO jaffle_user;
 GRANT USAGE ON SCHEMA raw_jaffle_shop, raw_stripe, raw_inventory, raw_marketing, raw_support, analytics TO jaffle_user;
 
+-- dbt schemas: jaffle_user needs CREATE + USAGE to run dbt models
+GRANT ALL ON SCHEMA staging, intermediate, marts_core, marts_finance, marts_marketing TO jaffle_user;
+
 -- Grant permissions for OpenMetadata lineage extraction
 -- pg_stat_statements requires pg_read_all_stats role for non-superusers
 GRANT pg_read_all_stats TO jaffle_user;
@@ -727,11 +737,17 @@ ALTER DEFAULT PRIVILEGES IN SCHEMA raw_inventory GRANT ALL ON TABLES TO jaffle_u
 ALTER DEFAULT PRIVILEGES IN SCHEMA raw_marketing GRANT ALL ON TABLES TO jaffle_user;
 ALTER DEFAULT PRIVILEGES IN SCHEMA raw_support GRANT ALL ON TABLES TO jaffle_user;
 ALTER DEFAULT PRIVILEGES IN SCHEMA analytics GRANT ALL ON TABLES TO jaffle_user;
+ALTER DEFAULT PRIVILEGES IN SCHEMA staging GRANT ALL ON TABLES TO jaffle_user;
+ALTER DEFAULT PRIVILEGES IN SCHEMA intermediate GRANT ALL ON TABLES TO jaffle_user;
+ALTER DEFAULT PRIVILEGES IN SCHEMA marts_core GRANT ALL ON TABLES TO jaffle_user;
+ALTER DEFAULT PRIVILEGES IN SCHEMA marts_finance GRANT ALL ON TABLES TO jaffle_user;
+ALTER DEFAULT PRIVILEGES IN SCHEMA marts_marketing GRANT ALL ON TABLES TO jaffle_user;
 
 -- Create an openmetadata_user with read-only access (recommended for production)
 CREATE USER openmetadata_user WITH PASSWORD 'openmetadata_pass';
 GRANT CONNECT ON DATABASE jaffle_shop TO openmetadata_user;
 GRANT USAGE ON SCHEMA raw_jaffle_shop, raw_stripe, raw_inventory, raw_marketing, raw_support, analytics, public TO openmetadata_user;
+GRANT USAGE ON SCHEMA staging, intermediate, marts_core, marts_finance, marts_marketing TO openmetadata_user;
 GRANT SELECT ON ALL TABLES IN SCHEMA raw_jaffle_shop TO openmetadata_user;
 GRANT SELECT ON ALL TABLES IN SCHEMA raw_stripe TO openmetadata_user;
 GRANT SELECT ON ALL TABLES IN SCHEMA raw_inventory TO openmetadata_user;
@@ -739,6 +755,11 @@ GRANT SELECT ON ALL TABLES IN SCHEMA raw_marketing TO openmetadata_user;
 GRANT SELECT ON ALL TABLES IN SCHEMA raw_support TO openmetadata_user;
 GRANT SELECT ON ALL TABLES IN SCHEMA analytics TO openmetadata_user;
 GRANT SELECT ON ALL TABLES IN SCHEMA public TO openmetadata_user;
+GRANT SELECT ON ALL TABLES IN SCHEMA staging TO openmetadata_user;
+GRANT SELECT ON ALL TABLES IN SCHEMA intermediate TO openmetadata_user;
+GRANT SELECT ON ALL TABLES IN SCHEMA marts_core TO openmetadata_user;
+GRANT SELECT ON ALL TABLES IN SCHEMA marts_finance TO openmetadata_user;
+GRANT SELECT ON ALL TABLES IN SCHEMA marts_marketing TO openmetadata_user;
 GRANT pg_read_all_stats TO openmetadata_user;
 GRANT SELECT ON ALL TABLES IN SCHEMA pg_catalog TO openmetadata_user;
 GRANT SELECT ON ALL TABLES IN SCHEMA information_schema TO openmetadata_user;
@@ -751,5 +772,17 @@ ALTER DEFAULT PRIVILEGES IN SCHEMA raw_marketing GRANT SELECT ON TABLES TO openm
 ALTER DEFAULT PRIVILEGES IN SCHEMA raw_support GRANT SELECT ON TABLES TO openmetadata_user;
 ALTER DEFAULT PRIVILEGES IN SCHEMA analytics GRANT SELECT ON TABLES TO openmetadata_user;
 ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT SELECT ON TABLES TO openmetadata_user;
+ALTER DEFAULT PRIVILEGES IN SCHEMA staging GRANT SELECT ON TABLES TO openmetadata_user;
+ALTER DEFAULT PRIVILEGES IN SCHEMA intermediate GRANT SELECT ON TABLES TO openmetadata_user;
+ALTER DEFAULT PRIVILEGES IN SCHEMA marts_core GRANT SELECT ON TABLES TO openmetadata_user;
+ALTER DEFAULT PRIVILEGES IN SCHEMA marts_finance GRANT SELECT ON TABLES TO openmetadata_user;
+ALTER DEFAULT PRIVILEGES IN SCHEMA marts_marketing GRANT SELECT ON TABLES TO openmetadata_user;
+
+-- Default privileges for objects created by jaffle_user (dbt runs as jaffle_user)
+ALTER DEFAULT PRIVILEGES FOR ROLE jaffle_user IN SCHEMA staging GRANT SELECT ON TABLES TO openmetadata_user;
+ALTER DEFAULT PRIVILEGES FOR ROLE jaffle_user IN SCHEMA intermediate GRANT SELECT ON TABLES TO openmetadata_user;
+ALTER DEFAULT PRIVILEGES FOR ROLE jaffle_user IN SCHEMA marts_core GRANT SELECT ON TABLES TO openmetadata_user;
+ALTER DEFAULT PRIVILEGES FOR ROLE jaffle_user IN SCHEMA marts_finance GRANT SELECT ON TABLES TO openmetadata_user;
+ALTER DEFAULT PRIVILEGES FOR ROLE jaffle_user IN SCHEMA marts_marketing GRANT SELECT ON TABLES TO openmetadata_user;
 
 COMMIT;

@@ -155,7 +155,7 @@ tag-n8n:  ## Create git tag for n8n release
 .PHONY: build-all test-all test-integration install-cli \
         lint lint-python lint-rust lint-typescript lint-java lint-n8n \
         format format-python format-rust format-typescript format-java format-n8n \
-        install-hooks install-local install-dbt demo-database demo-database-stop demo-dbt
+        install-hooks install-local install-dbt demo-database demo-database-stop demo-dbt demo-gdpr
 
 install-local:  ## Install Python SDK locally in editable mode (for development)
 	@echo "Installing Python SDK (editable, all extras)..."
@@ -188,6 +188,13 @@ demo-dbt:  ## Run dbt models against the demo database
 	cd cookbook/resources/demo-database/dbt && DBT_PROFILES_DIR=$$(pwd) dbt test
 	@echo ""
 	@echo "dbt models and tests completed"
+
+demo-gdpr:  ## Start the GDPR DSAR compliance demo (bundles SDK + starts server)
+	@echo "Bundling TypeScript SDK..."
+	@npx esbuild typescript/src/index.ts --bundle --format=esm \
+		--outfile=cookbook/gdpr-dsar-compliance/metadata-ai.js --target=es2022 --log-level=warning
+	@echo "Starting server (SDK runs server-side)..."
+	@node cookbook/gdpr-dsar-compliance/serve.js
 
 install-cli:  ## Build CLI (release) and install to ~/.local/bin
 	@echo "Building CLI in release mode..."

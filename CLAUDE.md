@@ -51,6 +51,7 @@ make install-dbt         # Install dbt-postgres for the demo
 make demo-database       # Start PostgreSQL (port 5433) + Metabase (port 3000)
 make demo-database-stop  # Stop demo database containers
 make demo-dbt            # Run dbt models and tests against the demo database
+make demo-gdpr           # Start the GDPR DSAR compliance demo (port 8080)
 
 # Git Hooks
 make install-hooks     # Install pre-commit hooks
