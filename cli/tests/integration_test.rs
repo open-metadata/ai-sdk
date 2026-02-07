@@ -18,9 +18,10 @@ use uuid::Uuid;
 /// Static storage for dynamically created test agent
 static TEST_AGENT: OnceLock<Option<String>> = OnceLock::new();
 
-/// Check if integration tests should run
+/// Check if integration tests should run (requires non-empty METADATA_HOST and METADATA_TOKEN)
 fn should_run() -> bool {
-    env::var("METADATA_HOST").is_ok() && env::var("METADATA_TOKEN").is_ok()
+    !env::var("METADATA_HOST").unwrap_or_default().is_empty()
+        && !env::var("METADATA_TOKEN").unwrap_or_default().is_empty()
 }
 
 /// Check if chat tests should run (invoke + streaming - they use AI tokens)
