@@ -18,9 +18,10 @@ use uuid::Uuid;
 /// Static storage for dynamically created test agent
 static TEST_AGENT: OnceLock<Option<String>> = OnceLock::new();
 
-/// Check if integration tests should run
+/// Check if integration tests should run (requires non-empty METADATA_HOST and METADATA_TOKEN)
 fn should_run() -> bool {
-    env::var("METADATA_HOST").is_ok() && env::var("METADATA_TOKEN").is_ok()
+    !env::var("METADATA_HOST").unwrap_or_default().is_empty()
+        && !env::var("METADATA_TOKEN").unwrap_or_default().is_empty()
 }
 
 /// Check if chat tests should run (invoke + streaming - they use AI tokens)
@@ -612,6 +613,175 @@ fn test_get_ability() {
             println!("Ability info:\n{stdout}");
         }
     }
+}
+
+// ==================== Agent Info with Persona Tests ====================
+
+#[test]
+fn test_agent_info_includes_persona() {
+    if !should_run() {
+        println!("Skipping: METADATA_HOST and METADATA_TOKEN not set");
+        return;
+    }
+
+    // Step 1: Create a persona with a specific prompt
+    let persona_name = unique_name("info-persona");
+    let persona_prompt =
+        "You are a test persona for verifying agent info includes persona details.";
+    let create_persona_output = run_cli(&[
+        "personas",
+        "create",
+        "--name",
+        &persona_name,
+        "--description",
+        "Test persona for agent info integration test",
+        "--prompt",
+        persona_prompt,
+    ]);
+
+    if !create_persona_output.status.success() {
+        let stderr = String::from_utf8_lossy(&create_persona_output.stderr);
+        panic!("Failed to create persona: {stderr}");
+    }
+    println!("Created persona: {persona_name}");
+
+    // Step 2: Create an agent with that persona
+    let agent_name = unique_name("info-agent");
+    let create_agent_output = run_cli(&[
+        "agents",
+        "create",
+        "--name",
+        &agent_name,
+        "--description",
+        "Test agent for verifying agent info includes persona",
+        "--persona",
+        &persona_name,
+        "--api-enabled",
+        "true",
+    ]);
+
+    if !create_agent_output.status.success() {
+        let stderr = String::from_utf8_lossy(&create_agent_output.stderr);
+        panic!("Failed to create agent: {stderr}");
+    }
+    println!("Created agent: {agent_name}");
+
+    // Step 3: Fetch agent info and verify persona details are included
+    let info_output = run_cli(&["agents", "info", &agent_name]);
+
+    if !info_output.status.success() {
+        let stderr = String::from_utf8_lossy(&info_output.stderr);
+        panic!("agents info failed: {stderr}");
+    }
+
+    let stdout = String::from_utf8_lossy(&info_output.stdout);
+    println!("Agent info output:\n{stdout}");
+
+    // Verify agent name is present
+    assert!(
+        stdout.contains(&agent_name),
+        "Expected agent name '{agent_name}' in output"
+    );
+
+    // Verify persona name is present
+    assert!(
+        stdout.contains(&persona_name),
+        "Expected persona name '{persona_name}' in output. Got:\n{stdout}"
+    );
+
+    // Verify "Persona:" label is present
+    assert!(
+        stdout.contains("Persona:"),
+        "Expected 'Persona:' label in output. Got:\n{stdout}"
+    );
+
+    // Verify persona prompt is present (at least part of it)
+    assert!(
+        stdout.contains("Persona Prompt:"),
+        "Expected 'Persona Prompt:' label in output. Got:\n{stdout}"
+    );
+
+    // Verify the actual prompt content is included
+    assert!(
+        stdout.contains("test persona for verifying"),
+        "Expected persona prompt content in output. Got:\n{stdout}"
+    );
+}
+
+#[test]
+fn test_agent_info_with_abilities() {
+    if !should_run() {
+        println!("Skipping: METADATA_HOST and METADATA_TOKEN not set");
+        return;
+    }
+
+    // Step 1: Create a persona
+    let persona_name = unique_name("abilities-persona");
+    let create_persona_output = run_cli(&[
+        "personas",
+        "create",
+        "--name",
+        &persona_name,
+        "--description",
+        "Test persona for agent with abilities",
+        "--prompt",
+        "You are a test assistant with search abilities.",
+    ]);
+
+    if !create_persona_output.status.success() {
+        let stderr = String::from_utf8_lossy(&create_persona_output.stderr);
+        panic!("Failed to create persona: {stderr}");
+    }
+
+    // Step 2: Create an agent with abilities
+    let agent_name = unique_name("abilities-agent");
+    let create_agent_output = run_cli(&[
+        "agents",
+        "create",
+        "--name",
+        &agent_name,
+        "--description",
+        "Test agent with abilities for info test",
+        "--persona",
+        &persona_name,
+        "--abilities",
+        "discoveryAndSearch,dataQualityAndTesting",
+        "--api-enabled",
+        "true",
+    ]);
+
+    if !create_agent_output.status.success() {
+        let stderr = String::from_utf8_lossy(&create_agent_output.stderr);
+        panic!("Failed to create agent: {stderr}");
+    }
+
+    // Step 3: Fetch agent info and verify abilities are included
+    let info_output = run_cli(&["agents", "info", &agent_name]);
+
+    if !info_output.status.success() {
+        let stderr = String::from_utf8_lossy(&info_output.stderr);
+        panic!("agents info failed: {stderr}");
+    }
+
+    let stdout = String::from_utf8_lossy(&info_output.stdout);
+    println!("Agent info output:\n{stdout}");
+
+    // Verify abilities section is present
+    assert!(
+        stdout.contains("Abilities:"),
+        "Expected 'Abilities:' section in output. Got:\n{stdout}"
+    );
+
+    // Verify persona is also present
+    assert!(
+        stdout.contains("Persona:"),
+        "Expected 'Persona:' in output. Got:\n{stdout}"
+    );
+
+    assert!(
+        stdout.contains(&persona_name),
+        "Expected persona name '{persona_name}' in output. Got:\n{stdout}"
+    );
 }
 
 // ==================== Agent CRUD Operations Tests ====================

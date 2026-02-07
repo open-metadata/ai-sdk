@@ -31,7 +31,7 @@ def client():
 def mock_agent_info(httpx_mock: HTTPXMock):
     """Mock agent info endpoint."""
     httpx_mock.add_response(
-        url="https://metadata.example.com/api/v1/api/agents/DataQualityAgent",
+        url="https://metadata.example.com/api/v1/agents/dynamic/name/DataQualityAgent",
         json={
             "name": "DataQualityAgent",
             "displayName": "Data Quality Agent",
@@ -46,7 +46,7 @@ def mock_agent_info(httpx_mock: HTTPXMock):
 def mock_agent_invoke(httpx_mock: HTTPXMock):
     """Mock agent invoke endpoint."""
     httpx_mock.add_response(
-        url="https://metadata.example.com/api/v1/api/agents/DataQualityAgent/invoke",
+        url="https://metadata.example.com/api/v1/agents/dynamic/name/DataQualityAgent/invoke",
         json={
             "conversationId": "conv-123",
             "response": "Found 3 data quality issues in the customers table.",
@@ -82,7 +82,7 @@ class TestMetadataAgentToolInit:
     def test_fallback_when_get_info_fails(self, client, httpx_mock: HTTPXMock):
         """Tool uses fallback when get_info fails."""
         httpx_mock.add_response(
-            url="https://metadata.example.com/api/v1/api/agents/UnknownAgent",
+            url="https://metadata.example.com/api/v1/agents/dynamic/name/UnknownAgent",
             status_code=500,
         )
 
@@ -108,11 +108,11 @@ class TestMetadataAgentToolRun:
     def test_run_preserves_conversation_id(self, client, mock_agent_info, httpx_mock):
         """_run stores and uses conversation_id for multi-turn."""
         httpx_mock.add_response(
-            url="https://metadata.example.com/api/v1/api/agents/DataQualityAgent/invoke",
+            url="https://metadata.example.com/api/v1/agents/dynamic/name/DataQualityAgent/invoke",
             json={"conversationId": "conv-first", "response": "First response"},
         )
         httpx_mock.add_response(
-            url="https://metadata.example.com/api/v1/api/agents/DataQualityAgent/invoke",
+            url="https://metadata.example.com/api/v1/agents/dynamic/name/DataQualityAgent/invoke",
             json={"conversationId": "conv-first", "response": "Second response"},
         )
 
@@ -130,7 +130,7 @@ class TestMetadataAgentToolRun:
     def test_reset_conversation_clears_id(self, client, mock_agent_info, httpx_mock):
         """reset_conversation clears stored conversation_id."""
         httpx_mock.add_response(
-            url="https://metadata.example.com/api/v1/api/agents/DataQualityAgent/invoke",
+            url="https://metadata.example.com/api/v1/agents/dynamic/name/DataQualityAgent/invoke",
             json={"conversationId": "conv-to-reset", "response": "OK"},
         )
 
@@ -161,7 +161,7 @@ class TestCreateMetadataTools:
     def test_creates_tools_for_specific_agents(self, client, httpx_mock: HTTPXMock):
         """create_metadata_tools creates tools for specified agent names."""
         httpx_mock.add_response(
-            url="https://metadata.example.com/api/v1/api/agents/Agent1",
+            url="https://metadata.example.com/api/v1/agents/dynamic/name/Agent1",
             json={
                 "name": "Agent1",
                 "displayName": "Agent 1",
@@ -171,7 +171,7 @@ class TestCreateMetadataTools:
             },
         )
         httpx_mock.add_response(
-            url="https://metadata.example.com/api/v1/api/agents/Agent2",
+            url="https://metadata.example.com/api/v1/agents/dynamic/name/Agent2",
             json={
                 "name": "Agent2",
                 "displayName": "Agent 2",
@@ -190,7 +190,7 @@ class TestCreateMetadataTools:
     def test_creates_tools_for_api_enabled_agents_only(self, client, httpx_mock: HTTPXMock):
         """create_metadata_tools with None fetches only API-enabled agents."""
         httpx_mock.add_response(
-            url="https://metadata.example.com/api/v1/api/agents/?limit=100",
+            url="https://metadata.example.com/api/v1/agents/dynamic/?apiEnabled=true&limit=100",
             json={
                 "data": [
                     {"name": "EnabledAgent", "apiEnabled": True},
@@ -199,7 +199,7 @@ class TestCreateMetadataTools:
             },
         )
         httpx_mock.add_response(
-            url="https://metadata.example.com/api/v1/api/agents/EnabledAgent",
+            url="https://metadata.example.com/api/v1/agents/dynamic/name/EnabledAgent",
             json={
                 "name": "EnabledAgent",
                 "displayName": "Enabled",

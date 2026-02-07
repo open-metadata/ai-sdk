@@ -131,6 +131,7 @@ class HTTPClient:
         max_retries: int = 3,
         retry_delay: float = 1.0,
         user_agent: str | None = None,
+        extra_headers: dict[str, str] | None = None,
     ):
         """
         Initialize the HTTP client.
@@ -143,6 +144,7 @@ class HTTPClient:
             max_retries: Maximum number of retry attempts
             retry_delay: Base delay between retries (exponential backoff)
             user_agent: Custom User-Agent string
+            extra_headers: Additional headers merged into every request (overrides defaults)
         """
         self._base_url = base_url.rstrip("/")
         self._auth = auth
@@ -151,6 +153,7 @@ class HTTPClient:
         self._max_retries = max_retries
         self._retry_delay = retry_delay
         self._user_agent = user_agent or "metadata-ai-sdk/0.1.0"
+        self._extra_headers = extra_headers or {}
 
         self._client = httpx.Client(
             base_url=self._base_url,
@@ -168,6 +171,7 @@ class HTTPClient:
         headers["User-Agent"] = self._user_agent
         if request_id:
             headers["X-Request-ID"] = request_id
+        headers.update(self._extra_headers)
         return headers
 
     def _should_retry(self, response: httpx.Response, attempt: int) -> bool:

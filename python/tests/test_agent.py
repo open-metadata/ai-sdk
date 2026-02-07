@@ -39,7 +39,7 @@ class TestAgentHandleCall:
     ):
         """call() returns InvokeResponse with conversation_id and response."""
         httpx_mock.add_response(
-            url="https://metadata.example.com/api/v1/api/agents/DataQualityAgent/invoke",
+            url="https://metadata.example.com/api/v1/agents/dynamic/name/DataQualityAgent/invoke",
             json=sample_invoke_response_dict,
         )
 
@@ -52,7 +52,7 @@ class TestAgentHandleCall:
     def test_call_sends_message_and_optional_params(self, agent, httpx_mock: HTTPXMock):
         """call() sends message, conversation_id, and parameters in request."""
         httpx_mock.add_response(
-            url="https://metadata.example.com/api/v1/api/agents/DataQualityAgent/invoke",
+            url="https://metadata.example.com/api/v1/agents/dynamic/name/DataQualityAgent/invoke",
             json={"conversationId": "conv-1", "response": "OK"},
         )
 
@@ -71,7 +71,7 @@ class TestAgentHandleCall:
     def test_call_without_message(self, agent, httpx_mock: HTTPXMock):
         """call() works without providing a message."""
         httpx_mock.add_response(
-            url="https://metadata.example.com/api/v1/api/agents/DataQualityAgent/invoke",
+            url="https://metadata.example.com/api/v1/agents/dynamic/name/DataQualityAgent/invoke",
             json={"conversationId": "conv-1", "response": "Default task executed"},
         )
 
@@ -87,7 +87,7 @@ class TestAgentHandleCall:
     def test_call_with_none_message_and_parameters(self, agent, httpx_mock: HTTPXMock):
         """call() sends parameters but not message when message is None."""
         httpx_mock.add_response(
-            url="https://metadata.example.com/api/v1/api/agents/DataQualityAgent/invoke",
+            url="https://metadata.example.com/api/v1/agents/dynamic/name/DataQualityAgent/invoke",
             json={"conversationId": "conv-1", "response": "OK"},
         )
 
@@ -101,7 +101,7 @@ class TestAgentHandleCall:
     def test_call_401_raises_authentication_error(self, agent, httpx_mock: HTTPXMock):
         """call() raises AuthenticationError on 401."""
         httpx_mock.add_response(
-            url="https://metadata.example.com/api/v1/api/agents/DataQualityAgent/invoke",
+            url="https://metadata.example.com/api/v1/agents/dynamic/name/DataQualityAgent/invoke",
             status_code=401,
         )
 
@@ -111,7 +111,7 @@ class TestAgentHandleCall:
     def test_call_403_raises_agent_not_enabled_error(self, agent, httpx_mock: HTTPXMock):
         """call() raises AgentNotEnabledError on 403."""
         httpx_mock.add_response(
-            url="https://metadata.example.com/api/v1/api/agents/DataQualityAgent/invoke",
+            url="https://metadata.example.com/api/v1/agents/dynamic/name/DataQualityAgent/invoke",
             status_code=403,
         )
 
@@ -123,7 +123,7 @@ class TestAgentHandleCall:
     def test_call_404_raises_agent_not_found_error(self, agent, httpx_mock: HTTPXMock):
         """call() raises AgentNotFoundError on 404."""
         httpx_mock.add_response(
-            url="https://metadata.example.com/api/v1/api/agents/DataQualityAgent/invoke",
+            url="https://metadata.example.com/api/v1/agents/dynamic/name/DataQualityAgent/invoke",
             status_code=404,
         )
 
@@ -139,7 +139,7 @@ class TestAgentHandleStream:
     def test_stream_yields_events(self, agent, httpx_mock: HTTPXMock):
         """stream() yields StreamEvent objects with correct types."""
         httpx_mock.add_response(
-            url="https://metadata.example.com/api/v1/api/agents/DataQualityAgent/stream",
+            url="https://metadata.example.com/api/v1/agents/dynamic/name/DataQualityAgent/stream",
             content=b'event: stream-start\ndata: {"conversationId": "conv-1"}\n\n'
             b'event: message\ndata: {"content": "Hello"}\n\n'
             b"event: stream-completed\ndata: {}\n\n",
@@ -157,7 +157,7 @@ class TestAgentHandleStream:
     def test_stream_sends_conversation_id(self, agent, httpx_mock: HTTPXMock):
         """stream() sends conversation_id in request body."""
         httpx_mock.add_response(
-            url="https://metadata.example.com/api/v1/api/agents/DataQualityAgent/stream",
+            url="https://metadata.example.com/api/v1/agents/dynamic/name/DataQualityAgent/stream",
             content=b'event: message\ndata: {"content": "OK"}\n\n',
         )
 
@@ -170,7 +170,7 @@ class TestAgentHandleStream:
     def test_stream_without_message(self, agent, httpx_mock: HTTPXMock):
         """stream() works without providing a message."""
         httpx_mock.add_response(
-            url="https://metadata.example.com/api/v1/api/agents/DataQualityAgent/stream",
+            url="https://metadata.example.com/api/v1/agents/dynamic/name/DataQualityAgent/stream",
             content=b'event: stream-start\ndata: {"conversationId": "conv-1"}\n\n'
             b'event: message\ndata: {"content": "Default response"}\n\n'
             b"event: stream-completed\ndata: {}\n\n",
@@ -194,7 +194,7 @@ class TestAgentHandleGetInfo:
     ):
         """get_info() returns AgentInfo with all fields."""
         httpx_mock.add_response(
-            url="https://metadata.example.com/api/v1/api/agents/DataQualityAgent",
+            url="https://metadata.example.com/api/v1/agents/dynamic/name/DataQualityAgent",
             json=sample_agent_info_dict,
         )
 
@@ -209,7 +209,7 @@ class TestAgentHandleGetInfo:
     def test_get_info_404_raises_agent_not_found_error(self, agent, httpx_mock: HTTPXMock):
         """get_info() raises AgentNotFoundError on 404."""
         httpx_mock.add_response(
-            url="https://metadata.example.com/api/v1/api/agents/DataQualityAgent",
+            url="https://metadata.example.com/api/v1/agents/dynamic/name/DataQualityAgent",
             status_code=404,
         )
 

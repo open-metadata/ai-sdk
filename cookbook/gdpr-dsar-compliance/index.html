@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GDPR DSAR Compliance - Metadata AI</title>
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: #f8f9fb;
+      color: #1a1a2e;
+      line-height: 1.6;
+    }
+
+    .container {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 2rem 1.5rem;
+    }
+
+    header {
+      margin-bottom: 2rem;
+    }
+
+    header h1 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #1a1a2e;
+    }
+
+    header p {
+      color: #555;
+      margin-top: 0.25rem;
+      font-size: 0.95rem;
+    }
+
+    .card {
+      background: #fff;
+      border: 1px solid #e2e4e9;
+      border-radius: 8px;
+      padding: 1.5rem;
+      margin-bottom: 1.25rem;
+    }
+
+    .card h2 {
+      font-size: 1rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+    }
+
+    label {
+      display: block;
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: #444;
+      margin-bottom: 0.3rem;
+    }
+
+    textarea {
+      width: 100%;
+      min-height: 120px;
+      padding: 0.75rem;
+      border: 1px solid #d1d5db;
+      border-radius: 6px;
+      font-family: inherit;
+      font-size: 0.95rem;
+      resize: vertical;
+      transition: border-color 0.15s;
+    }
+
+    textarea:focus {
+      outline: none;
+      border-color: #7c3aed;
+      box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.1);
+    }
+
+    .hint {
+      font-size: 0.8rem;
+      color: #888;
+      margin-top: 0.3rem;
+    }
+
+    button {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.6rem 1.25rem;
+      background: #7c3aed;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      font-size: 0.95rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.15s;
+      margin-top: 1rem;
+    }
+
+    button:hover:not(:disabled) { background: #6d28d9; }
+    button:disabled { opacity: 0.6; cursor: not-allowed; }
+
+    /* Tool usage indicator */
+    .tools-bar {
+      display: none;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.6rem 1rem;
+      background: #f5f3ff;
+      border: 1px solid #e0d7fa;
+      border-radius: 6px;
+      margin-bottom: 1rem;
+      font-size: 0.85rem;
+      color: #5b21b6;
+    }
+
+    .tools-bar.visible { display: flex; }
+
+    .spinner {
+      width: 14px;
+      height: 14px;
+      border: 2px solid #c4b5fd;
+      border-top-color: #7c3aed;
+      border-radius: 50%;
+      animation: spin 0.6s linear infinite;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* Response area */
+    #response {
+      display: none;
+    }
+
+    #response.visible { display: block; }
+
+    #response-content {
+      line-height: 1.7;
+      font-size: 0.95rem;
+    }
+
+    #response-content h1, #response-content h2, #response-content h3 {
+      margin-top: 1.25rem;
+      margin-bottom: 0.5rem;
+    }
+
+    #response-content h1 { font-size: 1.3rem; }
+    #response-content h2 { font-size: 1.15rem; }
+    #response-content h3 { font-size: 1.05rem; }
+
+    #response-content p { margin-bottom: 0.75rem; }
+
+    #response-content ul, #response-content ol {
+      margin-bottom: 0.75rem;
+      padding-left: 1.5rem;
+    }
+
+    #response-content li { margin-bottom: 0.3rem; }
+
+    #response-content table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 1rem;
+      font-size: 0.9rem;
+    }
+
+    #response-content th, #response-content td {
+      border: 1px solid #e2e4e9;
+      padding: 0.5rem 0.75rem;
+      text-align: left;
+    }
+
+    #response-content th {
+      background: #f8f9fb;
+      font-weight: 600;
+    }
+
+    #response-content code {
+      background: #f3f4f6;
+      padding: 0.15rem 0.35rem;
+      border-radius: 3px;
+      font-size: 0.88em;
+    }
+
+    #response-content pre {
+      background: #1e1e2e;
+      color: #cdd6f4;
+      padding: 1rem;
+      border-radius: 6px;
+      overflow-x: auto;
+      margin-bottom: 1rem;
+    }
+
+    #response-content pre code {
+      background: none;
+      padding: 0;
+      color: inherit;
+    }
+
+    #response-content blockquote {
+      border-left: 3px solid #7c3aed;
+      padding-left: 1rem;
+      color: #555;
+      margin-bottom: 0.75rem;
+    }
+
+    .error-msg {
+      color: #dc2626;
+      background: #fef2f2;
+      border: 1px solid #fecaca;
+      padding: 0.75rem 1rem;
+      border-radius: 6px;
+      font-size: 0.9rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>GDPR DSAR Compliance</h1>
+      <p>Submit a Data Subject Access Request to trace customer data, discover related tables via lineage, and check retention policies.</p>
+    </header>
+
+    <!-- DSAR Input -->
+    <div class="card">
+      <h2>Data Subject Request</h2>
+      <label for="dsar-input">Describe the DSAR</label>
+      <textarea id="dsar-input" placeholder="Example: Customer Michael Perez (customer_id: 1, email: mperez@example.com) has requested deletion of all his personal data under GDPR Article 17. Search for tables where his data resides, trace lineage to find all related tables, identify PII columns in each, and check retention policies for conflicts with immediate deletion."></textarea>
+      <p class="hint">Include the customer's identifiers (name, email, customer ID) and the request type (deletion, access, rectification). The agent will search for relevant tables, trace lineage, and check retention policies.</p>
+      <button id="submit-btn">Submit Request</button>
+    </div>
+
+    <!-- Response -->
+    <div id="response" class="card">
+      <h2>Compliance Report</h2>
+      <div id="tools-bar" class="tools-bar">
+        <div class="spinner"></div>
+        <span id="tools-label">Agent is working...</span>
+      </div>
+      <div id="response-content"></div>
+    </div>
+
+  </div>
+
+  <script>
+    // The TypeScript SDK runs server-side in serve.js (same as Rust TUI).
+    // This page just sends the message and renders the result.
+    const responseCard    = document.getElementById("response");
+    const responseContent = document.getElementById("response-content");
+    const toolsBar        = document.getElementById("tools-bar");
+    const toolsLabel      = document.getElementById("tools-label");
+    const submitBtn       = document.getElementById("submit-btn");
+    const dsarInput       = document.getElementById("dsar-input");
+
+    function showError(msg) {
+      responseCard.classList.add("visible");
+      toolsBar.classList.remove("visible");
+      responseContent.innerHTML = '<div class="error-msg">' + msg + '</div>';
+      submitBtn.disabled = false;
+    }
+
+    async function submitDSAR() {
+      const message = dsarInput.value.trim();
+      if (!message) return;
+
+      // Reset UI
+      responseContent.innerHTML = "";
+      responseCard.classList.add("visible");
+      toolsBar.classList.add("visible");
+      toolsLabel.textContent = "Agent is analyzing (this may take a minute)...";
+      submitBtn.disabled = true;
+
+      try {
+        const res = await fetch("/api/analyze", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ message }),
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+          throw new Error(data.error || "API error (" + res.status + ")");
+        }
+
+        toolsBar.classList.remove("visible");
+        if (data.response) {
+          responseContent.innerHTML = marked.parse(data.response);
+          if (data.toolsUsed && data.toolsUsed.length > 0) {
+            var p = document.createElement("p");
+            p.style.cssText = "margin-top:1rem;font-size:0.8rem;color:#888;";
+            p.textContent = "Tools used: " + data.toolsUsed.join(", ");
+            responseContent.appendChild(p);
+          }
+        } else {
+          responseContent.textContent = "Agent returned an empty response.";
+        }
+      } catch (err) {
+        showError(err.message);
+      } finally {
+        toolsBar.classList.remove("visible");
+        submitBtn.disabled = false;
+      }
+    }
+
+    submitBtn.addEventListener("click", submitDSAR);
+
+    dsarInput.addEventListener("keydown", function (e) {
+      if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) {
+        e.preventDefault();
+        submitDSAR();
+      }
+    });
+  </script>
+</body>
+</html>

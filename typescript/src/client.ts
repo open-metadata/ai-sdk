@@ -212,9 +212,9 @@ export class MetadataAI {
     // Normalize host URL (remove trailing slash)
     this.hostUrl = options.host.replace(/\/$/, '');
 
-    // Create HTTP client with base URL for agents API
+    // Create HTTP client with base URL for agents API (consolidated endpoint)
     this.http = new HttpClient({
-      baseUrl: `${this.hostUrl}/api/v1/api/agents`,
+      baseUrl: `${this.hostUrl}/api/v1/agents/dynamic`,
       token: options.token,
       timeout: options.timeout ?? DEFAULT_TIMEOUT,
       maxRetries: options.maxRetries ?? DEFAULT_MAX_RETRIES,
@@ -312,7 +312,7 @@ export class MetadataAI {
    */
   async listAgents(options?: { limit?: number }): Promise<AgentInfo[]> {
     return this.paginateList<ApiAgentInfo, AgentInfo>(
-      (params) => this.http.get<PaginatedResponse<ApiAgentInfo>>('/', params),
+      (params) => this.http.get<PaginatedResponse<ApiAgentInfo>>('/', { ...params, apiEnabled: 'true' }),
       mapAgentInfo,
       options?.limit
     );

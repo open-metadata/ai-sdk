@@ -91,8 +91,8 @@ export class HttpClient {
 
   constructor(options: HttpClientOptions) {
     this.baseUrl = options.baseUrl.replace(/\/$/, '');
-    // Extract host URL from base URL (remove /api/v1/api/agents suffix)
-    this.hostUrl = this.baseUrl.replace(/\/api\/v1\/api\/agents$/, '');
+    // Extract host URL from base URL (remove /api/v1/agents/dynamic suffix)
+    this.hostUrl = this.baseUrl.replace(/\/api\/v1\/agents\/dynamic$/, '');
     this.token = options.token;
     this.timeout = options.timeout;
     this.maxRetries = options.maxRetries;
@@ -254,7 +254,7 @@ export class HttpClient {
 
   /**
    * Make a GET request to a custom API path (relative to host URL).
-   * This allows accessing endpoints outside the default /api/v1/api/agents base.
+   * This allows accessing endpoints outside the default /api/v1/agents/dynamic base.
    */
   async getAbsolute<T>(
     apiPath: string,
@@ -273,7 +273,7 @@ export class HttpClient {
 
   /**
    * Make a POST request to a custom API path (relative to host URL).
-   * This allows accessing endpoints outside the default /api/v1/api/agents base.
+   * This allows accessing endpoints outside the default /api/v1/agents/dynamic base.
    */
   async postAbsolute<T>(
     apiPath: string,

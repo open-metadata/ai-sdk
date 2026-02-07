@@ -138,7 +138,7 @@ export class AgentHandle {
     }
 
     const data = await this.http.post<ApiInvokeResponse>(
-      `/${this.agentName}/invoke`,
+      `/name/${this.agentName}/invoke`,
       requestBody,
       this.agentName
     );
@@ -205,7 +205,7 @@ export class AgentHandle {
     }
 
     const byteStream = await this.http.postStream(
-      `/${this.agentName}/stream`,
+      `/name/${this.agentName}/stream`,
       requestBody,
       this.agentName
     );
@@ -231,7 +231,7 @@ export class AgentHandle {
    */
   async getInfo(): Promise<AgentInfo> {
     const data = await this.http.get<ApiAgentInfo>(
-      `/${this.agentName}`,
+      `/name/${this.agentName}`,
       undefined,
       this.agentName
     );

@@ -1,3 +1,10 @@
+---
+name: run-integration
+description: Use when running integration tests against a real Metadata instance.
+  Guides setup of environment variables (METADATA_HOST, METADATA_TOKEN) and runs
+  tests that make actual API calls.
+---
+
 # Run Integration Tests
 
 Runs integration tests against a real Metadata instance. These tests use actual API calls.

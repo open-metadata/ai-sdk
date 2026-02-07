@@ -298,7 +298,7 @@ impl MetadataClient {
         let client = Client::builder()
             .timeout(Duration::from_secs(config.timeout))
             .build()
-            .map_err(|e| CliError::NetworkError(e.to_string()))?;
+            .map_err(CliError::from_reqwest)?;
 
         // Normalize base URL (remove trailing slash)
         let base_url = config.host.trim_end_matches('/').to_string();
@@ -310,9 +310,9 @@ impl MetadataClient {
         })
     }
 
-    /// Get the base API URL.
-    fn api_url(&self, path: &str) -> String {
-        format!("{}/api/v1/api/agents{}", self.base_url, path)
+    /// Get the base URL for dynamic agent endpoints.
+    fn agents_url(&self, path: &str) -> String {
+        format!("{}/api/v1/agents/dynamic{}", self.base_url, path)
     }
 
     /// Add authorization header to request.
@@ -329,10 +329,7 @@ impl MetadataClient {
         let status = response.status().as_u16();
 
         if (200..300).contains(&status) {
-            response
-                .text()
-                .await
-                .map_err(|e| CliError::NetworkError(e.to_string()))
+            response.text().await.map_err(CliError::from_reqwest)
         } else {
             let body = response.text().await.unwrap_or_default();
             Err(CliError::from_status(status, &body, agent_name))
@@ -354,8 +351,10 @@ impl MetadataClient {
 
         loop {
             let url = match &after {
-                Some(cursor) => self.api_url(&format!("?limit={PAGE_SIZE}&after={cursor}")),
-                None => self.api_url(&format!("?limit={PAGE_SIZE}")),
+                Some(cursor) => self.agents_url(&format!(
+                    "?apiEnabled=true&limit={PAGE_SIZE}&after={cursor}"
+                )),
+                None => self.agents_url(&format!("?apiEnabled=true&limit={PAGE_SIZE}")),
             };
 
             let response = self
@@ -364,7 +363,7 @@ impl MetadataClient {
                 .header("Authorization", self.auth_header())
                 .send()
                 .await
-                .map_err(|e| CliError::NetworkError(e.to_string()))?;
+                .map_err(CliError::from_reqwest)?;
 
             let body = self.handle_response(response, None).await?;
 
@@ -392,15 +391,16 @@ impl MetadataClient {
     }
 
     /// Get agent information by name.
+    /// Note: This endpoint returns minimal info; use `get_dynamic_agent` for full details.
     pub async fn get_agent(&self, name: &str) -> CliResult<AgentInfo> {
         let encoded_name = encode(name);
         let response = self
             .client
-            .get(self.api_url(&format!("/{encoded_name}")))
+            .get(self.agents_url(&format!("/name/{encoded_name}")))
             .header("Authorization", self.auth_header())
             .send()
             .await
-            .map_err(|e| CliError::NetworkError(e.to_string()))?;
+            .map_err(CliError::from_reqwest)?;
 
         let body = self.handle_response(response, Some(name)).await?;
 
@@ -423,13 +423,13 @@ impl MetadataClient {
 
         let response = self
             .client
-            .post(self.api_url(&format!("/{encoded_name}/invoke")))
+            .post(self.agents_url(&format!("/name/{encoded_name}/invoke")))
             .header("Authorization", self.auth_header())
             .header("Content-Type", "application/json")
             .json(&request)
             .send()
             .await
-            .map_err(|e| CliError::NetworkError(e.to_string()))?;
+            .map_err(CliError::from_reqwest)?;
 
         let body = self.handle_response(response, Some(agent_name)).await?;
 
@@ -453,14 +453,14 @@ impl MetadataClient {
 
         let response = self
             .client
-            .post(self.api_url(&format!("/{encoded_name}/stream")))
+            .post(self.agents_url(&format!("/name/{encoded_name}/stream")))
             .header("Authorization", self.auth_header())
             .header("Content-Type", "application/json")
             .header("Accept", "text/event-stream")
             .json(&request)
             .send()
             .await
-            .map_err(|e| CliError::NetworkError(e.to_string()))?;
+            .map_err(CliError::from_reqwest)?;
 
         let status = response.status().as_u16();
         if (200..300).contains(&status) {
@@ -503,7 +503,7 @@ impl MetadataClient {
                 .header("Authorization", self.auth_header())
                 .send()
                 .await
-                .map_err(|e| CliError::NetworkError(e.to_string()))?;
+                .map_err(CliError::from_reqwest)?;
 
             let body = self.handle_response(response, None).await?;
 
@@ -539,7 +539,7 @@ impl MetadataClient {
             .header("Authorization", self.auth_header())
             .send()
             .await
-            .map_err(|e| CliError::NetworkError(e.to_string()))?;
+            .map_err(CliError::from_reqwest)?;
 
         let body = self.handle_response(response, None).await?;
 
@@ -586,7 +586,7 @@ impl MetadataClient {
                 .header("Authorization", self.auth_header())
                 .send()
                 .await
-                .map_err(|e| CliError::NetworkError(e.to_string()))?;
+                .map_err(CliError::from_reqwest)?;
 
             let body = self.handle_response(response, None).await?;
 
@@ -622,7 +622,7 @@ impl MetadataClient {
             .header("Authorization", self.auth_header())
             .send()
             .await
-            .map_err(|e| CliError::NetworkError(e.to_string()))?;
+            .map_err(CliError::from_reqwest)?;
 
         let body = self.handle_response(response, None).await?;
 
@@ -639,7 +639,7 @@ impl MetadataClient {
             .json(&request)
             .send()
             .await
-            .map_err(|e| CliError::NetworkError(e.to_string()))?;
+            .map_err(CliError::from_reqwest)?;
 
         let body = self.handle_response(response, None).await?;
 
@@ -676,7 +676,7 @@ impl MetadataClient {
                 .header("Authorization", self.auth_header())
                 .send()
                 .await
-                .map_err(|e| CliError::NetworkError(e.to_string()))?;
+                .map_err(CliError::from_reqwest)?;
 
             let body = self.handle_response(response, None).await?;
 
@@ -712,7 +712,7 @@ impl MetadataClient {
             .header("Authorization", self.auth_header())
             .send()
             .await
-            .map_err(|e| CliError::NetworkError(e.to_string()))?;
+            .map_err(CliError::from_reqwest)?;
 
         let body = self.handle_response(response, None).await?;
 
@@ -721,22 +721,35 @@ impl MetadataClient {
 
     // ==================== Agent Operations ====================
 
-    /// Get the base URL for dynamic agent endpoints.
-    fn dynamic_agents_url(&self, path: &str) -> String {
-        format!("{}/api/v1/agents/dynamic{}", self.base_url, path)
+    /// Get full agent details from the dynamic agents endpoint (includes persona, abilities).
+    pub async fn get_dynamic_agent(&self, name: &str) -> CliResult<AgentInfo> {
+        let encoded_name = encode(name);
+        let response = self
+            .client
+            .get(self.agents_url(&format!(
+                "/name/{encoded_name}?fields=persona,bot,abilities"
+            )))
+            .header("Authorization", self.auth_header())
+            .send()
+            .await
+            .map_err(CliError::from_reqwest)?;
+
+        let body = self.handle_response(response, Some(name)).await?;
+
+        serde_json::from_str(&body).map_err(|e| CliError::ParseError(e.to_string()))
     }
 
     /// Create a new dynamic agent.
     pub async fn create_agent(&self, request: CreateAgentRequest) -> CliResult<AgentInfo> {
         let response = self
             .client
-            .post(self.dynamic_agents_url(""))
+            .post(self.agents_url(""))
             .header("Authorization", self.auth_header())
             .header("Content-Type", "application/json")
             .json(&request)
             .send()
             .await
-            .map_err(|e| CliError::NetworkError(e.to_string()))?;
+            .map_err(CliError::from_reqwest)?;
 
         let body = self.handle_response(response, None).await?;
 

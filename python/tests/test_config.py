@@ -131,7 +131,6 @@ class TestMetadataConfigUserAgent:
         client = MetadataAI.from_config(config)
 
         assert client._http._user_agent == "my-custom-agent/1.0"
-        assert client._admin_http._user_agent == "my-custom-agent/1.0"
         assert client._personas_http._user_agent == "my-custom-agent/1.0"
         assert client._bots_http._user_agent == "my-custom-agent/1.0"
 
@@ -173,6 +172,5 @@ class TestMetadataConfigUserAgent:
         client = MetadataAI.from_config(config)
 
         assert client._async_http._user_agent == "async-custom-agent/1.0"
-        assert client._async_admin_http._user_agent == "async-custom-agent/1.0"
         assert client._async_personas_http._user_agent == "async-custom-agent/1.0"
         assert client._async_bots_http._user_agent == "async-custom-agent/1.0"

@@ -1,0 +1,42 @@
+version: 2
+
+models:
+  - name: int_orders__enriched
+    description: Orders enriched with customer info, payment details, and line item aggregates
+    columns:
+      - name: order_id
+        description: Unique order identifier
+        data_tests:
+          - unique
+          - not_null
+      - name: net_order_value
+        description: Final order value (total - discount + shipping)
+      - name: used_coupon
+        description: Boolean flag if a coupon was applied
+
+  - name: int_products__with_reviews
+    description: Products with aggregated review statistics and sales data
+    columns:
+      - name: product_id
+        description: Unique product identifier
+        data_tests:
+          - unique
+          - not_null
+      - name: avg_rating
+        description: Average verified review rating (1-5)
+      - name: total_margin
+        description: Total profit from this product (units sold * unit margin)
+
+  - name: int_campaigns__performance
+    description: Marketing campaigns with aggregated performance metrics
+    columns:
+      - name: campaign_id
+        data_tests:
+          - unique
+          - not_null
+      - name: overall_ctr
+        description: Click-through rate as percentage
+      - name: cost_per_acquisition
+        description: Cost per conversion in dollars
+      - name: budget_utilization_pct
+        description: Percentage of budget spent

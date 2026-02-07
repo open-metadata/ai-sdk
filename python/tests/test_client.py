@@ -51,7 +51,7 @@ class TestMetadataAIListAgents:
     ):
         """list_agents returns list of AgentInfo objects."""
         httpx_mock.add_response(
-            url="https://metadata.example.com/api/v1/api/agents/?limit=100",
+            url="https://metadata.example.com/api/v1/agents/dynamic/?apiEnabled=true&limit=100",
             json=sample_agents_list_response,
         )
 
@@ -67,7 +67,7 @@ class TestMetadataAIListAgents:
     ):
         """list_agents respects user limit parameter."""
         httpx_mock.add_response(
-            url="https://metadata.example.com/api/v1/api/agents/?limit=100",
+            url="https://metadata.example.com/api/v1/agents/dynamic/?apiEnabled=true&limit=100",
             json=sample_agents_list_response,
         )
 

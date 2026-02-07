@@ -1,3 +1,10 @@
+---
+name: add-test
+description: Use when adding unit or integration tests. Provides test patterns,
+  naming conventions, and fixtures for Python (pytest), TypeScript (vitest),
+  Java (JUnit/Mockito), and Rust.
+---
+
 # Add Test
 
 Add unit or integration tests for existing functionality.

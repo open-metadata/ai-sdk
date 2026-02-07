@@ -2,6 +2,15 @@
 
 This guide covers using the Metadata AI SDK directly without external frameworks like LangChain.
 
+## Prerequisites
+
+Before using this SDK, you need:
+
+1. **An OpenMetadata or Collate instance** with Dynamic Agents enabled
+2. **A Bot JWT token** for API authentication
+
+See [Getting Your Credentials](README.md#getting-your-credentials) for detailed instructions on obtaining these.
+
 ## Installation
 
 Install the SDK with minimal dependencies:
@@ -17,10 +26,10 @@ Core dependencies are only `httpx` and `pydantic` - no framework lock-in.
 ```python
 from metadata_ai import MetadataAI
 
-# Initialize client
+# Initialize client with explicit credentials
 client = MetadataAI(
-    host="https://metadata.example.com",
-    token="your-bot-jwt-token"
+    host="https://your-org.getcollate.io",    # Your OpenMetadata/Collate URL
+    token="eyJhbGciOiJSUzI1NiIs..."           # Your bot's JWT token
 )
 
 # Invoke an agent
@@ -54,22 +63,37 @@ client = MetadataAI(
 
 ### From Environment Variables
 
+Set your environment variables first:
+
+```bash
+# Required: Your OpenMetadata/Collate server URL
+export METADATA_HOST="https://your-org.getcollate.io"
+
+# Required: Your bot's JWT token (from Settings > Bots)
+export METADATA_TOKEN="eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9..."
+```
+
+Then load them in Python:
+
 ```python
 from metadata_ai import MetadataAI, MetadataConfig
 
-# Load from environment
+# Load from environment (reads METADATA_HOST and METADATA_TOKEN)
 config = MetadataConfig.from_env()
 client = MetadataAI.from_config(config)
 ```
 
-Environment variables:
-- `METADATA_HOST`: Server URL (required)
-- `METADATA_TOKEN`: JWT bot token (required)
-- `METADATA_TIMEOUT`: Request timeout in seconds
-- `METADATA_VERIFY_SSL`: SSL verification (`true`/`false`)
-- `METADATA_DEBUG`: Enable debug logging
-- `METADATA_MAX_RETRIES`: Retry attempts
-- `METADATA_RETRY_DELAY`: Base retry delay
+**All environment variables:**
+
+| Variable | Required | Default | Description |
+|----------|----------|---------|-------------|
+| `METADATA_HOST` | Yes | - | Your OpenMetadata/Collate server URL |
+| `METADATA_TOKEN` | Yes | - | Bot JWT token (from Settings > Bots) |
+| `METADATA_TIMEOUT` | No | `120` | Request timeout in seconds |
+| `METADATA_VERIFY_SSL` | No | `true` | Verify SSL certificates (`true`/`false`) |
+| `METADATA_DEBUG` | No | `false` | Enable debug logging |
+| `METADATA_MAX_RETRIES` | No | `3` | Number of retry attempts for failed requests |
+| `METADATA_RETRY_DELAY` | No | `1.0` | Base delay between retries (seconds) |
 
 ### With Overrides
 

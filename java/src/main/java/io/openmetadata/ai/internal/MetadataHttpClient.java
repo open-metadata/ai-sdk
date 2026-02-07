@@ -25,10 +25,9 @@ import io.openmetadata.ai.models.*;
 /** Internal HTTP client for communicating with the Metadata AI API. */
 public class MetadataHttpClient implements AutoCloseable {
 
-  private static final String API_BASE_PATH = "/api/v1/api/agents";
+  private static final String API_BASE_PATH = "/api/v1/agents/dynamic";
   private static final String BOTS_API_PATH = "/api/v1/bots";
   private static final String PERSONAS_API_PATH = "/api/v1/agents/personas";
-  private static final String DYNAMIC_AGENTS_API_PATH = "/api/v1/agents/dynamic";
   private static final String ABILITIES_API_PATH = "/api/v1/agents/abilities";
   private static final String CONTENT_TYPE_JSON = "application/json";
   private static final String ACCEPT_SSE = "text/event-stream";
@@ -77,7 +76,8 @@ public class MetadataHttpClient implements AutoCloseable {
    * @return a list of agent information
    */
   public List<AgentInfo> listAgents(Integer limit) {
-    return paginateList(baseUrl, limit, new TypeReference<List<AgentInfo>>() {});
+    return paginateList(
+        baseUrl + "?apiEnabled=true", limit, new TypeReference<List<AgentInfo>>() {});
   }
 
   /**
@@ -168,7 +168,7 @@ public class MetadataHttpClient implements AutoCloseable {
     String encodedName = URLEncoder.encode(agentName, StandardCharsets.UTF_8);
     HttpRequest request =
         HttpRequest.newBuilder()
-            .uri(URI.create(baseUrl + "/" + encodedName))
+            .uri(URI.create(baseUrl + "/name/" + encodedName))
             .header("Authorization", "Bearer " + token)
             .header("Accept", CONTENT_TYPE_JSON)
             .GET()
@@ -194,7 +194,7 @@ public class MetadataHttpClient implements AutoCloseable {
 
     HttpRequest request =
         HttpRequest.newBuilder()
-            .uri(URI.create(baseUrl + "/" + encodedName + "/invoke"))
+            .uri(URI.create(baseUrl + "/name/" + encodedName + "/invoke"))
             .header("Authorization", "Bearer " + token)
             .header("Content-Type", CONTENT_TYPE_JSON)
             .header("Accept", CONTENT_TYPE_JSON)
@@ -222,7 +222,7 @@ public class MetadataHttpClient implements AutoCloseable {
 
     HttpRequest request =
         HttpRequest.newBuilder()
-            .uri(URI.create(baseUrl + "/" + encodedName + "/stream"))
+            .uri(URI.create(baseUrl + "/name/" + encodedName + "/stream"))
             .header("Authorization", "Bearer " + token)
             .header("Content-Type", CONTENT_TYPE_JSON)
             .header("Accept", ACCEPT_SSE)
@@ -262,7 +262,7 @@ public class MetadataHttpClient implements AutoCloseable {
 
     HttpRequest request =
         HttpRequest.newBuilder()
-            .uri(URI.create(baseUrl + "/" + encodedName + "/stream"))
+            .uri(URI.create(baseUrl + "/name/" + encodedName + "/stream"))
             .header("Authorization", "Bearer " + token)
             .header("Content-Type", CONTENT_TYPE_JSON)
             .header("Accept", ACCEPT_SSE)
@@ -429,10 +429,9 @@ public class MetadataHttpClient implements AutoCloseable {
       throw new MetadataException("Failed to serialize agent create request", e);
     }
 
-    String url = host + DYNAMIC_AGENTS_API_PATH;
     HttpRequest request =
         HttpRequest.newBuilder()
-            .uri(URI.create(url))
+            .uri(URI.create(baseUrl))
             .header("Authorization", "Bearer " + token)
             .header("Content-Type", CONTENT_TYPE_JSON)
             .header("Accept", CONTENT_TYPE_JSON)

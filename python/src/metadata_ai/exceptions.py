@@ -80,3 +80,17 @@ class AbilityNotFoundError(MetadataError):
             status_code=404,
         )
         self.ability_name = ability_name
+
+
+class MCPError(MetadataError):
+    """Base error for MCP operations."""
+
+    pass
+
+
+class MCPToolExecutionError(MCPError):
+    """Tool execution failed."""
+
+    def __init__(self, tool: str, message: str) -> None:
+        self.tool = tool
+        super().__init__(f"Tool '{tool}' failed: {message}")

@@ -77,7 +77,7 @@ class TestAsyncAgentCall:
     ):
         """acall returns InvokeResponse."""
         httpx_mock.add_response(
-            url="https://metadata.example.com/api/v1/api/agents/TestAgent/invoke",
+            url="https://metadata.example.com/api/v1/agents/dynamic/name/TestAgent/invoke",
             json=sample_invoke_response_dict,
         )
 
@@ -102,7 +102,7 @@ class TestAsyncAgentCall:
     async def test_acall_sends_conversation_id(self, async_client, httpx_mock: HTTPXMock):
         """acall sends conversation_id in request."""
         httpx_mock.add_response(
-            url="https://metadata.example.com/api/v1/api/agents/TestAgent/invoke",
+            url="https://metadata.example.com/api/v1/agents/dynamic/name/TestAgent/invoke",
             json={"conversationId": "existing-conv", "response": "OK"},
         )
 
@@ -123,7 +123,7 @@ class TestAsyncAgentGetInfo:
     ):
         """aget_info returns AgentInfo."""
         httpx_mock.add_response(
-            url="https://metadata.example.com/api/v1/api/agents/TestAgent",
+            url="https://metadata.example.com/api/v1/agents/dynamic/name/TestAgent",
             json=sample_agent_info_dict,
         )
 
@@ -143,7 +143,7 @@ class TestAsyncListAgents:
     ):
         """alist_agents returns list of AgentInfo."""
         httpx_mock.add_response(
-            url="https://metadata.example.com/api/v1/api/agents/?limit=100",
+            url="https://metadata.example.com/api/v1/agents/dynamic/?apiEnabled=true&limit=100",
             json=sample_agents_list_response,
         )
 
@@ -198,7 +198,7 @@ class TestAsyncLangChainIntegration:
         from metadata_ai.integrations.langchain import MetadataAgentTool
 
         httpx_mock.add_response(
-            url="https://metadata.example.com/api/v1/api/agents/TestAgent",
+            url="https://metadata.example.com/api/v1/agents/dynamic/name/TestAgent",
             json={
                 "name": "TestAgent",
                 "displayName": "Test Agent",
@@ -208,7 +208,7 @@ class TestAsyncLangChainIntegration:
             },
         )
         httpx_mock.add_response(
-            url="https://metadata.example.com/api/v1/api/agents/TestAgent/invoke",
+            url="https://metadata.example.com/api/v1/agents/dynamic/name/TestAgent/invoke",
             json={"conversationId": "conv-async", "response": "Async response"},
         )
 

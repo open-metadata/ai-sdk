@@ -145,9 +145,10 @@ export async function* parseSSEStream(
       buffer += decoder.decode(value, { stream: true });
 
       // Process complete events (delimited by double newlines)
-      while (buffer.includes('\n\n')) {
-        const [eventStr, rest] = buffer.split('\n\n', 2);
-        buffer = rest;
+      let idx: number;
+      while ((idx = buffer.indexOf('\n\n')) !== -1) {
+        const eventStr = buffer.slice(0, idx);
+        buffer = buffer.slice(idx + 2);
 
         const event = parseEvent(eventStr);
         if (event) {

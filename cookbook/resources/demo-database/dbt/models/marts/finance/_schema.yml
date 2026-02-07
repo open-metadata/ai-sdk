@@ -1,0 +1,36 @@
+version: 2
+
+models:
+  - name: fct_daily_revenue
+    description: |
+      Daily revenue aggregations for financial reporting.
+      Grain: one row per calendar day with orders.
+    columns:
+      - name: order_date
+        description: The calendar date
+        data_tests:
+          - unique
+          - not_null
+      - name: total_orders
+        description: Number of completed orders
+      - name: net_revenue
+        description: Revenue after discounts plus shipping
+      - name: avg_order_value
+        description: Average net order value for the day
+      - name: coupon_usage_rate
+        description: Percentage of orders using a coupon
+
+  - name: fct_monthly_revenue
+    description: |
+      Monthly revenue summary with month-over-month growth metrics.
+      Use for executive reporting and trend analysis.
+    columns:
+      - name: order_month
+        description: First day of the month
+        data_tests:
+          - unique
+          - not_null
+      - name: revenue_growth_pct
+        description: Percentage change from previous month
+      - name: orders_growth_pct
+        description: Order count percentage change from previous month

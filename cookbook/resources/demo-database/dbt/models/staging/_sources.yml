@@ -1,0 +1,83 @@
+version: 2
+
+sources:
+  - name: jaffle_shop
+    database: jaffle_shop
+    schema: raw_jaffle_shop
+    description: Core transactional data from the Jaffle Shop application
+    tables:
+      - name: customers
+        description: Raw customer data including PII
+        columns:
+          - name: id
+            description: Primary key
+            data_tests:
+              - unique
+              - not_null
+          - name: email
+            description: Customer email address (PII)
+          - name: ssn_last_four
+            description: Last 4 digits of SSN (Sensitive PII)
+
+      - name: orders
+        description: Customer orders
+        columns:
+          - name: id
+            data_tests:
+              - unique
+              - not_null
+
+      - name: order_items
+        description: Line items for each order
+
+  - name: stripe
+    database: jaffle_shop
+    schema: raw_stripe
+    description: Payment data from Stripe
+    tables:
+      - name: payments
+        description: Payment transactions
+        columns:
+          - name: card_last_four
+            description: Last 4 digits of card (PCI data)
+          - name: ip_address
+            description: Customer IP address
+
+      - name: refunds
+        description: Refund transactions
+
+  - name: inventory
+    database: jaffle_shop
+    schema: raw_inventory
+    description: Product and inventory management data
+    tables:
+      - name: products
+        description: Product catalog
+      - name: suppliers
+        description: Supplier information
+      - name: stock_levels
+        description: Current inventory levels
+
+  - name: marketing
+    database: jaffle_shop
+    schema: raw_marketing
+    description: Marketing and campaign data
+    tables:
+      - name: campaigns
+        description: Marketing campaigns
+      - name: ad_spend
+        description: Daily ad spend by campaign
+      - name: user_sessions
+        description: Website session data
+      - name: events
+        description: User event tracking
+
+  - name: support
+    database: jaffle_shop
+    schema: raw_support
+    description: Customer support data
+    tables:
+      - name: tickets
+        description: Support tickets
+      - name: reviews
+        description: Product reviews

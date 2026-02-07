@@ -52,7 +52,11 @@ pub async fn run_info(name: &str) -> CliResult<()> {
     let config = ResolvedConfig::load()?;
     let client = MetadataClient::new(&config)?;
 
-    let agent = client.get_agent(name).await?;
+    // Try to get full details from dynamic agents endpoint first (includes persona)
+    let agent = match client.get_dynamic_agent(name).await {
+        Ok(a) => a,
+        Err(_) => client.get_agent(name).await?,
+    };
 
     let display_name = agent.display_name.as_deref().unwrap_or(&agent.name);
 
@@ -76,6 +80,45 @@ pub async fn run_info(name: &str) -> CliResult<()> {
             "No".red()
         }
     );
+
+    if let Some(provider) = &agent.provider {
+        println!("  {} {}", "Provider:".cyan(), provider);
+    }
+
+    // Display persona information
+    if let Some(persona_ref) = &agent.persona {
+        let persona_name = persona_ref
+            .display_name
+            .as_ref()
+            .or(persona_ref.name.as_ref());
+
+        if let Some(name) = persona_name {
+            println!("  {} {}", "Persona:".cyan(), name);
+        }
+
+        // Fetch full persona details to show the prompt
+        if let Some(persona_name) = &persona_ref.name {
+            if let Ok(persona) = client.get_persona(persona_name).await {
+                if let Some(prompt) = &persona.prompt {
+                    if !prompt.is_empty() {
+                        println!("  {}", "Persona Prompt:".cyan());
+                        // Indent and wrap the prompt for readability
+                        for line in prompt.lines() {
+                            println!("    {}", line.dimmed());
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    // Display bot information
+    if let Some(bot_ref) = &agent.bot {
+        let bot_name = bot_ref.display_name.as_ref().or(bot_ref.name.as_ref());
+        if let Some(name) = bot_name {
+            println!("  {} {}", "Bot:".cyan(), name);
+        }
+    }
 
     if !agent.abilities.is_empty() {
         println!("  {}", "Abilities:".cyan());
