@@ -39,60 +39,106 @@ const NUDGE =
   "Stop searching. Compile ALL findings into the full GDPR compliance " +
   "report now — affected tables, PII columns, retention conflicts, " +
   "deletion order, and risk flags. Output markdown.";
+const CONTINUE =
+  "Your previous response was cut off. Continue writing the report " +
+  "exactly where you left off. Do not repeat any content already produced.";
 
-/** Stream one turn, return { text, tools, conversationId }. */
-async function streamOnce(message, conversationId) {
-  let text = "";
-  const tools = [];
-  let convId = conversationId;
-  for await (const ev of agent.stream(message, { conversationId })) {
-    switch (ev.type) {
-      case "content":
-        if (ev.content) text += ev.content;
-        break;
-      case "tool_use":
-        if (ev.toolName) tools.push(ev.toolName);
-        break;
-      case "error":
-        throw new Error(ev.error || "Agent error");
-    }
-    if (ev.conversationId) convId = ev.conversationId;
-  }
-  return { text, tools, conversationId: convId };
+/** True when the text ends mid-sentence / mid-word. */
+function looksIncomplete(text) {
+  const t = text.trim();
+  if (!t) return true;
+  return !/[.!?:)\]}\n]\s*$/.test(t);
 }
 
 createServer(async (req, res) => {
-  // ── POST /api/analyze — stream via SDK, accumulate, return ────────
+  // ── POST /api/analyze — stream SSE events to the browser ──────────
   if (req.method === "POST" && req.url === "/api/analyze") {
     try {
       const chunks = [];
       for await (const chunk of req) chunks.push(chunk);
       const { message } = JSON.parse(Buffer.concat(chunks).toString());
 
+      // Defer SSE headers until the first event arrives — if the SDK
+      // throws before producing any events we can still return a proper
+      // JSON error with a non-200 status.
+      let sseStarted = false;
+      function ensureSSE() {
+        if (!sseStarted) {
+          res.writeHead(200, {
+            "Content-Type": "text/event-stream",
+            "Cache-Control": "no-cache",
+            "Connection": "keep-alive",
+          });
+          sseStarted = true;
+        }
+      }
+
+      const send = (obj) => { ensureSSE(); res.write(`data: ${JSON.stringify(obj)}\n\n`); };
+      const allTools = [];
+
+      /** Stream one turn, forwarding every event to the browser. */
+      async function streamTurn(msg, convId) {
+        let text = "";
+        for await (const ev of agent.stream(msg, { conversationId: convId })) {
+          switch (ev.type) {
+            case "content":
+              if (ev.content) {
+                text += ev.content;
+                send({ type: "content", text: ev.content });
+              }
+              break;
+            case "tool_use":
+              if (ev.toolName) allTools.push(ev.toolName);
+              send({ type: "tool" });
+              text = ""; // content after last tool = the report
+              break;
+            case "error":
+              send({ type: "error", message: ev.error || "Agent error" });
+              return { text: "", conversationId: convId };
+          }
+          if (ev.conversationId) convId = ev.conversationId;
+        }
+        return { text, conversationId: convId };
+      }
+
       // First turn — the user's actual DSAR request.
-      let result = await streamOnce(message, undefined);
-      let best = result.text;
-      const allTools = [...result.tools];
+      let result = await streamTurn(message, undefined);
+      let reportText = result.text;
 
-      // If the agent stopped early with a narration line, continue the
-      // conversation (like a TUI user would type "continue").
+      // If the agent stopped early with a narration line, nudge it to
+      // compile the actual report.
       let turn = 0;
-      while (best.length < MIN_REPORT_LEN && turn < MAX_TURNS && result.conversationId) {
+      while (reportText.length < MIN_REPORT_LEN && turn < MAX_TURNS && result.conversationId) {
         turn++;
-        console.log(`  turn ${turn}: ${best.length} chars — nudging agent to produce report`);
-        result = await streamOnce(NUDGE, result.conversationId);
-        allTools.push(...result.tools);
-        // Keep the longest response (the actual report).
-        if (result.text.length > best.length) best = result.text;
+        console.log(`  turn ${turn}: ${reportText.length} chars — nudging agent to produce report`);
+        send({ type: "turn", number: turn });
+        result = await streamTurn(NUDGE, result.conversationId);
+        if (result.text.length > reportText.length) reportText = result.text;
       }
 
-      res.writeHead(200, { "Content-Type": "application/json" });
-      res.end(JSON.stringify({ response: best, toolsUsed: [...new Set(allTools)] }));
-    } catch (err) {
-      if (!res.headersSent) {
-        res.writeHead(502, { "Content-Type": "application/json" });
+      // If the report was cut off mid-sentence (LLM output-token limit),
+      // ask the agent to continue from where it left off.
+      while (looksIncomplete(reportText) && turn < MAX_TURNS && result.conversationId) {
+        turn++;
+        console.log(`  turn ${turn}: report looks truncated — asking agent to continue`);
+        send({ type: "turn", number: turn });
+        result = await streamTurn(CONTINUE, result.conversationId);
+        if (result.text.trim()) reportText += "\n" + result.text;
       }
-      res.end(JSON.stringify({ error: err.message }));
+
+      send({ type: "done", report: reportText });
+      res.end();
+    } catch (err) {
+      if (!sseStarted) {
+        // SDK failed before any events — return a normal JSON error.
+        res.writeHead(502, { "Content-Type": "application/json" });
+        res.end(JSON.stringify({ error: err.message }));
+      } else {
+        try {
+          res.write(`data: ${JSON.stringify({ type: "error", message: err.message })}\n\n`);
+        } catch (_) { /* stream already closed */ }
+        res.end();
+      }
     }
     return;
   }

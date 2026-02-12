@@ -73,7 +73,7 @@ metadata-ai agents create \
   --name GDPRComplianceAnalyzer \
   --description "Handles GDPR deletion requests by searching for customer data, tracing lineage, and checking retention policies" \
   --persona GDPRAnalyst \
-  --abilities discoveryAndSearch,dataLineageAndExploration,dataQualityAndTesting \
+  --abilities discoveryAndSearch,dataLineageAndExploration \
   --api-enabled true
 ```
 
@@ -109,7 +109,7 @@ The agent will stream its response in real-time, showing which tools it uses (se
 
 **Deletion request (recommended starting point):**
 ```
-Customer Michael Perez (customer_id: 1, email: mperez@example.com) has requested
+Customer Michael Perez has requested
 deletion of all his personal data under GDPR Article 17. Search for tables where
 his data resides, trace lineage to find all related tables, identify PII columns
 in each, and check retention policies for conflicts with immediate deletion.
@@ -117,7 +117,7 @@ in each, and check retention policies for conflicts with immediate deletion.
 
 **Access request:**
 ```
-Customer Sara Chen (customer_id: 5, email: schen@example.com) has submitted a
+Customer Sara Chen has submitted a
 Subject Access Request under GDPR Article 15. Find all tables containing her
 data by searching for customer-related tables and tracing lineage. For each
 table, list the PII columns and the retention period.
@@ -125,7 +125,7 @@ table, list the PII columns and the retention period.
 
 **Rectification request:**
 ```
-Customer Diana Williams (email: dwilliams@example.com) has requested rectification
+Customer Diana Williams has requested rectification
 of her address data under GDPR Article 16. Search for tables that store address
 information, trace lineage to find downstream copies, and identify all locations
 where her address data may need to be updated.

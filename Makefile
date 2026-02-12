@@ -155,7 +155,7 @@ tag-n8n:  ## Create git tag for n8n release
 .PHONY: build-all test-all test-integration install-cli \
         lint lint-python lint-rust lint-typescript lint-java lint-n8n \
         format format-python format-rust format-typescript format-java format-n8n \
-        install-hooks install-local install-dbt demo-database demo-database-stop demo-dbt demo-gdpr
+        install-hooks install-local install-dbt demo-database demo-database-stop demo-dbt demo-gdpr demo-n8n
 
 install-local:  ## Install Python SDK locally in editable mode (for development)
 	@echo "Installing Python SDK (editable, all extras)..."
@@ -195,6 +195,17 @@ demo-gdpr:  ## Start the GDPR DSAR compliance demo (bundles SDK + starts server)
 		--outfile=cookbook/gdpr-dsar-compliance/metadata-ai.js --target=es2022 --log-level=warning
 	@echo "Starting server (SDK runs server-side)..."
 	@node cookbook/gdpr-dsar-compliance/serve.js
+
+demo-n8n:  ## Build n8n node and start n8n with it loaded
+	@echo "Building TypeScript SDK..."
+	@cd typescript && npm install --silent && npm run build
+	@echo "Building n8n node..."
+	@cd n8n-nodes-metadata && npm install --silent && npm run build
+	@echo ""
+	@echo "Starting n8n with Metadata Agent node..."
+	@echo "  Open: http://localhost:5678"
+	@echo ""
+	@N8N_CUSTOM_EXTENSIONS=$(CURDIR)/n8n-nodes-metadata N8N_SECURE_COOKIE=false npx n8n
 
 install-cli:  ## Build CLI (release) and install to ~/.local/bin
 	@echo "Building CLI in release mode..."

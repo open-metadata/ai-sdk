@@ -148,15 +148,15 @@ return [{
 - **Type:** Metadata Agent (from `n8n-nodes-metadata`)
 - **Credentials:** Configure with your Collate host and JWT token
 - **Agent Name:** `DataQualityAnalyzer`
-- **Message:**
+- **Message:** Switch the field to **Expression** mode (click the `{ }` toggle above the input — it should say "Expression", not "Fixed"), then enter:
 
 ```
-Data Quality test "${tableFqn}.${testName}" has FAILED.
+Data Quality test "{{ $json.tableFqn }}.{{ $json.testName }}" has FAILED.
 
 Failure details:
-- Table: ${tableFqn}
-- Test: ${testName}
-- Result: ${failureMessage}
+- Table: {{ $json.tableFqn }}
+- Test: {{ $json.testName }}
+- Result: {{ $json.failureMessage }}
 
 Please:
 1. Identify the affected table and its purpose
@@ -165,7 +165,7 @@ Please:
 4. Summarize the impact and recommend next steps
 ```
 
-(Use n8n expressions: `{{ $json.tableFqn }}`, etc.)
+> **Important:** The `{{ }}` expressions are only evaluated in Expression mode. If the field is in Fixed mode, the expressions are sent as literal text and the agent won't receive the actual values.
 
 #### Node 4: Slack
 
