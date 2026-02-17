@@ -199,6 +199,206 @@ class TestMetadataAIMCPProperty:
         assert mcp1 is mcp2
 
 
+class TestMCPClientCallNewTools:
+    """Tests for calling the newer MCP tools."""
+
+    def test_call_semantic_search(self, client, httpx_mock: HTTPXMock):
+        """call_tool works with semantic_search tool."""
+        httpx_mock.add_response(
+            url="https://metadata.example.com/mcp",
+            method="POST",
+            json={
+                "jsonrpc": "2.0",
+                "id": "test-id",
+                "result": {
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": '{"query": "revenue metrics", "results": [{"name": "monthly_revenue"}], "totalFound": 1}',
+                        }
+                    ]
+                },
+            },
+        )
+
+        mcp = MCPClient(client._host, client._auth, client._http)
+        result = mcp.call_tool(MCPTool.SEMANTIC_SEARCH, {"query": "revenue metrics", "size": 5})
+
+        assert result.success is True
+        assert result.data["totalFound"] == 1
+        assert result.data["results"][0]["name"] == "monthly_revenue"
+
+    def test_call_get_test_definitions(self, client, httpx_mock: HTTPXMock):
+        """call_tool works with get_test_definitions tool."""
+        httpx_mock.add_response(
+            url="https://metadata.example.com/mcp",
+            method="POST",
+            json={
+                "jsonrpc": "2.0",
+                "id": "test-id",
+                "result": {
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": '{"data": [{"name": "columnValuesToBeNotNull"}], "paging": {}}',
+                        }
+                    ]
+                },
+            },
+        )
+
+        mcp = MCPClient(client._host, client._auth, client._http)
+        result = mcp.call_tool(
+            MCPTool.GET_TEST_DEFINITIONS,
+            {"entityType": "COLUMN", "testPlatform": "OpenMetadata"},
+        )
+
+        assert result.success is True
+        assert result.data["data"][0]["name"] == "columnValuesToBeNotNull"
+
+    def test_call_create_test_case(self, client, httpx_mock: HTTPXMock):
+        """call_tool works with create_test_case tool."""
+        httpx_mock.add_response(
+            url="https://metadata.example.com/mcp",
+            method="POST",
+            json={
+                "jsonrpc": "2.0",
+                "id": "test-id",
+                "result": {
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": '{"id": "abc-123", "name": "test_not_null_email"}',
+                        }
+                    ]
+                },
+            },
+        )
+
+        mcp = MCPClient(client._host, client._auth, client._http)
+        result = mcp.call_tool(
+            MCPTool.CREATE_TEST_CASE,
+            {
+                "name": "test_not_null_email",
+                "fqn": "db.schema.users",
+                "columnName": "email",
+                "testDefinitionName": "columnValuesToBeNotNull",
+                "parameterValues": [],
+            },
+        )
+
+        assert result.success is True
+        assert result.data["name"] == "test_not_null_email"
+
+    def test_call_root_cause_analysis(self, client, httpx_mock: HTTPXMock):
+        """call_tool works with root_cause_analysis tool."""
+        httpx_mock.add_response(
+            url="https://metadata.example.com/mcp",
+            method="POST",
+            json={
+                "jsonrpc": "2.0",
+                "id": "test-id",
+                "result": {
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": '{"fqn": "db.schema.orders", "status": "failed", "summary": "Upstream failure detected"}',
+                        }
+                    ]
+                },
+            },
+        )
+
+        mcp = MCPClient(client._host, client._auth, client._http)
+        result = mcp.call_tool(
+            MCPTool.ROOT_CAUSE_ANALYSIS,
+            {
+                "fqn": "db.schema.orders",
+                "entityType": "table",
+                "upstreamDepth": 3,
+                "downstreamDepth": 3,
+            },
+        )
+
+        assert result.success is True
+        assert result.data["status"] == "failed"
+        assert "Upstream failure" in result.data["summary"]
+
+    def test_list_tools_includes_new_tools(self, client, httpx_mock: HTTPXMock):
+        """list_tools recognizes the new tool types."""
+        httpx_mock.add_response(
+            url="https://metadata.example.com/mcp",
+            method="POST",
+            json={
+                "jsonrpc": "2.0",
+                "id": "test-id",
+                "result": {
+                    "tools": [
+                        {
+                            "name": "semantic_search",
+                            "description": "Semantic search for metadata",
+                            "inputSchema": {
+                                "type": "object",
+                                "properties": {
+                                    "query": {"type": "string", "description": "Search query"},
+                                },
+                                "required": ["query"],
+                            },
+                        },
+                        {
+                            "name": "get_test_definitions",
+                            "description": "Get test definitions",
+                            "inputSchema": {
+                                "type": "object",
+                                "properties": {
+                                    "entityType": {
+                                        "type": "string",
+                                        "description": "TABLE or COLUMN",
+                                    },
+                                },
+                                "required": ["entityType"],
+                            },
+                        },
+                        {
+                            "name": "create_test_case",
+                            "description": "Create a test case",
+                            "inputSchema": {
+                                "type": "object",
+                                "properties": {
+                                    "name": {"type": "string", "description": "Test case name"},
+                                    "fqn": {"type": "string", "description": "Table FQN"},
+                                },
+                                "required": ["name", "fqn"],
+                            },
+                        },
+                        {
+                            "name": "root_cause_analysis",
+                            "description": "Analyze root cause",
+                            "inputSchema": {
+                                "type": "object",
+                                "properties": {
+                                    "fqn": {"type": "string", "description": "Entity FQN"},
+                                    "entityType": {"type": "string", "description": "Entity type"},
+                                },
+                                "required": ["fqn", "entityType"],
+                            },
+                        },
+                    ]
+                },
+            },
+        )
+
+        mcp = MCPClient(client._host, client._auth, client._http)
+        tools = mcp.list_tools()
+
+        assert len(tools) == 4
+        tool_names = {t.name for t in tools}
+        assert MCPTool.SEMANTIC_SEARCH in tool_names
+        assert MCPTool.GET_TEST_DEFINITIONS in tool_names
+        assert MCPTool.CREATE_TEST_CASE in tool_names
+        assert MCPTool.ROOT_CAUSE_ANALYSIS in tool_names
+
+
 class TestMCPClientFiltering:
     """Tests for tool filtering."""
 

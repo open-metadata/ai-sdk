@@ -9,12 +9,16 @@ class TestMCPToolEnum:
     def test_enum_has_all_tools(self):
         """MCPTool enum contains all expected tools."""
         assert MCPTool.SEARCH_METADATA == "search_metadata"
+        assert MCPTool.SEMANTIC_SEARCH == "semantic_search"
         assert MCPTool.GET_ENTITY_DETAILS == "get_entity_details"
         assert MCPTool.GET_ENTITY_LINEAGE == "get_entity_lineage"
         assert MCPTool.CREATE_GLOSSARY == "create_glossary"
         assert MCPTool.CREATE_GLOSSARY_TERM == "create_glossary_term"
         assert MCPTool.CREATE_LINEAGE == "create_lineage"
         assert MCPTool.PATCH_ENTITY == "patch_entity"
+        assert MCPTool.GET_TEST_DEFINITIONS == "get_test_definitions"
+        assert MCPTool.CREATE_TEST_CASE == "create_test_case"
+        assert MCPTool.ROOT_CAUSE_ANALYSIS == "root_cause_analysis"
 
     def test_enum_is_str_enum(self):
         """MCPTool values are strings."""
