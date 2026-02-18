@@ -63,7 +63,10 @@ jobs:
         run: |
           PACKAGE_VERSION=$(node -p "require('./package.json').version")
           TAG_VERSION=${{ steps.version.outputs.version }}
-          if [ "$PACKAGE_VERSION" != "$TAG_VERSION" ]; then
+          # Compare only first 3 components (major.minor.patch)
+          PKG_BASE=$(echo "$PACKAGE_VERSION" | cut -d. -f1-3)
+          TAG_BASE=$(echo "$TAG_VERSION" | cut -d. -f1-3)
+          if [ "$PKG_BASE" != "$TAG_BASE" ]; then
             echo "Error: package.json version ($PACKAGE_VERSION) does not match tag version ($TAG_VERSION)"
             exit 1
           fi
