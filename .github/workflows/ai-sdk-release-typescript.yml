@@ -40,6 +40,12 @@ jobs:
           cache: 'npm'
           cache-dependency-path: typescript/package-lock.json
 
+      - name: Upgrade npm for trusted publishing
+        working-directory: .
+        run: |
+          npm install -g npm@latest
+          echo "npm version: $(npm --version)"
+
       - name: Install dependencies
         run: npm ci
 
