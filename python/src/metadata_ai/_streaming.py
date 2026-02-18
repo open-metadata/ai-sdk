@@ -51,14 +51,19 @@ def _parse_event(event_str: str) -> StreamEvent | None:
     conversation_id = payload.get("conversationId")
 
     if message_data := payload.get("data"):
-        if message := message_data.get("message"):
-            # Get conversation ID from message if not at top level
+        if (
+            isinstance(message_data, dict)
+            and (message := message_data.get("message"))
+            and isinstance(message, dict)
+        ):
             if not conversation_id:
                 conversation_id = message.get("conversationId")
             # Extract text content from content blocks
             if content_blocks := message.get("content"):
                 text_parts = []
                 for block in content_blocks:
+                    if not isinstance(block, dict):
+                        continue
                     # Extract text message
                     if text_msg := block.get("textMessage"):
                         if isinstance(text_msg, dict) and "message" in text_msg:

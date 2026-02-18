@@ -18,12 +18,16 @@ class MCPTool(StrEnum):
     """Available MCP tools from OpenMetadata."""
 
     SEARCH_METADATA = "search_metadata"
+    SEMANTIC_SEARCH = "semantic_search"
     GET_ENTITY_DETAILS = "get_entity_details"
     GET_ENTITY_LINEAGE = "get_entity_lineage"
     CREATE_GLOSSARY = "create_glossary"
     CREATE_GLOSSARY_TERM = "create_glossary_term"
     CREATE_LINEAGE = "create_lineage"
     PATCH_ENTITY = "patch_entity"
+    GET_TEST_DEFINITIONS = "get_test_definitions"
+    CREATE_TEST_CASE = "create_test_case"
+    ROOT_CAUSE_ANALYSIS = "root_cause_analysis"
 
 
 @dataclass
