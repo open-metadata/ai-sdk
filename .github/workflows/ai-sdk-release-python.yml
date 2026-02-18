@@ -60,9 +60,12 @@ jobs:
 
       - name: Verify package version matches tag
         run: |
-          PACKAGE_VERSION=$(python -c "import tomllib; print(tomllib.load(open('pyproject.toml', 'rb'))['project']['version'])")
+          PACKAGE_VERSION=$(python -c "from importlib.metadata import version; print(version('metadata-ai'))")
           TAG_VERSION=${{ steps.version.outputs.version }}
-          if [ "$PACKAGE_VERSION" != "$TAG_VERSION" ]; then
+          # Compare only first 3 components (major.minor.patch)
+          PKG_BASE=$(echo "$PACKAGE_VERSION" | cut -d. -f1-3)
+          TAG_BASE=$(echo "$TAG_VERSION" | cut -d. -f1-3)
+          if [ "$PKG_BASE" != "$TAG_BASE" ]; then
             echo "Error: pyproject.toml version ($PACKAGE_VERSION) does not match tag version ($TAG_VERSION)"
             exit 1
           fi

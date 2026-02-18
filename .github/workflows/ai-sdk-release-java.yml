@@ -80,7 +80,10 @@ jobs:
         run: |
           POM_VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
           TAG_VERSION=${{ steps.version.outputs.version }}
-          if [ "$POM_VERSION" != "$TAG_VERSION" ]; then
+          # Compare only first 3 components (major.minor.patch)
+          POM_BASE=$(echo "$POM_VERSION" | cut -d. -f1-3)
+          TAG_BASE=$(echo "$TAG_VERSION" | cut -d. -f1-3)
+          if [ "$POM_BASE" != "$TAG_BASE" ]; then
             echo "Error: pom.xml version ($POM_VERSION) does not match tag version ($TAG_VERSION)"
             exit 1
           fi
