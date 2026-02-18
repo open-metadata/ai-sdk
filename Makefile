@@ -215,6 +215,7 @@ install-cli:  ## Build CLI (release) and install to ~/.local/bin
 	@mkdir -p ~/.local/bin
 	@cp cli/target/release/metadata-ai ~/.local/bin/metadata-ai
 	@chmod +x ~/.local/bin/metadata-ai
+	@if [ "$$(uname)" = "Darwin" ]; then codesign --sign - --force ~/.local/bin/metadata-ai 2>/dev/null; fi
 	@echo ""
 	@echo "Installed: ~/.local/bin/metadata-ai"
 	@echo "Version: $$(~/.local/bin/metadata-ai --version 2>/dev/null || echo 'unknown')"
