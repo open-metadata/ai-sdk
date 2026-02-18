@@ -4,6 +4,16 @@ on:
   push:
     tags:
       - 'cli-v*'
+  workflow_call:
+    inputs:
+      version:
+        required: true
+        type: string
+        description: 'Version to release (e.g., 0.2.0)'
+      release_tag:
+        required: false
+        type: string
+        description: 'Existing release tag to upload binaries to (e.g., v0.2.0)'
 
 permissions:
   contents: write
@@ -114,7 +124,7 @@ jobs:
     name: Create GitHub Release
     needs: build
     runs-on: ubuntu-latest
-    environment: release
+    environment: publish
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -144,11 +154,19 @@ jobs:
           echo "$CHANGELOG" >> $GITHUB_OUTPUT
           echo "EOF" >> $GITHUB_OUTPUT
 
-      - name: Extract version from tag
+      - name: Extract version
         id: version
-        run: echo "version=${GITHUB_REF#refs/tags/cli-v}" >> $GITHUB_OUTPUT
+        run: |
+          INPUT_VERSION="${{ inputs.version || '' }}"
+          if [ -n "$INPUT_VERSION" ]; then
+            echo "version=$INPUT_VERSION" >> $GITHUB_OUTPUT
+          else
+            echo "version=${GITHUB_REF#refs/tags/cli-v}" >> $GITHUB_OUTPUT
+          fi
 
+      # When triggered directly by a cli-v* tag: create a new GitHub Release
       - name: Create Release
+        if: ${{ !inputs.release_tag }}
         uses: softprops/action-gh-release@v2
         with:
           name: CLI v${{ steps.version.outputs.version }}
@@ -203,5 +221,17 @@ jobs:
             artifacts/**/*.zip
           draft: false
           prerelease: ${{ contains(github.ref, '-alpha') || contains(github.ref, '-beta') || contains(github.ref, '-rc') }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # When called from the orchestrator: upload binaries to the existing release
+      - name: Upload CLI binaries to existing release
+        if: ${{ inputs.release_tag }}
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ inputs.release_tag }}
+          files: |
+            artifacts/**/*.tar.gz
+            artifacts/**/*.zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -1,0 +1,90 @@
+name: Release
+
+# Triggered when a GitHub Release is published with a v* tag (e.g., v0.2.0).
+# Validates version consistency, then publishes all SDKs in parallel:
+#   - Python SDK → PyPI
+#   - TypeScript SDK → npm
+#   - Java SDK → Maven Central
+#   - CLI binaries → attached to the GitHub Release
+#
+# For individual SDK releases, push SDK-specific tags instead:
+#   python-v0.2.0, typescript-v0.2.0, java-v0.2.0, cli-v0.2.0
+
+on:
+  release:
+    types: [published]
+
+permissions:
+  contents: write
+  id-token: write
+
+concurrency:
+  group: release-${{ github.event.release.tag_name }}
+  cancel-in-progress: false
+
+jobs:
+  validate:
+    name: Validate Release
+    # Only run for unified version tags (v*), not SDK-specific tags
+    if: startsWith(github.event.release.tag_name, 'v')
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Extract version from release tag
+        id: version
+        run: |
+          TAG="${{ github.event.release.tag_name }}"
+          VERSION="${TAG#v}"
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "Release version: $VERSION"
+
+      - name: Validate VERSION file matches release tag
+        run: |
+          VERSION=${{ steps.version.outputs.version }}
+          FILE_VERSION=$(cat VERSION | tr -d '[:space:]')
+          if [ "$FILE_VERSION" != "$VERSION" ]; then
+            echo "::error::VERSION file ($FILE_VERSION) does not match release tag ($VERSION)"
+            echo "Run 'make bump-version V=$VERSION' and push before creating the release."
+            exit 1
+          fi
+
+      - name: Validate all SDK versions match
+        run: make check-versions
+
+  release-python:
+    name: Python SDK
+    needs: validate
+    uses: ./.github/workflows/ai-sdk-release-python.yml
+    with:
+      version: ${{ needs.validate.outputs.version }}
+    secrets: inherit
+
+  release-typescript:
+    name: TypeScript SDK
+    needs: validate
+    uses: ./.github/workflows/ai-sdk-release-typescript.yml
+    with:
+      version: ${{ needs.validate.outputs.version }}
+    secrets: inherit
+
+  release-java:
+    name: Java SDK
+    needs: validate
+    uses: ./.github/workflows/ai-sdk-release-java.yml
+    with:
+      version: ${{ needs.validate.outputs.version }}
+    secrets: inherit
+
+  release-cli:
+    name: CLI Binaries
+    needs: validate
+    uses: ./.github/workflows/ai-sdk-release-cli.yml
+    with:
+      version: ${{ needs.validate.outputs.version }}
+      release_tag: ${{ github.event.release.tag_name }}
+    secrets: inherit

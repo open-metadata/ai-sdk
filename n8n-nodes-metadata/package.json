@@ -48,7 +48,7 @@
     "vitest": "^1.0.0"
   },
   "dependencies": {
-    "@openmetadata/ai-sdk": "file:../typescript"
+    "@openmetadata/metadata-ai": "file:../typescript"
   },
   "peerDependencies": {
     "n8n-workflow": "*"

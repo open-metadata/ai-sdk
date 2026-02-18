@@ -43,16 +43,26 @@ Download the appropriate binary for your platform from the [releases page](https
 
 | Platform | Architecture | Download |
 |----------|--------------|----------|
-| macOS | Intel (x64) | `metadata-ai-darwin-x64.tar.gz` |
-| macOS | Apple Silicon (arm64) | `metadata-ai-darwin-arm64.tar.gz` |
-| Linux | x64 | `metadata-ai-linux-x64.tar.gz` |
-| Linux | arm64 | `metadata-ai-linux-arm64.tar.gz` |
+| macOS | Intel (x86_64) | `metadata-ai-macos-x86_64.tar.gz` |
+| macOS | Apple Silicon (aarch64) | `metadata-ai-macos-aarch64.tar.gz` |
+| Linux | x86_64 | `metadata-ai-linux-x86_64.tar.gz` |
+| Linux | aarch64 | `metadata-ai-linux-aarch64.tar.gz` |
+| Windows | x86_64 | `metadata-ai-windows-x86_64.zip` |
+| Windows | aarch64 | `metadata-ai-windows-aarch64.zip` |
 
 Extract and move to a directory in your PATH:
 
+**macOS / Linux:**
 ```bash
 tar -xzf metadata-ai-<os>-<arch>.tar.gz
 mv metadata-ai ~/.local/bin/
+# Or system-wide: sudo mv metadata-ai /usr/local/bin/
+```
+
+**Windows (PowerShell):**
+```powershell
+Expand-Archive metadata-ai-windows-x86_64.zip -DestinationPath .
+# Move metadata-ai.exe to a directory in your PATH
 ```
 
 ## Configuration

@@ -12,7 +12,8 @@
 #   make tag-n8n              # Create tag for n8n only
 
 .PHONY: help version check-versions bump-version sync-versions \
-        tag-all tag-cli tag-python tag-typescript tag-java tag-n8n
+        tag-all tag-cli tag-python tag-typescript tag-java tag-n8n \
+        release
 
 # Version file paths
 VERSION_FILE := VERSION
@@ -150,6 +151,24 @@ tag-java:  ## Create git tag for Java release
 tag-n8n:  ## Create git tag for n8n release
 	@echo "Creating tag: n8n-v$(CURRENT_VERSION)"
 	@git tag -a "n8n-v$(CURRENT_VERSION)" -m "n8n node release $(CURRENT_VERSION)"
+
+release:  ## Create a GitHub Release (triggers CI to publish all SDKs)
+	@if ! command -v gh >/dev/null 2>&1; then \
+		echo "Error: GitHub CLI (gh) is not installed. Install from https://cli.github.com/"; \
+		exit 1; \
+	fi
+	@$(MAKE) check-versions --no-print-directory
+	@echo ""
+	@echo "Creating GitHub Release v$(CURRENT_VERSION)..."
+	@gh release create "v$(CURRENT_VERSION)" \
+		--title "v$(CURRENT_VERSION)" \
+		--generate-notes
+	@echo ""
+	@echo "Release v$(CURRENT_VERSION) created! CI will now:"
+	@echo "  - Publish Python SDK to PyPI"
+	@echo "  - Publish TypeScript SDK to npm"
+	@echo "  - Publish Java SDK to Maven Central"
+	@echo "  - Build CLI binaries and attach to release"
 
 # Development helpers
 .PHONY: build-all test-all test-integration install-cli \
