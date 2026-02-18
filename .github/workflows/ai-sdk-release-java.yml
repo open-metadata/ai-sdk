@@ -48,10 +48,23 @@ jobs:
           rm -rf ~/.m2/settings-security.xml
           echo "<settingsSecurity><master>${{ secrets.MAVEN_MASTER_PASSWORD }}</master></settingsSecurity>" > ~/.m2/settings-security.xml
 
-      - name: Install GPG secret key
+      - name: Verify GPG key is valid
+        working-directory: .
         run: |
-          cat <(echo -e "${{ secrets.OSSRH_GPG_SECRET_KEY }}") | gpg --batch --import
+          echo "Checking imported GPG keys..."
           gpg --list-secret-keys --keyid-format LONG
+          # Check the validity field (field 2) in colon-delimited output
+          # 'e' = expired, 'r' = revoked
+          VALIDITY=$(gpg --list-secret-keys --with-colons 2>/dev/null | awk -F: '/^sec/{print $2}')
+          if [ -z "$VALIDITY" ]; then
+            echo "::error::No GPG secret key found. Ensure OSSRH_GPG_SECRET_KEY is configured in the 'publish' environment."
+            exit 1
+          fi
+          if [ "$VALIDITY" = "e" ]; then
+            echo "::error::GPG signing key is expired. Generate a new key and update the OSSRH_GPG_SECRET_KEY secret."
+            exit 1
+          fi
+          echo "GPG key is valid (validity=$VALIDITY)."
 
       - name: Extract version
         id: version

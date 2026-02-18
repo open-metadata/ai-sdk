@@ -189,6 +189,9 @@ class TestAsyncSSEIterator:
         assert events[0].content == "Chunked"
 
 
+langchain_core = pytest.importorskip("langchain_core")
+
+
 class TestAsyncLangChainIntegration:
     """Tests for async LangChain integration."""
 
