@@ -102,57 +102,21 @@
     button:hover:not(:disabled) { background: #6d28d9; }
     button:disabled { opacity: 0.6; cursor: not-allowed; }
 
-    /* ── Activity feed ─────────────────────────────────────── */
-    #activity {
+    /* Tool usage indicator */
+    .tools-bar {
       display: none;
-      border: 1px solid #e0d7fa;
-      border-radius: 6px;
-      margin-bottom: 1rem;
-      font-size: 0.85rem;
-      color: #444;
-    }
-
-    #activity.visible { display: block; }
-
-    #activity summary {
-      list-style: none;
-      display: flex;
       align-items: center;
       gap: 0.5rem;
       padding: 0.6rem 1rem;
       background: #f5f3ff;
+      border: 1px solid #e0d7fa;
       border-radius: 6px;
-      cursor: pointer;
+      margin-bottom: 1rem;
+      font-size: 0.85rem;
       color: #5b21b6;
-      font-weight: 500;
     }
 
-    #activity summary::-webkit-details-marker { display: none; }
-
-    #activity[open] summary {
-      border-radius: 6px 6px 0 0;
-    }
-
-    #activity-log {
-      max-height: 240px;
-      overflow-y: auto;
-      padding: 0.5rem 1rem;
-    }
-
-    .activity-narration {
-      margin: 0.2rem 0;
-      color: #555;
-      font-style: italic;
-      white-space: pre-wrap;
-      word-break: break-word;
-    }
-
-    .activity-turn {
-      margin: 0.4rem 0;
-      color: #7c3aed;
-      font-weight: 500;
-      font-size: 0.8rem;
-    }
+    .tools-bar.visible { display: flex; }
 
     .spinner {
       width: 14px;
@@ -161,12 +125,11 @@
       border-top-color: #7c3aed;
       border-radius: 50%;
       animation: spin 0.6s linear infinite;
-      flex-shrink: 0;
     }
 
     @keyframes spin { to { transform: rotate(360deg); } }
 
-    /* ── Response area ─────────────────────────────────────── */
+    /* Response area */
     #response {
       display: none;
     }
@@ -272,155 +235,72 @@
     <!-- Response -->
     <div id="response" class="card">
       <h2>Compliance Report</h2>
-
-      <details id="activity" open>
-        <summary id="activity-summary">
-          <div class="spinner"></div>
-          <span>Agent is analyzing...</span>
-        </summary>
-        <div id="activity-log"></div>
-      </details>
-
+      <div id="tools-bar" class="tools-bar">
+        <div class="spinner"></div>
+        <span id="tools-label">Agent is working...</span>
+      </div>
       <div id="response-content"></div>
     </div>
 
   </div>
 
   <script>
-    var responseCard    = document.getElementById("response");
-    var activity        = document.getElementById("activity");
-    var activitySummary = document.getElementById("activity-summary");
-    var activityLog     = document.getElementById("activity-log");
-    var responseContent = document.getElementById("response-content");
-    var submitBtn       = document.getElementById("submit-btn");
-    var dsarInput       = document.getElementById("dsar-input");
+    // The TypeScript SDK runs server-side in serve.js (same as Rust TUI).
+    // This page just sends the message and renders the result.
+    const responseCard    = document.getElementById("response");
+    const responseContent = document.getElementById("response-content");
+    const toolsBar        = document.getElementById("tools-bar");
+    const toolsLabel      = document.getElementById("tools-label");
+    const submitBtn       = document.getElementById("submit-btn");
+    const dsarInput       = document.getElementById("dsar-input");
 
     function showError(msg) {
       responseCard.classList.add("visible");
-      activity.classList.remove("visible");
+      toolsBar.classList.remove("visible");
       responseContent.innerHTML = '<div class="error-msg">' + msg + '</div>';
       submitBtn.disabled = false;
     }
 
     async function submitDSAR() {
-      var message = dsarInput.value.trim();
+      const message = dsarInput.value.trim();
       if (!message) return;
 
       // Reset UI
-      activityLog.innerHTML = "";
       responseContent.innerHTML = "";
       responseCard.classList.add("visible");
-      activity.classList.add("visible");
-      activity.open = true;
-      activitySummary.innerHTML =
-        '<div class="spinner"></div><span>Agent is analyzing...</span>';
+      toolsBar.classList.add("visible");
+      toolsLabel.textContent = "Agent is analyzing (this may take a minute)...";
       submitBtn.disabled = true;
 
-      // Tracks the live narration element being streamed into
-      var liveEl = null;
-      var currentText = "";
-
-      function flushNarration() {
-        if (liveEl && currentText.trim()) {
-          liveEl.classList.remove("live");
-          activityLog.appendChild(document.createElement("br"));
-        }
-        liveEl = null;
-        currentText = "";
-      }
-
-      function appendContent(text) {
-        currentText += text;
-        if (!liveEl) {
-          liveEl = document.createElement("p");
-          liveEl.className = "activity-narration";
-          activityLog.appendChild(liveEl);
-        }
-        liveEl.textContent = currentText.replace(/([.!?])(?=[A-Z])/g, "$1\n");
-        activityLog.scrollTop = activityLog.scrollHeight;
-      }
-
       try {
-        var res = await fetch("/api/analyze", {
+        const res = await fetch("/api/analyze", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ message: message }),
+          body: JSON.stringify({ message }),
         });
 
+        const data = await res.json();
+
         if (!res.ok) {
-          var errData = await res.json();
-          throw new Error(errData.error || "API error (" + res.status + ")");
+          throw new Error(data.error || "API error (" + res.status + ")");
         }
 
-        if (!res.body) throw new Error("Streaming not supported — try Chrome, Firefox, or Safari 14.1+");
-        var reader = res.body.getReader();
-        var decoder = new TextDecoder();
-        var buffer = "";
-        var report = "";
-
-        while (true) {
-          var chunk = await reader.read();
-          if (!chunk.done) {
-            buffer += decoder.decode(chunk.value, { stream: true });
-          } else {
-            buffer += decoder.decode(); // flush remaining bytes
+        toolsBar.classList.remove("visible");
+        if (data.response) {
+          responseContent.innerHTML = marked.parse(data.response);
+          if (data.toolsUsed && data.toolsUsed.length > 0) {
+            var p = document.createElement("p");
+            p.style.cssText = "margin-top:1rem;font-size:0.8rem;color:#888;";
+            p.textContent = "Tools used: " + data.toolsUsed.join(", ");
+            responseContent.appendChild(p);
           }
-
-          var idx;
-          while ((idx = buffer.indexOf("\n\n")) !== -1) {
-            var raw = buffer.slice(0, idx).trim();
-            buffer = buffer.slice(idx + 2);
-            if (!raw.startsWith("data: ")) continue;
-
-            var event;
-            try { event = JSON.parse(raw.slice(6)); } catch (_) { continue; }
-
-            switch (event.type) {
-              case "content":
-                appendContent(event.text);
-                break;
-
-              case "tool":
-                flushNarration();
-                break;
-
-              case "turn":
-                flushNarration();
-                var turnEl = document.createElement("p");
-                turnEl.className = "activity-turn";
-                turnEl.textContent = "Continuing analysis (turn " + event.number + ")...";
-                activityLog.appendChild(turnEl);
-                break;
-
-              case "done":
-                report = event.report || "";
-                break;
-
-              case "error":
-                throw new Error(event.message);
-            }
-          }
-
-          if (chunk.done) break;
-        }
-
-        // Remove the live streaming element from the activity log so the
-        // thinking steps keep their original formatting.
-        if (liveEl) liveEl.remove();
-
-        if (report) {
-          responseContent.innerHTML = marked.parse(report);
         } else {
           responseContent.textContent = "Agent returned an empty response.";
         }
-
-        // Collapse activity feed — user can re-open it
-        activity.open = false;
-        activitySummary.innerHTML = "<span>Agent activity</span>";
-
       } catch (err) {
         showError(err.message);
       } finally {
+        toolsBar.classList.remove("visible");
         submitBtn.disabled = false;
       }
     }

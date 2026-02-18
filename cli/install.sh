@@ -68,7 +68,7 @@ detect_os() {
             echo "linux"
             ;;
         Darwin*)
-            echo "darwin"
+            echo "macos"
             ;;
         CYGWIN*|MINGW*|MSYS*)
             error "Windows is not supported. Please use WSL (Windows Subsystem for Linux)."
@@ -87,10 +87,10 @@ detect_arch() {
     ARCH="$(uname -m)"
     case "$ARCH" in
         x86_64|amd64)
-            echo "x64"
+            echo "x86_64"
             ;;
         arm64|aarch64)
-            echo "arm64"
+            echo "aarch64"
             ;;
         *)
             error "Unsupported architecture: $ARCH"
@@ -322,6 +322,11 @@ main() {
     if [ ! -f "$INSTALL_PATH" ]; then
         error "Installation failed"
         exit 1
+    fi
+
+    # Re-sign on macOS (file operations can invalidate linker-signed code signatures)
+    if [ "$OS" = "macos" ] && command -v codesign >/dev/null 2>&1; then
+        codesign --sign - --force "$INSTALL_PATH" 2>/dev/null || true
     fi
 
     success "Installation complete"
