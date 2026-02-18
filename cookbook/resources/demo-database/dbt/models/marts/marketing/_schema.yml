@@ -1,0 +1,38 @@
+version: 2
+
+models:
+  - name: fct_campaign_performance
+    description: |
+      Campaign-level marketing performance metrics.
+      Use for ROI analysis and campaign optimization.
+    columns:
+      - name: campaign_id
+        description: Unique campaign identifier
+        data_tests:
+          - unique
+          - not_null
+      - name: overall_ctr
+        description: Click-through rate as percentage
+      - name: cost_per_acquisition
+        description: Cost per conversion in dollars
+      - name: estimated_roi_pct
+        description: Estimated return on investment percentage
+      - name: ctr_tier
+        description: Performance tier based on CTR
+      - name: conversion_tier
+        description: Performance tier based on conversion rate
+
+  - name: fct_channel_performance
+    description: |
+      Channel-level marketing aggregations.
+      Compare performance across email, social, and paid search.
+    columns:
+      - name: channel
+        description: Marketing channel (email, social, paid_search)
+        data_tests:
+          - unique
+          - not_null
+      - name: overall_ctr
+        description: Channel-wide click-through rate
+      - name: avg_cpa
+        description: Average cost per acquisition across channel

@@ -1,0 +1,59 @@
+{
+  "name": "n8n-nodes-metadata",
+  "version": "0.0.2",
+  "description": "n8n node to invoke OpenMetadata DynamicAgents",
+  "keywords": [
+    "n8n-community-node-package",
+    "openmetadata",
+    "dynamic-agent",
+    "ai",
+    "metadata"
+  ],
+  "license": "SEE LICENSE IN LICENSE",
+  "homepage": "https://github.com/open-metadata/metadata-ai-sdk",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/open-metadata/metadata-ai-sdk.git"
+  },
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc && npm run copy:icons",
+    "copy:icons": "find nodes \\( -name '*.svg' -o -name '*.png' \\) -exec cp {} dist/nodes/MetadataAgent/ \\;",
+    "dev": "tsc --watch",
+    "lint": "eslint nodes credentials --ext .ts",
+    "lint:fix": "eslint nodes credentials --ext .ts --fix",
+    "test": "vitest run --exclude '**/integration*'",
+    "test:integration": "vitest run tests/integration.test.ts",
+    "prepublishOnly": "npm run build"
+  },
+  "files": [
+    "dist"
+  ],
+  "n8n": {
+    "n8nNodesApiVersion": 1,
+    "credentials": [
+      "dist/credentials/MetadataApi.credentials.js"
+    ],
+    "nodes": [
+      "dist/nodes/MetadataAgent/MetadataAgent.node.js"
+    ]
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.0",
+    "@typescript-eslint/eslint-plugin": "^6.0.0",
+    "@typescript-eslint/parser": "^6.0.0",
+    "eslint": "^8.56.0",
+    "n8n-workflow": "^1.20.0",
+    "typescript": "^5.3.0",
+    "vitest": "^1.0.0"
+  },
+  "dependencies": {
+    "@openmetadata/metadata-ai": "file:../typescript"
+  },
+  "peerDependencies": {
+    "n8n-workflow": "*"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
