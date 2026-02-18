@@ -134,10 +134,12 @@ git add -A && git commit -m "Bump version to 0.2.0"
 git push
 
 # 3. Create a GitHub Release (triggers CI)
-make release
+make release              # from current branch
+# or
+make release B=main       # from a specific branch
 ```
 
-`make release` uses `gh release create` to create a release with tag `v0.2.0`. This triggers the release workflow which publishes all SDKs in parallel:
+`make release` uses `gh release create` to create a release targeting the current branch (or the branch specified with `B=`). This triggers the release workflow which publishes all SDKs in parallel:
 
 | SDK | Target | Workflow |
 |-----|--------|----------|

@@ -48,6 +48,7 @@ Your `METADATA_HOST` is your OpenMetadata/Collate server URL:
 | [Error Handling](error-handling.md) | Exception handling patterns |
 | [LangChain Integration](langchain.md) | Use Dynamic Agents with LangChain |
 | [MCP Tools](mcp.md) | Use MCP tools with LangChain/OpenAI |
+| [Releasing](releasing.md) | How to publish a new SDK release |
 
 ## Installation
 

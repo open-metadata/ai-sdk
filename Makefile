@@ -4,6 +4,8 @@
 #   make version              # Show current version
 #   make check-versions       # Validate all versions match
 #   make bump-version V=0.2.0 # Update all SDKs to new version
+#   make release              # Create GitHub Release from current branch
+#   make release B=main       # Create GitHub Release from a specific branch
 #   make tag-all              # Create git tags for all components
 #   make tag-cli              # Create tag for CLI only
 #   make tag-python           # Create tag for Python only
@@ -152,19 +154,21 @@ tag-n8n:  ## Create git tag for n8n release
 	@echo "Creating tag: n8n-v$(CURRENT_VERSION)"
 	@git tag -a "n8n-v$(CURRENT_VERSION)" -m "n8n node release $(CURRENT_VERSION)"
 
-release:  ## Create a GitHub Release (triggers CI to publish all SDKs)
+release:  ## Create a GitHub Release (usage: make release [B=branch])
 	@if ! command -v gh >/dev/null 2>&1; then \
 		echo "Error: GitHub CLI (gh) is not installed. Install from https://cli.github.com/"; \
 		exit 1; \
 	fi
 	@$(MAKE) check-versions --no-print-directory
 	@echo ""
-	@echo "Creating GitHub Release v$(CURRENT_VERSION)..."
+	$(eval BRANCH := $(or $(B),$(shell git rev-parse --abbrev-ref HEAD)))
+	@echo "Creating GitHub Release v$(CURRENT_VERSION) from branch '$(BRANCH)'..."
 	@gh release create "v$(CURRENT_VERSION)" \
 		--title "v$(CURRENT_VERSION)" \
+		--target "$(BRANCH)" \
 		--generate-notes
 	@echo ""
-	@echo "Release v$(CURRENT_VERSION) created! CI will now:"
+	@echo "Release v$(CURRENT_VERSION) created from branch '$(BRANCH)'! CI will now:"
 	@echo "  - Publish Python SDK to PyPI"
 	@echo "  - Publish TypeScript SDK to npm"
 	@echo "  - Publish Java SDK to Maven Central"
