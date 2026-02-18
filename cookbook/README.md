@@ -16,6 +16,7 @@ Practical examples and workflows for integrating Metadata AI into your data plat
 | [DQ Failure Slack Notifications](./dq-failure-slack-notifications/) | Automatically analyze Data Quality failures and send impact summaries to Slack | n8n, Slack |
 | [dbt Model PR Review](./dbt-pr-review/) | Automatically review dbt model changes for downstream impact and DQ risks | GitHub Actions, Python SDK |
 | [GDPR DSAR Compliance](./gdpr-dsar-compliance/) | Trace PII across your catalog to handle GDPR deletion and access requests | TypeScript SDK, Browser |
+| [MCP Metadata Chatbot](./mcp-metadata-chatbot/) | Multi-agent chatbot with semantic search, lineage exploration, and metadata curation via agent-to-agent delegation | Python SDK, LangChain |
 
 ## Getting Started
 
