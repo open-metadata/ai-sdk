@@ -49,5 +49,5 @@ jobs:
           repo: open-metadata/openmetadata-collate
           token: ${{ secrets.COLLATE_PAT }}
           wait-for-completion: true
-          wait-for-completion-timeout: 5400
+          wait-for-completion-timeout: 90m
           inputs: '{ "sha": "${{ github.event.pull_request.head.sha || github.sha }}", "event": "${{ github.event_name }}", "run_chat_tests": "${{ inputs.run_chat_tests || false }}" }'
