@@ -47,9 +47,12 @@ jobs:
         run: |
           VERSION=${{ steps.version.outputs.version }}
           FILE_VERSION=$(cat VERSION | tr -d '[:space:]')
-          if [ "$FILE_VERSION" != "$VERSION" ]; then
-            echo "::error::VERSION file ($FILE_VERSION) does not match release tag ($VERSION)"
-            echo "Run 'make bump-version V=$VERSION' and push before creating the release."
+          # Compare only first 3 components (major.minor.patch), allowing tag suffixes like 0.0.2.1
+          TAG_BASE=$(echo "$VERSION" | cut -d. -f1-3)
+          FILE_BASE=$(echo "$FILE_VERSION" | cut -d. -f1-3)
+          if [ "$FILE_BASE" != "$TAG_BASE" ]; then
+            echo "::error::VERSION file ($FILE_VERSION) does not match release tag ($VERSION) - comparing first 3 components"
+            echo "Run 'make bump-version V=$TAG_BASE' and push before creating the release."
             exit 1
           fi
 
