@@ -66,7 +66,7 @@ check-versions:  ## Validate all SDK versions match the VERSION file
 		ERRORS=1; \
 	fi; \
 	\
-	JAVA_VER=$$(grep -A1 '<artifactId>metadata-ai-sdk</artifactId>' $(JAVA_POM) | grep '<version>' | sed 's/.*<version>\(.*\)<\/version>.*/\1/'); \
+	JAVA_VER=$$(grep -A1 '<artifactId>metadata-ai</artifactId>' $(JAVA_POM) | grep '<version>' | sed 's/.*<version>\(.*\)<\/version>.*/\1/'); \
 	if [ "$$JAVA_VER" = "$(CURRENT_VERSION)" ]; then \
 		echo "  [OK] Java:           $$JAVA_VER"; \
 	else \
@@ -117,7 +117,7 @@ sync-versions:  ## Sync all SDK versions to match VERSION file
 	@sed -i.bak 's/"version": ".*"/"version": "$(CURRENT_VERSION)"/' $(TS_PACKAGE) && rm -f $(TS_PACKAGE).bak
 	@echo "  Updated: $(TS_PACKAGE)"
 	@# Java - pom.xml (update version after artifactId line)
-	@sed -i.bak '/<artifactId>metadata-ai-sdk<\/artifactId>/{ n; s/<version>.*<\/version>/<version>$(CURRENT_VERSION)<\/version>/; }' $(JAVA_POM) && rm -f $(JAVA_POM).bak
+	@sed -i.bak '/<artifactId>metadata-ai<\/artifactId>/{ n; s/<version>.*<\/version>/<version>$(CURRENT_VERSION)<\/version>/; }' $(JAVA_POM) && rm -f $(JAVA_POM).bak
 	@echo "  Updated: $(JAVA_POM)"
 	@# n8n - package.json
 	@sed -i.bak 's/"version": ".*"/"version": "$(CURRENT_VERSION)"/' $(N8N_PACKAGE) && rm -f $(N8N_PACKAGE).bak
