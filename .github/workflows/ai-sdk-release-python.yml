@@ -70,6 +70,12 @@ jobs:
             exit 1
           fi
 
+      - name: Resolve LICENSE symlink
+        run: |
+          if [ -L LICENSE ]; then
+            cp --remove-destination "$(readlink -f LICENSE)" LICENSE
+          fi
+
       - name: Build package
         run: python -m build
 
