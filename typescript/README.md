@@ -1,11 +1,11 @@
-# @openmetadata/ai-sdk
+# @openmetadata/metadata-ai
 
 TypeScript SDK for interacting with OpenMetadata Dynamic Agents.
 
 ## Installation
 
 ```bash
-npm install @openmetadata/ai-sdk
+npm install @openmetadata/metadata-ai
 ```
 
 **Requirements**: Node.js >= 18.0.0 (uses native `fetch`)
@@ -13,7 +13,7 @@ npm install @openmetadata/ai-sdk
 ## Quick Start
 
 ```typescript
-import { MetadataAI } from '@openmetadata/ai-sdk';
+import { MetadataAI } from '@openmetadata/metadata-ai';
 
 // Initialize the client
 const client = new MetadataAI({
@@ -204,7 +204,7 @@ import {
   AgentExecutionError,
   NetworkError,
   TimeoutError,
-} from '@openmetadata/ai-sdk';
+} from '@openmetadata/metadata-ai';
 
 try {
   const response = await client.agent('MyAgent').invoke('Hello');

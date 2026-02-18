@@ -102,12 +102,12 @@ print(conv.send("Create tests"))  # auto-tracks conversationId
 
 ---
 
-## TypeScript SDK (`@openmetadata/ai-sdk`)
+## TypeScript SDK (`@openmetadata/metadata-ai`)
 
 ### MetadataAI Client
 
 ```typescript
-import { MetadataAI } from '@openmetadata/ai-sdk';
+import { MetadataAI } from '@openmetadata/metadata-ai';
 
 const client = new MetadataAI({
   host: 'https://your-org.getcollate.io',
@@ -141,7 +141,7 @@ const client = new MetadataAI({
 
 ---
 
-## Java SDK (`io.openmetadata:metadata-ai-sdk`)
+## Java SDK (`io.openmetadata:metadata-ai`)
 
 ### MetadataAI Client
 

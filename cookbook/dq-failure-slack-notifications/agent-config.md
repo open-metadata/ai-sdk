@@ -126,7 +126,7 @@ print(f"Created agent: {agent.name}")
 ## Using the TypeScript SDK
 
 ```typescript
-import { MetadataAI } from '@openmetadata/ai-sdk';
+import { MetadataAI } from '@openmetadata/metadata-ai';
 
 const client = new MetadataAI({
   host: 'https://your-instance.getcollate.io',

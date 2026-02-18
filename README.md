@@ -8,8 +8,8 @@ SDKs and CLI for invoking Metadata Dynamic Agents from your AI applications.
 |-----------|----------|---------|--------|
 | CLI | Rust | `metadata-ai` | ✅ Ready |
 | Python SDK | Python | `metadata-ai` | ✅ Ready |
-| TypeScript SDK | TypeScript | `@openmetadata/ai-sdk` | ✅ Ready |
-| Java SDK | Java | `io.openmetadata:metadata-ai-sdk` | ✅ Ready |
+| TypeScript SDK | TypeScript | `@openmetadata/metadata-ai` | ✅ Ready |
+| Java SDK | Java | `io.openmetadata:metadata-ai` | ✅ Ready |
 | n8n Integration | TypeScript | `n8n-nodes-metadata` | ✅ Ready |
 
 ## Quick Start
@@ -50,11 +50,11 @@ print(response.response)
 ### TypeScript
 
 ```bash
-npm install @openmetadata/ai-sdk
+npm install @openmetadata/metadata-ai
 ```
 
 ```typescript
-import { MetadataAI } from '@openmetadata/ai-sdk';
+import { MetadataAI } from '@openmetadata/metadata-ai';
 
 const client = new MetadataAI({
   host: 'https://your-metadata-instance.com',
@@ -72,7 +72,7 @@ console.log(response.response);
 ```xml
 <dependency>
   <groupId>io.openmetadata</groupId>
-  <artifactId>metadata-ai-sdk</artifactId>
+  <artifactId>metadata-ai</artifactId>
   <version>0.1.0</version>
 </dependency>
 ```
@@ -142,8 +142,8 @@ make release
 | SDK | Target | Workflow |
 |-----|--------|----------|
 | Python | PyPI (`metadata-ai`) | `ai-sdk-release-python.yml` |
-| TypeScript | npm (`@openmetadata/ai-sdk`) | `ai-sdk-release-typescript.yml` |
-| Java | Maven Central (`io.openmetadata:metadata-ai-sdk`) | `ai-sdk-release-java.yml` |
+| TypeScript | npm (`@openmetadata/metadata-ai`) | `ai-sdk-release-typescript.yml` |
+| Java | Maven Central (`io.openmetadata:metadata-ai`) | `ai-sdk-release-java.yml` |
 | CLI | GitHub Release binaries | `ai-sdk-release-cli.yml` |
 
 ### Individual SDK Releases
@@ -161,7 +161,7 @@ The Java secrets are reused from the `open-metadata/OpenMetadata` org. Only `NPM
 
 | Secret | Used By | Description |
 |--------|---------|-------------|
-| `NPM_TOKEN` | TypeScript | npm access token with publish permission for `@openmetadata/ai-sdk` |
+| `NPM_TOKEN` | TypeScript | npm access token with publish permission for `@openmetadata/metadata-ai` |
 | `OSSRH_USERNAME` | Java | Sonatype OSSRH username (org secret) |
 | `OSSRH_TOKEN` | Java | Sonatype OSSRH token (org secret) |
 | `OSSRH_GPG_SECRET_KEY` | Java | GPG private key for signing (org secret) |
