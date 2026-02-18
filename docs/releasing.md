@@ -15,7 +15,9 @@ This document explains how to release the Metadata AI SDK. A single release publ
 make bump-version V=0.3.0
 git add -A && git commit -m "Bump version to 0.3.0"
 git push
-make release
+make release              # release from current branch
+# or
+make release B=main       # release from a specific branch
 ```
 
 That's it. CI handles the rest.
@@ -64,13 +66,19 @@ Wait for CI to pass on `main` before creating the release.
 make release
 ```
 
+By default this targets the **current branch**. To release from a specific branch:
+
+```bash
+make release B=main
+```
+
 This command:
 
 1. Checks that `gh` (GitHub CLI) is installed
 2. Validates all SDK versions match via `make check-versions`
-3. Runs `gh release create "v0.3.0" --title "v0.3.0" --generate-notes`
+3. Runs `gh release create "v0.3.0" --title "v0.3.0" --target <branch> --generate-notes`
 
-The `--generate-notes` flag auto-generates release notes from commits since the last release.
+The `--target` flag tells GitHub which branch (or commit) the tag should point to. The `--generate-notes` flag auto-generates release notes from commits since the last release.
 
 ### 5. CI takes over
 
@@ -95,6 +103,8 @@ The `VERSION` file at the repository root is the single source of truth. All ver
 | `make check-versions` | Verify all SDK manifests match `VERSION` |
 | `make bump-version V=X.Y.Z` | Update `VERSION` and sync all SDKs |
 | `make sync-versions` | Re-sync all SDK manifests to match `VERSION` (used internally by `bump-version`) |
+| `make release` | Create a GitHub Release from the current branch |
+| `make release B=main` | Create a GitHub Release from a specific branch |
 
 If versions somehow drift out of sync, `make sync-versions` rewrites all manifests to match the `VERSION` file.
 
