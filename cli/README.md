@@ -9,7 +9,7 @@ Command-line tool for interacting with Metadata AI Agents.
 Install the Metadata AI CLI with a single command:
 
 ```bash
-curl -sSL https://open-metadata.org/cli | sh
+curl -sSL https://raw.githubusercontent.com/open-metadata/metadata-ai-sdk/main/cli/install.sh | sh
 ```
 
 This script will:

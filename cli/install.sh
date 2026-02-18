@@ -3,7 +3,7 @@
 # https://github.com/open-metadata/metadata-ai-sdk
 #
 # Usage:
-#   curl -sSL https://open-metadata.org/cli | sh
+#   curl -sSL https://raw.githubusercontent.com/open-metadata/metadata-ai-sdk/main/cli/install.sh | sh
 #
 # This script detects your OS and architecture, downloads the appropriate
 # binary from GitHub releases, and installs it to a location in your PATH.

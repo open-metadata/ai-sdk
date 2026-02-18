@@ -18,7 +18,7 @@ SDKs and CLI for invoking Metadata Dynamic Agents from your AI applications.
 
 ```bash
 # Install
-curl -sSL https://open-metadata.org/cli | sh
+curl -sSL https://raw.githubusercontent.com/open-metadata/metadata-ai-sdk/main/cli/install.sh | sh
 
 # Configure
 metadata-ai configure
@@ -188,7 +188,7 @@ The CLI is distributed as pre-built binaries attached to GitHub Releases. Users 
 
 ```bash
 # Automatic installer (recommended)
-curl -sSL https://open-metadata.org/cli | sh
+curl -sSL https://raw.githubusercontent.com/open-metadata/metadata-ai-sdk/main/cli/install.sh | sh
 
 # Or download manually from the releases page
 # https://github.com/open-metadata/metadata-ai-sdk/releases
