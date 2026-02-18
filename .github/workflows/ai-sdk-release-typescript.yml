@@ -4,6 +4,12 @@ on:
   push:
     tags:
       - 'typescript-v*'
+  workflow_call:
+    inputs:
+      version:
+        required: true
+        type: string
+        description: 'Version to release (e.g., 0.2.0)'
 
 permissions:
   contents: read
@@ -17,7 +23,7 @@ jobs:
   build-and-publish:
     name: Build and Publish to npm
     runs-on: ubuntu-latest
-    environment: release
+    environment: publish
     defaults:
       run:
         working-directory: typescript
@@ -43,9 +49,15 @@ jobs:
       - name: Build
         run: npm run build
 
-      - name: Extract version from tag
+      - name: Extract version
         id: version
-        run: echo "version=${GITHUB_REF#refs/tags/typescript-v}" >> $GITHUB_OUTPUT
+        run: |
+          INPUT_VERSION="${{ inputs.version || '' }}"
+          if [ -n "$INPUT_VERSION" ]; then
+            echo "version=$INPUT_VERSION" >> $GITHUB_OUTPUT
+          else
+            echo "version=${GITHUB_REF#refs/tags/typescript-v}" >> $GITHUB_OUTPUT
+          fi
 
       - name: Verify package version matches tag
         run: |

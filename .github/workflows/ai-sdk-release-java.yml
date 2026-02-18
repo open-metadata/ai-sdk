@@ -4,6 +4,12 @@ on:
   push:
     tags:
       - 'java-v*'
+  workflow_call:
+    inputs:
+      version:
+        required: true
+        type: string
+        description: 'Version to release (e.g., 0.2.0)'
 
 permissions:
   contents: read
@@ -16,7 +22,7 @@ jobs:
   build-and-publish:
     name: Build and Publish to Maven Central
     runs-on: ubuntu-latest
-    environment: release
+    environment: publish
     defaults:
       run:
         working-directory: java
@@ -31,15 +37,31 @@ jobs:
           java-version: '11'
           distribution: 'temurin'
           cache: 'maven'
-          server-id: ossrh
+          server-id: central
           server-username: MAVEN_USERNAME
           server-password: MAVEN_PASSWORD
-          gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }}
-          gpg-passphrase: GPG_PASSPHRASE
+          gpg-private-key: ${{ secrets.OSSRH_GPG_SECRET_KEY }}
+          gpg-passphrase: MAVEN_GPG_PASSPHRASE
 
-      - name: Extract version from tag
+      - name: Setup settings-security.xml
+        run: |
+          rm -rf ~/.m2/settings-security.xml
+          echo "<settingsSecurity><master>${{ secrets.MAVEN_MASTER_PASSWORD }}</master></settingsSecurity>" > ~/.m2/settings-security.xml
+
+      - name: Install GPG secret key
+        run: |
+          cat <(echo -e "${{ secrets.OSSRH_GPG_SECRET_KEY }}") | gpg --batch --import
+          gpg --list-secret-keys --keyid-format LONG
+
+      - name: Extract version
         id: version
-        run: echo "version=${GITHUB_REF#refs/tags/java-v}" >> $GITHUB_OUTPUT
+        run: |
+          INPUT_VERSION="${{ inputs.version || '' }}"
+          if [ -n "$INPUT_VERSION" ]; then
+            echo "version=$INPUT_VERSION" >> $GITHUB_OUTPUT
+          else
+            echo "version=${GITHUB_REF#refs/tags/java-v}" >> $GITHUB_OUTPUT
+          fi
 
       - name: Verify pom.xml version matches tag
         run: |
@@ -55,10 +77,12 @@ jobs:
 
       - name: Deploy to Maven Central
         run: |
-          mvn deploy -P release \
+          mvn deploy -Prelease \
+            --no-transfer-progress \
+            --batch-mode \
             -DskipTests \
-            -Dgpg.passphrase=${{ secrets.GPG_PASSPHRASE }}
+            -Dgpg.passphrase=${{ secrets.OSSRH_GPG_SECRET_KEY_PASSWORD }}
         env:
-          MAVEN_USERNAME: ${{ secrets.MAVEN_USERNAME }}
-          MAVEN_PASSWORD: ${{ secrets.MAVEN_PASSWORD }}
-          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+          MAVEN_USERNAME: ${{ secrets.OSSRH_USERNAME }}
+          MAVEN_PASSWORD: ${{ secrets.OSSRH_TOKEN }}
+          MAVEN_GPG_PASSPHRASE: ${{ secrets.OSSRH_GPG_SECRET_KEY_PASSWORD }}

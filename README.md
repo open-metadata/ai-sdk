@@ -119,6 +119,81 @@ make check-versions   # Validate all versions match
 make bump-version V=0.2.0  # Update all SDKs
 ```
 
+## Releasing
+
+Creating a GitHub Release triggers CI to publish all SDKs automatically.
+
+### Release Flow
+
+```bash
+# 1. Bump version across all SDKs
+make bump-version V=0.2.0
+
+# 2. Commit and push
+git add -A && git commit -m "Bump version to 0.2.0"
+git push
+
+# 3. Create a GitHub Release (triggers CI)
+make release
+```
+
+`make release` uses `gh release create` to create a release with tag `v0.2.0`. This triggers the release workflow which publishes all SDKs in parallel:
+
+| SDK | Target | Workflow |
+|-----|--------|----------|
+| Python | PyPI (`metadata-ai`) | `ai-sdk-release-python.yml` |
+| TypeScript | npm (`@openmetadata/ai-sdk`) | `ai-sdk-release-typescript.yml` |
+| Java | Maven Central (`io.openmetadata:metadata-ai-sdk`) | `ai-sdk-release-java.yml` |
+| CLI | GitHub Release binaries | `ai-sdk-release-cli.yml` |
+
+### Individual SDK Releases
+
+To release a single SDK (e.g., for a hotfix), push an SDK-specific tag:
+
+```bash
+make tag-python    # Creates python-v0.2.0 tag
+git push origin python-v0.2.0
+```
+
+### Required Secrets
+
+The Java secrets are reused from the `open-metadata/OpenMetadata` org. Only `NPM_TOKEN` needs to be created.
+
+| Secret | Used By | Description |
+|--------|---------|-------------|
+| `NPM_TOKEN` | TypeScript | npm access token with publish permission for `@openmetadata/ai-sdk` |
+| `OSSRH_USERNAME` | Java | Sonatype OSSRH username (org secret) |
+| `OSSRH_TOKEN` | Java | Sonatype OSSRH token (org secret) |
+| `OSSRH_GPG_SECRET_KEY` | Java | GPG private key for signing (org secret) |
+| `OSSRH_GPG_SECRET_KEY_PASSWORD` | Java | GPG key passphrase (org secret) |
+| `MAVEN_MASTER_PASSWORD` | Java | Maven master password for settings-security.xml (org secret) |
+
+`GITHUB_TOKEN` is provided automatically by GitHub Actions for CLI binary uploads.
+
+### Required Environment
+
+Create a GitHub environment named **`publish`** (**Settings → Environments → New environment**):
+
+- Optionally add **required reviewers** for release approval
+- The Python SDK uses **PyPI trusted publishing** (OIDC). Configure the trusted publisher on [pypi.org](https://pypi.org):
+  - Repository: `open-metadata/metadata-ai-sdk`
+  - Workflow: `ai-sdk-release-python.yml`
+  - Environment: `publish`
+
+### CLI Install Path
+
+The CLI is distributed as pre-built binaries attached to GitHub Releases. Users install via:
+
+```bash
+# Automatic installer (recommended)
+curl -sSL https://open-metadata.org/cli | sh
+
+# Or download manually from the releases page
+# https://github.com/open-metadata/metadata-ai-sdk/releases
+```
+
+The installer downloads the binary to `~/.local/bin/metadata-ai` (falls back to `/usr/local/bin/`).
+
 ## Development
 
 ```bash
