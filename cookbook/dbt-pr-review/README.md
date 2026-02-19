@@ -41,7 +41,7 @@ See [agent-config.md](./agent-config.md) for detailed setup instructions.
 
 ```bash
 # Create the Persona
-metadata-ai personas create \
+ai-sdk personas create \
   --name DBTReviewerPersona \
   --description "dbt model code review specialist" \
   --prompt "You are a senior data engineer reviewing dbt model changes. You:
@@ -54,7 +54,7 @@ metadata-ai personas create \
 Be concise. Focus on what matters: will this change break something downstream?"
 
 # Create the Agent
-metadata-ai agents create \
+ai-sdk agents create \
   --name DBTReviewer \
   --description "Reviews dbt model PRs for downstream impact and DQ risks" \
   --persona DBTReviewerPersona \
@@ -122,7 +122,7 @@ jobs:
 
       - name: Install dependencies
         if: steps.changes.outputs.files != ''
-        run: pip install metadata-ai
+        run: pip install ai-sdk
 
       - name: Run dbt review
         if: steps.changes.outputs.files != ''

@@ -1,6 +1,6 @@
 """Tests for MCP models."""
 
-from metadata_ai.mcp.models import MCPTool, ToolCallResult, ToolInfo, ToolParameter
+from ai_sdk.mcp.models import MCPTool, ToolCallResult, ToolInfo, ToolParameter
 
 
 class TestMCPToolEnum:
@@ -103,7 +103,7 @@ class TestMCPExceptions:
 
     def test_mcp_error_base(self):
         """MCPError is base exception."""
-        from metadata_ai.exceptions import MCPError
+        from ai_sdk.exceptions import MCPError
 
         error = MCPError("Something went wrong")
         assert str(error) == "Something went wrong"
@@ -111,7 +111,7 @@ class TestMCPExceptions:
 
     def test_mcp_tool_execution_error(self):
         """MCPToolExecutionError includes tool name."""
-        from metadata_ai.exceptions import MCPToolExecutionError
+        from ai_sdk.exceptions import MCPToolExecutionError
 
         error = MCPToolExecutionError(MCPTool.SEARCH_METADATA, "Connection failed")
         assert "search_metadata" in str(error)

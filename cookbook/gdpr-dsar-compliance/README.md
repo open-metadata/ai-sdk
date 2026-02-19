@@ -47,7 +47,7 @@ See [agent-config.md](./agent-config.md) for detailed setup instructions using t
 
 ```bash
 # Create the Persona
-metadata-ai personas create \
+ai-sdk personas create \
   --name GDPRAnalyst \
   --description "GDPR compliance and PII analysis specialist" \
   --prompt "You are a GDPR compliance analyst. You MUST execute the full analysis yourself and produce a complete compliance report. Do NOT stop to ask the user what to do next — complete every step autonomously.
@@ -69,7 +69,7 @@ STEP 4 — PRODUCE THE FULL COMPLIANCE REPORT with these sections:
 IMPORTANT: Do not present intermediate findings and ask the user for next steps. Execute the full workflow and deliver the complete report."
 
 # Create the Agent
-metadata-ai agents create \
+ai-sdk agents create \
   --name GDPRComplianceAnalyzer \
   --description "Handles GDPR deletion requests by searching for customer data, tracing lineage, and checking retention policies" \
   --persona GDPRAnalyst \
@@ -144,7 +144,7 @@ policies are compatible with a 90-day customer data retention window.
 The HTML file imports the [TypeScript SDK](../../typescript/) as a browser ES module bundled with esbuild. It uses the SDK's `agent().invoke()` method to get the complete compliance report after the agent finishes all tool calls (search, lineage, detail inspection):
 
 ```javascript
-import { MetadataAI } from './metadata-ai.js';
+import { MetadataAI } from './ai-sdk.js';
 
 const client = new MetadataAI({ host: HOST, token: TOKEN });
 
@@ -172,7 +172,7 @@ See [agent-config.md](./agent-config.md) for the full system prompt template.
 Combine this with n8n or a scheduled script to process DSARs from a queue:
 
 ```python
-from metadata_ai import MetadataAI
+from ai_sdk import MetadataAI
 
 client = MetadataAI(host="https://...", token="...")
 

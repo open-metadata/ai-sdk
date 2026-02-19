@@ -7,19 +7,19 @@ from typing import TYPE_CHECKING, Any
 from urllib.parse import quote
 
 if TYPE_CHECKING:
-    from metadata_ai._http import AsyncHTTPClient as AsyncHttpClient, HTTPClient as HttpClient
-    from metadata_ai.config import MetadataConfig
+    from ai_sdk._http import AsyncHTTPClient as AsyncHttpClient, HTTPClient as HttpClient
+    from ai_sdk.config import MetadataConfig
 
-from metadata_ai._http import AsyncHTTPClient, HTTPClient
-from metadata_ai.agent import AgentHandle
-from metadata_ai.auth import TokenAuth
-from metadata_ai.exceptions import (
+from ai_sdk._http import AsyncHTTPClient, HTTPClient
+from ai_sdk.agent import AgentHandle
+from ai_sdk.auth import TokenAuth
+from ai_sdk.exceptions import (
     AbilityNotFoundError,
     MetadataError,
     PersonaNotFoundError,
 )
-from metadata_ai.mcp._client import MCPClient
-from metadata_ai.models import (
+from ai_sdk.mcp._client import MCPClient
+from ai_sdk.models import (
     AbilityInfo,
     AgentInfo,
     BotInfo,
@@ -37,7 +37,7 @@ class MetadataAI:
     leverage semantic intelligence capabilities in your AI applications.
 
     Usage:
-        from metadata_ai.client import MetadataAI
+        from ai_sdk.client import MetadataAI
 
         client = MetadataAI(
             host="https://metadata.example.com",
@@ -77,8 +77,8 @@ class MetadataAI:
         response = await agent.acall("Analyze the customers table")
 
     From environment:
-        from metadata_ai.client import MetadataAI
-        from metadata_ai.config import MetadataConfig
+        from ai_sdk.client import MetadataAI
+        from ai_sdk.config import MetadataConfig
 
         config = MetadataConfig.from_env()  # Uses METADATA_HOST, METADATA_TOKEN
         client = MetadataAI.from_config(config)
@@ -418,7 +418,7 @@ class MetadataAI:
             AgentInfo for the created agent
 
         Example:
-            from metadata_ai import CreateAgentRequest
+            from ai_sdk import CreateAgentRequest
 
             request = CreateAgentRequest(
                 name="MyAgent",
@@ -459,7 +459,7 @@ class MetadataAI:
             RuntimeError: If async client is not available
 
         Example:
-            from metadata_ai import CreateAgentRequest
+            from ai_sdk import CreateAgentRequest
 
             request = CreateAgentRequest(
                 name="MyAgent",
@@ -882,8 +882,8 @@ class MetadataAI:
             MetadataAI client
 
         Example:
-            from metadata_ai.client import MetadataAI
-            from metadata_ai.config import MetadataConfig
+            from ai_sdk.client import MetadataAI
+            from ai_sdk.config import MetadataConfig
 
             # From environment variables
             config = MetadataConfig.from_env()
@@ -894,7 +894,7 @@ class MetadataAI:
             client = MetadataAI.from_config(config)
         """
         if config.debug:
-            from metadata_ai._logging import set_debug
+            from ai_sdk._logging import set_debug
 
             set_debug(True)
 

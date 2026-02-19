@@ -78,7 +78,7 @@ This pattern is powerful because:
 ## Installation
 
 ```bash
-pip install metadata-ai[langchain] langchain langchain-openai
+pip install ai-sdk[langchain] langchain langchain-openai
 ```
 
 ## Environment Setup

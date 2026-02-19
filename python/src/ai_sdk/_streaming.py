@@ -5,7 +5,7 @@ from __future__ import annotations
 import json
 from collections.abc import AsyncIterator, Iterator
 
-from metadata_ai.models import StreamEvent
+from ai_sdk.models import StreamEvent
 
 
 def _parse_event(event_str: str) -> StreamEvent | None:

@@ -3,9 +3,9 @@
 import pytest
 from pytest_httpx import HTTPXMock
 
-from metadata_ai._http import HTTPClient
-from metadata_ai.auth import TokenAuth
-from metadata_ai.exceptions import (
+from ai_sdk._http import HTTPClient
+from ai_sdk.auth import TokenAuth
+from ai_sdk.exceptions import (
     AgentExecutionError,
     AgentNotEnabledError,
     AgentNotFoundError,

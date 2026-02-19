@@ -15,7 +15,7 @@ import {
 	AgentNotFoundError,
 	AgentNotEnabledError,
 	AgentExecutionError,
-} from '@openmetadata/metadata-ai';
+} from '@openmetadata/ai-sdk';
 
 export class MetadataAgent implements INodeType {
 	description: INodeTypeDescription = {

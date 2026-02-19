@@ -18,7 +18,7 @@ MetadataError (base)
 ## Import Exceptions
 
 ```python
-from metadata_ai.exceptions import (
+from ai_sdk.exceptions import (
     MetadataError,
     AuthenticationError,
     AgentNotFoundError,
@@ -127,8 +127,8 @@ except MetadataError as e:
 ### Basic Pattern
 
 ```python
-from metadata_ai import MetadataAI
-from metadata_ai.exceptions import (
+from ai_sdk import MetadataAI
+from ai_sdk.exceptions import (
     AuthenticationError,
     AgentNotFoundError,
     AgentNotEnabledError,
@@ -298,8 +298,8 @@ except AgentExecutionError as e:
 Input validation happens at initialization:
 
 ```python
-from metadata_ai.auth import TokenAuth
-from metadata_ai import MetadataConfig
+from ai_sdk.auth import TokenAuth
+from ai_sdk import MetadataConfig
 
 # Token validation
 try:

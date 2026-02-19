@@ -71,8 +71,8 @@ pub fn run_interactive() -> CliResult<()> {
     save_credentials(&credentials)?;
 
     println!("\n{}", "Configuration saved successfully!".green());
-    println!("Config location: ~/.metadata-ai/config.toml");
-    println!("Credentials location: ~/.metadata-ai/credentials");
+    println!("Config location: ~/.ai-sdk/config.toml");
+    println!("Credentials location: ~/.ai-sdk/credentials");
 
     Ok(())
 }

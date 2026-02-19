@@ -21,17 +21,17 @@ cli/
 ├── src/
 │   ├── main.rs          # Entry point, CLI argument parsing
 │   ├── commands/        # Subcommand implementations
-│   │   ├── configure.rs # metadata-ai configure
-│   │   ├── agents.rs    # metadata-ai agents list/info
-│   │   ├── invoke.rs    # metadata-ai invoke
-│   │   └── chat.rs      # metadata-ai chat (TUI mode)
+│   │   ├── configure.rs # ai-sdk configure
+│   │   ├── agents.rs    # ai-sdk agents list/info
+│   │   ├── invoke.rs    # ai-sdk invoke
+│   │   └── chat.rs      # ai-sdk chat (TUI mode)
 │   ├── tui/             # Terminal UI components
 │   │   ├── mod.rs       # Module exports
 │   │   ├── app.rs       # Application state
 │   │   ├── ui.rs        # Layout and rendering
 │   │   └── markdown.rs  # Markdown renderer with syntax highlighting
 │   ├── client.rs        # HTTP client for Metadata API
-│   ├── config.rs        # Config file management (~/.metadata-ai/)
+│   ├── config.rs        # Config file management (~/.ai-sdk/)
 │   ├── streaming.rs     # SSE parser
 │   └── error.rs         # Error types
 ├── Cargo.toml
@@ -40,8 +40,8 @@ cli/
 
 ## Config Location
 
-- `~/.metadata-ai/config.toml` - Host and settings
-- `~/.metadata-ai/credentials` - Token (0600 permissions)
+- `~/.ai-sdk/config.toml` - Host and settings
+- `~/.ai-sdk/credentials` - Token (0600 permissions)
 - Environment override: `METADATA_HOST`, `METADATA_TOKEN`
 
 ## Key Dependencies
@@ -60,9 +60,9 @@ cli/
 The `chat` command launches an interactive terminal interface:
 
 ```bash
-metadata-ai chat              # Opens agent selector
-metadata-ai chat AgentName    # Opens chat with specific agent
-metadata-ai chat AgentName -c <conv-id>  # Resume conversation
+ai-sdk chat              # Opens agent selector
+ai-sdk chat AgentName    # Opens chat with specific agent
+ai-sdk chat AgentName -c <conv-id>  # Resume conversation
 ```
 
 ### TUI Features

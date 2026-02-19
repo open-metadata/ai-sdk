@@ -1,6 +1,6 @@
 //! Configuration management for Metadata AI CLI.
 //!
-//! Configuration is stored in `~/.metadata-ai/` with separate files for settings and credentials:
+//! Configuration is stored in `~/.ai-sdk/` with separate files for settings and credentials:
 //! - `config.toml`: Host URL, timeout, and other settings
 //! - `credentials`: Authentication token (separate for security)
 //!
@@ -13,7 +13,7 @@ use serde::{Deserialize, Serialize};
 use std::fs;
 use std::path::PathBuf;
 
-const CONFIG_DIR: &str = ".metadata-ai";
+const CONFIG_DIR: &str = ".ai-sdk";
 const CONFIG_FILE: &str = "config.toml";
 const CREDENTIALS_FILE: &str = "credentials";
 

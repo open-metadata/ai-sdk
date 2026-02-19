@@ -5,11 +5,11 @@ import json
 import pytest
 from pytest_httpx import HTTPXMock
 
-from metadata_ai.client import MetadataAI
+from ai_sdk.client import MetadataAI
 
 pytest.importorskip("langchain_core")
 
-from metadata_ai.integrations.langchain import (
+from ai_sdk.integrations.langchain import (
     MetadataAgentTool,
     create_metadata_tools,
 )

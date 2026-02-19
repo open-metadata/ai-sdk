@@ -4,7 +4,7 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from metadata_ai.agent import AgentHandle
+from ai_sdk.agent import AgentHandle
 
 
 class MockAsyncByteStream:

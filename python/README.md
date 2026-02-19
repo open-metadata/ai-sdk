@@ -5,19 +5,19 @@ Python SDK for invoking [Metadata](https://open-metadata.org) Dynamic Agents fro
 ## Installation
 
 ```bash
-pip install metadata-ai
+pip install ai-sdk
 ```
 
 With LangChain integration:
 
 ```bash
-pip install metadata-ai[langchain]
+pip install ai-sdk[langchain]
 ```
 
 ## Quick Start
 
 ```python
-from metadata_ai import MetadataAI
+from ai_sdk import MetadataAI
 
 client = MetadataAI(
     host="https://your-metadata-instance.com",
@@ -42,7 +42,7 @@ for event in client.agent("DataQualityPlannerAgent").stream("Analyze the custome
 
 ```python
 import asyncio
-from metadata_ai import MetadataAI
+from ai_sdk import MetadataAI
 
 async def main():
     client = MetadataAI(

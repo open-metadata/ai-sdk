@@ -35,28 +35,28 @@ jobs:
         include:
           - target: x86_64-apple-darwin
             os: macos-latest
-            artifact_name: metadata-ai
-            asset_name: metadata-ai-macos-x86_64
+            artifact_name: ai-sdk
+            asset_name: ai-sdk-macos-x86_64
           - target: aarch64-apple-darwin
             os: macos-latest
-            artifact_name: metadata-ai
-            asset_name: metadata-ai-macos-aarch64
+            artifact_name: ai-sdk
+            asset_name: ai-sdk-macos-aarch64
           - target: x86_64-unknown-linux-gnu
             os: ubuntu-latest
-            artifact_name: metadata-ai
-            asset_name: metadata-ai-linux-x86_64
+            artifact_name: ai-sdk
+            asset_name: ai-sdk-linux-x86_64
           - target: aarch64-unknown-linux-gnu
             os: ubuntu-latest
-            artifact_name: metadata-ai
-            asset_name: metadata-ai-linux-aarch64
+            artifact_name: ai-sdk
+            asset_name: ai-sdk-linux-aarch64
           - target: x86_64-pc-windows-msvc
             os: windows-latest
-            artifact_name: metadata-ai.exe
-            asset_name: metadata-ai-windows-x86_64
+            artifact_name: ai-sdk.exe
+            asset_name: ai-sdk-windows-x86_64
           - target: aarch64-pc-windows-msvc
             os: windows-latest
-            artifact_name: metadata-ai.exe
-            asset_name: metadata-ai-windows-aarch64
+            artifact_name: ai-sdk.exe
+            asset_name: ai-sdk-windows-aarch64
 
     steps:
       - name: Checkout code
@@ -179,38 +179,38 @@ jobs:
 
             **macOS (Intel)**
             ```bash
-            tar -xzf metadata-ai-macos-x86_64.tar.gz
-            sudo mv metadata-ai /usr/local/bin/
+            tar -xzf ai-sdk-macos-x86_64.tar.gz
+            sudo mv ai-sdk /usr/local/bin/
             ```
 
             **macOS (Apple Silicon)**
             ```bash
-            tar -xzf metadata-ai-macos-aarch64.tar.gz
-            sudo mv metadata-ai /usr/local/bin/
+            tar -xzf ai-sdk-macos-aarch64.tar.gz
+            sudo mv ai-sdk /usr/local/bin/
             ```
 
             **Linux (x86_64)**
             ```bash
-            tar -xzf metadata-ai-linux-x86_64.tar.gz
-            sudo mv metadata-ai /usr/local/bin/
+            tar -xzf ai-sdk-linux-x86_64.tar.gz
+            sudo mv ai-sdk /usr/local/bin/
             ```
 
             **Linux (ARM64)**
             ```bash
-            tar -xzf metadata-ai-linux-aarch64.tar.gz
-            sudo mv metadata-ai /usr/local/bin/
+            tar -xzf ai-sdk-linux-aarch64.tar.gz
+            sudo mv ai-sdk /usr/local/bin/
             ```
 
             **Windows (x86_64)**
             ```powershell
-            Expand-Archive metadata-ai-windows-x86_64.zip -DestinationPath .
-            # Move metadata-ai.exe to a directory in your PATH
+            Expand-Archive ai-sdk-windows-x86_64.zip -DestinationPath .
+            # Move ai-sdk.exe to a directory in your PATH
             ```
 
             **Windows (ARM64)**
             ```powershell
-            Expand-Archive metadata-ai-windows-aarch64.zip -DestinationPath .
-            # Move metadata-ai.exe to a directory in your PATH
+            Expand-Archive ai-sdk-windows-aarch64.zip -DestinationPath .
+            # Move ai-sdk.exe to a directory in your PATH
             ```
 
             ### Changes

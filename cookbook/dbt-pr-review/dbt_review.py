@@ -21,8 +21,8 @@ import subprocess
 import sys
 import time
 
-from metadata_ai import MetadataAI
-from metadata_ai.exceptions import (
+from ai_sdk import MetadataAI
+from ai_sdk.exceptions import (
     AgentExecutionError,
     AuthenticationError,
     MetadataError,
@@ -30,7 +30,7 @@ from metadata_ai.exceptions import (
 )
 
 AGENT_NAME = "DBTReviewer"
-COMMENT_MARKER = "<!-- metadata-ai-dbt-review -->"
+COMMENT_MARKER = "<!-- ai-sdk-dbt-review -->"
 
 
 def get_file_diff(filepath: str, base_ref: str) -> str:
@@ -109,7 +109,7 @@ def post_or_update_comment(pr_number: int, body: str) -> None:
             "--json",
             "comments",
             "--jq",
-            ".comments[] | select(.body | startswith(\"<!-- metadata-ai-dbt-review -->\")) | .url",
+            ".comments[] | select(.body | startswith(\"<!-- ai-sdk-dbt-review -->\")) | .url",
         ],
         capture_output=True,
         text=True,
@@ -153,7 +153,7 @@ def post_error_comment(pr_number: int, error: str) -> None:
 Please check the workflow logs for details.
 
 ---
-*Powered by [Metadata AI](https://github.com/open-metadata/metadata-ai-sdk)*
+*Powered by [Metadata AI](https://github.com/open-metadata/ai-sdk-sdk)*
 """
     post_or_update_comment(pr_number, body)
 
@@ -211,7 +211,7 @@ def main() -> int:
 {response}
 
 ---
-*Powered by [Metadata AI](https://github.com/open-metadata/metadata-ai-sdk)*
+*Powered by [Metadata AI](https://github.com/open-metadata/ai-sdk-sdk)*
 """
 
     post_or_update_comment(args.pr_number, review_body)

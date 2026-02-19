@@ -7,11 +7,11 @@ import uuid
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from metadata_ai.auth import TokenAuth
+    from ai_sdk.auth import TokenAuth
 
-from metadata_ai._http import HTTPClient
-from metadata_ai.exceptions import MCPError, MCPToolExecutionError
-from metadata_ai.mcp.models import MCPTool, ToolCallResult, ToolInfo, ToolParameter
+from ai_sdk._http import HTTPClient
+from ai_sdk.exceptions import MCPError, MCPToolExecutionError
+from ai_sdk.mcp.models import MCPTool, ToolCallResult, ToolInfo, ToolParameter
 
 
 def _filter_tools(
@@ -181,7 +181,7 @@ class MCPClient:
         Returns:
             List of dicts in OpenAI function calling schema format
         """
-        from metadata_ai.mcp._openai import build_openai_tools
+        from ai_sdk.mcp._openai import build_openai_tools
 
         tools = self.list_tools()
         filtered = _filter_tools(tools, include, exclude)
@@ -194,7 +194,7 @@ class MCPClient:
         Returns:
             Callable[[str, dict], dict] that executes tool calls
         """
-        from metadata_ai.mcp._openai import create_tool_executor
+        from ai_sdk.mcp._openai import create_tool_executor
 
         return create_tool_executor(self)
 
@@ -206,7 +206,7 @@ class MCPClient:
         """
         Get tools formatted for LangChain.
 
-        Requires: pip install metadata-ai[langchain]
+        Requires: pip install ai-sdk[langchain]
 
         Args:
             include: Only include these tools (allowlist)
@@ -215,7 +215,7 @@ class MCPClient:
         Returns:
             List of LangChain BaseTool instances
         """
-        from metadata_ai.mcp._langchain import build_langchain_tools
+        from ai_sdk.mcp._langchain import build_langchain_tools
 
         tools = self.list_tools()
         filtered = _filter_tools(tools, include, exclude)

@@ -106,7 +106,7 @@ jobs:
         working-directory: python
         run: |
           pip install pytest-cov -q
-          pytest --ignore=tests/integration -v --cov=src/metadata_ai --cov-report=term-missing --cov-report=xml
+          pytest --ignore=tests/integration -v --cov=src/ai_sdk --cov-report=term-missing --cov-report=xml
 
       - name: "Test: TypeScript SDK"
         id: test-typescript

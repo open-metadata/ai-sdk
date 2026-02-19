@@ -9,7 +9,7 @@ This guide covers using Metadata AI agents as tools in LangChain pipelines.
 Install the SDK with LangChain support:
 
 ```bash
-pip install metadata-ai[langchain]
+pip install ai-sdk[langchain]
 ```
 
 This installs `langchain-core` as a dependency.
@@ -17,8 +17,8 @@ This installs `langchain-core` as a dependency.
 ## Quick Start
 
 ```python
-from metadata_ai import MetadataAI
-from metadata_ai.integrations.langchain import MetadataAgentTool
+from ai_sdk import MetadataAI
+from ai_sdk.integrations.langchain import MetadataAgentTool
 from langchain_openai import ChatOpenAI
 from langchain.agents import AgentExecutor, create_openai_functions_agent
 from langchain_core.prompts import ChatPromptTemplate
@@ -57,8 +57,8 @@ print(result["output"])
 The simplest way to create a tool:
 
 ```python
-from metadata_ai import MetadataAI
-from metadata_ai.integrations.langchain import MetadataAgentTool
+from ai_sdk import MetadataAI
+from ai_sdk.integrations.langchain import MetadataAgentTool
 
 client = MetadataAI(host="...", token="...")
 tool = MetadataAgentTool.from_client(client, "DataQualityPlannerAgent")
@@ -95,7 +95,7 @@ By default:
 Create tools for specific agents:
 
 ```python
-from metadata_ai.integrations.langchain import create_metadata_tools
+from ai_sdk.integrations.langchain import create_metadata_tools
 
 tools = create_metadata_tools(client, [
     "DataQualityPlannerAgent",
@@ -238,7 +238,7 @@ If `enable_async=False` (default), `_arun` falls back to synchronous execution. 
 Handle Metadata-specific errors in your LangChain pipeline:
 
 ```python
-from metadata_ai.exceptions import (
+from ai_sdk.exceptions import (
     AgentNotFoundError,
     AgentNotEnabledError,
     AuthenticationError,
@@ -265,8 +265,8 @@ except AgentExecutionError as e:
 ### Data Quality Analysis Pipeline
 
 ```python
-from metadata_ai import MetadataAI
-from metadata_ai.integrations.langchain import MetadataAgentTool
+from ai_sdk import MetadataAI
+from ai_sdk.integrations.langchain import MetadataAgentTool
 from langchain_openai import ChatOpenAI
 from langchain.agents import AgentExecutor, create_openai_functions_agent
 from langchain_core.prompts import ChatPromptTemplate
@@ -323,8 +323,8 @@ print(result["output"])
 ### Multi-Agent Collaboration
 
 ```python
-from metadata_ai import MetadataAI
-from metadata_ai.integrations.langchain import create_metadata_tools
+from ai_sdk import MetadataAI
+from ai_sdk.integrations.langchain import create_metadata_tools
 from langchain_openai import ChatOpenAI
 from langchain.agents import AgentExecutor, create_openai_functions_agent
 from langchain_core.prompts import ChatPromptTemplate
@@ -434,7 +434,7 @@ def create_metadata_tools(
 
 ```python
 import time
-from metadata_ai.exceptions import RateLimitError
+from ai_sdk.exceptions import RateLimitError
 
 try:
     result = executor.invoke({"input": "..."})

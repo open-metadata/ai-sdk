@@ -27,10 +27,10 @@ OpenMetadata exposes an MCP server at the `/mcp` endpoint that provides tools fo
 
 ```bash
 # Core SDK
-pip install metadata-ai
+pip install ai-sdk
 
 # With LangChain support
-pip install metadata-ai[langchain]
+pip install ai-sdk[langchain]
 ```
 
 ## Set Environment Variables
@@ -48,7 +48,7 @@ export METADATA_TOKEN="eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9..."
 ### List Available Tools
 
 ```python
-from metadata_ai import MetadataAI, MetadataConfig
+from ai_sdk import MetadataAI, MetadataConfig
 
 # Create client from environment
 config = MetadataConfig.from_env()
@@ -65,8 +65,8 @@ client.close()
 ### Call a Tool Directly
 
 ```python
-from metadata_ai import MetadataAI, MetadataConfig
-from metadata_ai.mcp.models import MCPTool
+from ai_sdk import MetadataAI, MetadataConfig
+from ai_sdk.mcp.models import MCPTool
 
 config = MetadataConfig.from_env()
 client = MetadataAI.from_config(config)
@@ -92,7 +92,7 @@ Convert MCP tools to LangChain format for use with LangChain agents.
 ### Basic Usage
 
 ```python
-from metadata_ai import MetadataAI, MetadataConfig
+from ai_sdk import MetadataAI, MetadataConfig
 from langchain_openai import ChatOpenAI
 from langchain.agents import AgentExecutor, create_tool_calling_agent
 from langchain_core.prompts import ChatPromptTemplate
@@ -129,7 +129,7 @@ client.close()
 Include only specific tools:
 
 ```python
-from metadata_ai.mcp.models import MCPTool
+from ai_sdk.mcp.models import MCPTool
 
 # Only include read-only tools
 tools = client.mcp.as_langchain_tools(
@@ -155,7 +155,7 @@ Convert MCP tools to OpenAI function calling format for direct use with OpenAI's
 ```python
 import json
 from openai import OpenAI
-from metadata_ai import MetadataAI, MetadataConfig
+from ai_sdk import MetadataAI, MetadataConfig
 
 # Create clients
 config = MetadataConfig.from_env()
@@ -194,7 +194,7 @@ om_client.close()
 Same filtering works for OpenAI format:
 
 ```python
-from metadata_ai.mcp.models import MCPTool
+from ai_sdk.mcp.models import MCPTool
 
 # Only read-only tools
 tools = om_client.mcp.as_openai_tools(
@@ -212,8 +212,8 @@ tools = om_client.mcp.as_openai_tools(
 A complete example building a metadata exploration assistant:
 
 ```python
-from metadata_ai import MetadataAI, MetadataConfig
-from metadata_ai.mcp.models import MCPTool
+from ai_sdk import MetadataAI, MetadataConfig
+from ai_sdk.mcp.models import MCPTool
 from langchain_openai import ChatOpenAI
 from langchain.agents import AgentExecutor, create_tool_calling_agent
 from langchain_core.prompts import ChatPromptTemplate
@@ -272,7 +272,7 @@ client.close()
 ### MCPTool Enum
 
 ```python
-from metadata_ai.mcp.models import MCPTool
+from ai_sdk.mcp.models import MCPTool
 
 class MCPTool(StrEnum):
     SEARCH_METADATA = "search_metadata"
@@ -317,7 +317,7 @@ class ToolCallResult:
 ## Error Handling
 
 ```python
-from metadata_ai.exceptions import MCPError, MCPToolExecutionError
+from ai_sdk.exceptions import MCPError, MCPToolExecutionError
 
 try:
     result = client.mcp.call_tool(MCPTool.SEARCH_METADATA, {"query": "test"})
@@ -352,7 +352,7 @@ The MCP endpoint may not be available:
 Ensure you have LangChain installed:
 
 ```bash
-pip install metadata-ai[langchain]
+pip install ai-sdk[langchain]
 ```
 
 If you see "langchain-core is required", the optional dependency is missing.
@@ -369,7 +369,7 @@ If you see 429 errors, you're hitting rate limits:
 
 ```python
 import time
-from metadata_ai.exceptions import MCPError
+from ai_sdk.exceptions import MCPError
 
 try:
     result = client.mcp.call_tool(...)

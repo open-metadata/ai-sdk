@@ -2,7 +2,7 @@
 
 import pytest
 
-from metadata_ai.config import MetadataConfig
+from ai_sdk.config import MetadataConfig
 
 
 class TestMetadataConfigInit:
@@ -120,7 +120,7 @@ class TestMetadataConfigUserAgent:
 
     def test_user_agent_passed_through_from_config(self):
         """Test that user_agent from config is passed to HTTP clients."""
-        from metadata_ai.client import MetadataAI
+        from ai_sdk.client import MetadataAI
 
         config = MetadataConfig(
             host="https://test.com",
@@ -136,7 +136,7 @@ class TestMetadataConfigUserAgent:
 
     def test_user_agent_default_when_not_specified(self):
         """Test that default user_agent is used when not specified."""
-        from metadata_ai.client import MetadataAI
+        from ai_sdk.client import MetadataAI
 
         config = MetadataConfig(
             host="https://test.com",
@@ -146,7 +146,7 @@ class TestMetadataConfigUserAgent:
         client = MetadataAI.from_config(config)
 
         # Default user agent should be used
-        assert "metadata-ai-sdk" in client._http._user_agent
+        assert "ai-sdk-sdk" in client._http._user_agent
 
     def test_user_agent_from_env(self, monkeypatch):
         """Test that user_agent can be set from environment variable."""
@@ -160,7 +160,7 @@ class TestMetadataConfigUserAgent:
 
     def test_user_agent_passed_to_async_clients(self):
         """Test that user_agent is passed to async HTTP clients when enabled."""
-        from metadata_ai.client import MetadataAI
+        from ai_sdk.client import MetadataAI
 
         config = MetadataConfig(
             host="https://test.com",

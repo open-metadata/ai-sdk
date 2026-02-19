@@ -9,10 +9,10 @@ from __future__ import annotations
 from abc import ABC, abstractmethod
 from typing import Any
 
-from metadata_ai.agent import AgentHandle
-from metadata_ai.client import MetadataAI
-from metadata_ai.exceptions import MetadataError
-from metadata_ai.models import AgentInfo
+from ai_sdk.agent import AgentHandle
+from ai_sdk.client import MetadataAI
+from ai_sdk.exceptions import MetadataError
+from ai_sdk.models import AgentInfo
 
 
 class BaseAgentWrapper(ABC):

@@ -5,13 +5,13 @@ import json
 import pytest
 from pytest_httpx import HTTPXMock
 
-from metadata_ai.client import MetadataAI
-from metadata_ai.exceptions import (
+from ai_sdk.client import MetadataAI
+from ai_sdk.exceptions import (
     AgentNotEnabledError,
     AgentNotFoundError,
     AuthenticationError,
 )
-from metadata_ai.models import AgentInfo, InvokeResponse
+from ai_sdk.models import AgentInfo, InvokeResponse
 
 
 @pytest.fixture

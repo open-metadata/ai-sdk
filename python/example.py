@@ -6,7 +6,7 @@ This example demonstrates how to use the SemanticLayerAgent as a tool
 in a LangChain pipeline to query metrics and explore your semantic layer.
 
 Prerequisites:
-    pip install metadata-ai[langchain]
+    pip install ai-sdk[langchain]
 
 Environment variables:
     METADATA_HOST: Your Metadata server URL
@@ -24,14 +24,14 @@ import sys
 
 from langchain.agents import create_agent
 
-from metadata_ai import MetadataAI, set_debug
-from metadata_ai.exceptions import (
+from ai_sdk import MetadataAI, set_debug
+from ai_sdk.exceptions import (
     AgentNotEnabledError,
     AgentNotFoundError,
     AuthenticationError,
     MetadataError,
 )
-from metadata_ai.integrations.langchain import MetadataAgentTool
+from ai_sdk.integrations.langchain import MetadataAgentTool
 
 
 def main():

@@ -21,12 +21,12 @@ Comprehensive reference of all SDK methods, server endpoints, data models, and f
 
 ---
 
-## Python SDK (`metadata-ai`)
+## Python SDK (`ai-sdk`)
 
 ### MetadataAI Client
 
 ```python
-from metadata_ai import MetadataAI
+from ai_sdk import MetadataAI
 
 client = MetadataAI(
     host="https://your-org.getcollate.io",
@@ -68,7 +68,7 @@ agent = client.agent("DataQualityPlannerAgent")
 ### MCPClient (Python-only)
 
 ```python
-from metadata_ai.mcp.models import MCPTool
+from ai_sdk.mcp.models import MCPTool
 ```
 
 | Method | Protocol | Description |
@@ -82,7 +82,7 @@ from metadata_ai.mcp.models import MCPTool
 ### Conversation (convenience class)
 
 ```python
-from metadata_ai import Conversation
+from ai_sdk import Conversation
 
 conv = Conversation(client.agent("MyAgent"))
 print(conv.send("Analyze data"))
@@ -102,12 +102,12 @@ print(conv.send("Create tests"))  # auto-tracks conversationId
 
 ---
 
-## TypeScript SDK (`@openmetadata/metadata-ai`)
+## TypeScript SDK (`@openmetadata/ai-sdk`)
 
 ### MetadataAI Client
 
 ```typescript
-import { MetadataAI } from '@openmetadata/metadata-ai';
+import { MetadataAI } from '@openmetadata/ai-sdk';
 
 const client = new MetadataAI({
   host: 'https://your-org.getcollate.io',
@@ -141,7 +141,7 @@ const client = new MetadataAI({
 
 ---
 
-## Java SDK (`io.openmetadata:metadata-ai`)
+## Java SDK (`io.openmetadata:ai-sdk`)
 
 ### MetadataAI Client
 
@@ -181,7 +181,7 @@ MetadataAI client = MetadataAI.builder()
 
 ---
 
-## Rust CLI (`metadata-ai`)
+## Rust CLI (`ai-sdk`)
 
 ### Agent Commands
 
@@ -226,10 +226,10 @@ MetadataAI client = MetadataAI.builder()
 ### Configure
 
 ```bash
-metadata-ai configure                     # Interactive setup
-metadata-ai configure set <key> <value>   # Set config value
-metadata-ai configure get <key>           # Get config value
-metadata-ai configure list                # List all config
+ai-sdk configure                     # Interactive setup
+ai-sdk configure set <key> <value>   # Set config value
+ai-sdk configure get <key>           # Get config value
+ai-sdk configure list                # List all config
 ```
 
 ---
@@ -388,7 +388,7 @@ All endpoints require a Bearer token:
 Authorization: Bearer <jwt_token>
 Content-Type: application/json
 Accept: application/json        (or text/event-stream for streaming)
-User-Agent: metadata-ai-sdk/X.Y.Z
+User-Agent: ai-sdk/X.Y.Z
 X-Request-ID: <correlation_id>
 ```
 
@@ -441,7 +441,7 @@ SDK-idiomatic streaming:
 - **Python:** `agent.stream()` / `agent.astream()` (sync/async generators)
 - **TypeScript:** `agent.stream()` (AsyncGenerator)
 - **Java:** `agent.stream(Consumer)` or `agent.streamIterator()` (Java Stream)
-- **Rust CLI:** `metadata-ai invoke --stream`
+- **Rust CLI:** `ai-sdk invoke --stream`
 
 ---
 

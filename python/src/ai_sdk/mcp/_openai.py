@@ -5,10 +5,10 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from metadata_ai.mcp._client import MCPClient
+    from ai_sdk.mcp._client import MCPClient
 
-from metadata_ai.exceptions import MCPToolExecutionError
-from metadata_ai.mcp.models import MCPTool, ToolInfo
+from ai_sdk.exceptions import MCPToolExecutionError
+from ai_sdk.mcp.models import MCPTool, ToolInfo
 
 
 def build_openai_tools(tools: list[ToolInfo]) -> list[dict]:

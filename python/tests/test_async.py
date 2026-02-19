@@ -5,12 +5,12 @@ import json
 import pytest
 from pytest_httpx import HTTPXMock
 
-from metadata_ai._http import AsyncHTTPClient
-from metadata_ai._streaming import AsyncSSEIterator
-from metadata_ai.auth import TokenAuth
-from metadata_ai.client import MetadataAI
-from metadata_ai.exceptions import AuthenticationError
-from metadata_ai.models import AgentInfo, InvokeResponse
+from ai_sdk._http import AsyncHTTPClient
+from ai_sdk._streaming import AsyncSSEIterator
+from ai_sdk.auth import TokenAuth
+from ai_sdk.client import MetadataAI
+from ai_sdk.exceptions import AuthenticationError
+from ai_sdk.models import AgentInfo, InvokeResponse
 
 
 @pytest.fixture
@@ -198,7 +198,7 @@ class TestAsyncLangChainIntegration:
     @pytest.mark.asyncio
     async def test_arun_uses_acall(self, async_client, httpx_mock: HTTPXMock):
         """LangChain _arun uses acall with async client."""
-        from metadata_ai.integrations.langchain import MetadataAgentTool
+        from ai_sdk.integrations.langchain import MetadataAgentTool
 
         httpx_mock.add_response(
             url="https://metadata.example.com/api/v1/agents/dynamic/name/TestAgent",

@@ -3,8 +3,8 @@
 import pytest
 from pytest_httpx import HTTPXMock
 
-from metadata_ai.client import MetadataAI
-from metadata_ai.mcp.models import MCPTool
+from ai_sdk.client import MetadataAI
+from ai_sdk.mcp.models import MCPTool
 
 
 @pytest.fixture

@@ -4,19 +4,19 @@ This module provides proper Python logging integration.
 
 Usage:
     # Get the SDK logger
-    from metadata_ai._logging import get_logger
+    from ai_sdk._logging import get_logger
 
     logger = get_logger(__name__)
     logger.info("Processing request")
     logger.debug("Request details: %s", details)
 
     # Enable debug logging globally
-    from metadata_ai._logging import set_debug
+    from ai_sdk._logging import set_debug
     set_debug(True)
 
     # Or configure logging directly
     import logging
-    logging.getLogger("metadata_ai").setLevel(logging.DEBUG)
+    logging.getLogger("ai_sdk").setLevel(logging.DEBUG)
 """
 
 from __future__ import annotations
@@ -25,7 +25,7 @@ import logging
 import sys
 
 # Create the SDK root logger
-_SDK_LOGGER_NAME = "metadata_ai"
+_SDK_LOGGER_NAME = "ai_sdk"
 _sdk_logger = logging.getLogger(_SDK_LOGGER_NAME)
 
 # Default handler (only added if no handlers exist)
@@ -65,7 +65,7 @@ def set_debug(enabled: bool) -> None:
         enabled: True to enable debug logging, False to disable
 
     Example:
-        from metadata_ai._logging import set_debug
+        from ai_sdk._logging import set_debug
         set_debug(True)  # Enable debug logging
     """
     global _debug_enabled, _default_handler
@@ -132,7 +132,7 @@ def configure_logging(
         handler: Custom handler to use (optional)
 
     Example:
-        from metadata_ai._logging import configure_logging
+        from ai_sdk._logging import configure_logging
         import logging
 
         # Use custom format

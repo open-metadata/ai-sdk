@@ -9,8 +9,8 @@ from __future__ import annotations
 from collections.abc import AsyncIterator, Iterable
 from typing import Any
 
-from metadata_ai.agent import AgentHandle
-from metadata_ai.models import InvokeResponse, StreamEvent
+from ai_sdk.agent import AgentHandle
+from ai_sdk.models import InvokeResponse, StreamEvent
 
 
 class Conversation:
@@ -21,8 +21,8 @@ class Conversation:
     agents without needing LangChain or other frameworks.
 
     Usage:
-        from metadata_ai.client import MetadataAI
-        from metadata_ai.conversation import Conversation
+        from ai_sdk.client import MetadataAI
+        from ai_sdk.conversation import Conversation
 
         client = MetadataAI(host="...", token="...")
         agent = client.agent("DataQualityPlannerAgent")

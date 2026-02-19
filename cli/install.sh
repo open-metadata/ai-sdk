@@ -1,9 +1,9 @@
 #!/bin/sh
 # Metadata AI CLI Installer
-# https://github.com/open-metadata/metadata-ai-sdk
+# https://github.com/open-metadata/ai-sdk-sdk
 #
 # Usage:
-#   curl -sSL https://raw.githubusercontent.com/open-metadata/metadata-ai-sdk/main/cli/install.sh | sh
+#   curl -sSL https://raw.githubusercontent.com/open-metadata/ai-sdk-sdk/main/cli/install.sh | sh
 #
 # This script detects your OS and architecture, downloads the appropriate
 # binary from GitHub releases, and installs it to a location in your PATH.
@@ -28,8 +28,8 @@ else
 fi
 
 # Configuration
-GITHUB_REPO="open-metadata/metadata-ai-sdk"
-BINARY_NAME="metadata-ai"
+GITHUB_REPO="open-metadata/ai-sdk-sdk"
+BINARY_NAME="ai-sdk"
 INSTALL_DIR_PRIMARY="$HOME/.local/bin"
 INSTALL_DIR_FALLBACK="/usr/local/bin"
 
@@ -354,13 +354,13 @@ main() {
     echo ""
     echo "Next steps:"
     echo "  1. Configure the CLI with your Metadata instance:"
-    echo "     ${BOLD}metadata-ai configure${NC}"
+    echo "     ${BOLD}ai-sdk configure${NC}"
     echo ""
     echo "  2. List available agents:"
-    echo "     ${BOLD}metadata-ai agents list${NC}"
+    echo "     ${BOLD}ai-sdk agents list${NC}"
     echo ""
     echo "  3. Invoke an agent:"
-    echo "     ${BOLD}metadata-ai invoke <agent-name> \"your question\"${NC}"
+    echo "     ${BOLD}ai-sdk invoke <agent-name> \"your question\"${NC}"
     echo ""
     echo "Documentation: https://docs.open-metadata.org/cli"
     echo ""

@@ -22,7 +22,7 @@ Add unit or integration tests for existing functionality.
 ```python
 import pytest
 from unittest.mock import AsyncMock, patch
-from metadata_ai import MetadataAI
+from ai_sdk import MetadataAI
 
 @pytest.fixture
 def client():
@@ -179,7 +179,7 @@ cd java && mvn test
 cd cli && cargo test
 
 # With coverage
-cd python && pytest --cov=src/metadata_ai tests/
+cd python && pytest --cov=src/ai_sdk tests/
 cd typescript && npm test -- --coverage
 cd java && mvn test jacoco:report
 ```

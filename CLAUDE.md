@@ -6,13 +6,13 @@ This repository contains SDKs and CLI for invoking Metadata Dynamic Agents.
 
 ```
 metadata-ai-sdk/
-├── cli/                    # Rust CLI (metadata-ai)
-├── python/                 # Python SDK (metadata-ai on PyPI)
-│   ├── src/metadata_ai/    # Source code
+├── cli/                    # Rust CLI (ai-sdk)
+├── python/                 # Python SDK (ai-sdk on PyPI)
+│   ├── src/ai_sdk/    # Source code
 │   ├── tests/              # Unit and integration tests
 │   └── pyproject.toml      # Package config
 ├── typescript/             # TypeScript SDK (@openmetadata/ai-sdk on npm)
-├── java/                   # Java SDK (io.openmetadata:metadata-ai-sdk)
+├── java/                   # Java SDK (io.openmetadata:ai-sdk)
 ├── n8n-nodes-metadata/     # n8n community node (depends on TypeScript SDK)
 ├── cookbook/                # Guides, scripts, and resources for common use cases
 │   └── resources/
@@ -109,7 +109,7 @@ MetadataError (base)
 
 When adding functionality, update ALL SDKs:
 
-1. **Python** (`python/src/metadata_ai/`)
+1. **Python** (`python/src/ai_sdk/`)
    - Add to `_client.py` or `_agent.py`
    - Add types to models
    - Add tests in `python/tests/`
@@ -262,7 +262,7 @@ cd cookbook/resources/demo-database/docker && docker-compose down -v
 
 ## DO NOT
 
-- Edit files in `python/src/metadata_ai/generated/` (auto-generated)
+- Edit files in `python/src/ai_sdk/generated/` (auto-generated)
 - Change version numbers manually (use `make bump-version`)
 - Add a method to only one SDK (all must be updated)
 - Add dependencies without strong justification

@@ -4,15 +4,15 @@ Integrations for the Metadata AI SDK with popular AI frameworks.
 Available integrations:
 
 - **langchain**: LangChain tool wrapper
-  Install: pip install metadata-ai[langchain]
+  Install: pip install ai-sdk[langchain]
   Usage:
-      from metadata_ai.integrations.langchain import MetadataAgentTool
+      from ai_sdk.integrations.langchain import MetadataAgentTool
 
 - **llamaindex**: LlamaIndex tool wrapper (coming soon)
-  Install: pip install metadata-ai[llamaindex]
+  Install: pip install ai-sdk[llamaindex]
 
 - **crewai**: CrewAI tool wrapper (coming soon)
-  Install: pip install metadata-ai[crewai]
+  Install: pip install ai-sdk[crewai]
 
 All integrations extend the BaseAgentWrapper class which provides:
 - Agent info fetching with graceful fallback
@@ -22,8 +22,8 @@ All integrations extend the BaseAgentWrapper class which provides:
 
 Creating a new integration:
 
-    from metadata_ai.integrations.base import BaseAgentWrapper
-    from metadata_ai.models import AgentInfo
+    from ai_sdk.integrations.base import BaseAgentWrapper
+    from ai_sdk.models import AgentInfo
 
     class MyFrameworkTool(BaseAgentWrapper):
         def _default_name(self, info: AgentInfo) -> str:
@@ -37,17 +37,17 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 # Base class is always available
-from metadata_ai.integrations.base import BaseAgentWrapper as BaseAgentWrapper
+from ai_sdk.integrations.base import BaseAgentWrapper as BaseAgentWrapper
 
 if TYPE_CHECKING:
     # For type checking only - these may not be installed
-    from metadata_ai.integrations import langchain as langchain
+    from ai_sdk.integrations import langchain as langchain
 
 # Lazy loading of integrations to avoid import errors for missing deps
 _INTEGRATION_MODULES = {
-    "langchain": "metadata_ai.integrations.langchain",
-    # "llamaindex": "metadata_ai.integrations.llamaindex",  # Coming soon
-    # "crewai": "metadata_ai.integrations.crewai",          # Coming soon
+    "langchain": "ai_sdk.integrations.langchain",
+    # "llamaindex": "ai_sdk.integrations.llamaindex",  # Coming soon
+    # "crewai": "ai_sdk.integrations.crewai",          # Coming soon
 }
 
 
@@ -68,7 +68,7 @@ def __getattr__(name: str) -> object:
         except ImportError as e:
             raise ImportError(
                 f"Integration '{name}' requires additional dependencies. "
-                f"Install with: pip install metadata-ai[{name}]"
+                f"Install with: pip install ai-sdk[{name}]"
             ) from e
 
     raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
