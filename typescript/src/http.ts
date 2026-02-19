@@ -87,7 +87,7 @@ export class HttpClient {
   private readonly timeout: number;
   private readonly maxRetries: number;
   private readonly retryDelay: number;
-  private readonly userAgent = 'metadata-ai-sdk-ts/0.1.0';
+  private readonly userAgent = 'ai-sdk-ts/0.1.0';
 
   constructor(options: HttpClientOptions) {
     this.baseUrl = options.baseUrl.replace(/\/$/, '');

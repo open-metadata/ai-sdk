@@ -13,7 +13,7 @@ If you don't have a token yet, see [Getting Your Credentials](README.md#getting-
 ## Installation
 
 ```bash
-pip install metadata-ai
+pip install ai-sdk
 ```
 
 ## Set Environment Variables
@@ -35,7 +35,7 @@ export METADATA_TOKEN="eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9..."
 ## Basic Usage
 
 ```python
-from metadata_ai import MetadataAI, MetadataConfig
+from ai_sdk import MetadataAI, MetadataConfig
 
 # Create client from environment
 config = MetadataConfig.from_env()
@@ -53,7 +53,7 @@ client.close()
 ## Multi-Turn Conversation
 
 ```python
-from metadata_ai import Conversation
+from ai_sdk import Conversation
 
 conv = Conversation(client.agent("DataQualityPlannerAgent"))
 
@@ -96,7 +96,7 @@ personas = client.list_personas()
 abilities = client.list_abilities()
 
 # Create a persona
-from metadata_ai.models import CreatePersonaRequest
+from ai_sdk.models import CreatePersonaRequest
 persona = client.create_persona(CreatePersonaRequest(
     name="MyPersona",
     description="A helpful analyst",
@@ -104,7 +104,7 @@ persona = client.create_persona(CreatePersonaRequest(
 ))
 
 # Create an agent
-from metadata_ai.models import CreateAgentRequest
+from ai_sdk.models import CreateAgentRequest
 agent = client.create_agent(CreateAgentRequest(
     name="MyAgent",
     description="Custom agent",

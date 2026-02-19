@@ -26,8 +26,8 @@ import urllib.error
 
 from langchain.agents import create_agent
 
-from metadata_ai import MetadataAI, MetadataConfig
-from metadata_ai.mcp.models import MCPTool
+from ai_sdk import MetadataAI, MetadataConfig
+from ai_sdk.mcp.models import MCPTool
 
 
 SYSTEM_PROMPT = """You are a Data Impact Analyst assistant. Your job is to help
@@ -166,7 +166,7 @@ def send_to_slack(webhook_url: str, analysis: str, change_description: str) -> b
                 "elements": [
                     {
                         "type": "mrkdwn",
-                        "text": "Sent by the Data Change Impact Analyzer · metadata-ai-sdk",
+                        "text": "Sent by the Data Change Impact Analyzer · ai-sdk-sdk",
                     }
                 ],
             },

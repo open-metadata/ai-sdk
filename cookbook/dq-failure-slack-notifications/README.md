@@ -42,7 +42,7 @@ See [agent-config.md](./agent-config.md) for detailed setup instructions using t
 
 ```bash
 # Create the Persona
-metadata-ai personas create \
+ai-sdk personas create \
   --name DQAnalyst \
   --description "Data Quality analysis specialist" \
   --prompt "You are a Data Quality analyst. When analyzing test failures, you:
@@ -53,7 +53,7 @@ metadata-ai personas create \
 5. Provide concise summaries with actionable recommendations"
 
 # Create the Agent
-metadata-ai agents create \
+ai-sdk agents create \
   --name DataQualityAnalyzer \
   --description "Analyzes DQ test failures, explores lineage impact, and suggests remediation" \
   --persona DQAnalyst \

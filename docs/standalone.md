@@ -16,7 +16,7 @@ See [Getting Your Credentials](README.md#getting-your-credentials) for detailed 
 Install the SDK with minimal dependencies:
 
 ```bash
-pip install metadata-ai
+pip install ai-sdk
 ```
 
 Core dependencies are only `httpx` and `pydantic` - no framework lock-in.
@@ -24,7 +24,7 @@ Core dependencies are only `httpx` and `pydantic` - no framework lock-in.
 ## Quick Start
 
 ```python
-from metadata_ai import MetadataAI
+from ai_sdk import MetadataAI
 
 # Initialize client with explicit credentials
 client = MetadataAI(
@@ -48,7 +48,7 @@ client.close()
 ### Direct Initialization
 
 ```python
-from metadata_ai import MetadataAI
+from ai_sdk import MetadataAI
 
 client = MetadataAI(
     host="https://metadata.example.com",
@@ -76,7 +76,7 @@ export METADATA_TOKEN="eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9..."
 Then load them in Python:
 
 ```python
-from metadata_ai import MetadataAI, MetadataConfig
+from ai_sdk import MetadataAI, MetadataConfig
 
 # Load from environment (reads METADATA_HOST and METADATA_TOKEN)
 config = MetadataConfig.from_env()
@@ -170,7 +170,7 @@ response3 = agent.call(
 The `Conversation` class automatically manages conversation context:
 
 ```python
-from metadata_ai import MetadataAI, Conversation
+from ai_sdk import MetadataAI, Conversation
 
 client = MetadataAI(host="...", token="...")
 agent = client.agent("DataQualityPlannerAgent")
@@ -284,7 +284,7 @@ print(info.abilities)
 Create new dynamic agents programmatically:
 
 ```python
-from metadata_ai.models import CreateAgentRequest
+from ai_sdk.models import CreateAgentRequest
 
 # Create a simple agent
 agent = client.create_agent(CreateAgentRequest(
@@ -354,7 +354,7 @@ print(f"Display Name: {bot.display_name}")
 ### Bot Errors
 
 ```python
-from metadata_ai.exceptions import BotNotFoundError
+from ai_sdk.exceptions import BotNotFoundError
 
 try:
     bot = client.get_bot("nonexistent-bot")
@@ -367,7 +367,7 @@ except BotNotFoundError as e:
 Personas define the behavior and personality of agents.
 
 ```python
-from metadata_ai.models import CreatePersonaRequest
+from ai_sdk.models import CreatePersonaRequest
 
 # List all personas
 personas = client.list_personas(limit=20)
@@ -410,7 +410,7 @@ print(f"Created persona: {new_persona.name}")
 ### Persona Errors
 
 ```python
-from metadata_ai.exceptions import PersonaNotFoundError
+from ai_sdk.exceptions import PersonaNotFoundError
 
 try:
     persona = client.get_persona("nonexistent")
@@ -445,7 +445,7 @@ print(f"Description: {ability.description}")
 ### Ability Errors
 
 ```python
-from metadata_ai.exceptions import AbilityNotFoundError
+from ai_sdk.exceptions import AbilityNotFoundError
 
 try:
     ability = client.get_ability("nonexistent")
@@ -459,7 +459,7 @@ Enable async for concurrent operations:
 
 ```python
 import asyncio
-from metadata_ai import MetadataAI
+from ai_sdk import MetadataAI
 
 async def main():
     client = MetadataAI(
@@ -492,7 +492,7 @@ asyncio.run(main())
 ### Async Conversation
 
 ```python
-from metadata_ai import Conversation
+from ai_sdk import Conversation
 
 async def chat():
     client = MetadataAI(host="...", token="...", enable_async=True)
@@ -519,8 +519,8 @@ async with MetadataAI(host="...", token="...", enable_async=True) as client:
 Handle specific error types:
 
 ```python
-from metadata_ai import MetadataAI
-from metadata_ai.exceptions import (
+from ai_sdk import MetadataAI
+from ai_sdk.exceptions import (
     MetadataError,
     AuthenticationError,
     AgentNotFoundError,
@@ -578,8 +578,8 @@ MetadataError (base)
 Enable verbose logging for debugging:
 
 ```python
-from metadata_ai import MetadataConfig, MetadataAI
-from metadata_ai._logging import set_debug
+from ai_sdk import MetadataConfig, MetadataAI
+from ai_sdk._logging import set_debug
 
 # Option 1: Via config
 config = MetadataConfig.from_env(debug=True)
@@ -592,7 +592,7 @@ set_debug(True)
 ### Custom Logging Configuration
 
 ```python
-from metadata_ai._logging import configure_logging
+from ai_sdk._logging import configure_logging
 import logging
 
 # Custom format
@@ -611,8 +611,8 @@ configure_logging(handler=handler)
 Use the ABC interfaces for testing:
 
 ```python
-from metadata_ai.protocols import AgentProtocol
-from metadata_ai.models import InvokeResponse
+from ai_sdk.protocols import AgentProtocol
+from ai_sdk.models import InvokeResponse
 
 class MockAgent(AgentProtocol):
     """Mock agent for testing."""
@@ -691,9 +691,9 @@ info.api_enabled   # bool - API access enabled
 """Complete standalone SDK usage example."""
 
 import sys
-from metadata_ai import MetadataAI, MetadataConfig, Conversation
-from metadata_ai.models import CreatePersonaRequest, CreateAgentRequest
-from metadata_ai.exceptions import MetadataError
+from ai_sdk import MetadataAI, MetadataConfig, Conversation
+from ai_sdk.models import CreatePersonaRequest, CreateAgentRequest
+from ai_sdk.exceptions import MetadataError
 
 def main():
     # Load configuration
@@ -792,9 +792,9 @@ if __name__ == "__main__":
 See the inline documentation for complete API details:
 
 ```python
-from metadata_ai import MetadataAI
+from ai_sdk import MetadataAI
 help(MetadataAI)
 
-from metadata_ai import Conversation
+from ai_sdk import Conversation
 help(Conversation)
 ```

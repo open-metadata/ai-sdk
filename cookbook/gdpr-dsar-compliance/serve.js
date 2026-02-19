@@ -16,7 +16,7 @@ import { createServer } from "node:http";
 import { readFile } from "node:fs/promises";
 import { join, extname } from "node:path";
 import { fileURLToPath } from "node:url";
-import { MetadataAI } from "./metadata-ai.js";
+import { MetadataAI } from "./ai-sdk.js";
 
 const HOST = (process.env.METADATA_HOST || "http://localhost:8585").replace(/\/$/, "");
 const TOKEN =

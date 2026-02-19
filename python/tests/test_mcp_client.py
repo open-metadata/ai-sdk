@@ -3,10 +3,10 @@
 import pytest
 from pytest_httpx import HTTPXMock
 
-from metadata_ai.client import MetadataAI
-from metadata_ai.exceptions import MCPError, MCPToolExecutionError
-from metadata_ai.mcp._client import MCPClient
-from metadata_ai.mcp.models import MCPTool, ToolInfo
+from ai_sdk.client import MetadataAI
+from ai_sdk.exceptions import MCPError, MCPToolExecutionError
+from ai_sdk.mcp._client import MCPClient
+from ai_sdk.mcp.models import MCPTool, ToolInfo
 
 
 @pytest.fixture
@@ -425,7 +425,7 @@ class TestMCPClientFiltering:
 
     def test_filter_tools_include(self, sample_tools):
         """filter_tools with include returns only specified tools."""
-        from metadata_ai.mcp._client import _filter_tools
+        from ai_sdk.mcp._client import _filter_tools
 
         filtered = _filter_tools(
             sample_tools,
@@ -438,7 +438,7 @@ class TestMCPClientFiltering:
 
     def test_filter_tools_exclude(self, sample_tools):
         """filter_tools with exclude removes specified tools."""
-        from metadata_ai.mcp._client import _filter_tools
+        from ai_sdk.mcp._client import _filter_tools
 
         filtered = _filter_tools(
             sample_tools,
@@ -452,7 +452,7 @@ class TestMCPClientFiltering:
 
     def test_filter_tools_none_returns_all(self, sample_tools):
         """filter_tools with no filters returns all tools."""
-        from metadata_ai.mcp._client import _filter_tools
+        from ai_sdk.mcp._client import _filter_tools
 
         filtered = _filter_tools(sample_tools, include=None, exclude=None)
 

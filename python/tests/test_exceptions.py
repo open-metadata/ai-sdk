@@ -1,6 +1,6 @@
 """Tests for the Metadata AI SDK exceptions."""
 
-from metadata_ai.exceptions import (
+from ai_sdk.exceptions import (
     AgentExecutionError,
     AgentNotEnabledError,
     AgentNotFoundError,

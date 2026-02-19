@@ -5,8 +5,8 @@ import json
 import pytest
 from pytest_httpx import HTTPXMock
 
-from metadata_ai.client import MetadataAI
-from metadata_ai.conversation import Conversation
+from ai_sdk.client import MetadataAI
+from ai_sdk.conversation import Conversation
 
 
 @pytest.fixture

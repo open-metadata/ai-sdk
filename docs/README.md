@@ -54,13 +54,13 @@ Your `METADATA_HOST` is your OpenMetadata/Collate server URL:
 
 ```bash
 # Core SDK (standalone)
-pip install metadata-ai
+pip install ai-sdk
 
 # With LangChain support
-pip install metadata-ai[langchain]
+pip install ai-sdk[langchain]
 
 # All optional dependencies
-pip install metadata-ai[all]
+pip install ai-sdk[all]
 ```
 
 ## Quick Example
@@ -78,7 +78,7 @@ export METADATA_TOKEN="eyJhbGciOiJSUzI1NiIs..."
 Then use the SDK:
 
 ```python
-from metadata_ai import MetadataAI, MetadataConfig, Conversation
+from ai_sdk import MetadataAI, MetadataConfig, Conversation
 
 # Create client (reads METADATA_HOST and METADATA_TOKEN from environment)
 config = MetadataConfig.from_env()
@@ -118,6 +118,6 @@ client.close()
 ## Links
 
 - [GitHub](https://github.com/open-metadata/metadata-ai-sdk)
-- [PyPI](https://pypi.org/project/metadata-ai/)
+- [PyPI](https://pypi.org/project/ai-sdk/)
 - [OpenMetadata Documentation](https://docs.open-metadata.org/)
 - [Collate Documentation](https://docs.getcollate.io/)

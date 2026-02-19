@@ -3,9 +3,9 @@
 import pytest
 from pytest_httpx import HTTPXMock
 
-from metadata_ai.client import MetadataAI
-from metadata_ai.exceptions import PersonaNotFoundError
-from metadata_ai.models import CreatePersonaRequest, PersonaInfo
+from ai_sdk.client import MetadataAI
+from ai_sdk.exceptions import PersonaNotFoundError
+from ai_sdk.models import CreatePersonaRequest, PersonaInfo
 
 
 @pytest.fixture

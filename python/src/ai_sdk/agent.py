@@ -5,10 +5,10 @@ from __future__ import annotations
 from collections.abc import AsyncIterator, Iterable
 from typing import Any
 
-from metadata_ai._http import AsyncHTTPClient, HTTPClient
-from metadata_ai._logging import debug as _log_debug
-from metadata_ai._streaming import AsyncSSEIterator, SSEIterator
-from metadata_ai.models import AgentInfo, InvokeRequest, InvokeResponse, StreamEvent
+from ai_sdk._http import AsyncHTTPClient, HTTPClient
+from ai_sdk._logging import debug as _log_debug
+from ai_sdk._streaming import AsyncSSEIterator, SSEIterator
+from ai_sdk.models import AgentInfo, InvokeRequest, InvokeResponse, StreamEvent
 
 
 def _debug(msg: str) -> None:

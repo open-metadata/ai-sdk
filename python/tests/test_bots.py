@@ -3,9 +3,9 @@
 import pytest
 from pytest_httpx import HTTPXMock
 
-from metadata_ai.client import MetadataAI
-from metadata_ai.exceptions import BotNotFoundError
-from metadata_ai.models import BotInfo
+from ai_sdk.client import MetadataAI
+from ai_sdk.exceptions import BotNotFoundError
+from ai_sdk.models import BotInfo
 
 
 @pytest.fixture

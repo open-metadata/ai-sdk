@@ -30,8 +30,8 @@ from langchain_core.callbacks import CallbackManagerForToolRun
 from langchain_core.tools import BaseTool
 from pydantic import BaseModel, Field
 
-from metadata_ai import MetadataAI, MetadataConfig
-from metadata_ai.mcp.models import MCPTool
+from ai_sdk import MetadataAI, MetadataConfig
+from ai_sdk.mcp.models import MCPTool
 
 
 # ---------------------------------------------------------------------------

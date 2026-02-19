@@ -7,7 +7,7 @@
  *
  * @example
  * ```typescript
- * import { MetadataAI } from '@openmetadata/metadata-ai';
+ * import { MetadataAI } from '@openmetadata/ai-sdk';
  *
  * // Initialize the client
  * const client = new MetadataAI({

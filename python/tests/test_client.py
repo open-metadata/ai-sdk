@@ -3,9 +3,9 @@
 import pytest
 from pytest_httpx import HTTPXMock
 
-from metadata_ai.agent import AgentHandle
-from metadata_ai.client import MetadataAI
-from metadata_ai.models import AgentInfo
+from ai_sdk.agent import AgentHandle
+from ai_sdk.client import MetadataAI
+from ai_sdk.models import AgentInfo
 
 
 @pytest.fixture

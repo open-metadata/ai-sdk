@@ -68,7 +68,7 @@ check-versions:  ## Validate all SDK versions match the VERSION file
 		ERRORS=1; \
 	fi; \
 	\
-	JAVA_VER=$$(grep -A1 '<artifactId>metadata-ai</artifactId>' $(JAVA_POM) | grep '<version>' | sed 's/.*<version>\(.*\)<\/version>.*/\1/'); \
+	JAVA_VER=$$(grep -A1 '<artifactId>ai-sdk</artifactId>' $(JAVA_POM) | grep '<version>' | sed 's/.*<version>\(.*\)<\/version>.*/\1/'); \
 	if [ "$$JAVA_VER" = "$(CURRENT_VERSION)" ]; then \
 		echo "  [OK] Java:           $$JAVA_VER"; \
 	else \
@@ -119,7 +119,7 @@ sync-versions:  ## Sync all SDK versions to match VERSION file
 	@sed -i.bak 's/"version": ".*"/"version": "$(CURRENT_VERSION)"/' $(TS_PACKAGE) && rm -f $(TS_PACKAGE).bak
 	@echo "  Updated: $(TS_PACKAGE)"
 	@# Java - pom.xml (update version after artifactId line)
-	@sed -i.bak '/<artifactId>metadata-ai<\/artifactId>/{ n; s/<version>.*<\/version>/<version>$(CURRENT_VERSION)<\/version>/; }' $(JAVA_POM) && rm -f $(JAVA_POM).bak
+	@sed -i.bak '/<artifactId>ai-sdk<\/artifactId>/{ n; s/<version>.*<\/version>/<version>$(CURRENT_VERSION)<\/version>/; }' $(JAVA_POM) && rm -f $(JAVA_POM).bak
 	@echo "  Updated: $(JAVA_POM)"
 	@# n8n - package.json
 	@sed -i.bak 's/"version": ".*"/"version": "$(CURRENT_VERSION)"/' $(N8N_PACKAGE) && rm -f $(N8N_PACKAGE).bak
@@ -215,7 +215,7 @@ demo-dbt:  ## Run dbt models against the demo database
 demo-gdpr:  ## Start the GDPR DSAR compliance demo (bundles SDK + starts server)
 	@echo "Bundling TypeScript SDK..."
 	@npx esbuild typescript/src/index.ts --bundle --format=esm \
-		--outfile=cookbook/gdpr-dsar-compliance/metadata-ai.js --target=es2022 --log-level=warning
+		--outfile=cookbook/gdpr-dsar-compliance/ai-sdk.js --target=es2022 --log-level=warning
 	@echo "Starting server (SDK runs server-side)..."
 	@node cookbook/gdpr-dsar-compliance/serve.js
 
@@ -236,15 +236,15 @@ install-cli:  ## Build CLI (release) and install to ~/.local/bin
 	@echo ""
 	@echo "Installing to ~/.local/bin..."
 	@mkdir -p ~/.local/bin
-	@cp cli/target/release/metadata-ai ~/.local/bin/metadata-ai
-	@chmod +x ~/.local/bin/metadata-ai
-	@if [ "$$(uname)" = "Darwin" ]; then codesign --sign - --force ~/.local/bin/metadata-ai 2>/dev/null; fi
+	@cp cli/target/release/ai-sdk ~/.local/bin/ai-sdk
+	@chmod +x ~/.local/bin/ai-sdk
+	@if [ "$$(uname)" = "Darwin" ]; then codesign --sign - --force ~/.local/bin/ai-sdk 2>/dev/null; fi
 	@echo ""
-	@echo "Installed: ~/.local/bin/metadata-ai"
-	@echo "Version: $$(~/.local/bin/metadata-ai --version 2>/dev/null || echo 'unknown')"
+	@echo "Installed: ~/.local/bin/ai-sdk"
+	@echo "Version: $$(~/.local/bin/ai-sdk --version 2>/dev/null || echo 'unknown')"
 	@echo ""
 	@if echo "$$PATH" | grep -q "$$HOME/.local/bin"; then \
-		echo "Ready to use: metadata-ai"; \
+		echo "Ready to use: ai-sdk"; \
 	else \
 		echo "Note: Add ~/.local/bin to your PATH:"; \
 		echo "  export PATH=\"\$$HOME/.local/bin:\$$PATH\""; \

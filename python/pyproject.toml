@@ -3,7 +3,7 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "metadata-ai"
+name = "ai-sdk"
 version = "0.0.2"
 description = "Python SDK for Metadata AI Agents - Semantic Intelligence for AI builders"
 readme = "README.md"
@@ -46,7 +46,7 @@ dev = [
     "datamodel-code-generator>=0.25.0",
 ]
 all = [
-    "metadata-ai[langchain,dev]",
+    "ai-sdk[langchain,dev]",
 ]
 
 [project.urls]
@@ -55,13 +55,13 @@ Documentation = "https://docs.open-metadata.org/sdk"
 Repository = "https://github.com/open-metadata/metadata-ai-sdk"
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/metadata_ai"]
+packages = ["src/ai_sdk"]
 
 [tool.ruff]
 line-length = 100
 target-version = "py310"
 src = ["src", "tests"]
-exclude = ["src/metadata_ai/generated"]
+exclude = ["src/ai_sdk/generated"]
 
 [tool.ruff.lint]
 select = [
@@ -86,7 +86,7 @@ ignore = [
 "tests/*" = ["ARG"]  # unused arguments common in test fixtures
 
 [tool.ruff.lint.isort]
-known-first-party = ["metadata_ai"]
+known-first-party = ["ai_sdk"]
 force-single-line = false
 combine-as-imports = true
 

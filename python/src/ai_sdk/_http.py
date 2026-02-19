@@ -17,9 +17,9 @@ from typing import Any
 
 import httpx
 
-from metadata_ai._logging import get_logger
-from metadata_ai.auth import TokenAuth
-from metadata_ai.exceptions import (
+from ai_sdk._logging import get_logger
+from ai_sdk.auth import TokenAuth
+from ai_sdk.exceptions import (
     AgentExecutionError,
     AgentNotEnabledError,
     AgentNotFoundError,
@@ -152,7 +152,7 @@ class HTTPClient:
         self._verify_ssl = verify_ssl
         self._max_retries = max_retries
         self._retry_delay = retry_delay
-        self._user_agent = user_agent or "metadata-ai-sdk/0.1.0"
+        self._user_agent = user_agent or "ai-sdk-sdk/0.1.0"
         self._extra_headers = extra_headers or {}
 
         self._client = httpx.Client(
@@ -383,7 +383,7 @@ class AsyncHTTPClient:
         self._verify_ssl = verify_ssl
         self._max_retries = max_retries
         self._retry_delay = retry_delay
-        self._user_agent = user_agent or "metadata-ai-sdk/0.1.0"
+        self._user_agent = user_agent or "ai-sdk-sdk/0.1.0"
         self._client: httpx.AsyncClient | None = None
 
         logger.debug("AsyncHTTPClient initialized for %s", self._base_url)

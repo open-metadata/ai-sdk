@@ -1,6 +1,6 @@
 """LangChain adapter for MCP tools.
 
-Requires: pip install metadata-ai[langchain]
+Requires: pip install ai-sdk[langchain]
 """
 
 from __future__ import annotations
@@ -9,7 +9,7 @@ import json
 from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:
-    from metadata_ai.mcp._client import MCPClient
+    from ai_sdk.mcp._client import MCPClient
 
 try:
     from langchain_core.callbacks import CallbackManagerForToolRun
@@ -17,12 +17,11 @@ try:
     from pydantic import BaseModel, Field, create_model
 except ImportError as e:
     raise ImportError(
-        "LangChain integration requires langchain-core. "
-        "Install with: pip install metadata-ai[langchain]"
+        "LangChain integration requires langchain-core. Install with: pip install ai-sdk[langchain]"
     ) from e
 
-from metadata_ai.exceptions import MCPToolExecutionError
-from metadata_ai.mcp.models import MCPTool, ToolInfo
+from ai_sdk.exceptions import MCPToolExecutionError
+from ai_sdk.mcp.models import MCPTool, ToolInfo
 
 
 def build_langchain_tools(

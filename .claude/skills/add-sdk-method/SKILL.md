@@ -21,7 +21,7 @@ Adds a new method to all SDKs (Python, TypeScript, Java, Rust CLI) with consiste
    - [ ] Clarify the HTTP endpoint it calls (GET/POST/etc, path, body)
    - [ ] Clarify error handling requirements
 
-2. **Python SDK** (`python/src/metadata_ai/`)
+2. **Python SDK** (`python/src/ai_sdk/`)
    - [ ] Add method to appropriate class (likely `AgentHandle` in `_client.py`)
    - [ ] Add type hints using Pydantic models
    - [ ] Add async version if sync version exists (or vice versa)

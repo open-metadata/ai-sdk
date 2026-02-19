@@ -6,8 +6,8 @@ from your AI applications. Use it standalone or integrate with
 LangChain, LlamaIndex, CrewAI, and other AI frameworks.
 
 Standalone Usage:
-    from metadata_ai.client import MetadataAI
-    from metadata_ai.conversation import Conversation
+    from ai_sdk.client import MetadataAI
+    from ai_sdk.conversation import Conversation
 
     # Initialize client
     client = MetadataAI(
@@ -34,15 +34,15 @@ Standalone Usage:
             print(event.content, end="", flush=True)
 
 Environment-based Configuration:
-    from metadata_ai.config import MetadataConfig
-    from metadata_ai.client import MetadataAI
+    from ai_sdk.config import MetadataConfig
+    from ai_sdk.client import MetadataAI
 
     # Load from METADATA_HOST and METADATA_TOKEN env vars
     config = MetadataConfig.from_env()
     client = MetadataAI.from_config(config)
 
 Async Usage:
-    from metadata_ai.client import MetadataAI
+    from ai_sdk.client import MetadataAI
 
     client = MetadataAI(
         host="https://metadata.example.com",
@@ -56,25 +56,25 @@ Async Usage:
     print(response.response)
 
 Framework Integrations:
-    # LangChain (pip install metadata-ai[langchain])
-    from metadata_ai.integrations.langchain import MetadataAgentTool
+    # LangChain (pip install ai-sdk[langchain])
+    from ai_sdk.integrations.langchain import MetadataAgentTool
     tool = MetadataAgentTool.from_client(client, "MyAgent")
 
     # More integrations coming: llamaindex, crewai, etc.
 
 Import Guide:
     # Client and agent
-    from metadata_ai.client import MetadataAI
-    from metadata_ai.agent import AgentHandle
+    from ai_sdk.client import MetadataAI
+    from ai_sdk.agent import AgentHandle
 
     # Configuration
-    from metadata_ai.config import MetadataConfig
+    from ai_sdk.config import MetadataConfig
 
     # Conversation
-    from metadata_ai.conversation import Conversation
+    from ai_sdk.conversation import Conversation
 
     # Models
-    from metadata_ai.models import (
+    from ai_sdk.models import (
         AbilityInfo,
         AgentInfo,
         BotInfo,
@@ -91,7 +91,7 @@ Import Guide:
     )
 
     # Exceptions
-    from metadata_ai.exceptions import (
+    from ai_sdk.exceptions import (
         AbilityNotFoundError,
         AgentExecutionError,
         AgentNotEnabledError,
@@ -104,10 +104,10 @@ Import Guide:
     )
 
     # Logging
-    from metadata_ai._logging import set_debug, get_logger, configure_logging
+    from ai_sdk._logging import set_debug, get_logger, configure_logging
 
     # Protocols (for mocking/testing)
-    from metadata_ai.protocols import AgentProtocol
+    from ai_sdk.protocols import AgentProtocol
 """
 
 from __future__ import annotations
@@ -115,11 +115,11 @@ from __future__ import annotations
 __version__ = "0.1.0"
 
 # Re-export main classes for convenient imports
-from metadata_ai.client import MetadataAI
-from metadata_ai.config import MetadataConfig
-from metadata_ai.conversation import Conversation
-from metadata_ai.exceptions import AbilityNotFoundError, BotNotFoundError, PersonaNotFoundError
-from metadata_ai.models import (
+from ai_sdk.client import MetadataAI
+from ai_sdk.config import MetadataConfig
+from ai_sdk.conversation import Conversation
+from ai_sdk.exceptions import AbilityNotFoundError, BotNotFoundError, PersonaNotFoundError
+from ai_sdk.models import (
     AbilityInfo,
     BotInfo,
     CreateAgentRequest,

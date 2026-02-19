@@ -2,7 +2,7 @@
 
 import pytest
 
-from metadata_ai.auth import TokenAuth
+from ai_sdk.auth import TokenAuth
 
 
 class TestTokenAuth:

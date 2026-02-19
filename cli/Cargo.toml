@@ -1,5 +1,5 @@
 [package]
-name = "metadata-ai"
+name = "ai-sdk"
 version = "0.0.2"
 edition = "2021"
 description = "Command-line tool for Metadata AI Agents"

@@ -4,21 +4,21 @@
 //!
 //! ```bash
 //! # Configuration
-//! metadata-ai configure              # Interactive setup
-//! metadata-ai configure set host <url>
-//! metadata-ai configure get host
-//! metadata-ai configure list
+//! ai-sdk configure              # Interactive setup
+//! ai-sdk configure set host <url>
+//! ai-sdk configure get host
+//! ai-sdk configure list
 //!
 //! # Agent discovery
-//! metadata-ai agents list            # List API-enabled agents
-//! metadata-ai agents info <name>     # Get agent details
+//! ai-sdk agents list            # List API-enabled agents
+//! ai-sdk agents info <name>     # Get agent details
 //!
 //! # Invocation
-//! metadata-ai invoke <agent>                       # Uses agent's default prompt
-//! metadata-ai invoke <agent> "message"             # Custom message
-//! metadata-ai invoke <agent> "message" --stream    # Streaming output
-//! metadata-ai invoke <agent> "message" --json      # JSON output
-//! metadata-ai invoke <agent> "message" -c <id>     # Continue conversation
+//! ai-sdk invoke <agent>                       # Uses agent's default prompt
+//! ai-sdk invoke <agent> "message"             # Custom message
+//! ai-sdk invoke <agent> "message" --stream    # Streaming output
+//! ai-sdk invoke <agent> "message" --json      # JSON output
+//! ai-sdk invoke <agent> "message" -c <id>     # Continue conversation
 //! ```
 
 mod client;
@@ -32,7 +32,7 @@ use clap::{Parser, Subcommand};
 
 /// Metadata AI CLI - Interact with Metadata AI Agents from the command line.
 #[derive(Parser)]
-#[command(name = "metadata-ai")]
+#[command(name = "ai-sdk")]
 #[command(author = "OpenMetadata <support@open-metadata.org>")]
 #[command(version)]
 #[command(about = "Command-line tool for Metadata AI Agents", long_about = None)]

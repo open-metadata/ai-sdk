@@ -9,7 +9,7 @@ This guide covers async patterns for the Metadata AI SDK.
 Async must be explicitly enabled when creating the client:
 
 ```python
-from metadata_ai import MetadataAI
+from ai_sdk import MetadataAI
 
 client = MetadataAI(
     host="https://metadata.example.com",
@@ -21,7 +21,7 @@ client = MetadataAI(
 Or via configuration:
 
 ```python
-from metadata_ai import MetadataAI, MetadataConfig
+from ai_sdk import MetadataAI, MetadataConfig
 
 config = MetadataConfig.from_env(enable_async=True)
 client = MetadataAI.from_config(config)
@@ -45,7 +45,7 @@ All sync methods have async counterparts:
 
 ```python
 import asyncio
-from metadata_ai import MetadataAI, MetadataConfig
+from ai_sdk import MetadataAI, MetadataConfig
 
 async def main():
     config = MetadataConfig.from_env(enable_async=True)
@@ -139,7 +139,7 @@ async def stream_response(client: MetadataAI, message: str):
 ## Async Conversation
 
 ```python
-from metadata_ai import Conversation
+from ai_sdk import Conversation
 
 async def chat(client: MetadataAI):
     agent = client.agent("DataQualityPlannerAgent")
@@ -169,7 +169,7 @@ async def list_all_agents(client: MetadataAI) -> list:
 ## Error Handling
 
 ```python
-from metadata_ai.exceptions import (
+from ai_sdk.exceptions import (
     RateLimitError,
     AgentExecutionError,
     MetadataError,

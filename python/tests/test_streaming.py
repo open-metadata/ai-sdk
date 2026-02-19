@@ -1,6 +1,6 @@
 """Tests for the Metadata AI SDK streaming functionality."""
 
-from metadata_ai._streaming import SSEIterator
+from ai_sdk._streaming import SSEIterator
 
 
 class TestSSEIterator:

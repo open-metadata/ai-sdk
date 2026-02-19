@@ -3,8 +3,8 @@
 This module provides adapters for using Metadata agents as LangChain tools.
 
 Usage:
-    from metadata_ai.client import MetadataAI
-    from metadata_ai.integrations.langchain import MetadataAgentTool, create_metadata_tools
+    from ai_sdk.client import MetadataAI
+    from ai_sdk.integrations.langchain import MetadataAgentTool, create_metadata_tools
     from langchain_openai import ChatOpenAI
     from langchain.agents import AgentExecutor, create_openai_functions_agent
     from langchain_core.prompts import ChatPromptTemplate
@@ -40,8 +40,8 @@ from __future__ import annotations
 
 from typing import Any
 
-from metadata_ai._logging import debug as _log_debug
-from metadata_ai.exceptions import MetadataError
+from ai_sdk._logging import debug as _log_debug
+from ai_sdk.exceptions import MetadataError
 
 try:
     from langchain_core.callbacks import CallbackManagerForToolRun
@@ -49,13 +49,12 @@ try:
     from pydantic import BaseModel, Field
 except ImportError as e:
     raise ImportError(
-        "LangChain integration requires langchain-core. "
-        "Install with: pip install metadata-ai[langchain]"
+        "LangChain integration requires langchain-core. Install with: pip install ai-sdk[langchain]"
     ) from e
 
-from metadata_ai.agent import AgentHandle
-from metadata_ai.client import MetadataAI
-from metadata_ai.models import AgentInfo
+from ai_sdk.agent import AgentHandle
+from ai_sdk.client import MetadataAI
+from ai_sdk.models import AgentInfo
 
 
 def _debug(msg: str) -> None:
@@ -77,8 +76,8 @@ class MetadataAgentTool(BaseTool):
     enabling semantic intelligence capabilities in your AI workflows.
 
     Example:
-        from metadata_ai.client import MetadataAI
-        from metadata_ai.integrations.langchain import MetadataAgentTool
+        from ai_sdk.client import MetadataAI
+        from ai_sdk.integrations.langchain import MetadataAgentTool
 
         client = MetadataAI(host="...", token="...")
         tool = MetadataAgentTool.from_client(client, "DataQualityPlannerAgent")
@@ -290,8 +289,8 @@ def create_metadata_tools(
         List of MetadataAgentTool instances
 
     Example:
-        from metadata_ai.client import MetadataAI
-        from metadata_ai.integrations.langchain import create_metadata_tools
+        from ai_sdk.client import MetadataAI
+        from ai_sdk.integrations.langchain import create_metadata_tools
 
         client = MetadataAI(host="...", token="...")
 

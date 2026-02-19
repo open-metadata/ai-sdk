@@ -4,9 +4,9 @@ This document explains how to release the Metadata AI SDK. A single release publ
 
 | Component | Registry | Package |
 |-----------|----------|---------|
-| Python SDK | [PyPI](https://pypi.org/project/metadata-ai/) | `metadata-ai` |
-| TypeScript SDK | [npm](https://www.npmjs.com/package/@openmetadata/metadata-ai) | `@openmetadata/metadata-ai` |
-| Java SDK | [Maven Central](https://central.sonatype.com/) | `io.openmetadata:metadata-ai` |
+| Python SDK | [PyPI](https://pypi.org/project/ai-sdk/) | `ai-sdk` |
+| TypeScript SDK | [npm](https://www.npmjs.com/package/@openmetadata/ai-sdk) | `@openmetadata/ai-sdk` |
+| Java SDK | [Maven Central](https://central.sonatype.com/) | `io.openmetadata:ai-sdk` |
 | CLI | [GitHub Releases](https://github.com/open-metadata/metadata-ai-sdk/releases) | Pre-built binaries (6 platforms) |
 
 ## TL;DR
@@ -195,7 +195,7 @@ A GitHub environment named **`publish`** must exist (**Settings > Environments >
 
 ### PyPI Trusted Publisher
 
-The Python SDK authenticates to PyPI via OIDC (no API tokens). Configure the trusted publisher at [pypi.org](https://pypi.org/manage/project/metadata-ai/settings/publishing/):
+The Python SDK authenticates to PyPI via OIDC (no API tokens). Configure the trusted publisher at [pypi.org](https://pypi.org/manage/project/ai-sdk/settings/publishing/):
 
 - **Owner:** `open-metadata`
 - **Repository:** `metadata-ai-sdk`
@@ -208,12 +208,12 @@ The CLI release builds binaries for 6 platform/architecture combinations:
 
 | Platform | Architecture | Artifact |
 |----------|-------------|----------|
-| macOS | x86_64 (Intel) | `metadata-ai-macos-x86_64.tar.gz` |
-| macOS | aarch64 (Apple Silicon) | `metadata-ai-macos-aarch64.tar.gz` |
-| Linux | x86_64 | `metadata-ai-linux-x86_64.tar.gz` |
-| Linux | aarch64 (ARM64) | `metadata-ai-linux-aarch64.tar.gz` |
-| Windows | x86_64 | `metadata-ai-windows-x86_64.zip` |
-| Windows | aarch64 (ARM64) | `metadata-ai-windows-aarch64.zip` |
+| macOS | x86_64 (Intel) | `ai-sdk-macos-x86_64.tar.gz` |
+| macOS | aarch64 (Apple Silicon) | `ai-sdk-macos-aarch64.tar.gz` |
+| Linux | x86_64 | `ai-sdk-linux-x86_64.tar.gz` |
+| Linux | aarch64 (ARM64) | `ai-sdk-linux-aarch64.tar.gz` |
+| Windows | x86_64 | `ai-sdk-windows-x86_64.zip` |
+| Windows | aarch64 (ARM64) | `ai-sdk-windows-aarch64.zip` |
 
 These are uploaded as assets to the GitHub Release.
 

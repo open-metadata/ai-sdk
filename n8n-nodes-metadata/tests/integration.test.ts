@@ -12,7 +12,7 @@
  */
 
 import { describe, it, expect, beforeAll } from 'vitest';
-import { MetadataAI } from '@openmetadata/metadata-ai';
+import { MetadataAI } from '@openmetadata/ai-sdk';
 
 // Skip tests if credentials not configured
 const METADATA_HOST = process.env.METADATA_HOST;

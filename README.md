@@ -6,10 +6,10 @@ SDKs and CLI for invoking Metadata Dynamic Agents from your AI applications.
 
 | Component | Language | Package | Status |
 |-----------|----------|---------|--------|
-| CLI | Rust | `metadata-ai` | ✅ Ready |
-| Python SDK | Python | `metadata-ai` | ✅ Ready |
-| TypeScript SDK | TypeScript | `@openmetadata/metadata-ai` | ✅ Ready |
-| Java SDK | Java | `io.openmetadata:metadata-ai` | ✅ Ready |
+| CLI | Rust | `ai-sdk` | ✅ Ready |
+| Python SDK | Python | `ai-sdk` | ✅ Ready |
+| TypeScript SDK | TypeScript | `@openmetadata/ai-sdk` | ✅ Ready |
+| Java SDK | Java | `io.openmetadata:ai-sdk` | ✅ Ready |
 | n8n Integration | TypeScript | `n8n-nodes-metadata` | ✅ Ready |
 
 ## Quick Start
@@ -21,20 +21,20 @@ SDKs and CLI for invoking Metadata Dynamic Agents from your AI applications.
 curl -sSL https://raw.githubusercontent.com/open-metadata/metadata-ai-sdk/main/cli/install.sh | sh
 
 # Configure
-metadata-ai configure
+ai-sdk configure
 
 # Invoke an agent
-metadata-ai invoke DataQualityPlannerAgent "Analyze the customers table"
+ai-sdk invoke DataQualityPlannerAgent "Analyze the customers table"
 ```
 
 ### Python
 
 ```bash
-pip install metadata-ai
+pip install ai-sdk
 ```
 
 ```python
-from metadata_ai import MetadataAI
+from ai_sdk import MetadataAI
 
 client = MetadataAI(
     host="https://your-metadata-instance.com",
@@ -50,11 +50,11 @@ print(response.response)
 ### TypeScript
 
 ```bash
-npm install @openmetadata/metadata-ai
+npm install @openmetadata/ai-sdk
 ```
 
 ```typescript
-import { MetadataAI } from '@openmetadata/metadata-ai';
+import { MetadataAI } from '@openmetadata/ai-sdk';
 
 const client = new MetadataAI({
   host: 'https://your-metadata-instance.com',
@@ -72,7 +72,7 @@ console.log(response.response);
 ```xml
 <dependency>
   <groupId>io.openmetadata</groupId>
-  <artifactId>metadata-ai</artifactId>
+  <artifactId>ai-sdk</artifactId>
   <version>0.1.0</version>
 </dependency>
 ```
@@ -143,9 +143,9 @@ make release B=main       # from a specific branch
 
 | SDK | Target | Workflow |
 |-----|--------|----------|
-| Python | PyPI (`metadata-ai`) | `ai-sdk-release-python.yml` |
-| TypeScript | npm (`@openmetadata/metadata-ai`) | `ai-sdk-release-typescript.yml` |
-| Java | Maven Central (`io.openmetadata:metadata-ai`) | `ai-sdk-release-java.yml` |
+| Python | PyPI (`ai-sdk`) | `ai-sdk-release-python.yml` |
+| TypeScript | npm (`@openmetadata/ai-sdk`) | `ai-sdk-release-typescript.yml` |
+| Java | Maven Central (`io.openmetadata:ai-sdk`) | `ai-sdk-release-java.yml` |
 | CLI | GitHub Release binaries | `ai-sdk-release-cli.yml` |
 
 ### Individual SDK Releases
@@ -163,7 +163,7 @@ The Java secrets are reused from the `open-metadata/OpenMetadata` org. Only `NPM
 
 | Secret | Used By | Description |
 |--------|---------|-------------|
-| `NPM_TOKEN` | TypeScript | npm access token with publish permission for `@openmetadata/metadata-ai` |
+| `NPM_TOKEN` | TypeScript | npm access token with publish permission for `@openmetadata/ai-sdk` |
 | `OSSRH_USERNAME` | Java | Sonatype OSSRH username (org secret) |
 | `OSSRH_TOKEN` | Java | Sonatype OSSRH token (org secret) |
 | `OSSRH_GPG_SECRET_KEY` | Java | GPG private key for signing (org secret) |
@@ -194,7 +194,7 @@ curl -sSL https://raw.githubusercontent.com/open-metadata/metadata-ai-sdk/main/c
 # https://github.com/open-metadata/metadata-ai-sdk/releases
 ```
 
-The installer downloads the binary to `~/.local/bin/metadata-ai` (falls back to `/usr/local/bin/`).
+The installer downloads the binary to `~/.local/bin/ai-sdk` (falls back to `/usr/local/bin/`).
 
 ## Development
 

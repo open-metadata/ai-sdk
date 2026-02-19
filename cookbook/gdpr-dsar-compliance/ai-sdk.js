@@ -414,7 +414,7 @@ var HttpClient = class {
   timeout;
   maxRetries;
   retryDelay;
-  userAgent = "metadata-ai-sdk-ts/0.1.0";
+  userAgent = "ai-sdk-ts/0.1.0";
   constructor(options) {
     this.baseUrl = options.baseUrl.replace(/\/$/, "");
     this.hostUrl = this.baseUrl.replace(/\/api\/v1\/agents\/dynamic$/, "");

@@ -35,7 +35,7 @@ fn chat_tests_enabled() -> bool {
 fn cli_binary() -> String {
     // Use cargo's target directory
     let target_dir = env::var("CARGO_TARGET_DIR").unwrap_or_else(|_| "target".to_string());
-    format!("{target_dir}/debug/metadata-ai")
+    format!("{target_dir}/debug/ai-sdk")
 }
 
 /// Generate a unique name for test entities
@@ -138,7 +138,7 @@ fn test_cli_version() {
     assert!(output.status.success());
 
     let stdout = String::from_utf8_lossy(&output.stdout);
-    assert!(stdout.contains("metadata-ai"));
+    assert!(stdout.contains("ai-sdk"));
     println!("CLI version: {}", stdout.trim());
 }
 

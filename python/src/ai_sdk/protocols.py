@@ -6,7 +6,7 @@ This module provides ABC classes that enable:
 - Dependency injection patterns
 
 Example:
-    from metadata_ai.protocols import AgentBase
+    from ai_sdk.protocols import AgentBase
 
     class MockAgent(AgentBase):
         '''Mock agent for testing.'''
@@ -41,7 +41,7 @@ from collections.abc import AsyncIterator, Iterator
 from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:
-    from metadata_ai.models import AgentInfo, InvokeResponse, StreamEvent
+    from ai_sdk.models import AgentInfo, InvokeResponse, StreamEvent
 
 
 class AgentProtocol(ABC):

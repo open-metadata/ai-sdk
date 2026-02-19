@@ -7,25 +7,25 @@ use thiserror::Error;
 /// CLI-specific error types with user-friendly messages.
 #[derive(Error, Debug)]
 pub enum CliError {
-    #[error("Authentication failed. Run: metadata-ai configure")]
+    #[error("Authentication failed. Run: ai-sdk configure")]
     AuthenticationFailed,
 
     #[error("Agent '{0}' is not API-enabled. Enable API access in the Metadata UI.")]
     AgentNotEnabled(String),
 
-    #[error("Agent '{0}' not found. Run: metadata-ai agents list")]
+    #[error("Agent '{0}' not found. Run: ai-sdk agents list")]
     AgentNotFound(String),
 
     #[error("Rate limit exceeded. Please wait before retrying.")]
     RateLimitExceeded,
 
-    #[error("Configuration not found. Run: metadata-ai configure")]
+    #[error("Configuration not found. Run: ai-sdk configure")]
     ConfigNotFound,
 
     #[error("Invalid configuration: {0}")]
     InvalidConfig(String),
 
-    #[error("Host not reachable: {0}\nCheck your network connection and verify the host URL with: metadata-ai configure")]
+    #[error("Host not reachable: {0}\nCheck your network connection and verify the host URL with: ai-sdk configure")]
     HostNotReachable(String),
 
     #[error("Network error: {0}")]

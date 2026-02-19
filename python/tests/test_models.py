@@ -1,6 +1,6 @@
 """Tests for the Metadata AI SDK models."""
 
-from metadata_ai.models import (
+from ai_sdk.models import (
     AgentInfo,
     InvokeRequest,
     InvokeResponse,

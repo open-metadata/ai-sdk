@@ -4,13 +4,13 @@ This guide shows how to create the `DBTReviewer` agent required for the dbt PR r
 
 ## Using the CLI (Recommended)
 
-The `metadata-ai` CLI provides the fastest way to set up the agent.
+The `ai-sdk` CLI provides the fastest way to set up the agent.
 
 ### Prerequisites
 
 ```bash
 # Install the CLI
-cargo install metadata-ai
+cargo install ai-sdk
 
 # Configure environment
 export METADATA_HOST=https://your-instance.getcollate.io
@@ -21,12 +21,12 @@ export METADATA_TOKEN=your-jwt-token
 
 ```bash
 # List all abilities
-metadata-ai abilities list
+ai-sdk abilities list
 
 # Get details on specific abilities
-metadata-ai abilities get discoveryAndSearch
-metadata-ai abilities get dataLineageAndExploration
-metadata-ai abilities get dataQualityAndTesting
+ai-sdk abilities get discoveryAndSearch
+ai-sdk abilities get dataLineageAndExploration
+ai-sdk abilities get dataQualityAndTesting
 ```
 
 The agent needs these abilities:
@@ -37,7 +37,7 @@ The agent needs these abilities:
 ### Step 2: Create the Persona
 
 ```bash
-metadata-ai personas create \
+ai-sdk personas create \
   --name DBTReviewerPersona \
   --description "dbt model code review specialist" \
   --prompt "You are a senior data engineer reviewing dbt model changes. You:
@@ -53,7 +53,7 @@ Be concise. Focus on what matters: will this change break something downstream?"
 ### Step 3: Create the Agent
 
 ```bash
-metadata-ai agents create \
+ai-sdk agents create \
   --name DBTReviewer \
   --description "Reviews dbt model PRs for downstream impact and DQ risks" \
   --persona DBTReviewerPersona \
@@ -65,13 +65,13 @@ metadata-ai agents create \
 
 ```bash
 # Check agent was created
-metadata-ai agents list
+ai-sdk agents list
 
 # Get agent details
-metadata-ai agents info DBTReviewer
+ai-sdk agents info DBTReviewer
 
 # Test with a sample query
-metadata-ai invoke DBTReviewer "What tables depend on the orders model?"
+ai-sdk invoke DBTReviewer "What tables depend on the orders model?"
 ```
 
 ## Using the Collate UI
@@ -92,7 +92,7 @@ metadata-ai invoke DBTReviewer "What tables depend on the orders model?"
 ## Using the Python SDK
 
 ```python
-from metadata_ai import MetadataAI
+from ai_sdk import MetadataAI
 
 client = MetadataAI(
     host="https://your-instance.getcollate.io",
@@ -114,7 +114,7 @@ print(f"Created agent: {agent.name}")
 ## Using the TypeScript SDK
 
 ```typescript
-import { MetadataAI } from '@openmetadata/metadata-ai';
+import { MetadataAI } from '@openmetadata/ai-sdk';
 
 const client = new MetadataAI({
   host: 'https://your-instance.getcollate.io',
@@ -135,7 +135,7 @@ console.log(`Created agent: ${agent.name}`);
 ## Verifying API Access
 
 ```bash
-metadata-ai agents info DBTReviewer
+ai-sdk agents info DBTReviewer
 
 # Should show:
 # Name: DBTReviewer

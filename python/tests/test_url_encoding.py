@@ -2,7 +2,7 @@
 
 from unittest.mock import MagicMock
 
-from metadata_ai.client import MetadataAI
+from ai_sdk.client import MetadataAI
 
 
 def test_get_bot_encodes_name_with_slash():

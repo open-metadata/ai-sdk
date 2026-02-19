@@ -1,5 +1,5 @@
 {
-  "name": "@openmetadata/metadata-ai",
+  "name": "@openmetadata/ai-sdk",
   "version": "0.0.2",
   "description": "OpenMetadata AI SDK for Node.js - Interact with OpenMetadata Dynamic Agents",
   "main": "dist/index.js",

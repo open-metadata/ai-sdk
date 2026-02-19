@@ -16,12 +16,12 @@ import uuid
 
 import pytest
 
-from metadata_ai import MetadataAI
-from metadata_ai.exceptions import (
+from ai_sdk import MetadataAI
+from ai_sdk.exceptions import (
     AuthenticationError,
     PersonaNotFoundError,
 )
-from metadata_ai.models import CreateAgentRequest, CreatePersonaRequest
+from ai_sdk.models import CreateAgentRequest, CreatePersonaRequest
 
 # Skip all tests if credentials not configured
 pytestmark = pytest.mark.skipif(

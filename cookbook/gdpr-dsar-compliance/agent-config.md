@@ -4,13 +4,13 @@ This guide shows how to create the `GDPRComplianceAnalyzer` agent required for t
 
 ## Using the CLI (Recommended)
 
-The `metadata-ai` CLI provides the fastest way to set up the agent.
+The `ai-sdk` CLI provides the fastest way to set up the agent.
 
 ### Prerequisites
 
 ```bash
 # Install the CLI
-cargo install metadata-ai
+cargo install ai-sdk
 
 # Or build from source
 cd cli && cargo build --release
@@ -24,12 +24,12 @@ export METADATA_TOKEN=your-jwt-token
 
 ```bash
 # List all abilities
-metadata-ai abilities list
+ai-sdk abilities list
 
 # Get details on specific abilities
-metadata-ai abilities get discoveryAndSearch
-metadata-ai abilities get dataLineageAndExploration
-metadata-ai abilities get dataQualityAndTesting
+ai-sdk abilities get discoveryAndSearch
+ai-sdk abilities get dataLineageAndExploration
+ai-sdk abilities get dataQualityAndTesting
 ```
 
 The agent needs these abilities:
@@ -41,16 +41,16 @@ The agent needs these abilities:
 
 ```bash
 # List personas
-metadata-ai personas list
+ai-sdk personas list
 
 # Get persona details
-metadata-ai personas get DataAnalyst
+ai-sdk personas get DataAnalyst
 ```
 
 Create a custom persona for GDPR analysis:
 
 ```bash
-metadata-ai personas create \
+ai-sdk personas create \
   --name GDPRAnalyst \
   --description "GDPR compliance and PII analysis specialist" \
   --prompt "You are a GDPR compliance analyst. You MUST execute the full analysis yourself and produce a complete compliance report. Do NOT stop to ask the user what to do next — complete every step autonomously.
@@ -75,7 +75,7 @@ IMPORTANT: Do not present intermediate findings and ask the user for next steps.
 ### Step 3: Create the Agent
 
 ```bash
-metadata-ai agents create \
+ai-sdk agents create \
   --name GDPRComplianceAnalyzer \
   --description "Handles GDPR deletion requests by searching for customer data, tracing lineage, and checking retention policies" \
   --persona GDPRAnalyst \
@@ -87,13 +87,13 @@ metadata-ai agents create \
 
 ```bash
 # Check agent was created
-metadata-ai agents list
+ai-sdk agents list
 
 # Get agent details
-metadata-ai agents info GDPRComplianceAnalyzer
+ai-sdk agents info GDPRComplianceAnalyzer
 
 # Test with a sample query
-metadata-ai invoke GDPRComplianceAnalyzer "Customer Michael Perez (customer_id: 1) wants his data deleted. Search for tables where his data resides and trace lineage to find related tables."
+ai-sdk invoke GDPRComplianceAnalyzer "Customer Michael Perez (customer_id: 1) wants his data deleted. Search for tables where his data resides and trace lineage to find related tables."
 ```
 
 ## Using the Collate UI
@@ -116,7 +116,7 @@ You can also create the agent through the Collate web interface:
 ## Using the Python SDK
 
 ```python
-from metadata_ai import MetadataAI
+from ai_sdk import MetadataAI
 
 client = MetadataAI(
     host="https://your-instance.getcollate.io",
@@ -138,7 +138,7 @@ print(f"Created agent: {agent.name}")
 ## Using the TypeScript SDK
 
 ```typescript
-import { MetadataAI } from '@openmetadata/metadata-ai';
+import { MetadataAI } from '@openmetadata/ai-sdk';
 
 const client = new MetadataAI({
   host: 'https://your-instance.getcollate.io',
@@ -224,7 +224,7 @@ After creating the agent, verify it's accessible via API:
 
 ```bash
 # Using CLI
-metadata-ai agents info GDPRComplianceAnalyzer
+ai-sdk agents info GDPRComplianceAnalyzer
 
 # Should show:
 # Name: GDPRComplianceAnalyzer
