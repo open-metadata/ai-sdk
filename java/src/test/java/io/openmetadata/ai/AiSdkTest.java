@@ -621,10 +621,11 @@ class AiSdkTest {
   @Test
   @DisplayName("StreamEvent types are defined")
   void streamEventTypesAreDefined() {
-    assertEquals(4, StreamEvent.Type.values().length);
+    assertEquals(5, StreamEvent.Type.values().length);
     assertNotNull(StreamEvent.Type.START);
     assertNotNull(StreamEvent.Type.CONTENT);
     assertNotNull(StreamEvent.Type.TOOL_USE);
+    assertNotNull(StreamEvent.Type.ERROR);
     assertNotNull(StreamEvent.Type.END);
   }
 }

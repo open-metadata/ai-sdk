@@ -12,6 +12,7 @@ public class StreamEvent {
     START,
     CONTENT,
     TOOL_USE,
+    ERROR,
     END
   }
 
@@ -26,17 +27,22 @@ public class StreamEvent {
   @JsonProperty("conversationId")
   private String conversationId;
 
+  @JsonProperty("error")
+  private String error;
+
   public StreamEvent() {}
 
   public StreamEvent(Type type) {
     this.type = type;
   }
 
-  public StreamEvent(Type type, String content, String toolName, String conversationId) {
+  public StreamEvent(
+      Type type, String content, String toolName, String conversationId, String error) {
     this.type = type;
     this.content = content;
     this.toolName = toolName;
     this.conversationId = conversationId;
+    this.error = error;
   }
 
   public Type getType() {
@@ -71,6 +77,14 @@ public class StreamEvent {
     this.conversationId = conversationId;
   }
 
+  public String getError() {
+    return error;
+  }
+
+  public void setError(String error) {
+    this.error = error;
+  }
+
   /** Creates a new builder for StreamEvent. */
   public static Builder builder() {
     return new Builder();
@@ -81,6 +95,7 @@ public class StreamEvent {
     private String content;
     private String toolName;
     private String conversationId;
+    private String error;
 
     public Builder type(Type type) {
       this.type = type;
@@ -102,8 +117,13 @@ public class StreamEvent {
       return this;
     }
 
+    public Builder error(String error) {
+      this.error = error;
+      return this;
+    }
+
     public StreamEvent build() {
-      return new StreamEvent(type, content, toolName, conversationId);
+      return new StreamEvent(type, content, toolName, conversationId, error);
     }
   }
 
@@ -120,6 +140,9 @@ public class StreamEvent {
         + '\''
         + ", conversationId='"
         + conversationId
+        + '\''
+        + ", error='"
+        + error
         + '\''
         + '}';
   }

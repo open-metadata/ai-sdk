@@ -56,6 +56,11 @@ class AgentHandle:
         """Get the agent name."""
         return self._name
 
+    @property
+    def has_async(self) -> bool:
+        """Check if async operations are available."""
+        return self._async_http is not None
+
     def call(
         self,
         message: str | None = None,

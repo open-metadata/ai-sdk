@@ -134,6 +134,19 @@ export interface ApiAgentInfo {
 }
 
 /**
+ * Convert API agent info response to AgentInfo.
+ */
+export function mapAgentInfo(data: ApiAgentInfo): AgentInfo {
+  return {
+    name: data.name,
+    displayName: data.displayName || data.name,
+    description: data.description || '',
+    abilities: data.abilities || [],
+    apiEnabled: data.apiEnabled ?? false,
+  };
+}
+
+/**
  * API response for invoke (maps to internal format).
  * @internal
  */

@@ -388,6 +388,9 @@ public class AiSdk implements AutoCloseable {
       if (host.isEmpty()) {
         throw new IllegalArgumentException("host cannot be empty");
       }
+      if (token.isEmpty()) {
+        throw new IllegalArgumentException("token cannot be empty");
+      }
       return new AiSdk(this);
     }
   }

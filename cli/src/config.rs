@@ -224,10 +224,13 @@ pub fn set_config_value(key: &str, value: &str) -> CliResult<()> {
 
 /// Mask a token for display, showing only first/last 4 characters.
 pub fn mask_token(token: &str) -> String {
-    if token.len() <= 12 {
-        return "*".repeat(token.len());
+    let char_count = token.chars().count();
+    if char_count <= 12 {
+        return "*".repeat(char_count);
     }
-    format!("{}...{}", &token[..4], &token[token.len() - 4..])
+    let prefix: String = token.chars().take(4).collect();
+    let suffix: String = token.chars().skip(char_count - 4).collect();
+    format!("{prefix}...{suffix}")
 }
 
 /// List all configuration values.

@@ -121,7 +121,8 @@ public class AiSdkHttpClient implements AutoCloseable {
 
     while (true) {
       StringBuilder urlBuilder = new StringBuilder(baseUrl);
-      urlBuilder.append("?limit=").append(pageSize);
+      String separator = baseUrl.contains("?") ? "&" : "?";
+      urlBuilder.append(separator).append("limit=").append(pageSize);
       if (after != null) {
         urlBuilder.append("&after=").append(URLEncoder.encode(after, StandardCharsets.UTF_8));
       }
@@ -232,7 +233,7 @@ public class AiSdkHttpClient implements AutoCloseable {
     try {
       HttpResponse<InputStream> response =
           httpClient.send(request, HttpResponse.BodyHandlers.ofInputStream());
-      handleErrorStatus(response.statusCode(), agentName);
+      handleErrorStatus(response.statusCode(), agentName, parseRetryAfter(response));
 
       try (InputStream inputStream = response.body()) {
         sseParser.parse(inputStream, eventConsumer);
@@ -272,7 +273,7 @@ public class AiSdkHttpClient implements AutoCloseable {
     try {
       HttpResponse<InputStream> response =
           httpClient.send(request, HttpResponse.BodyHandlers.ofInputStream());
-      handleErrorStatus(response.statusCode(), agentName);
+      handleErrorStatus(response.statusCode(), agentName, parseRetryAfter(response));
 
       return sseParser.parseAsStream(response.body());
     } catch (AiSdkException e) {
@@ -513,7 +514,8 @@ public class AiSdkHttpClient implements AutoCloseable {
       try {
         HttpResponse<String> response =
             httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-        handleErrorStatusForResource(response.statusCode(), resourceType, resourceName);
+        handleErrorStatusForResource(
+            response.statusCode(), resourceType, resourceName, parseRetryAfter(response));
         return response;
       } catch (RateLimitException e) {
         lastException = e;
@@ -544,7 +546,7 @@ public class AiSdkHttpClient implements AutoCloseable {
   }
 
   private void handleErrorStatusForResource(
-      int statusCode, ResourceType resourceType, String resourceName) {
+      int statusCode, ResourceType resourceType, String resourceName, Integer retryAfter) {
     switch (statusCode) {
       case 200:
       case 201:
@@ -569,7 +571,7 @@ public class AiSdkHttpClient implements AutoCloseable {
             throw new AgentNotFoundException(resourceName != null ? resourceName : "unknown");
         }
       case 429:
-        throw new RateLimitException("Rate limit exceeded");
+        throw new RateLimitException("Rate limit exceeded", retryAfter);
       default:
         if (statusCode >= 400) {
           throw new AiSdkException("Request failed with status " + statusCode, statusCode);
@@ -589,7 +591,7 @@ public class AiSdkHttpClient implements AutoCloseable {
       try {
         HttpResponse<String> response =
             httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-        handleErrorStatus(response.statusCode(), agentName);
+        handleErrorStatus(response.statusCode(), agentName, parseRetryAfter(response));
         return response;
       } catch (RateLimitException e) {
         lastException = e;
@@ -619,7 +621,7 @@ public class AiSdkHttpClient implements AutoCloseable {
     throw new AiSdkException("Request failed after " + maxRetries + " retries", lastException);
   }
 
-  private void handleErrorStatus(int statusCode, String agentName) {
+  private void handleErrorStatus(int statusCode, String agentName, Integer retryAfter) {
     switch (statusCode) {
       case 200:
       case 201:
@@ -631,12 +633,27 @@ public class AiSdkHttpClient implements AutoCloseable {
       case 404:
         throw new AgentNotFoundException(agentName != null ? agentName : "unknown");
       case 429:
-        throw new RateLimitException("Rate limit exceeded");
+        throw new RateLimitException("Rate limit exceeded", retryAfter);
       default:
         if (statusCode >= 400) {
           throw new AiSdkException("Request failed with status " + statusCode, statusCode);
         }
     }
+  }
+
+  private static Integer parseRetryAfter(HttpResponse<?> response) {
+    return response
+        .headers()
+        .firstValue("Retry-After")
+        .map(
+            value -> {
+              try {
+                return Integer.parseInt(value.trim());
+              } catch (NumberFormatException e) {
+                return null;
+              }
+            })
+        .orElse(null);
   }
 
   private void sleep(Duration duration) {

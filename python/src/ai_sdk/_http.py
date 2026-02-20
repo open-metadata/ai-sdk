@@ -32,7 +32,7 @@ from ai_sdk.exceptions import (
 logger = get_logger(__name__)
 
 # Status codes that should trigger retry
-RETRYABLE_STATUS_CODES = {429, 500, 502, 503, 504}
+RETRYABLE_STATUS_CODES = frozenset({429, 500, 502, 503, 504})
 
 
 def _generate_request_id() -> str:
@@ -86,7 +86,7 @@ def _handle_error(
 
     if response.status_code == 429:
         retry_after = response.headers.get("Retry-After")
-        retry_seconds = int(retry_after) if retry_after else None
+        retry_seconds = int(retry_after) if retry_after and retry_after.isdigit() else None
         logger.warning("%s Rate limit exceeded, retry after: %s", context, retry_seconds)
         raise RateLimitError("Rate limit exceeded", retry_after=retry_seconds)
 
@@ -108,6 +108,7 @@ def _handle_error(
         raise AgentExecutionError(
             f"API error ({response.status_code}): {message}",
             agent_name=agent_name,
+            status_code=response.status_code,
         )
 
 
@@ -152,7 +153,7 @@ class HTTPClient:
         self._verify_ssl = verify_ssl
         self._max_retries = max_retries
         self._retry_delay = retry_delay
-        self._user_agent = user_agent or "ai-sdk-sdk/0.1.0"
+        self._user_agent = user_agent or "ai-sdk-python/0.0.2"
         self._extra_headers = extra_headers or {}
 
         self._client = httpx.Client(
@@ -162,6 +163,31 @@ class HTTPClient:
         )
 
         logger.debug("HTTPClient initialized for %s", self._base_url)
+
+    @property
+    def timeout(self) -> float:
+        """Request timeout in seconds."""
+        return self._timeout
+
+    @property
+    def verify_ssl(self) -> bool:
+        """Whether SSL certificates are verified."""
+        return self._verify_ssl
+
+    @property
+    def max_retries(self) -> int:
+        """Maximum retry attempts."""
+        return self._max_retries
+
+    @property
+    def retry_delay(self) -> float:
+        """Base delay between retries."""
+        return self._retry_delay
+
+    @property
+    def user_agent(self) -> str:
+        """User-Agent string."""
+        return self._user_agent
 
     def _headers(self, request_id: str | None = None) -> dict[str, str]:
         """Get request headers."""
@@ -313,11 +339,8 @@ class HTTPClient:
         request_id = _generate_request_id()
         logger.debug("[req:%s] POST (stream) %s%s", request_id, self._base_url, path)
 
-        headers = self._auth.get_headers()
-        headers["Content-Type"] = "application/json"
+        headers = self._headers(request_id)
         headers["Accept"] = "text/event-stream"
-        headers["User-Agent"] = self._user_agent
-        headers["X-Request-ID"] = request_id
 
         with self._client.stream(
             "POST",
@@ -383,7 +406,7 @@ class AsyncHTTPClient:
         self._verify_ssl = verify_ssl
         self._max_retries = max_retries
         self._retry_delay = retry_delay
-        self._user_agent = user_agent or "ai-sdk-sdk/0.1.0"
+        self._user_agent = user_agent or "ai-sdk-python/0.0.2"
         self._client: httpx.AsyncClient | None = None
 
         logger.debug("AsyncHTTPClient initialized for %s", self._base_url)
@@ -545,11 +568,8 @@ class AsyncHTTPClient:
         request_id = _generate_request_id()
         logger.debug("[req:%s] async POST (stream) %s%s", request_id, self._base_url, path)
 
-        headers = self._auth.get_headers()
-        headers["Content-Type"] = "application/json"
+        headers = self._headers(request_id)
         headers["Accept"] = "text/event-stream"
-        headers["User-Agent"] = self._user_agent
-        headers["X-Request-ID"] = request_id
 
         client = self._get_client()
         async with client.stream(

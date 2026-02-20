@@ -7,11 +7,12 @@
 
 import { AgentHandle } from './agent.js';
 import { HttpClient } from './http.js';
-import type {
-  AgentInfo,
-  ApiAgentInfo,
-  AiSdkOptions,
-  PaginatedResponse,
+import {
+  mapAgentInfo,
+  type AgentInfo,
+  type ApiAgentInfo,
+  type AiSdkOptions,
+  type PaginatedResponse,
 } from './models.js';
 import type {
   AbilityInfo,
@@ -72,19 +73,6 @@ interface ApiAbilityInfo {
   provider?: string;
   fullyQualifiedName?: string;
   tools?: string[];
-}
-
-/**
- * Convert API agent info response to AgentInfo.
- */
-function mapAgentInfo(data: ApiAgentInfo): AgentInfo {
-  return {
-    name: data.name,
-    displayName: data.displayName || data.name,
-    description: data.description || '',
-    abilities: data.abilities || [],
-    apiEnabled: data.apiEnabled ?? false,
-  };
 }
 
 /**

@@ -7,7 +7,6 @@ from typing import TYPE_CHECKING, Any
 from urllib.parse import quote
 
 if TYPE_CHECKING:
-    from ai_sdk._http import AsyncHTTPClient as AsyncHttpClient, HTTPClient as HttpClient
     from ai_sdk.config import AiSdkConfig
 
 from ai_sdk._http import AsyncHTTPClient, HTTPClient
@@ -213,7 +212,7 @@ class AiSdk:
 
     def _paginate_list(
         self,
-        http: HttpClient,
+        http: HTTPClient,
         path: str,
         mapper: Callable[[dict], Any],
         limit: int | None = None,
@@ -262,7 +261,7 @@ class AiSdk:
 
     async def _apaginate_list(
         self,
-        http: AsyncHttpClient,
+        http: AsyncHTTPClient,
         path: str,
         mapper: Callable[[dict], Any],
         limit: int | None = None,

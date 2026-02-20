@@ -78,7 +78,8 @@ def invoke_with_retry(client: AiSdk, prompt: str, max_retries: int = 3) -> str:
     """Invoke agent with retry logic for transient failures."""
     for attempt in range(max_retries):
         try:
-            return client.agent(AGENT_NAME).invoke(prompt)
+            response = client.agent(AGENT_NAME).call(prompt)
+            return response.response
         except RateLimitError as e:
             if attempt < max_retries - 1:
                 wait_time = getattr(e, "retry_after", None) or (2**attempt)

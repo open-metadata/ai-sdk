@@ -87,6 +87,17 @@ public class SseParser {
       JsonNode jsonNode = objectMapper.readTree(data);
       StreamEvent.Builder builder = StreamEvent.builder().type(type);
 
+      if (type == StreamEvent.Type.ERROR) {
+        if (jsonNode.has("message")) {
+          builder.error(jsonNode.get("message").asText());
+        } else if (jsonNode.has("error")) {
+          builder.error(jsonNode.get("error").asText());
+        } else {
+          builder.error(data);
+        }
+        return builder.build();
+      }
+
       // Handle nested API response structure:
       // {"data": {"message": {"content": [{"textMessage": {"message": "..."}, "tools": [...]}]}}}
       JsonNode dataNode = jsonNode.has("data") ? jsonNode.get("data") : jsonNode;
@@ -146,8 +157,7 @@ public class SseParser {
       }
 
       return builder.build();
-    } catch (Exception e) {
-      // Log and skip malformed events
+    } catch (com.fasterxml.jackson.core.JsonProcessingException e) {
       return null;
     }
   }
@@ -168,6 +178,9 @@ public class SseParser {
       case "stream_completed":
       case "end":
         return StreamEvent.Type.END;
+      case "error":
+      case "fatal_error":
+        return StreamEvent.Type.ERROR;
       default:
         return null;
     }

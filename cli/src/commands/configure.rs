@@ -1,7 +1,8 @@
 //! Configuration management commands.
 
 use crate::config::{
-    get_config_value, list_config, load_config, load_credentials, save_config, save_credentials,
+    get_config_value, list_config, load_config, load_credentials, mask_token, save_config,
+    save_credentials,
 };
 use crate::error::{CliError, CliResult};
 use colored::Colorize;
@@ -80,7 +81,12 @@ pub fn run_interactive() -> CliResult<()> {
 /// Set a specific configuration value.
 pub fn run_set(key: &str, value: &str) -> CliResult<()> {
     crate::config::set_config_value(key, value)?;
-    println!("{} {} = {}", "Set".green(), key.bold(), value);
+    let display_value = if key == "token" {
+        mask_token(value)
+    } else {
+        value.to_string()
+    };
+    println!("{} {} = {}", "Set".green(), key.bold(), display_value);
     Ok(())
 }
 

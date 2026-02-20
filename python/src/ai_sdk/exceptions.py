@@ -50,8 +50,8 @@ class RateLimitError(AiSdkError):
 class AgentExecutionError(AiSdkError):
     """Error during agent execution."""
 
-    def __init__(self, message: str, agent_name: str | None = None):
-        super().__init__(message, status_code=500)
+    def __init__(self, message: str, agent_name: str | None = None, status_code: int = 500):
+        super().__init__(message, status_code=status_code)
         self.agent_name = agent_name
 
 
@@ -84,8 +84,6 @@ class AbilityNotFoundError(AiSdkError):
 
 class MCPError(AiSdkError):
     """Base error for MCP operations."""
-
-    pass
 
 
 class MCPToolExecutionError(MCPError):

@@ -6,11 +6,13 @@ import json
 import uuid
 from typing import TYPE_CHECKING
 
+import httpx
+
 if TYPE_CHECKING:
     from ai_sdk.auth import TokenAuth
 
 from ai_sdk._http import HTTPClient
-from ai_sdk.exceptions import MCPError, MCPToolExecutionError
+from ai_sdk.exceptions import AiSdkError, MCPError, MCPToolExecutionError
 from ai_sdk.mcp.models import MCPTool, ToolCallResult, ToolInfo, ToolParameter
 
 
@@ -65,11 +67,11 @@ class MCPClient:
         self._http = HTTPClient(
             base_url=self._host,
             auth=auth,
-            timeout=http._timeout,
-            verify_ssl=http._verify_ssl,
-            max_retries=http._max_retries,
-            retry_delay=http._retry_delay,
-            user_agent=http._user_agent,
+            timeout=http.timeout,
+            verify_ssl=http.verify_ssl,
+            max_retries=http.max_retries,
+            retry_delay=http.retry_delay,
+            user_agent=http.user_agent,
             extra_headers={"Accept": "application/json, text/event-stream"},
         )
 
@@ -85,7 +87,7 @@ class MCPClient:
 
         try:
             result = self._http.post("/mcp", json=payload)
-        except Exception as exc:
+        except (AiSdkError, httpx.HTTPError) as exc:
             raise MCPError(f"MCP request failed: {exc}") from exc
 
         if "error" in result:

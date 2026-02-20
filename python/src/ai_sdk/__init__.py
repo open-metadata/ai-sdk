@@ -112,13 +112,23 @@ Import Guide:
 
 from __future__ import annotations
 
-__version__ = "0.1.0"
+__version__ = "0.0.2"
 
 # Re-export main classes for convenient imports
 from ai_sdk.client import AiSdk
 from ai_sdk.config import AiSdkConfig
 from ai_sdk.conversation import Conversation
-from ai_sdk.exceptions import AbilityNotFoundError, BotNotFoundError, PersonaNotFoundError
+from ai_sdk.exceptions import (
+    AbilityNotFoundError,
+    AgentExecutionError,
+    AgentNotEnabledError,
+    AgentNotFoundError,
+    AiSdkError,
+    AuthenticationError,
+    BotNotFoundError,
+    PersonaNotFoundError,
+    RateLimitError,
+)
 from ai_sdk.models import (
     AbilityInfo,
     BotInfo,
@@ -131,8 +141,13 @@ from ai_sdk.models import (
 __all__ = [
     "AbilityInfo",
     "AbilityNotFoundError",
+    "AgentExecutionError",
+    "AgentNotEnabledError",
+    "AgentNotFoundError",
     "AiSdk",
     "AiSdkConfig",
+    "AiSdkError",
+    "AuthenticationError",
     "BotInfo",
     "BotNotFoundError",
     "Conversation",
@@ -141,5 +156,6 @@ __all__ = [
     "KnowledgeScope",
     "PersonaInfo",
     "PersonaNotFoundError",
+    "RateLimitError",
     "__version__",
 ]

@@ -37,9 +37,10 @@ pub async fn run_list(limit: Option<u32>, json: bool) -> CliResult<()> {
 
         if let Some(desc) = &bot.description {
             if !desc.is_empty() {
-                // Truncate long descriptions
-                let truncated = if desc.len() > 80 {
-                    format!("{}...", &desc[..77])
+                // Truncate long descriptions (char-boundary-safe)
+                let truncated = if desc.chars().count() > 80 {
+                    let t: String = desc.chars().take(77).collect();
+                    format!("{t}...")
                 } else {
                     desc.clone()
                 };

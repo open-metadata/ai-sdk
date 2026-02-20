@@ -38,14 +38,13 @@ def main():
         print("  python batch_analyzer.py changes.diff")
         sys.exit(1)
 
-    diff_file = sys.argv[1]
+    diff_path = Path(sys.argv[1])
 
-    try:
-        with open(diff_file) as f:
-            diff_output = f.read()
-    except FileNotFoundError:
-        print(f"Error: File not found: {diff_file}")
+    if not diff_path.exists():
+        print(f"Error: File not found: {diff_path}")
         sys.exit(1)
+
+    diff_output = diff_path.read_text(encoding="utf-8")
 
     changed_models = get_changed_models(diff_output)
 

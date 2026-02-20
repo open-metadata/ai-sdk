@@ -75,11 +75,18 @@ export class AiSdkAgent implements INodeType {
 		const items = this.getInputData();
 		const returnData: INodeExecutionData[] = [];
 
+		const credentials = await this.getCredentials('aiSdkApi');
+		const serverUrl = credentials.serverUrl as string;
+		const jwtToken = credentials.jwtToken as string;
+
+		const client = new AiSdk({
+			host: serverUrl,
+			token: jwtToken,
+			timeout: 300000, // 5 minute timeout to match API
+		});
+
 		for (let i = 0; i < items.length; i++) {
 			try {
-				const credentials = await this.getCredentials('aiSdkApi');
-				const serverUrl = credentials.serverUrl as string;
-				const jwtToken = credentials.jwtToken as string;
 				const agentName = this.getNodeParameter('agentName', i) as string;
 				const message = this.getNodeParameter('message', i) as string;
 				const conversationId = this.getNodeParameter('conversationId', i, '') as string;
@@ -91,13 +98,6 @@ export class AiSdkAgent implements INodeType {
 				if (!message) {
 					throw new NodeOperationError(this.getNode(), 'Message is required', { itemIndex: i });
 				}
-
-				// Initialize SDK client
-				const client = new AiSdk({
-					host: serverUrl,
-					token: jwtToken,
-					timeout: 300000, // 5 minute timeout to match API
-				});
 
 				// Invoke the agent using the SDK
 				const response = await client.agent(agentName).invoke(message, {
@@ -124,6 +124,15 @@ export class AiSdkAgent implements INodeType {
 					pairedItem: { item: i },
 				});
 			} catch (error) {
+				if (this.continueOnFail()) {
+					const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+					returnData.push({
+						json: { error: errorMessage },
+						pairedItem: { item: i },
+					});
+					continue;
+				}
+
 				if (error instanceof NodeApiError || error instanceof NodeOperationError) {
 					throw error;
 				}

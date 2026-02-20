@@ -21,8 +21,9 @@ Optional:
 
 import json
 import os
-import urllib.request
+import re
 import urllib.error
+import urllib.request
 
 from langchain.agents import create_agent
 
@@ -121,7 +122,6 @@ def _markdown_to_slack_mrkdwn(text: str) -> str:
     Slack uses *bold* (single asterisk) instead of **bold** (double),
     and <url|label> instead of [label](url).
     """
-    import re
 
     # Convert markdown links [text](url) → Slack <url|text>
     text = re.sub(r"\[([^\]]+)\]\(([^)]+)\)", r"<\2|\1>", text)

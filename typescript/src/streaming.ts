@@ -10,7 +10,7 @@ import type { StreamEvent, StreamEventType } from './models.js';
 /**
  * Map SSE event type names to StreamEvent types.
  */
-function mapEventType(eventType: string | null): StreamEventType {
+function mapEventType(eventType: string | null): StreamEventType | null {
   if (!eventType) {
     return 'content';
   }
@@ -24,7 +24,7 @@ function mapEventType(eventType: string | null): StreamEventType {
     'fatal-error': 'error',
   };
 
-  return typeMapping[eventType] || (eventType as StreamEventType);
+  return typeMapping[eventType] ?? null;
 }
 
 /**
@@ -32,17 +32,19 @@ function mapEventType(eventType: string | null): StreamEventType {
  */
 function parseEvent(eventStr: string): StreamEvent | null {
   let eventType: string | null = null;
-  let data: string | null = null;
+  const dataLines: string[] = [];
 
   for (const line of eventStr.split('\n')) {
     const trimmed = line.trim();
     if (trimmed.startsWith('event:')) {
       eventType = trimmed.slice(6).trim();
     } else if (trimmed.startsWith('data:')) {
-      data = trimmed.slice(5).trim();
+      dataLines.push(trimmed.slice(5).trim());
     }
     // 'id:' lines are currently not used
   }
+
+  const data = dataLines.length > 0 ? dataLines.join('\n') : null;
 
   if (!data) {
     return null;
@@ -58,6 +60,10 @@ function parseEvent(eventStr: string): StreamEvent | null {
   }
 
   const mappedType = mapEventType(eventType);
+
+  if (mappedType === null) {
+    return null;
+  }
 
   // Extract content from the nested message structure
   // The API returns: {"data": {"message": {"content": [{"textMessage": {"message": "..."}}]}}}

@@ -146,7 +146,7 @@ class TestAiSdkConfigUserAgent:
         client = AiSdk.from_config(config)
 
         # Default user agent should be used
-        assert "ai-sdk-sdk" in client._http._user_agent
+        assert "ai-sdk-python" in client._http._user_agent
 
     def test_user_agent_from_env(self, monkeypatch):
         """Test that user_agent can be set from environment variable."""

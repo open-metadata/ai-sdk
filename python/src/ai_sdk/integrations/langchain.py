@@ -257,7 +257,7 @@ class AiSdkAgentTool(BaseTool):
             enable_async=True. Otherwise falls back to sync execution.
         """
         # Check if async is available on the agent handle
-        if self._agent_handle._async_http is not None:
+        if self._agent_handle.has_async:
             response = await self._agent_handle.acall(
                 message=query,
                 conversation_id=self._conversation_id,

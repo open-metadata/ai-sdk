@@ -5,29 +5,17 @@
  */
 
 import type { HttpClient } from './http.js';
-import type {
-  AgentInfo,
-  ApiAgentInfo,
-  ApiInvokeResponse,
-  InvokeOptions,
-  InvokeRequestBody,
-  InvokeResponse,
-  StreamEvent,
+import {
+  mapAgentInfo,
+  type AgentInfo,
+  type ApiAgentInfo,
+  type ApiInvokeResponse,
+  type InvokeOptions,
+  type InvokeRequestBody,
+  type InvokeResponse,
+  type StreamEvent,
 } from './models.js';
 import { createStreamIterable } from './streaming.js';
-
-/**
- * Convert API agent info response to AgentInfo.
- */
-function mapAgentInfo(data: ApiAgentInfo): AgentInfo {
-  return {
-    name: data.name,
-    displayName: data.displayName || data.name,
-    description: data.description || '',
-    abilities: data.abilities || [],
-    apiEnabled: data.apiEnabled ?? false,
-  };
-}
 
 /**
  * Convert API invoke response to InvokeResponse.

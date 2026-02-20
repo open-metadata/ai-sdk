@@ -113,7 +113,7 @@ class Conversation:
         tools = set()
         for response in self._responses:
             tools.update(response.tools_used)
-        return list(tools)
+        return sorted(tools)
 
     def send(
         self,
