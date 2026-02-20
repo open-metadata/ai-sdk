@@ -1,4 +1,4 @@
-# OpenMetadata AI SDK
+# AI SDK
 
 Bring AI to your metadata. The OpenMetadata AI SDK gives you programmatic access to your data catalog through two complementary paths: **MCP tools** for building custom AI applications with any LLM, and **Dynamic Agents** for invoking ready-to-use AI assistants from [Collate's AI Studio](https://www.getcollate.io).
 
