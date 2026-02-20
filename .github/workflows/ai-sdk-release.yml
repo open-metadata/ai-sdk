@@ -13,20 +13,26 @@ name: Release
 on:
   release:
     types: [published]
+  workflow_dispatch:
+    inputs:
+      version:
+        required: true
+        type: string
+        description: 'Version to release (e.g., 0.2.0)'
 
 permissions:
   contents: write
   id-token: write
 
 concurrency:
-  group: release-${{ github.event.release.tag_name }}
+  group: release-${{ github.event.release.tag_name || inputs.version }}
   cancel-in-progress: false
 
 jobs:
   validate:
     name: Validate Release
-    # Only run for unified version tags (v*), not SDK-specific tags
-    if: startsWith(github.event.release.tag_name, 'v')
+    # Only run for unified version tags (v*) on release events, always run on workflow_dispatch
+    if: github.event_name == 'workflow_dispatch' || startsWith(github.event.release.tag_name, 'v')
     runs-on: ubuntu-latest
     outputs:
       version: ${{ steps.version.outputs.version }}
@@ -35,11 +41,15 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Extract version from release tag
+      - name: Extract version
         id: version
         run: |
-          TAG="${{ github.event.release.tag_name }}"
-          VERSION="${TAG#v}"
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            VERSION="${{ inputs.version }}"
+          else
+            TAG="${{ github.event.release.tag_name }}"
+            VERSION="${TAG#v}"
+          fi
           echo "version=$VERSION" >> $GITHUB_OUTPUT
           echo "Release version: $VERSION"
 
@@ -89,5 +99,5 @@ jobs:
     uses: ./.github/workflows/ai-sdk-release-cli.yml
     with:
       version: ${{ needs.validate.outputs.version }}
-      release_tag: ${{ github.event.release.tag_name }}
+      release_tag: ${{ github.event.release.tag_name || '' }}
     secrets: inherit

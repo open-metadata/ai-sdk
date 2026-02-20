@@ -4,6 +4,12 @@ on:
   push:
     tags:
       - 'typescript-v*'
+  workflow_dispatch:
+    inputs:
+      version:
+        required: true
+        type: string
+        description: 'Version to release (e.g., 0.2.0)'
   workflow_call:
     inputs:
       version:
