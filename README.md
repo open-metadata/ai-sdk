@@ -1,31 +1,62 @@
-# AI SDK
+# OpenMetadata AI SDK
 
-SDKs and CLI for invoking Metadata Dynamic Agents from your AI applications.
+Bring AI to your metadata. The OpenMetadata AI SDK gives you programmatic access to your data catalog through two complementary paths: **MCP tools** for building custom AI applications with any LLM, and **Dynamic Agents** for invoking ready-to-use AI assistants from [Collate's AI Studio](https://www.getcollate.io).
 
-## Components
+| SDK | Package | Install |
+|-----|---------|---------|
+| Python | [`ai-sdk`](https://pypi.org/project/ai-sdk/) | `pip install ai-sdk` |
+| TypeScript | [`@openmetadata/ai-sdk`](https://www.npmjs.com/package/@openmetadata/ai-sdk) | `npm install @openmetadata/ai-sdk` |
+| Java | [`io.openmetadata:ai-sdk`](https://central.sonatype.com/artifact/io.openmetadata/ai-sdk) | Maven / Gradle |
+| CLI | [`ai-sdk`](https://github.com/open-metadata/metadata-ai-sdk/releases) | [Install script](#cli-1) |
+| n8n | [`n8n-nodes-metadata`](n8n-nodes-metadata/) | n8n community node |
 
-| Component | Language | Package | Status |
-|-----------|----------|---------|--------|
-| CLI | Rust | `ai-sdk` | ✅ Ready |
-| Python SDK | Python | `ai-sdk` | ✅ Ready |
-| TypeScript SDK | TypeScript | `@openmetadata/ai-sdk` | ✅ Ready |
-| Java SDK | Java | `io.openmetadata:ai-sdk` | ✅ Ready |
-| n8n Integration | TypeScript | `n8n-nodes-metadata` | ✅ Ready |
+## Why This SDK?
+
+### MCP Tools — Your catalog as an AI toolkit
+
+OpenMetadata exposes an [MCP server](https://modelcontextprotocol.io/) at `/mcp` that turns your catalog into a set of tools any LLM can use. Unlike generic MCP connectors that only read raw database schemas, OpenMetadata's MCP tools give your AI access to the **full context** of your data platform:
+
+- **Semantic search** — Find assets by meaning, not just name. Search across tables, dashboards, pipelines, and more with catalog-aware ranking.
+- **Lineage traversal** — Trace upstream sources and downstream impact across your entire data estate. Understand how a schema change propagates before it breaks anything.
+- **Glossary & classification** — Read and write business definitions, tags, and PII classifications. Your AI doesn't just find data — it understands what it means.
+- **Catalog mutations** — Create glossary terms, update descriptions, add lineage edges, and patch entities. Go beyond read-only exploration to actually curate your catalog.
+- **Framework adapters** — First-class integration with LangChain and OpenAI function calling. Convert MCP tools with a single method call, with built-in include/exclude filtering for safety control.
+
+```python
+# Build a custom LangChain agent backed by your catalog
+from ai_sdk import MetadataAI, MetadataConfig
+
+client = MetadataAI.from_config(MetadataConfig.from_env())
+
+# Convert catalog tools to LangChain format — one line
+tools = client.mcp.as_langchain_tools()
+
+# Or call tools directly
+result = client.mcp.call_tool("search_metadata", {"query": "customers"})
+```
+
+### Dynamic Agents — Pre-built AI assistants from AI Studio
+
+With [Collate](https://www.getcollate.io), you get access to **AI Studio** — a platform for creating and managing AI agents that are purpose-built for data teams. Each agent combines a persona, a set of abilities, and full catalog access into a ready-to-use assistant you can invoke from any SDK:
+
+```python
+from ai_sdk import MetadataAI
+
+client = MetadataAI(
+    host="https://your-org.getcollate.io",
+    token="your-bot-jwt-token"
+)
+
+# Invoke a pre-built agent
+response = client.agent("DataQualityPlannerAgent").call(
+    "What data quality tests should I add for the customers table?"
+)
+print(response.response)
+```
+
+Agents support **streaming**, **multi-turn conversations**, and **async** out of the box. You can also create and manage agents programmatically — define personas, assign abilities, and deploy custom agents through the SDK.
 
 ## Quick Start
-
-### CLI
-
-```bash
-# Install
-curl -sSL https://raw.githubusercontent.com/open-metadata/metadata-ai-sdk/main/cli/install.sh | sh
-
-# Configure
-ai-sdk configure
-
-# Invoke an agent
-ai-sdk invoke DataQualityPlannerAgent "Analyze the customers table"
-```
 
 ### Python
 
@@ -34,17 +65,21 @@ pip install ai-sdk
 ```
 
 ```python
-from ai_sdk import MetadataAI
+from ai_sdk import MetadataAI, MetadataConfig
 
-client = MetadataAI(
-    host="https://your-metadata-instance.com",
-    token="your-bot-jwt-token"
-)
+config = MetadataConfig.from_env()  # reads METADATA_HOST and METADATA_TOKEN
+client = MetadataAI.from_config(config)
 
+# Invoke an agent
 response = client.agent("DataQualityPlannerAgent").call(
     "What data quality tests should I add for the customers table?"
 )
 print(response.response)
+
+# Stream responses in real time
+for event in client.agent("DataQualityPlannerAgent").stream("Analyze the orders table"):
+    if event.type == "content":
+        print(event.content, end="", flush=True)
 ```
 
 ### TypeScript
@@ -57,7 +92,7 @@ npm install @openmetadata/ai-sdk
 import { MetadataAI } from '@openmetadata/ai-sdk';
 
 const client = new MetadataAI({
-  host: 'https://your-metadata-instance.com',
+  host: 'https://your-org.getcollate.io',
   token: 'your-bot-jwt-token'
 });
 
@@ -65,7 +100,16 @@ const response = await client.agent('DataQualityPlannerAgent').call(
   'What data quality tests should I add for the customers table?'
 );
 console.log(response.response);
+
+// Stream responses
+for await (const event of client.agent('DataQualityPlannerAgent').stream('Analyze data quality')) {
+  if (event.type === 'content') {
+    process.stdout.write(event.content || '');
+  }
+}
 ```
+
+Zero runtime dependencies. Works in Node.js 18+, browsers, Deno, and Bun.
 
 ### Java
 
@@ -81,7 +125,7 @@ console.log(response.response);
 import io.openmetadata.ai.MetadataAI;
 
 MetadataAI client = new MetadataAI.Builder()
-    .host("https://your-metadata-instance.com")
+    .host("https://your-org.getcollate.io")
     .token("your-bot-jwt-token")
     .build();
 
@@ -90,124 +134,72 @@ InvokeResponse response = client.agent("DataQualityPlannerAgent")
 System.out.println(response.getResponse());
 ```
 
+### CLI
+
+```bash
+# Install
+curl -sSL https://raw.githubusercontent.com/open-metadata/metadata-ai-sdk/main/cli/install.sh | sh
+
+# Configure
+ai-sdk configure
+
+# Invoke an agent
+ai-sdk invoke DataQualityPlannerAgent "Analyze the customers table"
+```
+
+Interactive TUI with markdown rendering and syntax highlighting.
+
+## Cookbook
+
+Real-world examples showing how teams use the AI SDK in production workflows.
+
+| Use Case | What It Does | Stack |
+|----------|-------------|-------|
+| [MCP Impact Analysis](cookbook/mcp-impact-analysis/) | AI-powered impact analysis for schema changes — run in CI to catch breaking changes before they ship | Python SDK, LangChain |
+| [DQ Failure Slack Notifications](cookbook/dq-failure-slack-notifications/) | Automatically analyze Data Quality failures and post root-cause summaries to Slack | n8n, Slack |
+| [dbt Model PR Review](cookbook/dbt-pr-review/) | GitHub Action that reviews dbt model changes for downstream impact and DQ risks on every PR | GitHub Actions, Python SDK |
+| [GDPR DSAR Compliance](cookbook/gdpr-dsar-compliance/) | Trace PII across your catalog to handle data deletion and access requests | TypeScript SDK, Browser |
+| [MCP Metadata Chatbot](cookbook/mcp-metadata-chatbot/) | Multi-agent chatbot with specialist agents for discovery, lineage, and curation | Python SDK, LangChain |
+
+Each entry includes a step-by-step tutorial, importable artifacts, and the agent configuration needed to get started.
+
 ## Features
 
-All SDKs support:
+All SDKs share a consistent API surface with language-idiomatic patterns:
 
-- **Synchronous invocation** - Simple request/response pattern
-- **Streaming responses** - Real-time token streaming with SSE
-- **Multi-turn conversations** - Maintain context across messages
-- **Async support** - Native async/await (Python, TypeScript)
-- **Error handling** - Typed exceptions for common errors
-- **Retry logic** - Automatic retries with exponential backoff
+- **Synchronous & streaming** — Simple request/response or real-time SSE streaming
+- **Multi-turn conversations** — Maintain context across messages with conversation IDs
+- **Async support** — Native async/await in Python, TypeScript, and Java
+- **Typed errors** — Structured error hierarchy (authentication, not-found, rate-limit, etc.)
+- **Automatic retries** — Exponential backoff with configurable limits
+- **Management APIs** — Create and configure agents, personas, and abilities programmatically
 
 ## Documentation
 
-- [Python SDK](python/README.md)
-- [TypeScript SDK](typescript/README.md)
-- [Java SDK](java/README.md)
-- [CLI](cli/README.md)
-- [n8n Integration](n8n-nodes-metadata/README.md)
-
-## Version Management
-
-All components share a version number in the `VERSION` file. Use the Makefile to manage versions:
-
-```bash
-make version          # Show current version
-make check-versions   # Validate all versions match
-make bump-version V=0.2.0  # Update all SDKs
-```
-
-## Releasing
-
-Creating a GitHub Release triggers CI to publish all SDKs automatically.
-
-### Release Flow
-
-```bash
-# 1. Bump version across all SDKs
-make bump-version V=0.2.0
-
-# 2. Commit and push
-git add -A && git commit -m "Bump version to 0.2.0"
-git push
-
-# 3. Create a GitHub Release (triggers CI)
-make release              # from current branch
-# or
-make release B=main       # from a specific branch
-```
-
-`make release` uses `gh release create` to create a release targeting the current branch (or the branch specified with `B=`). This triggers the release workflow which publishes all SDKs in parallel:
-
-| SDK | Target | Workflow |
-|-----|--------|----------|
-| Python | PyPI (`ai-sdk`) | `ai-sdk-release-python.yml` |
-| TypeScript | npm (`@openmetadata/ai-sdk`) | `ai-sdk-release-typescript.yml` |
-| Java | Maven Central (`io.openmetadata:ai-sdk`) | `ai-sdk-release-java.yml` |
-| CLI | GitHub Release binaries | `ai-sdk-release-cli.yml` |
-
-### Individual SDK Releases
-
-To release a single SDK (e.g., for a hotfix), push an SDK-specific tag:
-
-```bash
-make tag-python    # Creates python-v0.2.0 tag
-git push origin python-v0.2.0
-```
-
-### Required Secrets
-
-The Java secrets are reused from the `open-metadata/OpenMetadata` org. Only `NPM_TOKEN` needs to be created.
-
-| Secret | Used By | Description |
-|--------|---------|-------------|
-| `NPM_TOKEN` | TypeScript | npm access token with publish permission for `@openmetadata/ai-sdk` |
-| `OSSRH_USERNAME` | Java | Sonatype OSSRH username (org secret) |
-| `OSSRH_TOKEN` | Java | Sonatype OSSRH token (org secret) |
-| `OSSRH_GPG_SECRET_KEY` | Java | GPG private key for signing (org secret) |
-| `OSSRH_GPG_SECRET_KEY_PASSWORD` | Java | GPG key passphrase (org secret) |
-| `MAVEN_MASTER_PASSWORD` | Java | Maven master password for settings-security.xml (org secret) |
-
-`GITHUB_TOKEN` is provided automatically by GitHub Actions for CLI binary uploads.
-
-### Required Environment
-
-Create a GitHub environment named **`publish`** (**Settings → Environments → New environment**):
-
-- Optionally add **required reviewers** for release approval
-- The Python SDK uses **PyPI trusted publishing** (OIDC). Configure the trusted publisher on [pypi.org](https://pypi.org):
-  - Repository: `open-metadata/metadata-ai-sdk`
-  - Workflow: `ai-sdk-release-python.yml`
-  - Environment: `publish`
-
-### CLI Install Path
-
-The CLI is distributed as pre-built binaries attached to GitHub Releases. Users install via:
-
-```bash
-# Automatic installer (recommended)
-curl -sSL https://raw.githubusercontent.com/open-metadata/metadata-ai-sdk/main/cli/install.sh | sh
-
-# Or download manually from the releases page
-# https://github.com/open-metadata/metadata-ai-sdk/releases
-```
-
-The installer downloads the binary to `~/.local/bin/ai-sdk` (falls back to `/usr/local/bin/`).
+| Resource | Description |
+|----------|-------------|
+| [Quick Start](docs/quickstart.md) | Get running in 5 minutes |
+| [Python SDK](python/README.md) | Full Python reference |
+| [TypeScript SDK](typescript/README.md) | Full TypeScript reference |
+| [Java SDK](java/README.md) | Full Java reference |
+| [CLI](cli/README.md) | CLI usage and commands |
+| [MCP Tools](docs/mcp.md) | MCP integration guide |
+| [LangChain Integration](docs/langchain.md) | Using agents and tools with LangChain |
+| [Async Patterns](docs/async.md) | Async usage across SDKs |
+| [Error Handling](docs/error-handling.md) | Exception handling patterns |
+| [n8n Integration](n8n-nodes-metadata/README.md) | n8n community node |
+| [Cookbook](cookbook/) | Production-ready examples and workflows |
 
 ## Development
 
 ```bash
-# Build all SDKs
-make build-all
-
-# Run unit tests
-make test-all
-
-# Run integration tests (requires credentials)
-METADATA_HOST=https://... METADATA_TOKEN=... make test-integration
+make build-all         # Build all SDKs
+make lint              # Lint all SDKs
+make test-all          # Run unit tests
+make test-integration  # Run integration tests (requires METADATA_HOST, METADATA_TOKEN)
 ```
+
+See [Releasing](docs/releasing.md) for version management and publishing.
 
 ## License
 
