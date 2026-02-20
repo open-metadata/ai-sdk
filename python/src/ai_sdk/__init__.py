@@ -26,11 +26,18 @@ Standalone Usage:
     print(conv.send("Analyze the customers table"))
     print(conv.send("Now create tests for the issues you found"))
 
-    # Streaming
+    # Streaming (simple - content only)
+    for chunk in client.agent("SqlQueryAgent").stream_content(
+        "Generate a query to find duplicate customer records"
+    ):
+        print(chunk, end="", flush=True)
+
+    # Streaming (advanced - all events)
+    from ai_sdk.models import EventType
     for event in client.agent("SqlQueryAgent").stream(
         "Generate a query to find duplicate customer records"
     ):
-        if event.type == "content":
+        if event.type == EventType.CONTENT:
             print(event.content, end="", flush=True)
 
 Environment-based Configuration:
@@ -134,6 +141,7 @@ from ai_sdk.models import (
     BotInfo,
     CreateAgentRequest,
     CreatePersonaRequest,
+    EventType,
     KnowledgeScope,
     PersonaInfo,
 )
@@ -153,6 +161,7 @@ __all__ = [
     "Conversation",
     "CreateAgentRequest",
     "CreatePersonaRequest",
+    "EventType",
     "KnowledgeScope",
     "PersonaInfo",
     "PersonaNotFoundError",

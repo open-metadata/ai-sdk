@@ -8,7 +8,7 @@ from typing import Any
 from ai_sdk._http import AsyncHTTPClient, HTTPClient
 from ai_sdk._logging import debug as _log_debug
 from ai_sdk._streaming import AsyncSSEIterator, SSEIterator
-from ai_sdk.models import AgentInfo, InvokeRequest, InvokeResponse, StreamEvent
+from ai_sdk.models import AgentInfo, EventType, InvokeRequest, InvokeResponse, StreamEvent
 
 
 def _debug(msg: str) -> None:
@@ -27,9 +27,13 @@ class AgentHandle:
         response = agent.call("What tables have issues?")
         print(response.response)
 
-        # Streaming call
+        # Stream content (simple)
+        for chunk in agent.stream_content("What tables have issues?"):
+            print(chunk, end="", flush=True)
+
+        # Stream all events (advanced)
         for event in agent.stream("What tables have issues?"):
-            if event.type == "content":
+            if event.type == EventType.CONTENT:
                 print(event.content, end="", flush=True)
     """
 
@@ -194,6 +198,38 @@ class AgentHandle:
         )
         return SSEIterator(byte_stream)
 
+    def stream_content(
+        self,
+        message: str | None = None,
+        *,
+        conversation_id: str | None = None,
+        parameters: dict[str, Any] | None = None,
+    ) -> Iterable[str]:
+        """
+        Stream only the text content from the agent response.
+
+        Convenience wrapper around stream() that yields only content strings,
+        filtering out start, end, tool_use, and error events.
+
+        Args:
+            message: The query or instruction for the agent. Optional if the agent
+                has a default prompt configured.
+            conversation_id: Optional ID for multi-turn conversations
+            parameters: Optional parameters to pass to the agent
+
+        Yields:
+            Content strings as they arrive
+
+        Raises:
+            AgentNotFoundError: If the agent does not exist
+            AgentNotEnabledError: If the agent is not API-enabled
+            AuthenticationError: If the token is invalid
+            AgentExecutionError: If the agent execution fails
+        """
+        for event in self.stream(message, conversation_id=conversation_id, parameters=parameters):
+            if event.type == EventType.CONTENT and event.content is not None:
+                yield event.content
+
     def astream(
         self,
         message: str | None = None,
@@ -237,6 +273,41 @@ class AgentHandle:
             agent_name=self._name,
         )
         return AsyncSSEIterator(byte_stream)
+
+    async def astream_content(
+        self,
+        message: str | None = None,
+        *,
+        conversation_id: str | None = None,
+        parameters: dict[str, Any] | None = None,
+    ) -> AsyncIterator[str]:
+        """
+        Async stream only the text content from the agent response.
+
+        Convenience wrapper around astream() that yields only content strings,
+        filtering out start, end, tool_use, and error events.
+
+        Args:
+            message: The query or instruction for the agent. Optional if the agent
+                has a default prompt configured.
+            conversation_id: Optional ID for multi-turn conversations
+            parameters: Optional parameters to pass to the agent
+
+        Yields:
+            Content strings as they arrive
+
+        Raises:
+            AgentNotFoundError: If the agent does not exist
+            AgentNotEnabledError: If the agent is not API-enabled
+            AuthenticationError: If the token is invalid
+            AgentExecutionError: If the agent execution fails
+            RuntimeError: If async client is not available
+        """
+        async for event in self.astream(
+            message, conversation_id=conversation_id, parameters=parameters
+        ):
+            if event.type == EventType.CONTENT and event.content is not None:
+                yield event.content
 
     def get_info(self) -> AgentInfo:
         """

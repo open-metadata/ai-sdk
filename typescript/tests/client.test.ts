@@ -292,6 +292,75 @@ describe('AgentHandle', () => {
     });
   });
 
+  describe('streamContent()', () => {
+    it('should yield only content strings', async () => {
+      const sseData =
+        'event: stream-start\ndata: {"conversationId": "conv-1"}\n\n' +
+        'event: message\ndata: {"content": "Hello "}\n\n' +
+        'event: tool-use\ndata: {"toolName": "search"}\n\n' +
+        'event: message\ndata: {"content": "world"}\n\n' +
+        'event: stream-completed\ndata: {}\n\n';
+
+      const encoder = new TextEncoder();
+      const stream = new ReadableStream({
+        start(controller) {
+          controller.enqueue(encoder.encode(sseData));
+          controller.close();
+        },
+      });
+
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        body: stream,
+        headers: new Headers({ 'content-type': 'text/event-stream' }),
+      });
+
+      const client = new AiSdk({
+        host: 'https://openmetadata.example.com',
+        token: 'test-token',
+      });
+
+      const chunks: string[] = [];
+      for await (const chunk of client.agent('TestAgent').streamContent('Analyze')) {
+        chunks.push(chunk);
+      }
+
+      expect(chunks).toEqual(['Hello ', 'world']);
+    });
+
+    it('should yield nothing when no content events exist', async () => {
+      const sseData =
+        'event: stream-start\ndata: {"conversationId": "conv-1"}\n\n' +
+        'event: stream-completed\ndata: {}\n\n';
+
+      const encoder = new TextEncoder();
+      const stream = new ReadableStream({
+        start(controller) {
+          controller.enqueue(encoder.encode(sseData));
+          controller.close();
+        },
+      });
+
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        body: stream,
+        headers: new Headers({ 'content-type': 'text/event-stream' }),
+      });
+
+      const client = new AiSdk({
+        host: 'https://openmetadata.example.com',
+        token: 'test-token',
+      });
+
+      const chunks: string[] = [];
+      for await (const chunk of client.agent('TestAgent').streamContent('Test')) {
+        chunks.push(chunk);
+      }
+
+      expect(chunks).toEqual([]);
+    });
+  });
+
   describe('getInfo()', () => {
     it('should return agent info', async () => {
       const mockResponse = {

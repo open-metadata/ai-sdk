@@ -186,6 +186,62 @@ class TestAgentHandleStream:
         assert "message" not in body
 
 
+class TestAgentHandleStreamContent:
+    """Tests for AgentHandle.stream_content() method."""
+
+    def test_stream_content_yields_only_strings(self, agent, httpx_mock: HTTPXMock):
+        """stream_content() yields only content strings, not StreamEvent objects."""
+        httpx_mock.add_response(
+            url="https://metadata.example.com/api/v1/agents/dynamic/name/DataQualityAgent/stream",
+            content=b'event: stream-start\ndata: {"conversationId": "conv-1"}\n\n'
+            b'event: message\ndata: {"content": "Hello "}\n\n'
+            b'event: tool-use\ndata: {"toolName": "search"}\n\n'
+            b'event: message\ndata: {"content": "world"}\n\n'
+            b"event: stream-completed\ndata: {}\n\n",
+        )
+
+        chunks = list(agent.stream_content("Test"))
+
+        assert chunks == ["Hello ", "world"]
+        assert all(isinstance(c, str) for c in chunks)
+
+    def test_stream_content_empty_for_no_content_events(self, agent, httpx_mock: HTTPXMock):
+        """stream_content() yields nothing when there are no content events."""
+        httpx_mock.add_response(
+            url="https://metadata.example.com/api/v1/agents/dynamic/name/DataQualityAgent/stream",
+            content=b'event: stream-start\ndata: {"conversationId": "conv-1"}\n\n'
+            b"event: stream-completed\ndata: {}\n\n",
+        )
+
+        chunks = list(agent.stream_content("Test"))
+
+        assert chunks == []
+
+    def test_stream_content_passes_conversation_id(self, agent, httpx_mock: HTTPXMock):
+        """stream_content() forwards conversation_id to stream()."""
+        httpx_mock.add_response(
+            url="https://metadata.example.com/api/v1/agents/dynamic/name/DataQualityAgent/stream",
+            content=b'event: message\ndata: {"content": "OK"}\n\n',
+        )
+
+        list(agent.stream_content("Continue", conversation_id="existing-conv"))
+
+        request = httpx_mock.get_request()
+        body = json.loads(request.content)
+        assert body["conversationId"] == "existing-conv"
+
+    def test_stream_content_without_message(self, agent, httpx_mock: HTTPXMock):
+        """stream_content() works without providing a message."""
+        httpx_mock.add_response(
+            url="https://metadata.example.com/api/v1/agents/dynamic/name/DataQualityAgent/stream",
+            content=b'event: message\ndata: {"content": "Default"}\n\n',
+        )
+
+        chunks = list(agent.stream_content())
+
+        assert chunks == ["Default"]
+
+
 class TestAgentHandleGetInfo:
     """Tests for AgentHandle.get_info() method."""
 

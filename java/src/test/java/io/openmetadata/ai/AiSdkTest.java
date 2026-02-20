@@ -616,6 +616,34 @@ class AiSdkTest {
     assertTrue(exception.getMessage().contains("test-ability"));
   }
 
+  // ==================== Stream Content Filtering Tests ====================
+
+  @Test
+  @DisplayName("StreamEvent content filtering works correctly")
+  void streamEventContentFilteringWorksCorrectly() {
+    // Simulate the filtering logic used by streamContent/streamContentIterator
+    StreamEvent contentEvent =
+        StreamEvent.builder().type(StreamEvent.Type.CONTENT).content("Hello").build();
+    StreamEvent startEvent = StreamEvent.builder().type(StreamEvent.Type.START).build();
+    StreamEvent toolEvent =
+        StreamEvent.builder().type(StreamEvent.Type.TOOL_USE).toolName("search").build();
+    StreamEvent endEvent = StreamEvent.builder().type(StreamEvent.Type.END).build();
+    StreamEvent contentNullEvent =
+        StreamEvent.builder().type(StreamEvent.Type.CONTENT).content(null).build();
+
+    List<StreamEvent> events =
+        Arrays.asList(startEvent, contentEvent, toolEvent, contentNullEvent, endEvent);
+
+    List<String> contentChunks =
+        events.stream()
+            .filter(e -> e.getType() == StreamEvent.Type.CONTENT && e.getContent() != null)
+            .map(StreamEvent::getContent)
+            .collect(java.util.stream.Collectors.toList());
+
+    assertEquals(1, contentChunks.size());
+    assertEquals("Hello", contentChunks.get(0));
+  }
+
   // ==================== Stream Event Type Tests ====================
 
   @Test

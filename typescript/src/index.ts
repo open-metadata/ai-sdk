@@ -20,7 +20,13 @@
  *   .invoke('What tables have quality issues?');
  * console.log(response.response);
  *
- * // Streaming invocation
+ * // Streaming (simple - content only)
+ * for await (const chunk of client.agent('DataQualityPlannerAgent')
+ *   .streamContent('Analyze the orders table')) {
+ *   process.stdout.write(chunk);
+ * }
+ *
+ * // Streaming (advanced - all events)
  * for await (const event of client.agent('DataQualityPlannerAgent')
  *   .stream('Analyze the orders table')) {
  *   if (event.type === 'content') {

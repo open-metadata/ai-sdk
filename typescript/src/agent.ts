@@ -202,6 +202,39 @@ export class AgentHandle {
   }
 
   /**
+   * Stream only the text content from the agent response.
+   *
+   * Convenience wrapper around stream() that yields only content strings,
+   * filtering out start, end, tool_use, and error events.
+   *
+   * @param message - Optional query or instruction for the agent
+   * @param options - Optional invoke options (conversationId, parameters)
+   * @returns Async iterable of content strings
+   *
+   * @throws {AgentNotFoundError} If the agent does not exist
+   * @throws {AgentNotEnabledError} If the agent is not API-enabled
+   * @throws {AuthenticationError} If the token is invalid
+   * @throws {AgentExecutionError} If the agent execution fails
+   *
+   * @example
+   * ```typescript
+   * for await (const chunk of agent.streamContent('Analyze data quality')) {
+   *   process.stdout.write(chunk);
+   * }
+   * ```
+   */
+  async *streamContent(
+    message?: string,
+    options?: InvokeOptions
+  ): AsyncGenerator<string, void, unknown> {
+    for await (const event of this.stream(message, options)) {
+      if (event.type === 'content' && event.content) {
+        yield event.content;
+      }
+    }
+  }
+
+  /**
    * Get agent metadata including abilities and description.
    *
    * @returns Promise resolving to agent information

@@ -112,7 +112,7 @@ class StreamEvent(BaseModel):
 
     model_config = ConfigDict(populate_by_name=True)
 
-    type: str = Field(..., description="Event type: start, content, tool_use, end, error")
+    type: EventType = Field(..., description="Event type: start, content, tool_use, end, error")
     content: str | None = Field(default=None, description="Content for content events")
     tool_name: str | None = Field(
         default=None,

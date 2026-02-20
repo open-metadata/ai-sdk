@@ -149,6 +149,109 @@ public class AgentHandle {
   }
 
   /**
+   * Invokes the agent with streaming using the agent's default prompt, calling the consumer for
+   * each content chunk.
+   *
+   * <p>Convenience wrapper around {@link #stream(Consumer)} that yields only text content,
+   * filtering out start, end, tool_use, and error events.
+   *
+   * <p>Example:
+   *
+   * <pre>{@code
+   * client.agent("semantic-layer-agent")
+   *     .streamContent(System.out::print);
+   * }</pre>
+   *
+   * @param contentConsumer a consumer that will be called for each content string
+   */
+  public void streamContent(Consumer<String> contentConsumer) {
+    stream(
+        event -> {
+          if (event.getType() == StreamEvent.Type.CONTENT && event.getContent() != null) {
+            contentConsumer.accept(event.getContent());
+          }
+        });
+  }
+
+  /**
+   * Invokes the agent with streaming, calling the consumer for each content chunk.
+   *
+   * <p>Convenience wrapper around {@link #stream(String, Consumer)} that yields only text content,
+   * filtering out start, end, tool_use, and error events.
+   *
+   * <p>Example:
+   *
+   * <pre>{@code
+   * client.agent("semantic-layer-agent")
+   *     .streamContent("Analyze data quality", System.out::print);
+   * }</pre>
+   *
+   * @param message the message to send to the agent
+   * @param contentConsumer a consumer that will be called for each content string
+   */
+  public void streamContent(String message, Consumer<String> contentConsumer) {
+    stream(
+        message,
+        event -> {
+          if (event.getType() == StreamEvent.Type.CONTENT && event.getContent() != null) {
+            contentConsumer.accept(event.getContent());
+          }
+        });
+  }
+
+  /**
+   * Invokes the agent with streaming using the agent's default prompt, returning a Stream of
+   * content strings.
+   *
+   * <p>Convenience wrapper around {@link #streamIterator()} that yields only text content,
+   * filtering out start, end, tool_use, and error events.
+   *
+   * <p>The caller must close the returned Stream when done (use try-with-resources).
+   *
+   * <p>Example:
+   *
+   * <pre>{@code
+   * try (Stream<String> content = client.agent("planner")
+   *         .streamContentIterator()) {
+   *     content.forEach(System.out::print);
+   * }
+   * }</pre>
+   *
+   * @return a Stream of content strings that must be closed when done
+   */
+  public Stream<String> streamContentIterator() {
+    return streamIterator()
+        .filter(e -> e.getType() == StreamEvent.Type.CONTENT && e.getContent() != null)
+        .map(StreamEvent::getContent);
+  }
+
+  /**
+   * Invokes the agent with streaming, returning a Stream of content strings.
+   *
+   * <p>Convenience wrapper around {@link #streamIterator(String)} that yields only text content,
+   * filtering out start, end, tool_use, and error events.
+   *
+   * <p>The caller must close the returned Stream when done (use try-with-resources).
+   *
+   * <p>Example:
+   *
+   * <pre>{@code
+   * try (Stream<String> content = client.agent("planner")
+   *         .streamContentIterator("Analyze orders")) {
+   *     content.forEach(System.out::print);
+   * }
+   * }</pre>
+   *
+   * @param message the message to send to the agent
+   * @return a Stream of content strings that must be closed when done
+   */
+  public Stream<String> streamContentIterator(String message) {
+    return streamIterator(message)
+        .filter(e -> e.getType() == StreamEvent.Type.CONTENT && e.getContent() != null)
+        .map(StreamEvent::getContent);
+  }
+
+  /**
    * Invokes the agent with streaming using the agent's default prompt, returning a Stream of
    * events.
    *

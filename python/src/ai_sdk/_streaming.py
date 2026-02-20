@@ -5,7 +5,7 @@ from __future__ import annotations
 import json
 from collections.abc import AsyncIterator, Iterator
 
-from ai_sdk.models import StreamEvent
+from ai_sdk.models import EventType, StreamEvent
 
 
 def _parse_event(event_str: str) -> StreamEvent | None:
@@ -90,33 +90,35 @@ def _parse_event(event_str: str) -> StreamEvent | None:
         content=content,
         tool_name=tool_name,
         conversation_id=conversation_id,
-        error=payload.get("error") or payload.get("message") if mapped_type == "error" else None,
+        error=payload.get("error") or payload.get("message")
+        if mapped_type == EventType.ERROR
+        else None,
     )
 
 
-def _map_event_type(event_type: str | None) -> str:
+def _map_event_type(event_type: str | None) -> EventType:
     """
-    Map SSE event type to StreamEvent type.
+    Map SSE event type to EventType.
 
     Args:
         event_type: Raw SSE event type
 
     Returns:
-        Mapped event type string
+        Mapped EventType value
     """
     if event_type is None:
-        return "content"
+        return EventType.CONTENT
 
-    type_mapping = {
-        "stream-start": "start",
-        "message": "content",
-        "tool-use": "tool_use",
-        "stream-completed": "end",
-        "error": "error",
-        "fatal-error": "error",
+    type_mapping: dict[str, EventType] = {
+        "stream-start": EventType.START,
+        "message": EventType.CONTENT,
+        "tool-use": EventType.TOOL_USE,
+        "stream-completed": EventType.END,
+        "error": EventType.ERROR,
+        "fatal-error": EventType.ERROR,
     }
 
-    return type_mapping.get(event_type, event_type)
+    return type_mapping.get(event_type, EventType.CONTENT)
 
 
 class SSEIterator:
