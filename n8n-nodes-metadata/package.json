@@ -18,7 +18,7 @@
   "main": "dist/index.js",
   "scripts": {
     "build": "tsc && npm run copy:icons",
-    "copy:icons": "find nodes \\( -name '*.svg' -o -name '*.png' \\) -exec cp {} dist/nodes/MetadataAgent/ \\;",
+    "copy:icons": "find nodes \\( -name '*.svg' -o -name '*.png' \\) -exec cp {} dist/nodes/AiSdkAgent/ \\;",
     "dev": "tsc --watch",
     "lint": "eslint nodes credentials --ext .ts",
     "lint:fix": "eslint nodes credentials --ext .ts --fix",
@@ -32,10 +32,10 @@
   "n8n": {
     "n8nNodesApiVersion": 1,
     "credentials": [
-      "dist/credentials/MetadataApi.credentials.js"
+      "dist/credentials/AiSdkApi.credentials.js"
     ],
     "nodes": [
-      "dist/nodes/MetadataAgent/MetadataAgent.node.js"
+      "dist/nodes/AiSdkAgent/AiSdkAgent.node.js"
     ]
   },
   "devDependencies": {

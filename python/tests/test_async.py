@@ -1,4 +1,4 @@
-"""Tests for the Metadata AI SDK async functionality."""
+"""Tests for the AI SDK async functionality."""
 
 import json
 
@@ -8,7 +8,7 @@ from pytest_httpx import HTTPXMock
 from ai_sdk._http import AsyncHTTPClient
 from ai_sdk._streaming import AsyncSSEIterator
 from ai_sdk.auth import TokenAuth
-from ai_sdk.client import MetadataAI
+from ai_sdk.client import AiSdk
 from ai_sdk.exceptions import AuthenticationError
 from ai_sdk.models import AgentInfo, InvokeResponse
 
@@ -21,8 +21,8 @@ def auth():
 
 @pytest.fixture
 def async_client():
-    """Async MetadataAI client fixture."""
-    c = MetadataAI(
+    """Async AiSdk client fixture."""
+    c = AiSdk(
         host="https://metadata.example.com",
         token="test-jwt-token",
         enable_async=True,
@@ -90,7 +90,7 @@ class TestAsyncAgentCall:
     @pytest.mark.asyncio
     async def test_acall_without_async_raises(self):
         """acall without async client raises RuntimeError."""
-        client = MetadataAI(host="https://example.com", token="token", enable_async=False)
+        client = AiSdk(host="https://example.com", token="token", enable_async=False)
         try:
             agent = client.agent("TestAgent")
             with pytest.raises(RuntimeError, match="enable_async=True"):
@@ -198,7 +198,7 @@ class TestAsyncLangChainIntegration:
     @pytest.mark.asyncio
     async def test_arun_uses_acall(self, async_client, httpx_mock: HTTPXMock):
         """LangChain _arun uses acall with async client."""
-        from ai_sdk.integrations.langchain import MetadataAgentTool
+        from ai_sdk.integrations.langchain import AiSdkAgentTool
 
         httpx_mock.add_response(
             url="https://metadata.example.com/api/v1/agents/dynamic/name/TestAgent",
@@ -215,7 +215,7 @@ class TestAsyncLangChainIntegration:
             json={"conversationId": "conv-async", "response": "Async response"},
         )
 
-        tool = MetadataAgentTool.from_client(async_client, "TestAgent")
+        tool = AiSdkAgentTool.from_client(async_client, "TestAgent")
         result = await tool._arun("Test query")
 
         assert result == "Async response"

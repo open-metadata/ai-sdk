@@ -92,7 +92,7 @@ const TOKEN = "your-jwt-token";
 make demo-gdpr
 
 # Or override the OpenMetadata host / port:
-METADATA_HOST=https://your-instance.getcollate.io PORT=3000 make demo-gdpr
+AI_SDK_HOST=https://your-instance.getcollate.io PORT=3000 make demo-gdpr
 ```
 
 Open `http://localhost:8080` (or the port you specified).
@@ -144,9 +144,9 @@ policies are compatible with a 90-day customer data retention window.
 The HTML file imports the [TypeScript SDK](../../typescript/) as a browser ES module bundled with esbuild. It uses the SDK's `agent().invoke()` method to get the complete compliance report after the agent finishes all tool calls (search, lineage, detail inspection):
 
 ```javascript
-import { MetadataAI } from './ai-sdk.js';
+import { AiSdk } from './ai-sdk.js';
 
-const client = new MetadataAI({ host: HOST, token: TOKEN });
+const client = new AiSdk({ host: HOST, token: TOKEN });
 
 const result = await client.agent(AGENT_NAME).invoke(message);
 // result.response contains the full compliance report (markdown)
@@ -172,9 +172,9 @@ See [agent-config.md](./agent-config.md) for the full system prompt template.
 Combine this with n8n or a scheduled script to process DSARs from a queue:
 
 ```python
-from ai_sdk import MetadataAI
+from ai_sdk import AiSdk
 
-client = MetadataAI(host="https://...", token="...")
+client = AiSdk(host="https://...", token="...")
 
 # Process a DSAR from your ticketing system
 response = client.agent("GDPRComplianceAnalyzer").invoke(
@@ -194,7 +194,7 @@ print(response.content)
 | No response from agent | Verify `TOKEN` is correct; check browser console for errors |
 | Agent returns empty analysis | Ensure PII classification tags are applied to your assets in Collate |
 | CORS error in browser | Use `serve.js` instead of a plain static server — it proxies API calls |
-| `Proxy error` in response | Check that `METADATA_HOST` is reachable from where `serve.js` runs |
+| `Proxy error` in response | Check that `AI_SDK_HOST` is reachable from where `serve.js` runs |
 | Tool usage not showing | The agent may not need tools for simple queries; try a more specific request |
 
 ## Related Resources

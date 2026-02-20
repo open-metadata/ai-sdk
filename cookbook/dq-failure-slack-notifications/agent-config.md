@@ -16,8 +16,8 @@ cargo install ai-sdk
 cd cli && cargo build --release
 
 # Configure environment
-export METADATA_HOST=https://your-instance.getcollate.io
-export METADATA_TOKEN=your-jwt-token
+export AI_SDK_HOST=https://your-instance.getcollate.io
+export AI_SDK_TOKEN=your-jwt-token
 ```
 
 ### Step 1: Explore Available Abilities
@@ -104,9 +104,9 @@ You can also create the agent through the Collate web interface:
 ## Using the Python SDK
 
 ```python
-from ai_sdk import MetadataAI
+from ai_sdk import AiSdk
 
-client = MetadataAI(
+client = AiSdk(
     host="https://your-instance.getcollate.io",
     token="your-jwt-token"
 )
@@ -126,9 +126,9 @@ print(f"Created agent: {agent.name}")
 ## Using the TypeScript SDK
 
 ```typescript
-import { MetadataAI } from '@openmetadata/ai-sdk';
+import { AiSdk } from '@openmetadata/ai-sdk';
 
-const client = new MetadataAI({
+const client = new AiSdk({
   host: 'https://your-instance.getcollate.io',
   token: 'your-jwt-token'
 });
@@ -147,10 +147,10 @@ console.log(`Created agent: ${agent.name}`);
 ## Using the Java SDK
 
 ```java
-import io.metadata.ai.MetadataAI;
+import io.metadata.ai.AiSdk;
 import io.metadata.ai.models.CreateAgentRequest;
 
-MetadataAI client = new MetadataAI(
+AiSdk client = new AiSdk(
     "https://your-instance.getcollate.io",
     "your-jwt-token"
 );

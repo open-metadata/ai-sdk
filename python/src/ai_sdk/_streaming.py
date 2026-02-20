@@ -1,4 +1,4 @@
-"""SSE streaming internals for the Metadata AI SDK."""
+"""SSE streaming internals for the AI SDK."""
 
 from __future__ import annotations
 

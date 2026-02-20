@@ -1,7 +1,7 @@
 package io.openmetadata.ai.exceptions;
 
 /** Exception thrown when a persona is not found (HTTP 404). */
-public class PersonaNotFoundException extends MetadataException {
+public class PersonaNotFoundException extends AiSdkException {
 
   private final String personaName;
 

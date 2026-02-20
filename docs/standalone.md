@@ -1,6 +1,6 @@
 # Standalone Usage Guide
 
-This guide covers using the Metadata AI SDK directly without external frameworks like LangChain.
+This guide covers using the AI SDK directly without external frameworks like LangChain.
 
 ## Prerequisites
 
@@ -24,10 +24,10 @@ Core dependencies are only `httpx` and `pydantic` - no framework lock-in.
 ## Quick Start
 
 ```python
-from ai_sdk import MetadataAI
+from ai_sdk import AiSdk
 
 # Initialize client with explicit credentials
-client = MetadataAI(
+client = AiSdk(
     host="https://your-org.getcollate.io",    # Your OpenMetadata/Collate URL
     token="eyJhbGciOiJSUzI1NiIs..."           # Your bot's JWT token
 )
@@ -48,9 +48,9 @@ client.close()
 ### Direct Initialization
 
 ```python
-from ai_sdk import MetadataAI
+from ai_sdk import AiSdk
 
-client = MetadataAI(
+client = AiSdk(
     host="https://metadata.example.com",
     token="your-bot-jwt-token",
     timeout=120.0,         # Request timeout in seconds
@@ -67,49 +67,49 @@ Set your environment variables first:
 
 ```bash
 # Required: Your OpenMetadata/Collate server URL
-export METADATA_HOST="https://your-org.getcollate.io"
+export AI_SDK_HOST="https://your-org.getcollate.io"
 
 # Required: Your bot's JWT token (from Settings > Bots)
-export METADATA_TOKEN="eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9..."
+export AI_SDK_TOKEN="eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9..."
 ```
 
 Then load them in Python:
 
 ```python
-from ai_sdk import MetadataAI, MetadataConfig
+from ai_sdk import AiSdk, AiSdkConfig
 
-# Load from environment (reads METADATA_HOST and METADATA_TOKEN)
-config = MetadataConfig.from_env()
-client = MetadataAI.from_config(config)
+# Load from environment (reads AI_SDK_HOST and AI_SDK_TOKEN)
+config = AiSdkConfig.from_env()
+client = AiSdk.from_config(config)
 ```
 
 **All environment variables:**
 
 | Variable | Required | Default | Description |
 |----------|----------|---------|-------------|
-| `METADATA_HOST` | Yes | - | Your OpenMetadata/Collate server URL |
-| `METADATA_TOKEN` | Yes | - | Bot JWT token (from Settings > Bots) |
-| `METADATA_TIMEOUT` | No | `120` | Request timeout in seconds |
-| `METADATA_VERIFY_SSL` | No | `true` | Verify SSL certificates (`true`/`false`) |
-| `METADATA_DEBUG` | No | `false` | Enable debug logging |
-| `METADATA_MAX_RETRIES` | No | `3` | Number of retry attempts for failed requests |
-| `METADATA_RETRY_DELAY` | No | `1.0` | Base delay between retries (seconds) |
+| `AI_SDK_HOST` | Yes | - | Your OpenMetadata/Collate server URL |
+| `AI_SDK_TOKEN` | Yes | - | Bot JWT token (from Settings > Bots) |
+| `AI_SDK_TIMEOUT` | No | `120` | Request timeout in seconds |
+| `AI_SDK_VERIFY_SSL` | No | `true` | Verify SSL certificates (`true`/`false`) |
+| `AI_SDK_DEBUG` | No | `false` | Enable debug logging |
+| `AI_SDK_MAX_RETRIES` | No | `3` | Number of retry attempts for failed requests |
+| `AI_SDK_RETRY_DELAY` | No | `1.0` | Base delay between retries (seconds) |
 
 ### With Overrides
 
 ```python
 # Start from environment, override specific values
-config = MetadataConfig.from_env(
+config = AiSdkConfig.from_env(
     timeout=30.0,
     enable_async=True,
 )
-client = MetadataAI.from_config(config)
+client = AiSdk.from_config(config)
 ```
 
 ### Context Manager
 
 ```python
-with MetadataAI(host="...", token="...") as client:
+with AiSdk(host="...", token="...") as client:
     response = client.agent("MyAgent").call("Hello")
     print(response.response)
 # Client automatically closed
@@ -170,9 +170,9 @@ response3 = agent.call(
 The `Conversation` class automatically manages conversation context:
 
 ```python
-from ai_sdk import MetadataAI, Conversation
+from ai_sdk import AiSdk, Conversation
 
-client = MetadataAI(host="...", token="...")
+client = AiSdk(host="...", token="...")
 agent = client.agent("DataQualityPlannerAgent")
 
 # Create conversation
@@ -459,10 +459,10 @@ Enable async for concurrent operations:
 
 ```python
 import asyncio
-from ai_sdk import MetadataAI
+from ai_sdk import AiSdk
 
 async def main():
-    client = MetadataAI(
+    client = AiSdk(
         host="https://metadata.example.com",
         token="your-token",
         enable_async=True  # Required
@@ -495,7 +495,7 @@ asyncio.run(main())
 from ai_sdk import Conversation
 
 async def chat():
-    client = MetadataAI(host="...", token="...", enable_async=True)
+    client = AiSdk(host="...", token="...", enable_async=True)
     conv = Conversation(client.agent("MyAgent"))
 
     # Async send
@@ -510,7 +510,7 @@ async def chat():
 ### Async Context Manager
 
 ```python
-async with MetadataAI(host="...", token="...", enable_async=True) as client:
+async with AiSdk(host="...", token="...", enable_async=True) as client:
     response = await client.agent("MyAgent").acall("Hello")
 ```
 
@@ -519,9 +519,9 @@ async with MetadataAI(host="...", token="...", enable_async=True) as client:
 Handle specific error types:
 
 ```python
-from ai_sdk import MetadataAI
+from ai_sdk import AiSdk
 from ai_sdk.exceptions import (
-    MetadataError,
+    AiSdkError,
     AuthenticationError,
     AgentNotFoundError,
     AgentNotEnabledError,
@@ -529,7 +529,7 @@ from ai_sdk.exceptions import (
     AgentExecutionError,
 )
 
-client = MetadataAI(host="...", token="...")
+client = AiSdk(host="...", token="...")
 
 try:
     response = client.agent("MyAgent").call("Hello")
@@ -537,7 +537,7 @@ try:
 
 except AuthenticationError:
     print("Invalid or expired token")
-    print("Check your METADATA_TOKEN")
+    print("Check your AI_SDK_TOKEN")
 
 except AgentNotFoundError as e:
     print(f"Agent not found: {e.agent_name}")
@@ -555,14 +555,14 @@ except RateLimitError as e:
 except AgentExecutionError as e:
     print(f"Agent execution failed: {e.message}")
 
-except MetadataError as e:
+except AiSdkError as e:
     print(f"Metadata error ({e.status_code}): {e.message}")
 ```
 
 ### Exception Hierarchy
 
 ```
-MetadataError (base)
+AiSdkError (base)
 ├── AuthenticationError (401)
 ├── AgentNotFoundError (404)
 ├── AgentNotEnabledError (403)
@@ -578,12 +578,12 @@ MetadataError (base)
 Enable verbose logging for debugging:
 
 ```python
-from ai_sdk import MetadataConfig, MetadataAI
+from ai_sdk import AiSdkConfig, AiSdk
 from ai_sdk._logging import set_debug
 
 # Option 1: Via config
-config = MetadataConfig.from_env(debug=True)
-client = MetadataAI.from_config(config)
+config = AiSdkConfig.from_env(debug=True)
+client = AiSdk.from_config(config)
 
 # Option 2: Direct toggle
 set_debug(True)
@@ -691,21 +691,21 @@ info.api_enabled   # bool - API access enabled
 """Complete standalone SDK usage example."""
 
 import sys
-from ai_sdk import MetadataAI, MetadataConfig, Conversation
+from ai_sdk import AiSdk, AiSdkConfig, Conversation
 from ai_sdk.models import CreatePersonaRequest, CreateAgentRequest
-from ai_sdk.exceptions import MetadataError
+from ai_sdk.exceptions import AiSdkError
 
 def main():
     # Load configuration
     try:
-        config = MetadataConfig.from_env()
+        config = AiSdkConfig.from_env()
     except ValueError as e:
         print(f"Configuration error: {e}")
-        print("Set METADATA_HOST and METADATA_TOKEN environment variables")
+        print("Set AI_SDK_HOST and AI_SDK_TOKEN environment variables")
         sys.exit(1)
 
     # Create client
-    client = MetadataAI.from_config(config)
+    client = AiSdk.from_config(config)
 
     try:
         # List available agents
@@ -767,7 +767,7 @@ def main():
         # ))
         # print(f"Created agent: {new_agent.name}")
 
-    except MetadataError as e:
+    except AiSdkError as e:
         print(f"Error: {e}")
         sys.exit(1)
 
@@ -792,8 +792,8 @@ if __name__ == "__main__":
 See the inline documentation for complete API details:
 
 ```python
-from ai_sdk import MetadataAI
-help(MetadataAI)
+from ai_sdk import AiSdk
+help(AiSdk)
 
 from ai_sdk import Conversation
 help(Conversation)

@@ -3,7 +3,7 @@ package io.openmetadata.ai.exceptions;
 import java.util.Optional;
 
 /** Exception thrown when rate limit is exceeded (HTTP 429). */
-public class RateLimitException extends MetadataException {
+public class RateLimitException extends AiSdkException {
 
   private final Integer retryAfter;
 

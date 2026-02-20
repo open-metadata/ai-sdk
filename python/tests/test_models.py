@@ -1,4 +1,4 @@
-"""Tests for the Metadata AI SDK models."""
+"""Tests for the AI SDK models."""
 
 from ai_sdk.models import (
     AgentInfo,

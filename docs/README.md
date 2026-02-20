@@ -1,10 +1,10 @@
-# Metadata AI SDK Documentation
+# AI SDK Documentation
 
 Python SDK for invoking Dynamic Agents from [OpenMetadata](https://open-metadata.org/) / [Collate](https://www.getcollate.io/).
 
 ## What is this SDK?
 
-The Metadata AI SDK lets you programmatically invoke **Dynamic Agents** - AI-powered assistants that can analyze your data catalog, generate SQL queries, plan data quality tests, explore lineage, and more. These agents run on your OpenMetadata or Collate instance and have full access to your metadata context.
+The AI SDK lets you programmatically invoke **Dynamic Agents** - AI-powered assistants that can analyze your data catalog, generate SQL queries, plan data quality tests, explore lineage, and more. These agents run on your OpenMetadata or Collate instance and have full access to your metadata context.
 
 **Use cases:**
 - Automate data quality test generation
@@ -23,7 +23,7 @@ Before using this SDK, you need:
 
 #### 1. Find your host URL
 
-Your `METADATA_HOST` is your OpenMetadata/Collate server URL:
+Your `AI_SDK_HOST` is your OpenMetadata/Collate server URL:
 - **Collate Cloud**: `https://your-org.getcollate.io`
 - **Self-hosted OpenMetadata**: `https://your-openmetadata-server.com`
 
@@ -34,7 +34,7 @@ Your `METADATA_HOST` is your OpenMetadata/Collate server URL:
 3. Click **Add Bot** (or use an existing bot)
 4. Give it a name (e.g., `sdk-bot`) and appropriate permissions
 5. Under **Token**, click **Generate Token** or copy the existing JWT token
-6. This JWT token is your `METADATA_TOKEN`
+6. This JWT token is your `AI_SDK_TOKEN`
 
 **Security tip:** Treat this token like a password. Don't commit it to version control.
 
@@ -69,20 +69,20 @@ First, set your environment variables:
 
 ```bash
 # Your OpenMetadata/Collate server URL
-export METADATA_HOST="https://your-org.getcollate.io"
+export AI_SDK_HOST="https://your-org.getcollate.io"
 
 # Your bot's JWT token (from Settings > Bots)
-export METADATA_TOKEN="eyJhbGciOiJSUzI1NiIs..."
+export AI_SDK_TOKEN="eyJhbGciOiJSUzI1NiIs..."
 ```
 
 Then use the SDK:
 
 ```python
-from ai_sdk import MetadataAI, MetadataConfig, Conversation
+from ai_sdk import AiSdk, AiSdkConfig, Conversation
 
-# Create client (reads METADATA_HOST and METADATA_TOKEN from environment)
-config = MetadataConfig.from_env()
-client = MetadataAI.from_config(config)
+# Create client (reads AI_SDK_HOST and AI_SDK_TOKEN from environment)
+config = AiSdkConfig.from_env()
+client = AiSdk.from_config(config)
 
 # Invoke an agent
 response = client.agent("DataQualityPlannerAgent").call(

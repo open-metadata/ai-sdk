@@ -1,4 +1,4 @@
-"""Configuration for the Metadata AI SDK.
+"""Configuration for the AI SDK.
 
 This module provides a configuration object pattern for cleaner
 client initialization and environment-based configuration.
@@ -12,28 +12,28 @@ from typing import Any
 
 
 @dataclass
-class MetadataConfig:
+class AiSdkConfig:
     """
-    Configuration for MetadataAI client.
+    Configuration for AiSdk client.
 
     This provides a cleaner way to configure the client, especially
     when loading from environment variables or configuration files.
 
     Usage:
         # From environment variables
-        config = MetadataConfig.from_env()
-        client = MetadataAI.from_config(config)
+        config = AiSdkConfig.from_env()
+        client = AiSdk.from_config(config)
 
         # Explicit configuration
-        config = MetadataConfig(
+        config = AiSdkConfig(
             host="https://metadata.example.com",
             token="your-token",
             timeout=60.0,
         )
-        client = MetadataAI.from_config(config)
+        client = AiSdk.from_config(config)
 
         # Override environment with explicit values
-        config = MetadataConfig.from_env(timeout=30.0, enable_async=True)
+        config = AiSdkConfig.from_env(timeout=30.0, enable_async=True)
     """
 
     host: str
@@ -63,25 +63,25 @@ class MetadataConfig:
     @classmethod
     def from_env(
         cls,
-        prefix: str = "METADATA",
+        prefix: str = "AI_SDK",
         **overrides: Any,
-    ) -> MetadataConfig:
+    ) -> AiSdkConfig:
         """
         Create configuration from environment variables.
 
         Environment variables:
-            {PREFIX}_HOST: Metadata server URL (required)
+            {PREFIX}_HOST: Server URL (required)
             {PREFIX}_TOKEN: JWT bot token (required)
             {PREFIX}_TIMEOUT: Request timeout in seconds (default: 120)
             {PREFIX}_VERIFY_SSL: Verify SSL certificates (default: true)
             {PREFIX}_DEBUG: Enable debug logging (default: false)
 
         Args:
-            prefix: Environment variable prefix (default: "METADATA")
+            prefix: Environment variable prefix (default: "AI_SDK")
             **overrides: Explicit values that override environment
 
         Returns:
-            MetadataConfig instance
+            AiSdkConfig instance
 
         Raises:
             ValueError: If required environment variables are missing
@@ -114,7 +114,7 @@ class MetadataConfig:
 
         if not host:
             raise ValueError(
-                f"Missing {prefix}_HOST environment variable. Set it to your Metadata server URL."
+                f"Missing {prefix}_HOST environment variable. Set it to your server URL."
             )
         if not token:
             raise ValueError(
@@ -133,7 +133,7 @@ class MetadataConfig:
             debug=overrides.get("debug", get_bool("DEBUG", False)),
         )
 
-    def with_overrides(self, **kwargs: Any) -> MetadataConfig:
+    def with_overrides(self, **kwargs: Any) -> AiSdkConfig:
         """
         Create a new config with some values overridden.
 
@@ -141,9 +141,9 @@ class MetadataConfig:
             **kwargs: Values to override
 
         Returns:
-            New MetadataConfig with overrides applied
+            New AiSdkConfig with overrides applied
         """
-        return MetadataConfig(
+        return AiSdkConfig(
             host=kwargs.get("host", self.host),
             token=kwargs.get("token", self.token),
             timeout=kwargs.get("timeout", self.timeout),

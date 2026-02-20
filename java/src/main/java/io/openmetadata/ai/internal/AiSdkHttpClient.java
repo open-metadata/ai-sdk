@@ -22,8 +22,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.openmetadata.ai.exceptions.*;
 import io.openmetadata.ai.models.*;
 
-/** Internal HTTP client for communicating with the Metadata AI API. */
-public class MetadataHttpClient implements AutoCloseable {
+/** Internal HTTP client for communicating with the AI SDK API. */
+public class AiSdkHttpClient implements AutoCloseable {
 
   private static final String API_BASE_PATH = "/api/v1/agents/dynamic";
   private static final String BOTS_API_PATH = "/api/v1/bots";
@@ -41,7 +41,7 @@ public class MetadataHttpClient implements AutoCloseable {
   private final int maxRetries;
   private final Duration retryDelay;
 
-  public MetadataHttpClient(
+  public AiSdkHttpClient(
       String host, String token, Duration timeout, int maxRetries, Duration retryDelay) {
     this.host = normalizeHost(host);
     this.baseUrl = this.host + API_BASE_PATH;
@@ -109,7 +109,7 @@ public class MetadataHttpClient implements AutoCloseable {
       }
       return objectMapper.convertValue(data, new TypeReference<List<AgentInfo>>() {});
     } catch (JsonProcessingException e) {
-      throw new MetadataException("Failed to parse agent list response", e);
+      throw new AiSdkException("Failed to parse agent list response", e);
     }
   }
 
@@ -156,7 +156,7 @@ public class MetadataHttpClient implements AutoCloseable {
           break;
         }
       } catch (JsonProcessingException e) {
-        throw new MetadataException("Failed to parse list response", e);
+        throw new AiSdkException("Failed to parse list response", e);
       }
     }
 
@@ -178,7 +178,7 @@ public class MetadataHttpClient implements AutoCloseable {
     try {
       return objectMapper.readValue(response.body(), AgentInfo.class);
     } catch (JsonProcessingException e) {
-      throw new MetadataException("Failed to parse agent response", e);
+      throw new AiSdkException("Failed to parse agent response", e);
     }
   }
 
@@ -189,7 +189,7 @@ public class MetadataHttpClient implements AutoCloseable {
     try {
       requestBody = objectMapper.writeValueAsString(invokeRequest);
     } catch (JsonProcessingException e) {
-      throw new MetadataException("Failed to serialize request", e);
+      throw new AiSdkException("Failed to serialize request", e);
     }
 
     HttpRequest request =
@@ -205,7 +205,7 @@ public class MetadataHttpClient implements AutoCloseable {
     try {
       return objectMapper.readValue(response.body(), InvokeResponse.class);
     } catch (JsonProcessingException e) {
-      throw new MetadataException("Failed to parse invoke response", e);
+      throw new AiSdkException("Failed to parse invoke response", e);
     }
   }
 
@@ -217,7 +217,7 @@ public class MetadataHttpClient implements AutoCloseable {
     try {
       requestBody = objectMapper.writeValueAsString(invokeRequest);
     } catch (JsonProcessingException e) {
-      throw new MetadataException("Failed to serialize request", e);
+      throw new AiSdkException("Failed to serialize request", e);
     }
 
     HttpRequest request =
@@ -237,13 +237,13 @@ public class MetadataHttpClient implements AutoCloseable {
       try (InputStream inputStream = response.body()) {
         sseParser.parse(inputStream, eventConsumer);
       }
-    } catch (MetadataException e) {
+    } catch (AiSdkException e) {
       throw e;
     } catch (IOException | InterruptedException e) {
       if (e instanceof InterruptedException) {
         Thread.currentThread().interrupt();
       }
-      throw new MetadataException("Stream request failed: " + e.getMessage(), e);
+      throw new AiSdkException("Stream request failed: " + e.getMessage(), e);
     }
   }
 
@@ -257,7 +257,7 @@ public class MetadataHttpClient implements AutoCloseable {
     try {
       requestBody = objectMapper.writeValueAsString(invokeRequest);
     } catch (JsonProcessingException e) {
-      throw new MetadataException("Failed to serialize request", e);
+      throw new AiSdkException("Failed to serialize request", e);
     }
 
     HttpRequest request =
@@ -275,13 +275,13 @@ public class MetadataHttpClient implements AutoCloseable {
       handleErrorStatus(response.statusCode(), agentName);
 
       return sseParser.parseAsStream(response.body());
-    } catch (MetadataException e) {
+    } catch (AiSdkException e) {
       throw e;
     } catch (IOException | InterruptedException e) {
       if (e instanceof InterruptedException) {
         Thread.currentThread().interrupt();
       }
-      throw new MetadataException("Stream request failed: " + e.getMessage(), e);
+      throw new AiSdkException("Stream request failed: " + e.getMessage(), e);
     }
   }
 
@@ -328,7 +328,7 @@ public class MetadataHttpClient implements AutoCloseable {
     try {
       return objectMapper.readValue(response.body(), BotInfo.class);
     } catch (JsonProcessingException e) {
-      throw new MetadataException("Failed to parse bot response", e);
+      throw new AiSdkException("Failed to parse bot response", e);
     }
   }
 
@@ -376,7 +376,7 @@ public class MetadataHttpClient implements AutoCloseable {
     try {
       return objectMapper.readValue(response.body(), PersonaInfo.class);
     } catch (JsonProcessingException e) {
-      throw new MetadataException("Failed to parse persona response", e);
+      throw new AiSdkException("Failed to parse persona response", e);
     }
   }
 
@@ -391,7 +391,7 @@ public class MetadataHttpClient implements AutoCloseable {
     try {
       requestBody = objectMapper.writeValueAsString(createRequest);
     } catch (JsonProcessingException e) {
-      throw new MetadataException("Failed to serialize persona create request", e);
+      throw new AiSdkException("Failed to serialize persona create request", e);
     }
 
     String url = host + PERSONAS_API_PATH;
@@ -409,7 +409,7 @@ public class MetadataHttpClient implements AutoCloseable {
     try {
       return objectMapper.readValue(response.body(), PersonaInfo.class);
     } catch (JsonProcessingException e) {
-      throw new MetadataException("Failed to parse persona create response", e);
+      throw new AiSdkException("Failed to parse persona create response", e);
     }
   }
 
@@ -426,7 +426,7 @@ public class MetadataHttpClient implements AutoCloseable {
     try {
       requestBody = objectMapper.writeValueAsString(createRequest);
     } catch (JsonProcessingException e) {
-      throw new MetadataException("Failed to serialize agent create request", e);
+      throw new AiSdkException("Failed to serialize agent create request", e);
     }
 
     HttpRequest request =
@@ -442,7 +442,7 @@ public class MetadataHttpClient implements AutoCloseable {
     try {
       return objectMapper.readValue(response.body(), AgentInfo.class);
     } catch (JsonProcessingException e) {
-      throw new MetadataException("Failed to parse agent create response", e);
+      throw new AiSdkException("Failed to parse agent create response", e);
     }
   }
 
@@ -491,7 +491,7 @@ public class MetadataHttpClient implements AutoCloseable {
     try {
       return objectMapper.readValue(response.body(), AbilityInfo.class);
     } catch (JsonProcessingException e) {
-      throw new MetadataException("Failed to parse ability response", e);
+      throw new AiSdkException("Failed to parse ability response", e);
     }
   }
 
@@ -522,12 +522,12 @@ public class MetadataHttpClient implements AutoCloseable {
           Duration waitTime = e.getRetryAfter().map(Duration::ofSeconds).orElse(retryDelay);
           sleep(waitTime);
         }
-      } catch (MetadataException e) {
+      } catch (AiSdkException e) {
         throw e;
       } catch (IOException | InterruptedException e) {
         if (e instanceof InterruptedException) {
           Thread.currentThread().interrupt();
-          throw new MetadataException("Request interrupted", e);
+          throw new AiSdkException("Request interrupted", e);
         }
         lastException = e;
         attempts++;
@@ -537,10 +537,10 @@ public class MetadataHttpClient implements AutoCloseable {
       }
     }
 
-    if (lastException instanceof MetadataException) {
-      throw (MetadataException) lastException;
+    if (lastException instanceof AiSdkException) {
+      throw (AiSdkException) lastException;
     }
-    throw new MetadataException("Request failed after " + maxRetries + " retries", lastException);
+    throw new AiSdkException("Request failed after " + maxRetries + " retries", lastException);
   }
 
   private void handleErrorStatusForResource(
@@ -555,7 +555,7 @@ public class MetadataHttpClient implements AutoCloseable {
         if (resourceType == ResourceType.AGENT) {
           throw new AgentNotEnabledException(resourceName != null ? resourceName : "unknown");
         }
-        throw new MetadataException("Access forbidden", 403);
+        throw new AiSdkException("Access forbidden", 403);
       case 404:
         switch (resourceType) {
           case BOT:
@@ -572,7 +572,7 @@ public class MetadataHttpClient implements AutoCloseable {
         throw new RateLimitException("Rate limit exceeded");
       default:
         if (statusCode >= 400) {
-          throw new MetadataException("Request failed with status " + statusCode, statusCode);
+          throw new AiSdkException("Request failed with status " + statusCode, statusCode);
         }
     }
   }
@@ -598,12 +598,12 @@ public class MetadataHttpClient implements AutoCloseable {
           Duration waitTime = e.getRetryAfter().map(Duration::ofSeconds).orElse(retryDelay);
           sleep(waitTime);
         }
-      } catch (MetadataException e) {
+      } catch (AiSdkException e) {
         throw e;
       } catch (IOException | InterruptedException e) {
         if (e instanceof InterruptedException) {
           Thread.currentThread().interrupt();
-          throw new MetadataException("Request interrupted", e);
+          throw new AiSdkException("Request interrupted", e);
         }
         lastException = e;
         attempts++;
@@ -613,10 +613,10 @@ public class MetadataHttpClient implements AutoCloseable {
       }
     }
 
-    if (lastException instanceof MetadataException) {
-      throw (MetadataException) lastException;
+    if (lastException instanceof AiSdkException) {
+      throw (AiSdkException) lastException;
     }
-    throw new MetadataException("Request failed after " + maxRetries + " retries", lastException);
+    throw new AiSdkException("Request failed after " + maxRetries + " retries", lastException);
   }
 
   private void handleErrorStatus(int statusCode, String agentName) {
@@ -634,7 +634,7 @@ public class MetadataHttpClient implements AutoCloseable {
         throw new RateLimitException("Rate limit exceeded");
       default:
         if (statusCode >= 400) {
-          throw new MetadataException("Request failed with status " + statusCode, statusCode);
+          throw new AiSdkException("Request failed with status " + statusCode, statusCode);
         }
     }
   }

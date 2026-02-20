@@ -85,8 +85,8 @@ pip install ai-sdk[langchain] langchain langchain-openai
 
 ```bash
 # OpenMetadata credentials
-export METADATA_HOST="https://your-openmetadata.com"
-export METADATA_TOKEN="..."
+export AI_SDK_HOST="https://your-openmetadata.com"
+export AI_SDK_TOKEN="..."
 
 # LLM API key
 export OPENAI_API_KEY="..."
@@ -353,8 +353,8 @@ If you want a read-only chatbot (no metadata updates), remove the Curator agent 
 
 ```python
 def create_chatbot():
-    config = MetadataConfig.from_env()
-    client = MetadataAI.from_config(config)
+    config = AiSdkConfig.from_env()
+    client = AiSdk.from_config(config)
     host = config.host.rstrip("/")
 
     discovery = _create_specialist(

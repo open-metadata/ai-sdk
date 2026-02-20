@@ -1,7 +1,7 @@
 package io.openmetadata.ai.exceptions;
 
 /** Exception thrown when a bot is not found (HTTP 404). */
-public class BotNotFoundException extends MetadataException {
+public class BotNotFoundException extends AiSdkException {
 
   private final String botName;
 

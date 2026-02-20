@@ -4,9 +4,9 @@
 
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import {
-  MetadataAI,
+  AiSdk,
   AgentHandle,
-  MetadataError,
+  AiSdkError,
   AuthenticationError,
   AgentNotFoundError,
   AgentNotEnabledError,
@@ -19,7 +19,7 @@ import {
 const mockFetch = vi.fn();
 vi.stubGlobal('fetch', mockFetch);
 
-describe('MetadataAI', () => {
+describe('AiSdk', () => {
   beforeEach(() => {
     mockFetch.mockReset();
   });
@@ -30,17 +30,17 @@ describe('MetadataAI', () => {
 
   describe('initialization', () => {
     it('should create a client with required options', () => {
-      const client = new MetadataAI({
+      const client = new AiSdk({
         host: 'https://openmetadata.example.com',
         token: 'test-token',
       });
 
-      expect(client).toBeInstanceOf(MetadataAI);
+      expect(client).toBeInstanceOf(AiSdk);
       expect(client.host).toBe('https://openmetadata.example.com');
     });
 
     it('should strip trailing slash from host', () => {
-      const client = new MetadataAI({
+      const client = new AiSdk({
         host: 'https://openmetadata.example.com/',
         token: 'test-token',
       });
@@ -50,7 +50,7 @@ describe('MetadataAI', () => {
 
     it('should throw error if host is empty', () => {
       expect(() => {
-        new MetadataAI({
+        new AiSdk({
           host: '',
           token: 'test-token',
         });
@@ -59,7 +59,7 @@ describe('MetadataAI', () => {
 
     it('should throw error if token is empty', () => {
       expect(() => {
-        new MetadataAI({
+        new AiSdk({
           host: 'https://openmetadata.example.com',
           token: '',
         });
@@ -69,7 +69,7 @@ describe('MetadataAI', () => {
 
   describe('agent()', () => {
     it('should return an AgentHandle with correct name', () => {
-      const client = new MetadataAI({
+      const client = new AiSdk({
         host: 'https://openmetadata.example.com',
         token: 'test-token',
       });
@@ -107,7 +107,7 @@ describe('MetadataAI', () => {
         json: () => Promise.resolve(mockResponse),
       });
 
-      const client = new MetadataAI({
+      const client = new AiSdk({
         host: 'https://openmetadata.example.com',
         token: 'test-token',
       });
@@ -134,7 +134,7 @@ describe('MetadataAI', () => {
         }),
       });
 
-      const client = new MetadataAI({
+      const client = new AiSdk({
         host: 'https://openmetadata.example.com',
         token: 'test-token',
       });
@@ -177,7 +177,7 @@ describe('AgentHandle', () => {
         json: () => Promise.resolve(mockResponse),
       });
 
-      const client = new MetadataAI({
+      const client = new AiSdk({
         host: 'https://openmetadata.example.com',
         token: 'test-token',
       });
@@ -201,7 +201,7 @@ describe('AgentHandle', () => {
           }),
       });
 
-      const client = new MetadataAI({
+      const client = new AiSdk({
         host: 'https://openmetadata.example.com',
         token: 'test-token',
       });
@@ -225,7 +225,7 @@ describe('AgentHandle', () => {
           }),
       });
 
-      const client = new MetadataAI({
+      const client = new AiSdk({
         host: 'https://openmetadata.example.com',
         token: 'test-token',
       });
@@ -250,7 +250,7 @@ describe('AgentHandle', () => {
         json: () => Promise.resolve(mockResponse),
       });
 
-      const client = new MetadataAI({
+      const client = new AiSdk({
         host: 'https://openmetadata.example.com',
         token: 'test-token',
       });
@@ -275,7 +275,7 @@ describe('AgentHandle', () => {
           }),
       });
 
-      const client = new MetadataAI({
+      const client = new AiSdk({
         host: 'https://openmetadata.example.com',
         token: 'test-token',
       });
@@ -307,7 +307,7 @@ describe('AgentHandle', () => {
         json: () => Promise.resolve(mockResponse),
       });
 
-      const client = new MetadataAI({
+      const client = new AiSdk({
         host: 'https://openmetadata.example.com',
         token: 'test-token',
       });
@@ -339,7 +339,7 @@ describe('Error handling', () => {
       json: () => Promise.resolve({ message: 'Invalid token' }),
     });
 
-    const client = new MetadataAI({
+    const client = new AiSdk({
       host: 'https://openmetadata.example.com',
       token: 'invalid-token',
     });
@@ -358,7 +358,7 @@ describe('Error handling', () => {
       json: () => Promise.resolve({ message: 'Agent not found' }),
     });
 
-    const client = new MetadataAI({
+    const client = new AiSdk({
       host: 'https://openmetadata.example.com',
       token: 'test-token',
     });
@@ -377,7 +377,7 @@ describe('Error handling', () => {
       json: () => Promise.resolve({ message: 'Agent not API enabled' }),
     });
 
-    const client = new MetadataAI({
+    const client = new AiSdk({
       host: 'https://openmetadata.example.com',
       token: 'test-token',
     });
@@ -399,7 +399,7 @@ describe('Error handling', () => {
       json: () => Promise.resolve({ message: 'Rate limit exceeded' }),
     });
 
-    const client = new MetadataAI({
+    const client = new AiSdk({
       host: 'https://openmetadata.example.com',
       token: 'test-token',
       maxRetries: 0, // Disable retries for this test
@@ -435,7 +435,7 @@ describe('Request configuration', () => {
         }),
     });
 
-    const client = new MetadataAI({
+    const client = new AiSdk({
       host: 'https://openmetadata.example.com',
       token: 'my-jwt-token',
     });
@@ -457,7 +457,7 @@ describe('Request configuration', () => {
         }),
     });
 
-    const client = new MetadataAI({
+    const client = new AiSdk({
       host: 'https://openmetadata.example.com',
       token: 'test-token',
     });
@@ -507,7 +507,7 @@ describe('Bot operations', () => {
         json: () => Promise.resolve(mockResponse),
       });
 
-      const client = new MetadataAI({
+      const client = new AiSdk({
         host: 'https://openmetadata.example.com',
         token: 'test-token',
       });
@@ -527,7 +527,7 @@ describe('Bot operations', () => {
         json: () => Promise.resolve({ data: [], paging: {} }),
       });
 
-      const client = new MetadataAI({
+      const client = new AiSdk({
         host: 'https://openmetadata.example.com',
         token: 'test-token',
       });
@@ -560,7 +560,7 @@ describe('Bot operations', () => {
         json: () => Promise.resolve(mockResponse),
       });
 
-      const client = new MetadataAI({
+      const client = new AiSdk({
         host: 'https://openmetadata.example.com',
         token: 'test-token',
       });
@@ -582,7 +582,7 @@ describe('Bot operations', () => {
           }),
       });
 
-      const client = new MetadataAI({
+      const client = new AiSdk({
         host: 'https://openmetadata.example.com',
         token: 'test-token',
       });
@@ -602,7 +602,7 @@ describe('Bot operations', () => {
         json: () => Promise.resolve({ message: 'Bot not found' }),
       });
 
-      const client = new MetadataAI({
+      const client = new AiSdk({
         host: 'https://openmetadata.example.com',
         token: 'test-token',
       });
@@ -650,7 +650,7 @@ describe('Persona operations', () => {
         json: () => Promise.resolve(mockResponse),
       });
 
-      const client = new MetadataAI({
+      const client = new AiSdk({
         host: 'https://openmetadata.example.com',
         token: 'test-token',
       });
@@ -670,7 +670,7 @@ describe('Persona operations', () => {
         json: () => Promise.resolve({ data: [], paging: {} }),
       });
 
-      const client = new MetadataAI({
+      const client = new AiSdk({
         host: 'https://openmetadata.example.com',
         token: 'test-token',
       });
@@ -700,7 +700,7 @@ describe('Persona operations', () => {
         json: () => Promise.resolve(mockResponse),
       });
 
-      const client = new MetadataAI({
+      const client = new AiSdk({
         host: 'https://openmetadata.example.com',
         token: 'test-token',
       });
@@ -723,7 +723,7 @@ describe('Persona operations', () => {
           }),
       });
 
-      const client = new MetadataAI({
+      const client = new AiSdk({
         host: 'https://openmetadata.example.com',
         token: 'test-token',
       });
@@ -743,7 +743,7 @@ describe('Persona operations', () => {
         json: () => Promise.resolve({ message: 'Persona not found' }),
       });
 
-      const client = new MetadataAI({
+      const client = new AiSdk({
         host: 'https://openmetadata.example.com',
         token: 'test-token',
       });
@@ -770,7 +770,7 @@ describe('Persona operations', () => {
         json: () => Promise.resolve(mockResponse),
       });
 
-      const client = new MetadataAI({
+      const client = new AiSdk({
         host: 'https://openmetadata.example.com',
         token: 'test-token',
       });
@@ -798,7 +798,7 @@ describe('Persona operations', () => {
           }),
       });
 
-      const client = new MetadataAI({
+      const client = new AiSdk({
         host: 'https://openmetadata.example.com',
         token: 'test-token',
       });
@@ -830,7 +830,7 @@ describe('Persona operations', () => {
           }),
       });
 
-      const client = new MetadataAI({
+      const client = new AiSdk({
         host: 'https://openmetadata.example.com',
         token: 'test-token',
       });
@@ -901,7 +901,7 @@ describe('Agent creation', () => {
           }),
       });
 
-      const client = new MetadataAI({
+      const client = new AiSdk({
         host: 'https://openmetadata.example.com',
         token: 'test-token',
       });
@@ -947,7 +947,7 @@ describe('Agent creation', () => {
           }),
       });
 
-      const client = new MetadataAI({
+      const client = new AiSdk({
         host: 'https://openmetadata.example.com',
         token: 'test-token',
       });
@@ -998,7 +998,7 @@ describe('Agent creation', () => {
           }),
       });
 
-      const client = new MetadataAI({
+      const client = new AiSdk({
         host: 'https://openmetadata.example.com',
         token: 'test-token',
       });
@@ -1040,7 +1040,7 @@ describe('Agent creation', () => {
           }),
       });
 
-      const client = new MetadataAI({
+      const client = new AiSdk({
         host: 'https://openmetadata.example.com',
         token: 'test-token',
       });

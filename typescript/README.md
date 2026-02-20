@@ -13,10 +13,10 @@ npm install @openmetadata/ai-sdk
 ## Quick Start
 
 ```typescript
-import { MetadataAI } from '@openmetadata/ai-sdk';
+import { AiSdk } from '@openmetadata/ai-sdk';
 
 // Initialize the client
-const client = new MetadataAI({
+const client = new AiSdk({
   host: 'https://openmetadata.example.com',
   token: 'your-bot-jwt-token',
 });
@@ -175,7 +175,7 @@ console.log('Ability:', ability.name);
 ## Configuration Options
 
 ```typescript
-const client = new MetadataAI({
+const client = new AiSdk({
   // Required
   host: 'https://openmetadata.example.com',  // OpenMetadata server URL
   token: 'your-jwt-token',               // Bot JWT token
@@ -193,7 +193,7 @@ The SDK provides specific error classes for different failure modes:
 
 ```typescript
 import {
-  MetadataAI,
+  AiSdk,
   AuthenticationError,
   AgentNotFoundError,
   AgentNotEnabledError,
@@ -334,7 +334,7 @@ interface CreatePersonaRequest {
 For convenience, you can use environment variables:
 
 ```typescript
-const client = new MetadataAI({
+const client = new AiSdk({
   host: process.env.OPENMETADATA_HOST!,
   token: process.env.OPENMETADATA_TOKEN!,
 });

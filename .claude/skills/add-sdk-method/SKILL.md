@@ -74,7 +74,7 @@ async newMethod(param: string): Promise<ResponseModel> {
 
 ### Java
 ```java
-public ResponseModel newMethod(String param) throws MetadataException {
+public ResponseModel newMethod(String param) throws AiSdkException {
     return httpClient.post("/path/" + param, ResponseModel.class);
 }
 ```

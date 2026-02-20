@@ -1,6 +1,6 @@
 """Base classes for framework integrations.
 
-This module provides the foundation for integrating Metadata agents
+This module provides the foundation for integrating agents
 with various AI frameworks (LangChain, LlamaIndex, CrewAI, etc.).
 """
 
@@ -10,8 +10,8 @@ from abc import ABC, abstractmethod
 from typing import Any
 
 from ai_sdk.agent import AgentHandle
-from ai_sdk.client import MetadataAI
-from ai_sdk.exceptions import MetadataError
+from ai_sdk.client import AiSdk
+from ai_sdk.exceptions import AiSdkError
 from ai_sdk.models import AgentInfo
 
 
@@ -19,7 +19,7 @@ class BaseAgentWrapper(ABC):
     """
     Base class for all framework integrations.
 
-    Provides common functionality for wrapping Metadata agents:
+    Provides common functionality for wrapping agents:
     - Agent info fetching with fallback
     - Description building from abilities
     - Conversation ID management
@@ -45,7 +45,7 @@ class BaseAgentWrapper(ABC):
         Initialize the wrapper.
 
         Args:
-            agent_handle: AgentHandle from MetadataAI client
+            agent_handle: AgentHandle from AiSdk.agent()
             name: Optional custom name (defaults to framework-specific naming)
             description: Optional custom description (defaults to agent info)
         """
@@ -72,24 +72,24 @@ class BaseAgentWrapper(ABC):
         """
         try:
             return self._agent_handle.get_info()
-        except MetadataError:
+        except AiSdkError:
             # Agent not found, not enabled, or network error
             return None
 
     @classmethod
     def from_client(
         cls,
-        client: MetadataAI,
+        client: AiSdk,
         agent_name: str,
         name: str | None = None,
         description: str | None = None,
         **kwargs: Any,
     ) -> BaseAgentWrapper:
         """
-        Create wrapper from MetadataAI client and agent name.
+        Create wrapper from AiSdk client and agent name.
 
         Args:
-            client: MetadataAI client instance
+            client: AiSdk client instance
             agent_name: Name of the agent to wrap
             name: Optional custom name
             description: Optional custom description

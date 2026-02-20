@@ -1,7 +1,7 @@
-"""Conversation management for the Metadata AI SDK.
+"""Conversation management for the AI SDK.
 
 This module provides a high-level interface for managing multi-turn
-conversations with Metadata agents without requiring external frameworks.
+conversations with agents without requiring external frameworks.
 """
 
 from __future__ import annotations
@@ -15,16 +15,16 @@ from ai_sdk.models import InvokeResponse, StreamEvent
 
 class Conversation:
     """
-    Manages a multi-turn conversation with a Metadata agent.
+    Manages a multi-turn conversation with an agent.
 
     This class provides a simple, self-contained way to interact with
     agents without needing LangChain or other frameworks.
 
     Usage:
-        from ai_sdk.client import MetadataAI
+        from ai_sdk.client import AiSdk
         from ai_sdk.conversation import Conversation
 
-        client = MetadataAI(host="...", token="...")
+        client = AiSdk(host="...", token="...")
         agent = client.agent("DataQualityPlannerAgent")
 
         # Create a conversation
@@ -51,7 +51,7 @@ class Conversation:
         Initialize a conversation with an agent.
 
         Args:
-            agent: AgentHandle from MetadataAI.agent()
+            agent: AgentHandle from AiSdk.agent()
         """
         self._agent = agent
         self._conversation_id: str | None = None

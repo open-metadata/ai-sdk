@@ -1,17 +1,17 @@
 # Async Usage Guide
 
-This guide covers async patterns for the Metadata AI SDK.
+This guide covers async patterns for the AI SDK.
 
-**Prerequisites:** You need `METADATA_HOST` and `METADATA_TOKEN` configured. See [Getting Your Credentials](README.md#getting-your-credentials) if you haven't set these up.
+**Prerequisites:** You need `AI_SDK_HOST` and `AI_SDK_TOKEN` configured. See [Getting Your Credentials](README.md#getting-your-credentials) if you haven't set these up.
 
 ## Enabling Async
 
 Async must be explicitly enabled when creating the client:
 
 ```python
-from ai_sdk import MetadataAI
+from ai_sdk import AiSdk
 
-client = MetadataAI(
+client = AiSdk(
     host="https://metadata.example.com",
     token="your-token",
     enable_async=True  # Required for async operations
@@ -21,10 +21,10 @@ client = MetadataAI(
 Or via configuration:
 
 ```python
-from ai_sdk import MetadataAI, MetadataConfig
+from ai_sdk import AiSdk, AiSdkConfig
 
-config = MetadataConfig.from_env(enable_async=True)
-client = MetadataAI.from_config(config)
+config = AiSdkConfig.from_env(enable_async=True)
+client = AiSdk.from_config(config)
 ```
 
 ## Async Methods
@@ -45,11 +45,11 @@ All sync methods have async counterparts:
 
 ```python
 import asyncio
-from ai_sdk import MetadataAI, MetadataConfig
+from ai_sdk import AiSdk, AiSdkConfig
 
 async def main():
-    config = MetadataConfig.from_env(enable_async=True)
-    client = MetadataAI.from_config(config)
+    config = AiSdkConfig.from_env(enable_async=True)
+    client = AiSdk.from_config(config)
 
     try:
         # Async agent call
@@ -68,7 +68,7 @@ asyncio.run(main())
 
 ```python
 async def main():
-    async with MetadataAI(
+    async with AiSdk(
         host="https://metadata.example.com",
         token="your-token",
         enable_async=True
@@ -83,7 +83,7 @@ async def main():
 Make multiple agent calls concurrently:
 
 ```python
-async def analyze_tables(client: MetadataAI, tables: list[str]) -> dict[str, str]:
+async def analyze_tables(client: AiSdk, tables: list[str]) -> dict[str, str]:
     """Analyze multiple tables concurrently."""
     agent = client.agent("DataQualityPlannerAgent")
 
@@ -100,7 +100,7 @@ async def analyze_tables(client: MetadataAI, tables: list[str]) -> dict[str, str
 
 # Usage
 async def main():
-    client = MetadataAI(host="...", token="...", enable_async=True)
+    client = AiSdk(host="...", token="...", enable_async=True)
 
     results = await analyze_tables(client, [
         "customers",
@@ -119,7 +119,7 @@ async def main():
 ## Async Streaming
 
 ```python
-async def stream_response(client: MetadataAI, message: str):
+async def stream_response(client: AiSdk, message: str):
     agent = client.agent("SqlQueryAgent")
 
     async for event in await agent.astream(message):
@@ -141,7 +141,7 @@ async def stream_response(client: MetadataAI, message: str):
 ```python
 from ai_sdk import Conversation
 
-async def chat(client: MetadataAI):
+async def chat(client: AiSdk):
     agent = client.agent("DataQualityPlannerAgent")
     conv = Conversation(agent)
 
@@ -161,7 +161,7 @@ async def chat(client: MetadataAI):
 ## Async List Agents
 
 ```python
-async def list_all_agents(client: MetadataAI) -> list:
+async def list_all_agents(client: AiSdk) -> list:
     agents = await client.alist_agents(limit=100)
     return [a for a in agents if a.api_enabled]
 ```
@@ -172,10 +172,10 @@ async def list_all_agents(client: MetadataAI) -> list:
 from ai_sdk.exceptions import (
     RateLimitError,
     AgentExecutionError,
-    MetadataError,
+    AiSdkError,
 )
 
-async def safe_call(client: MetadataAI, message: str) -> str | None:
+async def safe_call(client: AiSdk, message: str) -> str | None:
     try:
         response = await client.agent("MyAgent").acall(message)
         return response.response
@@ -229,7 +229,7 @@ response = await with_retry(
 
 ```python
 async def call_with_timeout(
-    client: MetadataAI,
+    client: AiSdk,
     message: str,
     timeout: float = 30.0,
 ) -> str:
@@ -251,7 +251,7 @@ Limit concurrent requests:
 
 ```python
 async def rate_limited_calls(
-    client: MetadataAI,
+    client: AiSdk,
     messages: list[str],
     max_concurrent: int = 5,
 ) -> list[str]:
@@ -273,7 +273,7 @@ async def rate_limited_calls(
 
 ```python
 async def process_queue(
-    client: MetadataAI,
+    client: AiSdk,
     queue: asyncio.Queue,
     results: list,
 ):
@@ -290,7 +290,7 @@ async def process_queue(
         queue.task_done()
 
 async def main():
-    client = MetadataAI(host="...", token="...", enable_async=True)
+    client = AiSdk(host="...", token="...", enable_async=True)
     queue = asyncio.Queue()
     results = []
 
@@ -327,11 +327,11 @@ async def main():
 
 ```python
 # Wrong - async not enabled
-client = MetadataAI(host="...", token="...")
+client = AiSdk(host="...", token="...")
 await client.agent("MyAgent").acall("Hi")  # RuntimeError!
 
 # Correct
-client = MetadataAI(host="...", token="...", enable_async=True)
+client = AiSdk(host="...", token="...", enable_async=True)
 await client.agent("MyAgent").acall("Hi")
 ```
 
@@ -339,7 +339,7 @@ await client.agent("MyAgent").acall("Hi")
 
 ```python
 # Wrong - async client not closed
-client = MetadataAI(host="...", token="...", enable_async=True)
+client = AiSdk(host="...", token="...", enable_async=True)
 response = await client.agent("MyAgent").acall("Hi")
 client.close()  # Only closes sync client!
 

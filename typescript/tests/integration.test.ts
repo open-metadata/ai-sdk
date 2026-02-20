@@ -2,11 +2,11 @@
  * Integration tests for Metadata AI TypeScript SDK.
  *
  * These tests run against a real Metadata instance and require:
- * - METADATA_HOST: Base URL of the Metadata instance
- * - METADATA_TOKEN: JWT authentication token
+ * - AI_SDK_HOST: Base URL of the Metadata instance
+ * - AI_SDK_TOKEN: JWT authentication token
  *
  * Optional:
- * - METADATA_RUN_CHAT_TESTS: Set to "true" to run chat tests - invoke and streaming (uses AI tokens)
+ * - AI_SDK_RUN_CHAT_TESTS: Set to "true" to run chat tests - invoke and streaming (uses AI tokens)
  *
  * Run with: npm run test:integration
  */
@@ -14,20 +14,20 @@
 import { describe, it, expect, beforeAll } from 'vitest';
 import { randomUUID } from 'crypto';
 import {
-  MetadataAI,
+  AiSdk,
   AuthenticationError,
   PersonaNotFoundError,
   BotNotFoundError,
 } from '../src';
 
 // Skip tests if credentials not configured
-const METADATA_HOST = process.env.METADATA_HOST;
-const METADATA_TOKEN = process.env.METADATA_TOKEN;
+const AI_SDK_HOST = process.env.AI_SDK_HOST;
+const AI_SDK_TOKEN = process.env.AI_SDK_TOKEN;
 
-const shouldRun = METADATA_HOST && METADATA_TOKEN;
+const shouldRun = AI_SDK_HOST && AI_SDK_TOKEN;
 
 // Check if chat tests should run (invoke + streaming - they use AI tokens)
-const CHAT_TESTS_ENABLED = process.env.METADATA_RUN_CHAT_TESTS?.toLowerCase() === 'true';
+const CHAT_TESTS_ENABLED = process.env.AI_SDK_RUN_CHAT_TESTS?.toLowerCase() === 'true';
 
 /** Generate a unique name for test entities */
 function uniqueName(prefix: string): string {
@@ -35,13 +35,13 @@ function uniqueName(prefix: string): string {
 }
 
 describe.skipIf(!shouldRun)('Integration Tests', () => {
-  let client: MetadataAI;
+  let client: AiSdk;
   let testAgentName: string | null = null;
 
   beforeAll(async () => {
-    client = new MetadataAI({
-      host: METADATA_HOST!,
-      token: METADATA_TOKEN!,
+    client = new AiSdk({
+      host: AI_SDK_HOST!,
+      token: AI_SDK_TOKEN!,
     });
 
     // Create a test agent with discoveryAndSearch ability for proper streaming tests
@@ -72,7 +72,7 @@ describe.skipIf(!shouldRun)('Integration Tests', () => {
   describe('Connection', () => {
     it('should create client with valid credentials', () => {
       expect(client).toBeDefined();
-      expect(client.host).toBe(METADATA_HOST!.replace(/\/$/, ''));
+      expect(client.host).toBe(AI_SDK_HOST!.replace(/\/$/, ''));
     });
 
     it('should list agents successfully', async () => {
@@ -82,8 +82,8 @@ describe.skipIf(!shouldRun)('Integration Tests', () => {
     });
 
     it('should reject invalid token', async () => {
-      const badClient = new MetadataAI({
-        host: METADATA_HOST!,
+      const badClient = new AiSdk({
+        host: AI_SDK_HOST!,
         token: 'invalid-token-12345',
       });
 

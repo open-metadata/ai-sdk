@@ -23,12 +23,12 @@ Comprehensive reference of all SDK methods, server endpoints, data models, and f
 
 ## Python SDK (`ai-sdk`)
 
-### MetadataAI Client
+### AiSdk Client
 
 ```python
-from ai_sdk import MetadataAI
+from ai_sdk import AiSdk
 
-client = MetadataAI(
+client = AiSdk(
     host="https://your-org.getcollate.io",
     token="your-jwt-token",
     timeout=120.0,           # seconds
@@ -104,12 +104,12 @@ print(conv.send("Create tests"))  # auto-tracks conversationId
 
 ## TypeScript SDK (`@openmetadata/ai-sdk`)
 
-### MetadataAI Client
+### AiSdk Client
 
 ```typescript
-import { MetadataAI } from '@openmetadata/ai-sdk';
+import { AiSdk } from '@openmetadata/ai-sdk';
 
-const client = new MetadataAI({
+const client = new AiSdk({
   host: 'https://your-org.getcollate.io',
   token: 'your-jwt-token',
   timeout: 120000,    // milliseconds
@@ -143,10 +143,10 @@ const client = new MetadataAI({
 
 ## Java SDK (`io.openmetadata:ai-sdk`)
 
-### MetadataAI Client
+### AiSdk Client
 
 ```java
-MetadataAI client = MetadataAI.builder()
+AiSdk client = AiSdk.builder()
     .host("https://your-org.getcollate.io")
     .token("your-jwt-token")
     .timeout(Duration.ofSeconds(120))
@@ -363,7 +363,7 @@ class ToolParameter:
 All SDKs implement the same error hierarchy:
 
 ```
-MetadataError (base)
+AiSdkError (base)
 +-- AuthenticationError (401)
 +-- AgentNotEnabledError (403)
 +-- NotFoundError (404)

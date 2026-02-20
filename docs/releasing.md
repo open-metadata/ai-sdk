@@ -1,6 +1,6 @@
 # Release Process
 
-This document explains how to release the Metadata AI SDK. A single release publishes all components in parallel:
+This document explains how to release the AI SDK. A single release publishes all components in parallel:
 
 | Component | Registry | Package |
 |-----------|----------|---------|

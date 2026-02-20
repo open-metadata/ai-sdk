@@ -9,10 +9,10 @@ Community node package for [n8n](https://n8n.io/), enabling workflow automation 
 ```
 n8n-nodes-metadata/
 ├── credentials/
-│   └── MetadataApi.credentials.ts    # OAuth/JWT credential configuration
+│   └── AiSdkApi.credentials.ts      # OAuth/JWT credential configuration
 ├── nodes/
-│   └── MetadataAgent/
-│       ├── MetadataAgent.node.ts     # Main node implementation
+│   └── AiSdkAgent/
+│       ├── AiSdkAgent.node.ts       # Main node implementation
 │       ├── metadata.png              # Node icon (PNG format)
 │       └── metadata.svg              # Node icon (SVG format, legacy)
 ├── index.ts                         # Package exports
@@ -46,9 +46,9 @@ npm run lint:fix         # Auto-fix ESLint issues
 
 ## How It Works
 
-### Node: MetadataAgent
+### Node: AiSdkAgent
 
-The `MetadataAgent` node allows n8n workflows to invoke OpenMetadata DynamicAgents via the API.
+The `AiSdkAgent` node allows n8n workflows to invoke OpenMetadata DynamicAgents via the API.
 
 **Inputs:**
 - `agentName` (required): Name of the DynamicAgent to invoke
@@ -58,7 +58,7 @@ The `MetadataAgent` node allows n8n workflows to invoke OpenMetadata DynamicAgen
 - `response`: Agent's text response
 - Other metadata from the agent execution (note: `toolsUsed` is filtered out)
 
-### Credentials: MetadataApi
+### Credentials: AiSdkApi
 
 Stores the OpenMetadata server URL and JWT token for authentication.
 
@@ -91,7 +91,7 @@ Then restart n8n to load the node.
 
 ### Adding New Parameters
 
-Edit `nodes/MetadataAgent/MetadataAgent.node.ts` and add to the `properties` array:
+Edit `nodes/AiSdkAgent/AiSdkAgent.node.ts` and add to the `properties` array:
 
 ```typescript
 {
@@ -105,7 +105,7 @@ Edit `nodes/MetadataAgent/MetadataAgent.node.ts` and add to the `properties` arr
 
 ### Updating the Icon
 
-1. Place icon file in `nodes/MetadataAgent/` (PNG or SVG format)
+1. Place icon file in `nodes/AiSdkAgent/` (PNG or SVG format)
 2. Update `icon` property in the node description to reference the new file
 3. Update `copy:icons` script in `package.json` if using a new file extension
 
@@ -125,8 +125,8 @@ The `package.json` includes n8n-specific configuration:
 {
   "n8n": {
     "n8nNodesApiVersion": 1,
-    "credentials": ["dist/credentials/MetadataApi.credentials.js"],
-    "nodes": ["dist/nodes/MetadataAgent/MetadataAgent.node.js"]
+    "credentials": ["dist/credentials/AiSdkApi.credentials.js"],
+    "nodes": ["dist/nodes/AiSdkAgent/AiSdkAgent.node.js"]
   }
 }
 ```
@@ -142,7 +142,7 @@ To test the node:
 1. Build the package: `npm run build`
 2. Link to n8n or install locally
 3. Restart n8n
-4. Create a workflow with the Metadata Agent node
+4. Create a workflow with the AI SDK Agent node
 5. Configure credentials with a valid OpenMetadata instance
 6. Execute a test workflow
 

@@ -1,8 +1,8 @@
 # LangChain Integration
 
-This guide covers using Metadata AI agents as tools in LangChain pipelines.
+This guide covers using AI SDK agents as tools in LangChain pipelines.
 
-**Prerequisites:** You need `METADATA_HOST` and `METADATA_TOKEN` configured. See [Getting Your Credentials](README.md#getting-your-credentials) if you haven't set these up.
+**Prerequisites:** You need `AI_SDK_HOST` and `AI_SDK_TOKEN` configured. See [Getting Your Credentials](README.md#getting-your-credentials) if you haven't set these up.
 
 ## Installation
 
@@ -17,20 +17,20 @@ This installs `langchain-core` as a dependency.
 ## Quick Start
 
 ```python
-from ai_sdk import MetadataAI
-from ai_sdk.integrations.langchain import MetadataAgentTool
+from ai_sdk import AiSdk
+from ai_sdk.integrations.langchain import AiSdkAgentTool
 from langchain_openai import ChatOpenAI
 from langchain.agents import AgentExecutor, create_openai_functions_agent
 from langchain_core.prompts import ChatPromptTemplate
 
-# Create Metadata client
-client = MetadataAI(
+# Create AI SDK client
+client = AiSdk(
     host="https://metadata.example.com",
     token="your-bot-jwt-token"
 )
 
-# Create a tool from a Metadata agent
-tool = MetadataAgentTool.from_client(client, "DataQualityPlannerAgent")
+# Create a tool from an AI SDK agent
+tool = AiSdkAgentTool.from_client(client, "DataQualityPlannerAgent")
 
 # Set up LangChain agent
 llm = ChatOpenAI(model="gpt-4")
@@ -57,11 +57,11 @@ print(result["output"])
 The simplest way to create a tool:
 
 ```python
-from ai_sdk import MetadataAI
-from ai_sdk.integrations.langchain import MetadataAgentTool
+from ai_sdk import AiSdk
+from ai_sdk.integrations.langchain import AiSdkAgentTool
 
-client = MetadataAI(host="...", token="...")
-tool = MetadataAgentTool.from_client(client, "DataQualityPlannerAgent")
+client = AiSdk(host="...", token="...")
+tool = AiSdkAgentTool.from_client(client, "DataQualityPlannerAgent")
 ```
 
 ### From Agent Handle
@@ -70,7 +70,7 @@ If you already have an agent handle:
 
 ```python
 agent_handle = client.agent("DataQualityPlannerAgent")
-tool = MetadataAgentTool.from_agent(agent_handle)
+tool = AiSdkAgentTool.from_agent(agent_handle)
 ```
 
 ### Custom Tool Name and Description
@@ -78,7 +78,7 @@ tool = MetadataAgentTool.from_agent(agent_handle)
 Override the auto-generated name and description:
 
 ```python
-tool = MetadataAgentTool.from_client(
+tool = AiSdkAgentTool.from_client(
     client,
     "DataQualityPlannerAgent",
     name="data_quality_analyzer",
@@ -87,7 +87,7 @@ tool = MetadataAgentTool.from_client(
 ```
 
 By default:
-- **Name**: `metadata_{agent_name}` (e.g., `metadata_DataQualityPlannerAgent`)
+- **Name**: `ai_sdk_{agent_name}` (e.g., `ai_sdk_DataQualityPlannerAgent`)
 - **Description**: Built from agent's description and abilities
 
 ### Create Multiple Tools
@@ -95,9 +95,9 @@ By default:
 Create tools for specific agents:
 
 ```python
-from ai_sdk.integrations.langchain import create_metadata_tools
+from ai_sdk.integrations.langchain import create_ai_sdk_tools
 
-tools = create_metadata_tools(client, [
+tools = create_ai_sdk_tools(client, [
     "DataQualityPlannerAgent",
     "SqlQueryAgent",
     "LineageExplorerAgent",
@@ -108,12 +108,12 @@ Or create tools for all API-enabled agents:
 
 ```python
 # Fetches all agents with apiEnabled=true
-tools = create_metadata_tools(client)
+tools = create_ai_sdk_tools(client)
 ```
 
 ## Tool Properties
 
-Each `MetadataAgentTool` has:
+Each `AiSdkAgentTool` has:
 
 | Property | Type | Description |
 |----------|------|-------------|
@@ -122,9 +122,9 @@ Each `MetadataAgentTool` has:
 | `args_schema` | `BaseModel` | Pydantic schema for input validation |
 
 ```python
-tool = MetadataAgentTool.from_client(client, "DataQualityPlannerAgent")
+tool = AiSdkAgentTool.from_client(client, "DataQualityPlannerAgent")
 
-print(tool.name)         # metadata_DataQualityPlannerAgent
+print(tool.name)         # ai_sdk_DataQualityPlannerAgent
 print(tool.description)  # Analyzes data quality... Capabilities: search_metadata, analyze_quality.
 ```
 
@@ -133,7 +133,7 @@ print(tool.description)  # Analyzes data quality... Capabilities: search_metadat
 The tool automatically maintains conversation context:
 
 ```python
-tool = MetadataAgentTool.from_client(client, "DataQualityPlannerAgent")
+tool = AiSdkAgentTool.from_client(client, "DataQualityPlannerAgent")
 
 # First invocation
 result1 = tool.invoke({"query": "Analyze the orders table"})
@@ -149,7 +149,7 @@ tool.reset_conversation()
 
 1. First call returns a `conversation_id`
 2. Subsequent calls automatically include this ID
-3. The Metadata agent uses the ID to maintain context
+3. The agent uses the ID to maintain context
 4. Call `reset_conversation()` to start a new conversation
 
 ## Using with Different Agent Types
@@ -185,17 +185,17 @@ executor = AgentExecutor(agent=agent, tools=tools)
 
 ## Async Support
 
-For async LangChain pipelines, enable async on the Metadata client:
+For async LangChain pipelines, enable async on the AiSdk client:
 
 ```python
 # Create client with async enabled
-client = MetadataAI(
+client = AiSdk(
     host="https://metadata.example.com",
     token="your-token",
     enable_async=True  # Required for true async
 )
 
-tool = MetadataAgentTool.from_client(client, "DataQualityPlannerAgent")
+tool = AiSdkAgentTool.from_client(client, "DataQualityPlannerAgent")
 
 # Now _arun uses true async
 result = await tool._arun("Analyze data quality")
@@ -207,8 +207,8 @@ result = await tool._arun("Analyze data quality")
 import asyncio
 
 async def main():
-    client = MetadataAI(host="...", token="...", enable_async=True)
-    tools = [MetadataAgentTool.from_client(client, "DataQualityPlannerAgent")]
+    client = AiSdk(host="...", token="...", enable_async=True)
+    tools = [AiSdkAgentTool.from_client(client, "DataQualityPlannerAgent")]
 
     llm = ChatOpenAI(model="gpt-4")
     prompt = ChatPromptTemplate.from_messages([...])
@@ -235,7 +235,7 @@ If `enable_async=False` (default), `_arun` falls back to synchronous execution. 
 
 ## Error Handling
 
-Handle Metadata-specific errors in your LangChain pipeline:
+Handle AI SDK-specific errors in your LangChain pipeline:
 
 ```python
 from ai_sdk.exceptions import (
@@ -265,25 +265,25 @@ except AgentExecutionError as e:
 ### Data Quality Analysis Pipeline
 
 ```python
-from ai_sdk import MetadataAI
-from ai_sdk.integrations.langchain import MetadataAgentTool
+from ai_sdk import AiSdk
+from ai_sdk.integrations.langchain import AiSdkAgentTool
 from langchain_openai import ChatOpenAI
 from langchain.agents import AgentExecutor, create_openai_functions_agent
 from langchain_core.prompts import ChatPromptTemplate
 
 # Setup
-client = MetadataAI(
+client = AiSdk(
     host="https://metadata.example.com",
     token="your-bot-jwt-token"
 )
 
 tools = [
-    MetadataAgentTool.from_client(
+    AiSdkAgentTool.from_client(
         client,
         "DataQualityPlannerAgent",
         description="Analyzes tables for data quality issues"
     ),
-    MetadataAgentTool.from_client(
+    AiSdkAgentTool.from_client(
         client,
         "SqlQueryAgent",
         description="Generates and explains SQL queries"
@@ -323,16 +323,16 @@ print(result["output"])
 ### Multi-Agent Collaboration
 
 ```python
-from ai_sdk import MetadataAI
-from ai_sdk.integrations.langchain import create_metadata_tools
+from ai_sdk import AiSdk
+from ai_sdk.integrations.langchain import create_ai_sdk_tools
 from langchain_openai import ChatOpenAI
 from langchain.agents import AgentExecutor, create_openai_functions_agent
 from langchain_core.prompts import ChatPromptTemplate
 
-client = MetadataAI(host="...", token="...")
+client = AiSdk(host="...", token="...")
 
 # Get all API-enabled agents as tools
-tools = create_metadata_tools(client)
+tools = create_ai_sdk_tools(client)
 
 print(f"Available tools: {[t.name for t in tools]}")
 
@@ -353,20 +353,20 @@ result = executor.invoke({
 
 ## API Reference
 
-### MetadataAgentTool
+### AiSdkAgentTool
 
 ```python
-class MetadataAgentTool(BaseTool):
-    """LangChain tool wrapping a Metadata Dynamic Agent."""
+class AiSdkAgentTool(BaseTool):
+    """LangChain tool wrapping a Dynamic Agent."""
 
     @classmethod
     def from_client(
         cls,
-        client: MetadataAI,
+        client: AiSdk,
         agent_name: str,
         name: Optional[str] = None,
         description: Optional[str] = None,
-    ) -> "MetadataAgentTool":
+    ) -> "AiSdkAgentTool":
         """Create tool from client and agent name."""
 
     @classmethod
@@ -375,30 +375,30 @@ class MetadataAgentTool(BaseTool):
         agent_handle: AgentHandle,
         name: Optional[str] = None,
         description: Optional[str] = None,
-    ) -> "MetadataAgentTool":
+    ) -> "AiSdkAgentTool":
         """Create tool from agent handle."""
 
     def reset_conversation(self) -> None:
         """Reset conversation context for fresh interactions."""
 ```
 
-### create_metadata_tools
+### create_ai_sdk_tools
 
 ```python
-def create_metadata_tools(
-    client: MetadataAI,
+def create_ai_sdk_tools(
+    client: AiSdk,
     agent_names: Optional[list[str]] = None,
-) -> list[MetadataAgentTool]:
+) -> list[AiSdkAgentTool]:
     """
-    Create LangChain tools for multiple Metadata agents.
+    Create LangChain tools for multiple AI SDK agents.
 
     Args:
-        client: MetadataAI client instance
+        client: AiSdk client instance
         agent_names: List of agent names. If None, creates tools
             for all API-enabled agents.
 
     Returns:
-        List of MetadataAgentTool instances
+        List of AiSdkAgentTool instances
     """
 ```
 
@@ -426,7 +426,7 @@ def create_metadata_tools(
 
 ### Async not working
 
-- Ensure `enable_async=True` on the MetadataAI client
+- Ensure `enable_async=True` on the AiSdk client
 - Check you're using `await` with async methods
 - Verify you're calling `ainvoke` not `invoke` on the executor
 

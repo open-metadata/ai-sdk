@@ -1,4 +1,4 @@
-"""Tests for the Metadata AI SDK HTTP client."""
+"""Tests for the AI SDK HTTP client."""
 
 import pytest
 from pytest_httpx import HTTPXMock

@@ -1,4 +1,4 @@
-"""Main client for the Metadata AI SDK."""
+"""Main client for the AI SDK."""
 
 from __future__ import annotations
 
@@ -8,14 +8,14 @@ from urllib.parse import quote
 
 if TYPE_CHECKING:
     from ai_sdk._http import AsyncHTTPClient as AsyncHttpClient, HTTPClient as HttpClient
-    from ai_sdk.config import MetadataConfig
+    from ai_sdk.config import AiSdkConfig
 
 from ai_sdk._http import AsyncHTTPClient, HTTPClient
 from ai_sdk.agent import AgentHandle
 from ai_sdk.auth import TokenAuth
 from ai_sdk.exceptions import (
     AbilityNotFoundError,
-    MetadataError,
+    AiSdkError,
     PersonaNotFoundError,
 )
 from ai_sdk.mcp._client import MCPClient
@@ -29,17 +29,17 @@ from ai_sdk.models import (
 )
 
 
-class MetadataAI:
+class AiSdk:
     """
-    Main client for interacting with Metadata AI agents.
+    Main client for interacting with AI agents.
 
-    This client provides access to Metadata AI Agents, enabling you to
+    This client provides access to AI Agents, enabling you to
     leverage semantic intelligence capabilities in your AI applications.
 
     Usage:
-        from ai_sdk.client import MetadataAI
+        from ai_sdk.client import AiSdk
 
-        client = MetadataAI(
+        client = AiSdk(
             host="https://metadata.example.com",
             token="your-bot-jwt-token"
         )
@@ -67,7 +67,7 @@ class MetadataAI:
         )
 
     Async usage:
-        client = MetadataAI(
+        client = AiSdk(
             host="https://metadata.example.com",
             token="your-bot-jwt-token",
             enable_async=True
@@ -77,11 +77,11 @@ class MetadataAI:
         response = await agent.acall("Analyze the customers table")
 
     From environment:
-        from ai_sdk.client import MetadataAI
-        from ai_sdk.config import MetadataConfig
+        from ai_sdk.client import AiSdk
+        from ai_sdk.config import AiSdkConfig
 
-        config = MetadataConfig.from_env()  # Uses METADATA_HOST, METADATA_TOKEN
-        client = MetadataAI.from_config(config)
+        config = AiSdkConfig.from_env()  # Uses AI_SDK_HOST, AI_SDK_TOKEN
+        client = AiSdk.from_config(config)
     """
 
     def __init__(
@@ -96,10 +96,10 @@ class MetadataAI:
         user_agent: str | None = None,
     ):
         """
-        Initialize the Metadata AI client.
+        Initialize the AI SDK client.
 
         Args:
-            host: The Metadata server URL (e.g., "https://metadata.example.com")
+            host: The server URL (e.g., "https://metadata.example.com")
             token: JWT bot token for authentication
             timeout: Request timeout in seconds (default: 120)
             verify_ssl: Whether to verify SSL certificates (default: True)
@@ -396,7 +396,7 @@ class MetadataAI:
         if self._async_http is None:
             raise RuntimeError(
                 "Async HTTP client not available. "
-                "Use MetadataAI with enable_async=True for async operations."
+                "Use AiSdk with enable_async=True for async operations."
             )
 
         return await self._apaginate_list(
@@ -473,7 +473,7 @@ class MetadataAI:
         if self._async_http is None:
             raise RuntimeError(
                 "Async HTTP client not available. "
-                "Use MetadataAI with enable_async=True for async operations."
+                "Use AiSdk with enable_async=True for async operations."
             )
 
         # Resolve persona name to ID
@@ -533,7 +533,7 @@ class MetadataAI:
         if self._async_bots_http is None:
             raise RuntimeError(
                 "Async HTTP client not available. "
-                "Use MetadataAI with enable_async=True for async operations."
+                "Use AiSdk with enable_async=True for async operations."
             )
 
         return await self._apaginate_list(
@@ -577,7 +577,7 @@ class MetadataAI:
         if self._async_bots_http is None:
             raise RuntimeError(
                 "Async HTTP client not available. "
-                "Use MetadataAI with enable_async=True for async operations."
+                "Use AiSdk with enable_async=True for async operations."
             )
 
         encoded_name = quote(name, safe="")
@@ -625,7 +625,7 @@ class MetadataAI:
         if self._async_personas_http is None:
             raise RuntimeError(
                 "Async HTTP client not available. "
-                "Use MetadataAI with enable_async=True for async operations."
+                "Use AiSdk with enable_async=True for async operations."
             )
 
         return await self._apaginate_list(
@@ -652,7 +652,7 @@ class MetadataAI:
             encoded_name = quote(name, safe="")
             response = self._personas_http.get(f"/name/{encoded_name}")
             return PersonaInfo.from_dict(response)
-        except MetadataError as e:
+        except AiSdkError as e:
             if e.status_code == 404:
                 raise PersonaNotFoundError(name) from e
             raise
@@ -674,14 +674,14 @@ class MetadataAI:
         if self._async_personas_http is None:
             raise RuntimeError(
                 "Async HTTP client not available. "
-                "Use MetadataAI with enable_async=True for async operations."
+                "Use AiSdk with enable_async=True for async operations."
             )
 
         try:
             encoded_name = quote(name, safe="")
             response = await self._async_personas_http.get(f"/name/{encoded_name}")
             return PersonaInfo.from_dict(response)
-        except MetadataError as e:
+        except AiSdkError as e:
             if e.status_code == 404:
                 raise PersonaNotFoundError(name) from e
             raise
@@ -715,7 +715,7 @@ class MetadataAI:
         if self._async_personas_http is None:
             raise RuntimeError(
                 "Async HTTP client not available. "
-                "Use MetadataAI with enable_async=True for async operations."
+                "Use AiSdk with enable_async=True for async operations."
             )
 
         response = await self._async_personas_http.post("/", json=request.to_api_dict())
@@ -762,7 +762,7 @@ class MetadataAI:
         if self._async_abilities_http is None:
             raise RuntimeError(
                 "Async HTTP client not available. "
-                "Use MetadataAI with enable_async=True for async operations."
+                "Use AiSdk with enable_async=True for async operations."
             )
 
         return await self._apaginate_list(
@@ -789,7 +789,7 @@ class MetadataAI:
             encoded_name = quote(name, safe="")
             response = self._abilities_http.get(f"/name/{encoded_name}")
             return AbilityInfo.from_dict(response)
-        except MetadataError as e:
+        except AiSdkError as e:
             if e.status_code == 404:
                 raise AbilityNotFoundError(name) from e
             raise
@@ -811,14 +811,14 @@ class MetadataAI:
         if self._async_abilities_http is None:
             raise RuntimeError(
                 "Async HTTP client not available. "
-                "Use MetadataAI with enable_async=True for async operations."
+                "Use AiSdk with enable_async=True for async operations."
             )
 
         try:
             encoded_name = quote(name, safe="")
             response = await self._async_abilities_http.get(f"/name/{encoded_name}")
             return AbilityInfo.from_dict(response)
-        except MetadataError as e:
+        except AiSdkError as e:
             if e.status_code == 404:
                 raise AbilityNotFoundError(name) from e
             raise
@@ -851,13 +851,13 @@ class MetadataAI:
         if self._async_abilities_http is not None:
             await self._async_abilities_http.close()
 
-    def __enter__(self) -> MetadataAI:
+    def __enter__(self) -> AiSdk:
         return self
 
     def __exit__(self, *args: object) -> None:
         self.close()
 
-    async def __aenter__(self) -> MetadataAI:
+    async def __aenter__(self) -> AiSdk:
         return self
 
     async def __aexit__(self, *args: object) -> None:
@@ -865,33 +865,33 @@ class MetadataAI:
         self.close()
 
     def __repr__(self) -> str:
-        return f"MetadataAI(host={self._host!r})"
+        return f"AiSdk(host={self._host!r})"
 
     @classmethod
-    def from_config(cls, config: MetadataConfig) -> MetadataAI:
+    def from_config(cls, config: AiSdkConfig) -> AiSdk:
         """
-        Create a client from a MetadataConfig object.
+        Create a client from an AiSdkConfig object.
 
         This is the recommended way to create a client when using
         environment-based configuration.
 
         Args:
-            config: MetadataConfig instance
+            config: AiSdkConfig instance
 
         Returns:
-            MetadataAI client
+            AiSdk client
 
         Example:
-            from ai_sdk.client import MetadataAI
-            from ai_sdk.config import MetadataConfig
+            from ai_sdk.client import AiSdk
+            from ai_sdk.config import AiSdkConfig
 
             # From environment variables
-            config = MetadataConfig.from_env()
-            client = MetadataAI.from_config(config)
+            config = AiSdkConfig.from_env()
+            client = AiSdk.from_config(config)
 
             # With overrides
-            config = MetadataConfig.from_env(timeout=30.0)
-            client = MetadataAI.from_config(config)
+            config = AiSdkConfig.from_env(timeout=30.0)
+            client = AiSdk.from_config(config)
         """
         if config.debug:
             from ai_sdk._logging import set_debug

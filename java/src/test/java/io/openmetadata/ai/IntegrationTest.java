@@ -13,34 +13,34 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledIfEnvironmentVariable;
 
+import io.openmetadata.ai.exceptions.AiSdkException;
 import io.openmetadata.ai.exceptions.AuthenticationException;
 import io.openmetadata.ai.exceptions.BotNotFoundException;
-import io.openmetadata.ai.exceptions.MetadataException;
 import io.openmetadata.ai.exceptions.PersonaNotFoundException;
 import io.openmetadata.ai.models.*;
 
 /**
- * Integration tests for Metadata AI Java SDK.
+ * Integration tests for the AI SDK (Java).
  *
- * <p>These tests run against a real Metadata instance and require: - METADATA_HOST: Base URL of the
- * Metadata instance - METADATA_TOKEN: JWT authentication token
+ * <p>These tests run against a real instance and require: - AI_SDK_HOST: Base URL of the instance -
+ * AI_SDK_TOKEN: JWT authentication token
  *
- * <p>Optional: - METADATA_TEST_AGENT: Name of an agent to test invocation (defaults to first
- * available) - METADATA_RUN_CHAT_TESTS: Set to "true" to run chat tests - invoke and streaming
- * (uses AI tokens)
+ * <p>Optional: - AI_SDK_TEST_AGENT: Name of an agent to test invocation (defaults to first
+ * available) - AI_SDK_RUN_CHAT_TESTS: Set to "true" to run chat tests - invoke and streaming (uses
+ * AI tokens)
  *
  * <p>Run with: mvn test -Dtest=IntegrationTest
  */
-@EnabledIfEnvironmentVariable(named = "METADATA_HOST", matches = ".+")
-@EnabledIfEnvironmentVariable(named = "METADATA_TOKEN", matches = ".+")
+@EnabledIfEnvironmentVariable(named = "AI_SDK_HOST", matches = ".+")
+@EnabledIfEnvironmentVariable(named = "AI_SDK_TOKEN", matches = ".+")
 public class IntegrationTest {
 
-  private static MetadataAI client;
+  private static AiSdk client;
   private static String testAgentName;
 
   /** Check if chat tests should run (invoke + streaming - they use AI tokens) */
   private static boolean isChatTestsEnabled() {
-    String enabled = System.getenv("METADATA_RUN_CHAT_TESTS");
+    String enabled = System.getenv("AI_SDK_RUN_CHAT_TESTS");
     return "true".equalsIgnoreCase(enabled);
   }
 
@@ -51,13 +51,13 @@ public class IntegrationTest {
 
   @BeforeAll
   static void setUp() {
-    String host = System.getenv("METADATA_HOST");
-    String token = System.getenv("METADATA_TOKEN");
+    String host = System.getenv("AI_SDK_HOST");
+    String token = System.getenv("AI_SDK_TOKEN");
 
-    client = MetadataAI.builder().host(host).token(token).build();
+    client = AiSdk.builder().host(host).token(token).build();
 
     // Get test agent name from env or create one dynamically
-    testAgentName = System.getenv("METADATA_TEST_AGENT");
+    testAgentName = System.getenv("AI_SDK_TEST_AGENT");
     if (testAgentName == null || testAgentName.isEmpty()) {
       try {
         // First, try to find an existing persona with LLM configured
@@ -84,7 +84,7 @@ public class IntegrationTest {
             testAgentName = agents.get(0).getName();
           }
         }
-      } catch (MetadataException e) {
+      } catch (AiSdkException e) {
         // Will be handled in individual tests
         System.out.println("Failed to create test agent: " + e.getMessage());
       }
@@ -116,11 +116,8 @@ public class IntegrationTest {
     @Test
     @DisplayName("Invalid token is rejected with AuthenticationException")
     void testInvalidTokenRejected() {
-      MetadataAI badClient =
-          MetadataAI.builder()
-              .host(System.getenv("METADATA_HOST"))
-              .token("invalid-token-12345")
-              .build();
+      AiSdk badClient =
+          AiSdk.builder().host(System.getenv("AI_SDK_HOST")).token("invalid-token-12345").build();
 
       assertThrows(AuthenticationException.class, badClient::listAgents);
     }
@@ -157,7 +154,7 @@ public class IntegrationTest {
     void testInvokeAgent() {
       if (!isChatTestsEnabled()) {
         System.out.println(
-            "Skipping: Chat tests disabled (set METADATA_RUN_CHAT_TESTS=true to enable)");
+            "Skipping: Chat tests disabled (set AI_SDK_RUN_CHAT_TESTS=true to enable)");
         return;
       }
       if (testAgentName == null) {
@@ -183,7 +180,7 @@ public class IntegrationTest {
     void testStreamAgent() {
       if (!isChatTestsEnabled()) {
         System.out.println(
-            "Skipping: Chat tests disabled (set METADATA_RUN_CHAT_TESTS=true to enable)");
+            "Skipping: Chat tests disabled (set AI_SDK_RUN_CHAT_TESTS=true to enable)");
         return;
       }
       if (testAgentName == null || testAgentName.isEmpty()) {
@@ -216,7 +213,7 @@ public class IntegrationTest {
     void testStreamIterator() {
       if (!isChatTestsEnabled()) {
         System.out.println(
-            "Skipping: Chat tests disabled (set METADATA_RUN_CHAT_TESTS=true to enable)");
+            "Skipping: Chat tests disabled (set AI_SDK_RUN_CHAT_TESTS=true to enable)");
         return;
       }
       if (testAgentName == null || testAgentName.isEmpty()) {

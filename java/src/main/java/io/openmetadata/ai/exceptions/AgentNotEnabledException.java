@@ -1,7 +1,7 @@
 package io.openmetadata.ai.exceptions;
 
 /** Exception thrown when an agent exists but is not API-enabled (HTTP 403). */
-public class AgentNotEnabledException extends MetadataException {
+public class AgentNotEnabledException extends AiSdkException {
 
   private final String agentName;
 

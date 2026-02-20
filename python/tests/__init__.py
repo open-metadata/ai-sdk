@@ -1,1 +1,1 @@
-"""Tests for the Metadata AI SDK."""
+"""Tests for the AI SDK."""

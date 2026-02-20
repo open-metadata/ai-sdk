@@ -1,4 +1,4 @@
-# Metadata AI CLI
+# AI SDK CLI
 
 Command-line tool for interacting with Metadata AI Agents.
 
@@ -6,7 +6,7 @@ Command-line tool for interacting with Metadata AI Agents.
 
 ### Quick Install (Recommended)
 
-Install the Metadata AI CLI with a single command:
+Install the AI SDK CLI with a single command:
 
 ```bash
 curl -sSL https://raw.githubusercontent.com/open-metadata/metadata-ai-sdk/main/cli/install.sh | sh
@@ -82,7 +82,7 @@ ai-sdk configure
 
 ```bash
 # Set individual values
-ai-sdk configure set host https://your-metadata-instance.com
+ai-sdk configure set host https://your-instance.getcollate.io
 ai-sdk configure set token your-jwt-token
 ai-sdk configure set timeout 120
 
@@ -96,8 +96,8 @@ ai-sdk configure get host
 Environment variables take precedence over file configuration:
 
 ```bash
-export METADATA_HOST="https://your-metadata-instance.com"
-export METADATA_TOKEN="your-jwt-token"
+export AI_SDK_HOST="https://your-instance.getcollate.io"
+export AI_SDK_TOKEN="your-jwt-token"
 ```
 
 ## Usage
@@ -357,7 +357,7 @@ src/
 │   ├── wizard.rs    # Shared wizard framework
 │   ├── create_persona.rs  # Persona creation wizard
 │   └── create_agent.rs    # Agent creation wizard
-├── client.rs        # HTTP client for Metadata API
+├── client.rs        # HTTP client for AI SDK API
 ├── config.rs        # Configuration file handling
 ├── streaming.rs     # SSE parser for streaming responses
 └── error.rs         # Error types and handling

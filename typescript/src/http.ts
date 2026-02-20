@@ -16,7 +16,7 @@ import {
   AgentNotFoundError,
   AuthenticationError,
   BotNotFoundError,
-  MetadataError,
+  AiSdkError,
   NetworkError,
   PersonaNotFoundError,
   RateLimitError,
@@ -178,7 +178,7 @@ export class HttpClient {
       if (agentName) {
         throw new AgentNotEnabledError(agentName);
       }
-      throw new MetadataError('Access forbidden', 403);
+      throw new AiSdkError('Access forbidden', 403);
     }
 
     if (status === 404) {
@@ -195,7 +195,7 @@ export class HttpClient {
       if (agentName) {
         throw new AgentNotFoundError(agentName);
       }
-      throw new MetadataError('Resource not found', 404);
+      throw new AiSdkError('Resource not found', 404);
     }
 
     if (status === 429) {
@@ -322,14 +322,14 @@ export class HttpClient {
       }
 
       if (!response.body) {
-        throw new MetadataError('No response body for streaming request');
+        throw new AiSdkError('No response body for streaming request');
       }
 
       return response.body;
     } catch (error) {
       clearTimeout(timeoutId);
 
-      if (error instanceof MetadataError) {
+      if (error instanceof AiSdkError) {
         throw error;
       }
 
@@ -388,7 +388,7 @@ export class HttpClient {
       } catch (error) {
         clearTimeout(timeoutId);
 
-        if (error instanceof MetadataError) {
+        if (error instanceof AiSdkError) {
           throw error;
         }
 
@@ -480,7 +480,7 @@ export class HttpClient {
       } catch (error) {
         clearTimeout(timeoutId);
 
-        if (error instanceof MetadataError) {
+        if (error instanceof AiSdkError) {
           throw error;
         }
 

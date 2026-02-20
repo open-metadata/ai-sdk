@@ -1,26 +1,26 @@
 package io.openmetadata.ai.exceptions;
 
-/** Base exception for all Metadata AI SDK errors. */
-public class MetadataException extends RuntimeException {
+/** Base exception for all AI SDK errors. */
+public class AiSdkException extends RuntimeException {
 
   private final int statusCode;
 
-  public MetadataException(String message) {
+  public AiSdkException(String message) {
     super(message);
     this.statusCode = 0;
   }
 
-  public MetadataException(String message, int statusCode) {
+  public AiSdkException(String message, int statusCode) {
     super(message);
     this.statusCode = statusCode;
   }
 
-  public MetadataException(String message, Throwable cause) {
+  public AiSdkException(String message, Throwable cause) {
     super(message, cause);
     this.statusCode = 0;
   }
 
-  public MetadataException(String message, int statusCode, Throwable cause) {
+  public AiSdkException(String message, int statusCode, Throwable cause) {
     super(message, cause);
     this.statusCode = statusCode;
   }

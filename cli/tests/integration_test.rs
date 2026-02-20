@@ -1,12 +1,12 @@
-//! Integration tests for Metadata AI CLI.
+//! Integration tests for AI SDK CLI.
 //!
-//! These tests run against a real Metadata instance and require:
-//! - METADATA_HOST: Base URL of the Metadata instance
-//! - METADATA_TOKEN: JWT authentication token
+//! These tests run against a real OpenMetadata instance and require:
+//! - AI_SDK_HOST: Base URL of the OpenMetadata instance
+//! - AI_SDK_TOKEN: JWT authentication token
 //!
 //! Optional:
-//! - METADATA_TEST_AGENT: Name of an agent to test invocation
-//! - METADATA_RUN_CHAT_TESTS: Set to "true" to run chat tests - invoke and streaming (uses AI tokens)
+//! - AI_SDK_TEST_AGENT: Name of an agent to test invocation
+//! - AI_SDK_RUN_CHAT_TESTS: Set to "true" to run chat tests - invoke and streaming (uses AI tokens)
 //!
 //! Run with: cargo test --test integration_test
 
@@ -18,15 +18,15 @@ use uuid::Uuid;
 /// Static storage for dynamically created test agent
 static TEST_AGENT: OnceLock<Option<String>> = OnceLock::new();
 
-/// Check if integration tests should run (requires non-empty METADATA_HOST and METADATA_TOKEN)
+/// Check if integration tests should run (requires non-empty AI_SDK_HOST and AI_SDK_TOKEN)
 fn should_run() -> bool {
-    !env::var("METADATA_HOST").unwrap_or_default().is_empty()
-        && !env::var("METADATA_TOKEN").unwrap_or_default().is_empty()
+    !env::var("AI_SDK_HOST").unwrap_or_default().is_empty()
+        && !env::var("AI_SDK_TOKEN").unwrap_or_default().is_empty()
 }
 
 /// Check if chat tests should run (invoke + streaming - they use AI tokens)
 fn chat_tests_enabled() -> bool {
-    env::var("METADATA_RUN_CHAT_TESTS")
+    env::var("AI_SDK_RUN_CHAT_TESTS")
         .map(|v| v.to_lowercase() == "true")
         .unwrap_or(false)
 }
@@ -47,22 +47,16 @@ fn unique_name(prefix: &str) -> String {
 fn run_cli(args: &[&str]) -> std::process::Output {
     Command::new(cli_binary())
         .args(args)
-        .env(
-            "METADATA_HOST",
-            env::var("METADATA_HOST").unwrap_or_default(),
-        )
-        .env(
-            "METADATA_TOKEN",
-            env::var("METADATA_TOKEN").unwrap_or_default(),
-        )
+        .env("AI_SDK_HOST", env::var("AI_SDK_HOST").unwrap_or_default())
+        .env("AI_SDK_TOKEN", env::var("AI_SDK_TOKEN").unwrap_or_default())
         .output()
         .expect("Failed to execute CLI")
 }
 
-/// Get a test agent name - either from METADATA_TEST_AGENT env var or create one dynamically
+/// Get a test agent name - either from AI_SDK_TEST_AGENT env var or create one dynamically
 fn get_test_agent() -> Option<String> {
     // First check env var
-    if let Ok(name) = env::var("METADATA_TEST_AGENT") {
+    if let Ok(name) = env::var("AI_SDK_TEST_AGENT") {
         return Some(name);
     }
 
@@ -130,7 +124,7 @@ fn get_test_agent() -> Option<String> {
 #[test]
 fn test_cli_version() {
     if !should_run() {
-        println!("Skipping: METADATA_HOST and METADATA_TOKEN not set");
+        println!("Skipping: AI_SDK_HOST and AI_SDK_TOKEN not set");
         return;
     }
 
@@ -145,7 +139,7 @@ fn test_cli_version() {
 #[test]
 fn test_cli_help() {
     if !should_run() {
-        println!("Skipping: METADATA_HOST and METADATA_TOKEN not set");
+        println!("Skipping: AI_SDK_HOST and AI_SDK_TOKEN not set");
         return;
     }
 
@@ -161,14 +155,14 @@ fn test_cli_help() {
 #[test]
 fn test_invalid_token_rejected() {
     if !should_run() {
-        println!("Skipping: METADATA_HOST and METADATA_TOKEN not set");
+        println!("Skipping: AI_SDK_HOST and AI_SDK_TOKEN not set");
         return;
     }
 
     let output = Command::new(cli_binary())
         .args(["agents", "list"])
-        .env("METADATA_HOST", env::var("METADATA_HOST").unwrap())
-        .env("METADATA_TOKEN", "invalid-token-12345")
+        .env("AI_SDK_HOST", env::var("AI_SDK_HOST").unwrap())
+        .env("AI_SDK_TOKEN", "invalid-token-12345")
         .output()
         .expect("Failed to execute CLI");
 
@@ -194,7 +188,7 @@ fn test_invalid_token_rejected() {
 #[test]
 fn test_list_agents() {
     if !should_run() {
-        println!("Skipping: METADATA_HOST and METADATA_TOKEN not set");
+        println!("Skipping: AI_SDK_HOST and AI_SDK_TOKEN not set");
         return;
     }
 
@@ -213,7 +207,7 @@ fn test_list_agents() {
 #[test]
 fn test_list_agents_json() {
     if !should_run() {
-        println!("Skipping: METADATA_HOST and METADATA_TOKEN not set");
+        println!("Skipping: AI_SDK_HOST and AI_SDK_TOKEN not set");
         return;
     }
 
@@ -232,14 +226,14 @@ fn test_list_agents_json() {
 #[test]
 fn test_agent_info() {
     if !should_run() {
-        println!("Skipping: METADATA_HOST and METADATA_TOKEN not set");
+        println!("Skipping: AI_SDK_HOST and AI_SDK_TOKEN not set");
         return;
     }
 
-    let agent_name = match env::var("METADATA_TEST_AGENT") {
+    let agent_name = match env::var("AI_SDK_TEST_AGENT") {
         Ok(name) => name,
         Err(_) => {
-            println!("Skipping: METADATA_TEST_AGENT not set");
+            println!("Skipping: AI_SDK_TEST_AGENT not set");
             return;
         }
     };
@@ -259,12 +253,12 @@ fn test_agent_info() {
 #[test]
 fn test_invoke_agent() {
     if !should_run() {
-        println!("Skipping: METADATA_HOST and METADATA_TOKEN not set");
+        println!("Skipping: AI_SDK_HOST and AI_SDK_TOKEN not set");
         return;
     }
 
     if !chat_tests_enabled() {
-        println!("Skipping: Chat tests disabled (set METADATA_RUN_CHAT_TESTS=true to enable)");
+        println!("Skipping: Chat tests disabled (set AI_SDK_RUN_CHAT_TESTS=true to enable)");
         return;
     }
 
@@ -298,12 +292,12 @@ fn test_invoke_agent() {
 #[test]
 fn test_stream_agent() {
     if !should_run() {
-        println!("Skipping: METADATA_HOST and METADATA_TOKEN not set");
+        println!("Skipping: AI_SDK_HOST and AI_SDK_TOKEN not set");
         return;
     }
 
     if !chat_tests_enabled() {
-        println!("Skipping: Chat tests disabled (set METADATA_RUN_CHAT_TESTS=true to enable)");
+        println!("Skipping: Chat tests disabled (set AI_SDK_RUN_CHAT_TESTS=true to enable)");
         return;
     }
 
@@ -342,7 +336,7 @@ fn test_stream_agent() {
 #[test]
 fn test_list_personas() {
     if !should_run() {
-        println!("Skipping: METADATA_HOST and METADATA_TOKEN not set");
+        println!("Skipping: AI_SDK_HOST and AI_SDK_TOKEN not set");
         return;
     }
 
@@ -360,7 +354,7 @@ fn test_list_personas() {
 #[test]
 fn test_list_personas_json() {
     if !should_run() {
-        println!("Skipping: METADATA_HOST and METADATA_TOKEN not set");
+        println!("Skipping: AI_SDK_HOST and AI_SDK_TOKEN not set");
         return;
     }
 
@@ -382,7 +376,7 @@ fn test_list_personas_json() {
 #[test]
 fn test_get_persona() {
     if !should_run() {
-        println!("Skipping: METADATA_HOST and METADATA_TOKEN not set");
+        println!("Skipping: AI_SDK_HOST and AI_SDK_TOKEN not set");
         return;
     }
 
@@ -422,7 +416,7 @@ fn test_get_persona() {
 #[test]
 fn test_create_persona() {
     if !should_run() {
-        println!("Skipping: METADATA_HOST and METADATA_TOKEN not set");
+        println!("Skipping: AI_SDK_HOST and AI_SDK_TOKEN not set");
         return;
     }
 
@@ -458,7 +452,7 @@ fn test_create_persona() {
 #[test]
 fn test_list_bots() {
     if !should_run() {
-        println!("Skipping: METADATA_HOST and METADATA_TOKEN not set");
+        println!("Skipping: AI_SDK_HOST and AI_SDK_TOKEN not set");
         return;
     }
 
@@ -476,7 +470,7 @@ fn test_list_bots() {
 #[test]
 fn test_list_bots_json() {
     if !should_run() {
-        println!("Skipping: METADATA_HOST and METADATA_TOKEN not set");
+        println!("Skipping: AI_SDK_HOST and AI_SDK_TOKEN not set");
         return;
     }
 
@@ -498,7 +492,7 @@ fn test_list_bots_json() {
 #[test]
 fn test_get_bot() {
     if !should_run() {
-        println!("Skipping: METADATA_HOST and METADATA_TOKEN not set");
+        println!("Skipping: AI_SDK_HOST and AI_SDK_TOKEN not set");
         return;
     }
 
@@ -539,7 +533,7 @@ fn test_get_bot() {
 #[test]
 fn test_list_abilities() {
     if !should_run() {
-        println!("Skipping: METADATA_HOST and METADATA_TOKEN not set");
+        println!("Skipping: AI_SDK_HOST and AI_SDK_TOKEN not set");
         return;
     }
 
@@ -557,7 +551,7 @@ fn test_list_abilities() {
 #[test]
 fn test_list_abilities_json() {
     if !should_run() {
-        println!("Skipping: METADATA_HOST and METADATA_TOKEN not set");
+        println!("Skipping: AI_SDK_HOST and AI_SDK_TOKEN not set");
         return;
     }
 
@@ -579,7 +573,7 @@ fn test_list_abilities_json() {
 #[test]
 fn test_get_ability() {
     if !should_run() {
-        println!("Skipping: METADATA_HOST and METADATA_TOKEN not set");
+        println!("Skipping: AI_SDK_HOST and AI_SDK_TOKEN not set");
         return;
     }
 
@@ -620,7 +614,7 @@ fn test_get_ability() {
 #[test]
 fn test_agent_info_includes_persona() {
     if !should_run() {
-        println!("Skipping: METADATA_HOST and METADATA_TOKEN not set");
+        println!("Skipping: AI_SDK_HOST and AI_SDK_TOKEN not set");
         return;
     }
 
@@ -711,7 +705,7 @@ fn test_agent_info_includes_persona() {
 #[test]
 fn test_agent_info_with_abilities() {
     if !should_run() {
-        println!("Skipping: METADATA_HOST and METADATA_TOKEN not set");
+        println!("Skipping: AI_SDK_HOST and AI_SDK_TOKEN not set");
         return;
     }
 
@@ -789,7 +783,7 @@ fn test_agent_info_with_abilities() {
 #[test]
 fn test_create_agent() {
     if !should_run() {
-        println!("Skipping: METADATA_HOST and METADATA_TOKEN not set");
+        println!("Skipping: AI_SDK_HOST and AI_SDK_TOKEN not set");
         return;
     }
 

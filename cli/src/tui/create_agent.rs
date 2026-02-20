@@ -6,7 +6,7 @@
 //! 3. Select Abilities - multi-select from available abilities (optional)
 //! 4. Actions - task prompt and bot selection (optional)
 
-use crate::client::{AbilityInfo, BotInfo, MetadataClient, PersonaInfo};
+use crate::client::{AbilityInfo, AiSdkClient, BotInfo, PersonaInfo};
 use crate::commands::agents::run_create;
 use crate::config::ResolvedConfig;
 use crate::error::{CliError, CliResult};
@@ -853,7 +853,7 @@ async fn run_wizard_loop(
 /// Load personas from API.
 async fn load_personas() -> Result<Vec<PersonaInfo>, String> {
     let config = ResolvedConfig::load().map_err(|e| e.to_string())?;
-    let client = MetadataClient::new(&config).map_err(|e| e.to_string())?;
+    let client = AiSdkClient::new(&config).map_err(|e| e.to_string())?;
     // Fetch all personas with automatic pagination
     client.list_personas().await.map_err(|e| e.to_string())
 }
@@ -861,7 +861,7 @@ async fn load_personas() -> Result<Vec<PersonaInfo>, String> {
 /// Load abilities from API.
 async fn load_abilities() -> Result<Vec<AbilityInfo>, String> {
     let config = ResolvedConfig::load().map_err(|e| e.to_string())?;
-    let client = MetadataClient::new(&config).map_err(|e| e.to_string())?;
+    let client = AiSdkClient::new(&config).map_err(|e| e.to_string())?;
     // Fetch all abilities with automatic pagination
     client.list_abilities().await.map_err(|e| e.to_string())
 }
@@ -869,7 +869,7 @@ async fn load_abilities() -> Result<Vec<AbilityInfo>, String> {
 /// Load bots from API.
 async fn load_bots() -> Result<Vec<BotInfo>, String> {
     let config = ResolvedConfig::load().map_err(|e| e.to_string())?;
-    let client = MetadataClient::new(&config).map_err(|e| e.to_string())?;
+    let client = AiSdkClient::new(&config).map_err(|e| e.to_string())?;
     // Fetch all bots with automatic pagination
     client.list_bots().await.map_err(|e| e.to_string())
 }

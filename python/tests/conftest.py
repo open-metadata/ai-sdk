@@ -1,4 +1,4 @@
-"""Pytest fixtures for Metadata AI SDK tests."""
+"""Pytest fixtures for AI SDK tests."""
 
 import pytest
 

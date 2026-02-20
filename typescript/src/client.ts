@@ -1,7 +1,7 @@
 /**
  * Main client for the Metadata AI SDK.
  *
- * This module provides the MetadataAI class, the primary entry point
+ * This module provides the AiSdk class, the primary entry point
  * for interacting with OpenMetadata Dynamic Agents.
  */
 
@@ -10,7 +10,7 @@ import { HttpClient } from './http.js';
 import type {
   AgentInfo,
   ApiAgentInfo,
-  MetadataAIOptions,
+  AiSdkOptions,
   PaginatedResponse,
 } from './models.js';
 import type {
@@ -137,10 +137,10 @@ function mapAbilityInfo(data: ApiAbilityInfo): AbilityInfo {
  *
  * @example
  * ```typescript
- * import { MetadataAI } from '@openmetadata/ai-sdk';
+ * import { AiSdk } from '@openmetadata/ai-sdk';
  *
  * // Initialize the client
- * const client = new MetadataAI({
+ * const client = new AiSdk({
  *   host: 'https://openmetadata.example.com',
  *   token: 'your-bot-jwt-token',
  * });
@@ -172,12 +172,12 @@ function mapAbilityInfo(data: ApiAbilityInfo): AbilityInfo {
  * }
  * ```
  */
-export class MetadataAI {
+export class AiSdk {
   private readonly hostUrl: string;
   private readonly http: HttpClient;
 
   /**
-   * Create a new MetadataAI client.
+   * Create a new AiSdk client.
    *
    * @param options - Client configuration options
    *
@@ -186,13 +186,13 @@ export class MetadataAI {
    * @example
    * ```typescript
    * // Basic initialization
-   * const client = new MetadataAI({
+   * const client = new AiSdk({
    *   host: 'https://openmetadata.example.com',
    *   token: 'your-jwt-token',
    * });
    *
    * // With custom options
-   * const client = new MetadataAI({
+   * const client = new AiSdk({
    *   host: 'https://openmetadata.example.com',
    *   token: 'your-jwt-token',
    *   timeout: 60000,      // 60 seconds
@@ -201,7 +201,7 @@ export class MetadataAI {
    * });
    * ```
    */
-  constructor(options: MetadataAIOptions) {
+  constructor(options: AiSdkOptions) {
     if (!options.host) {
       throw new Error('Host is required');
     }
@@ -586,6 +586,6 @@ export class MetadataAI {
    * String representation of the client.
    */
   toString(): string {
-    return `MetadataAI(host="${this.hostUrl}")`;
+    return `AiSdk(host="${this.hostUrl}")`;
   }
 }

@@ -2,12 +2,12 @@
 
 from unittest.mock import MagicMock
 
-from ai_sdk.client import MetadataAI
+from ai_sdk.client import AiSdk
 
 
 def test_get_bot_encodes_name_with_slash():
     """Test that bot names with slashes are URL-encoded."""
-    client = MetadataAI(host="https://test.com", token="test-token")
+    client = AiSdk(host="https://test.com", token="test-token")
     client._bots_http = MagicMock()
     client._bots_http.get.return_value = {"id": "123", "name": "test/bot"}
 
@@ -21,7 +21,7 @@ def test_get_bot_encodes_name_with_slash():
 
 def test_get_bot_encodes_name_with_spaces():
     """Test that bot names with spaces are URL-encoded."""
-    client = MetadataAI(host="https://test.com", token="test-token")
+    client = AiSdk(host="https://test.com", token="test-token")
     client._bots_http = MagicMock()
     client._bots_http.get.return_value = {"id": "123", "name": "my bot"}
 
@@ -35,7 +35,7 @@ def test_get_bot_encodes_name_with_spaces():
 
 def test_get_persona_encodes_name_with_special_chars():
     """Test that persona names with special chars are URL-encoded."""
-    client = MetadataAI(host="https://test.com", token="test-token")
+    client = AiSdk(host="https://test.com", token="test-token")
     client._personas_http = MagicMock()
     client._personas_http.get.return_value = {
         "id": "123",

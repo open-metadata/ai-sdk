@@ -13,8 +13,8 @@ The `ai-sdk` CLI provides the fastest way to set up the agent.
 cargo install ai-sdk
 
 # Configure environment
-export METADATA_HOST=https://your-instance.getcollate.io
-export METADATA_TOKEN=your-jwt-token
+export AI_SDK_HOST=https://your-instance.getcollate.io
+export AI_SDK_TOKEN=your-jwt-token
 ```
 
 ### Step 1: Explore Available Abilities
@@ -92,9 +92,9 @@ ai-sdk invoke DBTReviewer "What tables depend on the orders model?"
 ## Using the Python SDK
 
 ```python
-from ai_sdk import MetadataAI
+from ai_sdk import AiSdk
 
-client = MetadataAI(
+client = AiSdk(
     host="https://your-instance.getcollate.io",
     token="your-jwt-token"
 )
@@ -114,9 +114,9 @@ print(f"Created agent: {agent.name}")
 ## Using the TypeScript SDK
 
 ```typescript
-import { MetadataAI } from '@openmetadata/ai-sdk';
+import { AiSdk } from '@openmetadata/ai-sdk';
 
-const client = new MetadataAI({
+const client = new AiSdk({
   host: 'https://your-instance.getcollate.io',
   token: 'your-jwt-token'
 });

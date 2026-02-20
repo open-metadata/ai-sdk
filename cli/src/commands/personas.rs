@@ -1,6 +1,6 @@
 //! Persona management commands.
 
-use crate::client::{CreatePersonaRequest, MetadataClient};
+use crate::client::{AiSdkClient, CreatePersonaRequest};
 use crate::config::ResolvedConfig;
 use crate::error::CliResult;
 use colored::Colorize;
@@ -8,7 +8,7 @@ use colored::Colorize;
 /// List all personas.
 pub async fn run_list(limit: Option<u32>, json: bool) -> CliResult<()> {
     let config = ResolvedConfig::load()?;
-    let client = MetadataClient::new(&config)?;
+    let client = AiSdkClient::new(&config)?;
 
     // Use pagination - pass limit to respect user-specified limit, or None to fetch all
     let personas = client.list_personas_with_limit(limit).await?;
@@ -59,7 +59,7 @@ pub async fn run_list(limit: Option<u32>, json: bool) -> CliResult<()> {
 /// Get detailed information about a specific persona.
 pub async fn run_get(name: &str, json: bool) -> CliResult<()> {
     let config = ResolvedConfig::load()?;
-    let client = MetadataClient::new(&config)?;
+    let client = AiSdkClient::new(&config)?;
 
     let persona = client.get_persona(name).await?;
 
@@ -119,7 +119,7 @@ pub async fn run_create(
     json: bool,
 ) -> CliResult<()> {
     let config = ResolvedConfig::load()?;
-    let client = MetadataClient::new(&config)?;
+    let client = AiSdkClient::new(&config)?;
 
     let request = CreatePersonaRequest {
         name: name.to_string(),

@@ -1,6 +1,6 @@
 //! Agent discovery and management commands.
 
-use crate::client::{CreateAgentRequest, EntityReference, MetadataClient};
+use crate::client::{AiSdkClient, CreateAgentRequest, EntityReference};
 use crate::config::ResolvedConfig;
 use crate::error::CliResult;
 use colored::Colorize;
@@ -8,7 +8,7 @@ use colored::Colorize;
 /// List all API-enabled agents.
 pub async fn run_list() -> CliResult<()> {
     let config = ResolvedConfig::load()?;
-    let client = MetadataClient::new(&config)?;
+    let client = AiSdkClient::new(&config)?;
 
     let agents = client.list_agents().await?;
 
@@ -16,7 +16,7 @@ pub async fn run_list() -> CliResult<()> {
         println!("No API-enabled agents found.");
         println!(
             "\n{}",
-            "Tip: Enable API access for agents in the Metadata UI.".dimmed()
+            "Tip: Enable API access for agents in the OpenMetadata UI.".dimmed()
         );
         return Ok(());
     }
@@ -50,7 +50,7 @@ pub async fn run_list() -> CliResult<()> {
 /// Get detailed information about a specific agent.
 pub async fn run_info(name: &str) -> CliResult<()> {
     let config = ResolvedConfig::load()?;
-    let client = MetadataClient::new(&config)?;
+    let client = AiSdkClient::new(&config)?;
 
     // Try to get full details from dynamic agents endpoint first (includes persona)
     let agent = match client.get_dynamic_agent(name).await {
@@ -146,7 +146,7 @@ pub async fn run_create(
     json: bool,
 ) -> CliResult<()> {
     let config = ResolvedConfig::load()?;
-    let client = MetadataClient::new(&config)?;
+    let client = AiSdkClient::new(&config)?;
 
     // Look up the persona by name to get its ID (required by the API schema)
     let persona_info = client.get_persona(persona).await?;

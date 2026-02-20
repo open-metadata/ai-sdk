@@ -9,8 +9,8 @@ Usage:
     python dbt_review.py --pr-number 123 --changed-files "models/orders.sql\nmodels/customers.sql"
 
 Environment Variables:
-    METADATA_HOST: Collate/OpenMetadata instance URL
-    METADATA_TOKEN: JWT token for authentication
+    AI_SDK_HOST: Collate/OpenMetadata instance URL
+    AI_SDK_TOKEN: JWT token for authentication
     GITHUB_TOKEN: GitHub token for posting comments
     GITHUB_BASE_REF: Base branch for diff comparison
 """
@@ -21,11 +21,11 @@ import subprocess
 import sys
 import time
 
-from ai_sdk import MetadataAI
+from ai_sdk import AiSdk
 from ai_sdk.exceptions import (
     AgentExecutionError,
+    AiSdkError,
     AuthenticationError,
-    MetadataError,
     RateLimitError,
 )
 
@@ -74,7 +74,7 @@ Use tables and emoji indicators (🔴 High, 🟡 Medium, 🟢 Low) for clarity.
 """
 
 
-def invoke_with_retry(client: MetadataAI, prompt: str, max_retries: int = 3) -> str:
+def invoke_with_retry(client: AiSdk, prompt: str, max_retries: int = 3) -> str:
     """Invoke agent with retry logic for transient failures."""
     for attempt in range(max_retries):
         try:
@@ -175,10 +175,10 @@ def main() -> int:
     print(f"Reviewing {len(changed_files)} changed model(s): {', '.join(changed_files)}")
 
     # Validate environment
-    host = os.environ.get("METADATA_HOST")
-    token = os.environ.get("METADATA_TOKEN")
+    host = os.environ.get("AI_SDK_HOST")
+    token = os.environ.get("AI_SDK_TOKEN")
     if not host or not token:
-        print("Error: METADATA_HOST and METADATA_TOKEN must be set")
+        print("Error: AI_SDK_HOST and AI_SDK_TOKEN must be set")
         return 1
 
     # Get diffs
@@ -195,14 +195,14 @@ def main() -> int:
 
     # Invoke agent
     try:
-        client = MetadataAI(host=host, token=token)
+        client = AiSdk(host=host, token=token)
         prompt = build_prompt(diffs)
         response = invoke_with_retry(client, prompt)
     except AuthenticationError:
-        post_error_comment(args.pr_number, "Authentication failed. Check METADATA_TOKEN secret.")
+        post_error_comment(args.pr_number, "Authentication failed. Check AI_SDK_TOKEN secret.")
         return 1
-    except MetadataError as e:
-        post_error_comment(args.pr_number, f"Metadata AI error: {e}")
+    except AiSdkError as e:
+        post_error_comment(args.pr_number, f"AI SDK error: {e}")
         return 1
 
     # Format and post review

@@ -1,4 +1,4 @@
-//! Metadata AI CLI - Command-line tool for Metadata AI Agents.
+//! AI SDK CLI - Command-line tool for OpenMetadata AI Agents.
 //!
 //! # Usage
 //!
@@ -30,12 +30,12 @@ mod tui;
 
 use clap::{Parser, Subcommand};
 
-/// Metadata AI CLI - Interact with Metadata AI Agents from the command line.
+/// AI SDK CLI - Interact with OpenMetadata AI Agents from the command line.
 #[derive(Parser)]
 #[command(name = "ai-sdk")]
 #[command(author = "OpenMetadata <support@open-metadata.org>")]
 #[command(version)]
-#[command(about = "Command-line tool for Metadata AI Agents", long_about = None)]
+#[command(about = "Command-line tool for OpenMetadata AI Agents", long_about = None)]
 #[command(propagate_version = true)]
 struct Cli {
     #[command(subcommand)]

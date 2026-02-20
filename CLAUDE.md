@@ -34,7 +34,7 @@ make format            # Fix all SDKs (pre-commit equivalent)
 
 # Testing
 make test-all          # Run all unit tests
-make test-integration  # Run integration tests (requires METADATA_HOST, METADATA_TOKEN)
+make test-integration  # Run integration tests (requires AI_SDK_HOST, AI_SDK_TOKEN)
 
 # Building
 make build-all         # Build all SDKs
@@ -69,7 +69,7 @@ make install-hooks     # Install pre-commit hooks
 ### API Pattern (All SDKs)
 
 ```
-client = MetadataAI(host, token)
+client = AiSdk(host, token)
 response = client.agent("agent-name").invoke("message")
 
 # Streaming
@@ -86,7 +86,7 @@ for event in client.agent("agent-name").stream("message"):
 
 ### Error Hierarchy
 ```
-MetadataError (base)
+AiSdkError (base)
 ├── AuthenticationError (401)
 ├── AuthorizationError (403)
 ├── NotFoundError (404)
@@ -145,9 +145,9 @@ cd cli && cargo test --lib
 
 **Integration Tests** - Real API calls (requires credentials):
 ```bash
-export METADATA_HOST=https://your-instance.getcollate.io
-export METADATA_TOKEN=your-jwt-token
-export METADATA_TEST_AGENT=agent-name  # optional
+export AI_SDK_HOST=https://your-instance.getcollate.io
+export AI_SDK_TOKEN=your-jwt-token
+export AI_SDK_TEST_AGENT=agent-name  # optional
 
 make test-integration
 ```
@@ -278,4 +278,4 @@ cd cookbook/resources/demo-database/docker && docker-compose down -v
 | Type errors (Python) | Check type annotations, run `ty check src` |
 | Import errors | Check `__init__.py` exports |
 | n8n build fails | Build TypeScript SDK first: `cd typescript && npm run build` |
-| Integration tests skip | Set `METADATA_HOST` and `METADATA_TOKEN` env vars |
+| Integration tests skip | Set `AI_SDK_HOST` and `AI_SDK_TOKEN` env vars |

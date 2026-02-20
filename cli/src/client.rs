@@ -1,4 +1,4 @@
-//! HTTP client for Metadata AI API.
+//! HTTP client for AI SDK API.
 
 use crate::config::ResolvedConfig;
 use crate::error::{CliError, CliResult};
@@ -284,15 +284,15 @@ pub struct Usage {
     pub total_tokens: u32,
 }
 
-/// Metadata AI API client.
+/// AI SDK API client.
 #[derive(Clone)]
-pub struct MetadataClient {
+pub struct AiSdkClient {
     client: Client,
     base_url: String,
     token: String,
 }
 
-impl MetadataClient {
+impl AiSdkClient {
     /// Create a new client from resolved configuration.
     pub fn new(config: &ResolvedConfig) -> CliResult<Self> {
         let client = Client::builder()

@@ -2,7 +2,7 @@
 
 This guide covers using OpenMetadata's MCP (Model Context Protocol) tools directly with AI frameworks like LangChain and OpenAI.
 
-**Prerequisites:** You need `METADATA_HOST` and `METADATA_TOKEN` configured. See [Getting Your Credentials](README.md#getting-your-credentials) if you haven't set these up.
+**Prerequisites:** You need `AI_SDK_HOST` and `AI_SDK_TOKEN` configured. See [Getting Your Credentials](README.md#getting-your-credentials) if you haven't set these up.
 
 ## What are MCP Tools?
 
@@ -37,10 +37,10 @@ pip install ai-sdk[langchain]
 
 ```bash
 # Your OpenMetadata server URL
-export METADATA_HOST="https://your-openmetadata.com"
+export AI_SDK_HOST="https://your-openmetadata.com"
 
 # Your bot's JWT token (from Settings > Bots in your instance)
-export METADATA_TOKEN="eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9..."
+export AI_SDK_TOKEN="eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9..."
 ```
 
 ## Quick Start
@@ -48,11 +48,11 @@ export METADATA_TOKEN="eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9..."
 ### List Available Tools
 
 ```python
-from ai_sdk import MetadataAI, MetadataConfig
+from ai_sdk import AiSdk, AiSdkConfig
 
 # Create client from environment
-config = MetadataConfig.from_env()
-client = MetadataAI.from_config(config)
+config = AiSdkConfig.from_env()
+client = AiSdk.from_config(config)
 
 # List available MCP tools
 tools = client.mcp.list_tools()
@@ -65,11 +65,11 @@ client.close()
 ### Call a Tool Directly
 
 ```python
-from ai_sdk import MetadataAI, MetadataConfig
+from ai_sdk import AiSdk, AiSdkConfig
 from ai_sdk.mcp.models import MCPTool
 
-config = MetadataConfig.from_env()
-client = MetadataAI.from_config(config)
+config = AiSdkConfig.from_env()
+client = AiSdk.from_config(config)
 
 # Search for tables
 result = client.mcp.call_tool(
@@ -92,14 +92,14 @@ Convert MCP tools to LangChain format for use with LangChain agents.
 ### Basic Usage
 
 ```python
-from ai_sdk import MetadataAI, MetadataConfig
+from ai_sdk import AiSdk, AiSdkConfig
 from langchain_openai import ChatOpenAI
 from langchain.agents import AgentExecutor, create_tool_calling_agent
 from langchain_core.prompts import ChatPromptTemplate
 
-# Create Metadata client
-config = MetadataConfig.from_env()
-client = MetadataAI.from_config(config)
+# Create AI SDK client
+config = AiSdkConfig.from_env()
+client = AiSdk.from_config(config)
 
 # Convert MCP tools to LangChain format
 tools = client.mcp.as_langchain_tools()
@@ -155,11 +155,11 @@ Convert MCP tools to OpenAI function calling format for direct use with OpenAI's
 ```python
 import json
 from openai import OpenAI
-from ai_sdk import MetadataAI, MetadataConfig
+from ai_sdk import AiSdk, AiSdkConfig
 
 # Create clients
-config = MetadataConfig.from_env()
-om_client = MetadataAI.from_config(config)
+config = AiSdkConfig.from_env()
+om_client = AiSdk.from_config(config)
 openai_client = OpenAI()
 
 # Get tools in OpenAI format
@@ -212,15 +212,15 @@ tools = om_client.mcp.as_openai_tools(
 A complete example building a metadata exploration assistant:
 
 ```python
-from ai_sdk import MetadataAI, MetadataConfig
+from ai_sdk import AiSdk, AiSdkConfig
 from ai_sdk.mcp.models import MCPTool
 from langchain_openai import ChatOpenAI
 from langchain.agents import AgentExecutor, create_tool_calling_agent
 from langchain_core.prompts import ChatPromptTemplate
 
 # Setup
-config = MetadataConfig.from_env()
-client = MetadataAI.from_config(config)
+config = AiSdkConfig.from_env()
+client = AiSdk.from_config(config)
 
 # Use only read-only tools for safety
 tools = client.mcp.as_langchain_tools(
@@ -338,7 +338,7 @@ except MCPError as e:
 Your JWT token is invalid or expired:
 1. Go to Settings > Bots in your OpenMetadata instance
 2. Regenerate the token for your bot
-3. Update your `METADATA_TOKEN` environment variable
+3. Update your `AI_SDK_TOKEN` environment variable
 
 ### "MCP request failed" with 404 error
 

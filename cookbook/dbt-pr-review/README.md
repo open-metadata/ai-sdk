@@ -68,8 +68,8 @@ Add these secrets to your GitHub repository (Settings → Secrets and variables 
 
 | Secret | Description |
 |--------|-------------|
-| `METADATA_HOST` | Your Collate/OpenMetadata instance URL (e.g., `https://your-instance.getcollate.io`) |
-| `METADATA_TOKEN` | JWT token for API authentication |
+| `AI_SDK_HOST` | Your Collate/OpenMetadata instance URL (e.g., `https://your-instance.getcollate.io`) |
+| `AI_SDK_TOKEN` | JWT token for API authentication |
 
 ## Step 3: Add the Workflow
 
@@ -127,8 +127,8 @@ jobs:
       - name: Run dbt review
         if: steps.changes.outputs.files != ''
         env:
-          METADATA_HOST: ${{ secrets.METADATA_HOST }}
-          METADATA_TOKEN: ${{ secrets.METADATA_TOKEN }}
+          AI_SDK_HOST: ${{ secrets.AI_SDK_HOST }}
+          AI_SDK_TOKEN: ${{ secrets.AI_SDK_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GITHUB_BASE_REF: ${{ github.base_ref }}
         run: |
@@ -228,7 +228,7 @@ Ignore cosmetic changes like formatting or comments."""
 |-------|----------|
 | Workflow not triggering | Check that PR changes files matching `models/**/*.sql` |
 | "Model not found" in review | Ensure models are cataloged in OpenMetadata |
-| Authentication error | Verify `METADATA_HOST` and `METADATA_TOKEN` secrets |
+| Authentication error | Verify `AI_SDK_HOST` and `AI_SDK_TOKEN` secrets |
 | Empty review comment | Check agent has required abilities enabled |
 | Comment not posting | Verify workflow has `pull-requests: write` permission |
 

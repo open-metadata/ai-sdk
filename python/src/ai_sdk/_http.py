@@ -1,4 +1,4 @@
-"""HTTP client internals for the Metadata AI SDK.
+"""HTTP client internals for the AI SDK.
 
 This module provides HTTP clients with:
 - Automatic retry with exponential backoff
@@ -23,9 +23,9 @@ from ai_sdk.exceptions import (
     AgentExecutionError,
     AgentNotEnabledError,
     AgentNotFoundError,
+    AiSdkError,
     AuthenticationError,
     BotNotFoundError,
-    MetadataError,
     RateLimitError,
 )
 
@@ -73,7 +73,7 @@ def _handle_error(
         if agent_name:
             logger.warning("%s Agent not enabled: %s", context, agent_name)
             raise AgentNotEnabledError(agent_name)
-        raise MetadataError("Access forbidden", status_code=403)
+        raise AiSdkError("Access forbidden", status_code=403)
 
     if response.status_code == 404:
         if agent_name:
@@ -82,7 +82,7 @@ def _handle_error(
         if bot_name:
             logger.warning("%s Bot not found: %s", context, bot_name)
             raise BotNotFoundError(bot_name)
-        raise MetadataError("Resource not found", status_code=404)
+        raise AiSdkError("Resource not found", status_code=404)
 
     if response.status_code == 429:
         retry_after = response.headers.get("Retry-After")

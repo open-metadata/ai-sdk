@@ -105,7 +105,7 @@ npm run build
 
 3. Open n8n at http://localhost:5678
 
-4. Search for "Metadata Agent" in the node palette
+4. Search for "AI SDK Agent" in the node palette
 
 ### Development Workflow
 

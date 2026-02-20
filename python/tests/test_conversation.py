@@ -5,14 +5,14 @@ import json
 import pytest
 from pytest_httpx import HTTPXMock
 
-from ai_sdk.client import MetadataAI
+from ai_sdk.client import AiSdk
 from ai_sdk.conversation import Conversation
 
 
 @pytest.fixture
 def client():
-    """MetadataAI client fixture with retries disabled."""
-    c = MetadataAI(
+    """AiSdk client fixture with retries disabled."""
+    c = AiSdk(
         host="https://metadata.example.com",
         token="test-jwt-token",
         max_retries=0,
@@ -187,7 +187,7 @@ class TestConversationAsync:
             json={"conversationId": "async-conv-id", "response": "Async response", "toolsUsed": []},
         )
 
-        client = MetadataAI(
+        client = AiSdk(
             host="https://metadata.example.com",
             token="test-jwt-token",
             enable_async=True,

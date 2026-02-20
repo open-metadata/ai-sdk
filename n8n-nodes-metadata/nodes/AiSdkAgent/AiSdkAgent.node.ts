@@ -9,31 +9,31 @@ import {
 } from 'n8n-workflow';
 
 import {
-	MetadataAI,
-	MetadataError,
+	AiSdk,
+	AiSdkError,
 	AuthenticationError,
 	AgentNotFoundError,
 	AgentNotEnabledError,
 	AgentExecutionError,
 } from '@openmetadata/ai-sdk';
 
-export class MetadataAgent implements INodeType {
+export class AiSdkAgent implements INodeType {
 	description: INodeTypeDescription = {
-		displayName: 'Metadata Agent',
-		name: 'metadataAgent',
+		displayName: 'AI SDK Agent',
+		name: 'aiSdkAgent',
 		icon: 'file:metadata.png',
 		group: ['transform'],
 		version: 1,
 		subtitle: '={{$parameter["agentName"]}}',
 		description: 'Invoke an OpenMetadata DynamicAgent',
 		defaults: {
-			name: 'Metadata Agent',
+			name: 'AI SDK Agent',
 		},
 		inputs: ['main'],
 		outputs: ['main'],
 		credentials: [
 			{
-				name: 'metadataApi',
+				name: 'aiSdkApi',
 				required: true,
 			},
 		],
@@ -77,7 +77,7 @@ export class MetadataAgent implements INodeType {
 
 		for (let i = 0; i < items.length; i++) {
 			try {
-				const credentials = await this.getCredentials('metadataApi');
+				const credentials = await this.getCredentials('aiSdkApi');
 				const serverUrl = credentials.serverUrl as string;
 				const jwtToken = credentials.jwtToken as string;
 				const agentName = this.getNodeParameter('agentName', i) as string;
@@ -93,7 +93,7 @@ export class MetadataAgent implements INodeType {
 				}
 
 				// Initialize SDK client
-				const client = new MetadataAI({
+				const client = new AiSdk({
 					host: serverUrl,
 					token: jwtToken,
 					timeout: 300000, // 5 minute timeout to match API
@@ -145,7 +145,7 @@ export class MetadataAgent implements INodeType {
 				} else if (error instanceof AgentExecutionError) {
 					errorMessage = 'Agent execution failed. Check the agent configuration in OpenMetadata.';
 					httpCode = '500';
-				} else if (error instanceof MetadataError) {
+				} else if (error instanceof AiSdkError) {
 					errorMessage = error.message || 'OpenMetadata API error occurred';
 					httpCode = String(error.statusCode || 500);
 				} else {

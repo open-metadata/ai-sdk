@@ -22,11 +22,11 @@ Add unit or integration tests for existing functionality.
 ```python
 import pytest
 from unittest.mock import AsyncMock, patch
-from ai_sdk import MetadataAI
+from ai_sdk import AiSdk
 
 @pytest.fixture
 def client():
-    return MetadataAI(host="https://test.example.com", token="test-token")
+    return AiSdk(host="https://test.example.com", token="test-token")
 
 @pytest.mark.asyncio
 async def test_method_name(client):
@@ -47,11 +47,11 @@ import os
 
 @pytest.fixture
 def live_client():
-    host = os.environ.get("METADATA_HOST")
-    token = os.environ.get("METADATA_TOKEN")
+    host = os.environ.get("AI_SDK_HOST")
+    token = os.environ.get("AI_SDK_TOKEN")
     if not host or not token:
         pytest.skip("Integration test credentials not configured")
-    return MetadataAI(host=host, token=token)
+    return AiSdk(host=host, token=token)
 
 @pytest.mark.asyncio
 async def test_real_api_call(live_client):
@@ -65,11 +65,11 @@ async def test_real_api_call(live_client):
 **Unit Test:**
 ```typescript
 import { describe, it, expect, vi } from 'vitest';
-import { MetadataAI } from '../src';
+import { AiSdk } from '../src';
 
 describe('MethodName', () => {
   it('should do expected behavior', async () => {
-    const client = new MetadataAI({ host: 'https://test.example.com', token: 'test' });
+    const client = new AiSdk({ host: 'https://test.example.com', token: 'test' });
 
     // Mock fetch
     global.fetch = vi.fn().mockResolvedValue({
@@ -100,13 +100,13 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 class MethodNameTest {
-    private MetadataAI client;
-    private MetadataHttpClient mockHttp;
+    private AiSdk client;
+    private AiSdkHttpClient mockHttp;
 
     @BeforeEach
     void setUp() {
-        mockHttp = mock(MetadataHttpClient.class);
-        client = new MetadataAI.Builder()
+        mockHttp = mock(AiSdkHttpClient.class);
+        client = new AiSdk.Builder()
             .host("https://test.example.com")
             .token("test-token")
             .httpClient(mockHttp)

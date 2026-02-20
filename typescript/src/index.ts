@@ -7,10 +7,10 @@
  *
  * @example
  * ```typescript
- * import { MetadataAI } from '@openmetadata/ai-sdk';
+ * import { AiSdk } from '@openmetadata/ai-sdk';
  *
  * // Initialize the client
- * const client = new MetadataAI({
+ * const client = new AiSdk({
  *   host: 'https://openmetadata.example.com',
  *   token: 'your-bot-jwt-token',
  * });
@@ -40,14 +40,14 @@
  */
 
 // Main client
-export { MetadataAI } from './client.js';
+export { AiSdk } from './client.js';
 
 // Agent handle
 export { AgentHandle } from './agent.js';
 
 // Models and types
 export type {
-  MetadataAIOptions,
+  AiSdkOptions,
   InvokeOptions,
   InvokeResponse,
   StreamEvent,
@@ -69,7 +69,7 @@ export type {
 
 // Error classes
 export {
-  MetadataError,
+  AiSdkError,
   AuthenticationError,
   AgentNotFoundError,
   AgentNotEnabledError,

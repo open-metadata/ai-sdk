@@ -1,12 +1,12 @@
 """
-Integrations for the Metadata AI SDK with popular AI frameworks.
+Integrations for the AI SDK with popular AI frameworks.
 
 Available integrations:
 
 - **langchain**: LangChain tool wrapper
   Install: pip install ai-sdk[langchain]
   Usage:
-      from ai_sdk.integrations.langchain import MetadataAgentTool
+      from ai_sdk.integrations.langchain import AiSdkAgentTool
 
 - **llamaindex**: LlamaIndex tool wrapper (coming soon)
   Install: pip install ai-sdk[llamaindex]

@@ -3,14 +3,14 @@
 import pytest
 from pytest_httpx import HTTPXMock
 
-from ai_sdk.client import MetadataAI
+from ai_sdk.client import AiSdk
 from ai_sdk.models import AgentInfo, CreateAgentRequest, KnowledgeScope
 
 
 @pytest.fixture
 def client():
-    """MetadataAI client fixture."""
-    c = MetadataAI(
+    """AiSdk client fixture."""
+    c = AiSdk(
         host="https://metadata.example.com",
         token="test-jwt-token",
     )
@@ -20,8 +20,8 @@ def client():
 
 @pytest.fixture
 def async_client():
-    """MetadataAI async client fixture."""
-    c = MetadataAI(
+    """AiSdk async client fixture."""
+    c = AiSdk(
         host="https://metadata.example.com",
         token="test-jwt-token",
         enable_async=True,
@@ -159,7 +159,7 @@ class TestCreateAgentRequest:
 
 
 class TestCreateAgent:
-    """Tests for MetadataAI.create_agent() method."""
+    """Tests for AiSdk.create_agent() method."""
 
     def test_create_agent_minimal(self, client, httpx_mock: HTTPXMock, sample_agent_response):
         """create_agent works with minimal fields."""
@@ -297,7 +297,7 @@ class TestCreateAgent:
 
 
 class TestAsyncCreateAgent:
-    """Tests for MetadataAI.acreate_agent() method."""
+    """Tests for AiSdk.acreate_agent() method."""
 
     @pytest.mark.asyncio
     async def test_acreate_agent(self, async_client, httpx_mock: HTTPXMock, sample_agent_response):

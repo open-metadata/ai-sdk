@@ -1,7 +1,7 @@
 package io.openmetadata.ai.exceptions;
 
 /** Exception thrown when an ability is not found (HTTP 404). */
-public class AbilityNotFoundException extends MetadataException {
+public class AbilityNotFoundException extends AiSdkException {
 
   private final String abilityName;
 

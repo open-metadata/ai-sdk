@@ -2,7 +2,7 @@
 
 ## Overview
 
-Java SDK for Metadata AI agents. Uses java.net.http.HttpClient (Java 11+).
+Java SDK for AI agents. Uses java.net.http.HttpClient (Java 11+).
 
 ## Build Commands
 
@@ -18,7 +18,7 @@ mvn spotless:apply       # Format code (if configured)
 ```
 java/
 ├── src/main/java/io/metadata/ai/
-│   ├── MetadataAI.java        # Main client with builder
+│   ├── AiSdk.java             # Main client with builder
 │   ├── AgentHandle.java      # Agent operations
 │   ├── models/               # POJOs
 │   │   ├── InvokeRequest.java
@@ -27,28 +27,28 @@ java/
 │   │   ├── AgentInfo.java
 │   │   └── Usage.java
 │   ├── exceptions/           # Exception hierarchy
-│   │   ├── MetadataException.java
+│   │   ├── AiSdkException.java
 │   │   ├── AuthenticationException.java
 │   │   └── ...
 │   └── internal/             # Implementation details
-│       ├── MetadataHttpClient.java
+│       ├── AiSdkHttpClient.java
 │       └── SseParser.java
 ├── src/test/java/io/metadata/ai/
-│   └── MetadataAITest.java
+│   └── AiSdkTest.java
 └── pom.xml
 ```
 
 ## Key Design Decisions
 
 - **Java 11 minimum** - Uses HttpClient, no Apache HttpClient
-- **Builder pattern** - `MetadataAI.builder().host(...).build()`
+- **Builder pattern** - `AiSdk.builder().host(...).build()`
 - **Jackson** - JSON serialization (only external dependency)
 - **AutoCloseable** - Client implements close() for resource cleanup
 
 ## API Pattern
 
 ```java
-MetadataAI client = MetadataAI.builder()
+AiSdk client = AiSdk.builder()
     .host("https://...")
     .token("...")
     .build();
@@ -67,8 +67,8 @@ try (Stream<StreamEvent> events = client.agent("name").streamIterator("msg")) { 
 
 1. Add method to `AgentHandle.java`
 2. Add model classes if needed in `models/`
-3. Update `MetadataHttpClient.java` if new HTTP logic needed
-4. Add tests in `MetadataAITest.java`
+3. Update `AiSdkHttpClient.java` if new HTTP logic needed
+4. Add tests in `AiSdkTest.java`
 
 ## DO NOT
 

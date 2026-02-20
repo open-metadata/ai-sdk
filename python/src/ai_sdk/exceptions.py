@@ -1,10 +1,10 @@
-"""Exceptions for the Metadata AI SDK."""
+"""Exceptions for the AI SDK."""
 
 from __future__ import annotations
 
 
-class MetadataError(Exception):
-    """Base exception for Metadata AI SDK."""
+class AiSdkError(Exception):
+    """Base exception for AI SDK."""
 
     def __init__(self, message: str, status_code: int | None = None):
         super().__init__(message)
@@ -12,14 +12,14 @@ class MetadataError(Exception):
         self.status_code = status_code
 
 
-class AuthenticationError(MetadataError):
+class AuthenticationError(AiSdkError):
     """Invalid or expired token."""
 
     def __init__(self, message: str = "Invalid or expired authentication token"):
         super().__init__(message, status_code=401)
 
 
-class AgentNotFoundError(MetadataError):
+class AgentNotFoundError(AiSdkError):
     """Agent does not exist."""
 
     def __init__(self, agent_name: str):
@@ -27,7 +27,7 @@ class AgentNotFoundError(MetadataError):
         self.agent_name = agent_name
 
 
-class AgentNotEnabledError(MetadataError):
+class AgentNotEnabledError(AiSdkError):
     """Agent exists but is not API-enabled."""
 
     def __init__(self, agent_name: str):
@@ -39,7 +39,7 @@ class AgentNotEnabledError(MetadataError):
         self.agent_name = agent_name
 
 
-class RateLimitError(MetadataError):
+class RateLimitError(AiSdkError):
     """Rate limit exceeded."""
 
     def __init__(self, message: str = "Rate limit exceeded", retry_after: int | None = None):
@@ -47,7 +47,7 @@ class RateLimitError(MetadataError):
         self.retry_after = retry_after
 
 
-class AgentExecutionError(MetadataError):
+class AgentExecutionError(AiSdkError):
     """Error during agent execution."""
 
     def __init__(self, message: str, agent_name: str | None = None):
@@ -55,7 +55,7 @@ class AgentExecutionError(MetadataError):
         self.agent_name = agent_name
 
 
-class BotNotFoundError(MetadataError):
+class BotNotFoundError(AiSdkError):
     """Bot does not exist."""
 
     def __init__(self, bot_name: str):
@@ -63,7 +63,7 @@ class BotNotFoundError(MetadataError):
         self.bot_name = bot_name
 
 
-class PersonaNotFoundError(MetadataError):
+class PersonaNotFoundError(AiSdkError):
     """Raised when a persona is not found."""
 
     def __init__(self, persona_name: str):
@@ -71,7 +71,7 @@ class PersonaNotFoundError(MetadataError):
         self.persona_name = persona_name
 
 
-class AbilityNotFoundError(MetadataError):
+class AbilityNotFoundError(AiSdkError):
     """Raised when an ability is not found."""
 
     def __init__(self, ability_name: str):
@@ -82,7 +82,7 @@ class AbilityNotFoundError(MetadataError):
         self.ability_name = ability_name
 
 
-class MCPError(MetadataError):
+class MCPError(AiSdkError):
     """Base error for MCP operations."""
 
     pass

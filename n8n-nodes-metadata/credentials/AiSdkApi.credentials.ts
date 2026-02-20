@@ -5,8 +5,8 @@ import {
 	INodeProperties,
 } from 'n8n-workflow';
 
-export class MetadataApi implements ICredentialType {
-	name = 'metadataApi';
+export class AiSdkApi implements ICredentialType {
+	name = 'aiSdkApi';
 	displayName = 'OpenMetadata API';
 	documentationUrl = 'https://docs.open-metadata.org';
 	properties: INodeProperties[] = [

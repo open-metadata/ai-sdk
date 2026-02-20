@@ -4,16 +4,16 @@ import java.time.Duration;
 import java.util.List;
 import java.util.Objects;
 
-import io.openmetadata.ai.internal.MetadataHttpClient;
+import io.openmetadata.ai.internal.AiSdkHttpClient;
 import io.openmetadata.ai.models.*;
 
 /**
- * Main client for interacting with the Metadata AI Agents API.
+ * Main client for interacting with the AI SDK Agents API.
  *
  * <p>Use the {@link #builder()} method to create a new instance:
  *
  * <pre>{@code
- * MetadataAI client = MetadataAI.builder()
+ * AiSdk client = AiSdk.builder()
  *     .host("https://metadata.example.com")
  *     .token("your-jwt-token")
  *     .timeout(Duration.ofSeconds(120))  // optional
@@ -55,7 +55,7 @@ import io.openmetadata.ai.models.*;
  * <p>This class implements {@link AutoCloseable} for use with try-with-resources:
  *
  * <pre>{@code
- * try (MetadataAI client = MetadataAI.builder()
+ * try (AiSdk client = AiSdk.builder()
  *         .host("https://metadata.example.com")
  *         .token("your-jwt-token")
  *         .build()) {
@@ -63,17 +63,17 @@ import io.openmetadata.ai.models.*;
  * }
  * }</pre>
  */
-public class MetadataAI implements AutoCloseable {
+public class AiSdk implements AutoCloseable {
 
   private static final Duration DEFAULT_TIMEOUT = Duration.ofSeconds(120);
   private static final int DEFAULT_MAX_RETRIES = 3;
   private static final Duration DEFAULT_RETRY_DELAY = Duration.ofSeconds(1);
 
-  private final MetadataHttpClient httpClient;
+  private final AiSdkHttpClient httpClient;
 
-  private MetadataAI(Builder builder) {
+  private AiSdk(Builder builder) {
     this.httpClient =
-        new MetadataHttpClient(
+        new AiSdkHttpClient(
             builder.host,
             builder.token,
             builder.timeout != null ? builder.timeout : DEFAULT_TIMEOUT,
@@ -82,7 +82,7 @@ public class MetadataAI implements AutoCloseable {
   }
 
   /**
-   * Creates a new builder for MetadataAI.
+   * Creates a new builder.
    *
    * @return a new builder instance
    */
@@ -304,7 +304,7 @@ public class MetadataAI implements AutoCloseable {
     httpClient.close();
   }
 
-  /** Builder for creating MetadataAI instances. */
+  /** Builder for creating {@link AiSdk} instances. */
   public static class Builder {
     private String host;
     private String token;
@@ -315,7 +315,7 @@ public class MetadataAI implements AutoCloseable {
     private Builder() {}
 
     /**
-     * Sets the Metadata host URL.
+     * Sets the host URL.
      *
      * @param host the host URL (e.g., "https://metadata.example.com")
      * @return this builder
@@ -376,19 +376,19 @@ public class MetadataAI implements AutoCloseable {
     }
 
     /**
-     * Builds the MetadataAI instance.
+     * Builds the AiSdk instance.
      *
-     * @return a new MetadataAI instance
+     * @return a new AiSdk instance
      * @throws NullPointerException if host or token is null
      * @throws IllegalArgumentException if host is empty
      */
-    public MetadataAI build() {
+    public AiSdk build() {
       Objects.requireNonNull(host, "host is required");
       Objects.requireNonNull(token, "token is required");
       if (host.isEmpty()) {
         throw new IllegalArgumentException("host cannot be empty");
       }
-      return new MetadataAI(this);
+      return new AiSdk(this);
     }
   }
 }

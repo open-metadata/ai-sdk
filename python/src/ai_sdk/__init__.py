@@ -1,16 +1,16 @@
 """
-Metadata AI SDK - Semantic Intelligence for AI builders.
+AI SDK - Semantic Intelligence for AI builders.
 
-This SDK provides a simple interface to invoke Metadata AI Agents
+This SDK provides a simple interface to invoke AI Agents
 from your AI applications. Use it standalone or integrate with
 LangChain, LlamaIndex, CrewAI, and other AI frameworks.
 
 Standalone Usage:
-    from ai_sdk.client import MetadataAI
+    from ai_sdk.client import AiSdk
     from ai_sdk.conversation import Conversation
 
     # Initialize client
-    client = MetadataAI(
+    client = AiSdk(
         host="https://metadata.example.com",
         token="your-bot-jwt-token"
     )
@@ -34,17 +34,17 @@ Standalone Usage:
             print(event.content, end="", flush=True)
 
 Environment-based Configuration:
-    from ai_sdk.config import MetadataConfig
-    from ai_sdk.client import MetadataAI
+    from ai_sdk.config import AiSdkConfig
+    from ai_sdk.client import AiSdk
 
-    # Load from METADATA_HOST and METADATA_TOKEN env vars
-    config = MetadataConfig.from_env()
-    client = MetadataAI.from_config(config)
+    # Load from AI_SDK_HOST and AI_SDK_TOKEN env vars
+    config = AiSdkConfig.from_env()
+    client = AiSdk.from_config(config)
 
 Async Usage:
-    from ai_sdk.client import MetadataAI
+    from ai_sdk.client import AiSdk
 
-    client = MetadataAI(
+    client = AiSdk(
         host="https://metadata.example.com",
         token="your-bot-jwt-token",
         enable_async=True
@@ -57,18 +57,18 @@ Async Usage:
 
 Framework Integrations:
     # LangChain (pip install ai-sdk[langchain])
-    from ai_sdk.integrations.langchain import MetadataAgentTool
-    tool = MetadataAgentTool.from_client(client, "MyAgent")
+    from ai_sdk.integrations.langchain import AiSdkAgentTool
+    tool = AiSdkAgentTool.from_client(client, "MyAgent")
 
     # More integrations coming: llamaindex, crewai, etc.
 
 Import Guide:
     # Client and agent
-    from ai_sdk.client import MetadataAI
+    from ai_sdk.client import AiSdk
     from ai_sdk.agent import AgentHandle
 
     # Configuration
-    from ai_sdk.config import MetadataConfig
+    from ai_sdk.config import AiSdkConfig
 
     # Conversation
     from ai_sdk.conversation import Conversation
@@ -98,7 +98,7 @@ Import Guide:
         AgentNotFoundError,
         AuthenticationError,
         BotNotFoundError,
-        MetadataError,
+        AiSdkError,
         PersonaNotFoundError,
         RateLimitError,
     )
@@ -115,8 +115,8 @@ from __future__ import annotations
 __version__ = "0.1.0"
 
 # Re-export main classes for convenient imports
-from ai_sdk.client import MetadataAI
-from ai_sdk.config import MetadataConfig
+from ai_sdk.client import AiSdk
+from ai_sdk.config import AiSdkConfig
 from ai_sdk.conversation import Conversation
 from ai_sdk.exceptions import AbilityNotFoundError, BotNotFoundError, PersonaNotFoundError
 from ai_sdk.models import (
@@ -131,14 +131,14 @@ from ai_sdk.models import (
 __all__ = [
     "AbilityInfo",
     "AbilityNotFoundError",
+    "AiSdk",
+    "AiSdkConfig",
     "BotInfo",
     "BotNotFoundError",
     "Conversation",
     "CreateAgentRequest",
     "CreatePersonaRequest",
     "KnowledgeScope",
-    "MetadataAI",
-    "MetadataConfig",
     "PersonaInfo",
     "PersonaNotFoundError",
     "__version__",

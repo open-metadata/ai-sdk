@@ -1,17 +1,17 @@
-"""Tests for bot operations in the Metadata AI SDK."""
+"""Tests for bot operations in the AI SDK."""
 
 import pytest
 from pytest_httpx import HTTPXMock
 
-from ai_sdk.client import MetadataAI
+from ai_sdk.client import AiSdk
 from ai_sdk.exceptions import BotNotFoundError
 from ai_sdk.models import BotInfo
 
 
 @pytest.fixture
 def client():
-    """MetadataAI client fixture."""
-    c = MetadataAI(
+    """AiSdk client fixture."""
+    c = AiSdk(
         host="https://metadata.example.com",
         token="test-jwt-token",
     )
@@ -21,8 +21,8 @@ def client():
 
 @pytest.fixture
 def async_client():
-    """MetadataAI async client fixture."""
-    c = MetadataAI(
+    """AiSdk async client fixture."""
+    c = AiSdk(
         host="https://metadata.example.com",
         token="test-jwt-token",
         enable_async=True,
@@ -65,7 +65,7 @@ def sample_bots_list_response(sample_bot_info_dict):
 
 
 class TestListBots:
-    """Tests for MetadataAI.list_bots() method."""
+    """Tests for AiSdk.list_bots() method."""
 
     def test_list_bots_returns_bot_info(
         self, client, httpx_mock: HTTPXMock, sample_bots_list_response
@@ -110,7 +110,7 @@ class TestListBots:
 
 
 class TestGetBot:
-    """Tests for MetadataAI.get_bot() method."""
+    """Tests for AiSdk.get_bot() method."""
 
     def test_get_bot_returns_bot_info(self, client, httpx_mock: HTTPXMock, sample_bot_info_dict):
         """get_bot returns BotInfo object."""
@@ -143,7 +143,7 @@ class TestGetBot:
 
 
 class TestAsyncListBots:
-    """Tests for MetadataAI.alist_bots() method."""
+    """Tests for AiSdk.alist_bots() method."""
 
     @pytest.mark.asyncio
     async def test_alist_bots_returns_bot_info(
@@ -171,7 +171,7 @@ class TestAsyncListBots:
 
 
 class TestAsyncGetBot:
-    """Tests for MetadataAI.aget_bot() method."""
+    """Tests for AiSdk.aget_bot() method."""
 
     @pytest.mark.asyncio
     async def test_aget_bot_returns_bot_info(

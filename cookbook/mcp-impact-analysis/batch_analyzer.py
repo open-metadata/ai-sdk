@@ -8,8 +8,8 @@ Usage:
     python batch_analyzer.py changes.diff
 
 Environment variables required:
-    METADATA_HOST - Your OpenMetadata server URL
-    METADATA_TOKEN - Your bot's JWT token
+    AI_SDK_HOST - Your OpenMetadata server URL
+    AI_SDK_TOKEN - Your bot's JWT token
     OPENAI_API_KEY - OpenAI API key
 """
 

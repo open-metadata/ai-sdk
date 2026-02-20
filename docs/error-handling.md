@@ -1,13 +1,13 @@
 # Error Handling
 
-This guide covers error handling patterns for the Metadata AI SDK.
+This guide covers error handling patterns for the AI SDK.
 
 ## Exception Hierarchy
 
 The SDK provides a structured exception hierarchy:
 
 ```
-MetadataError (base)
+AiSdkError (base)
 ├── AuthenticationError (401)
 ├── AgentNotFoundError (404)
 ├── AgentNotEnabledError (403)
@@ -19,7 +19,7 @@ MetadataError (base)
 
 ```python
 from ai_sdk.exceptions import (
-    MetadataError,
+    AiSdkError,
     AuthenticationError,
     AgentNotFoundError,
     AgentNotEnabledError,
@@ -39,7 +39,7 @@ try:
     response = client.agent("MyAgent").call("Hello")
 except AuthenticationError:
     print("Invalid or expired token")
-    # Action: Check METADATA_TOKEN, regenerate bot token
+    # Action: Check AI_SDK_TOKEN, regenerate bot token
 ```
 
 **Status Code**: 401
@@ -109,14 +109,14 @@ except AgentExecutionError as e:
 **Status Code**: 500
 **Properties**: `agent_name` (may be `None`), `message`
 
-### MetadataError (Base)
+### AiSdkError (Base)
 
 Base class for all SDK exceptions.
 
 ```python
 try:
     response = client.agent("MyAgent").call("Hello")
-except MetadataError as e:
+except AiSdkError as e:
     print(f"Error ({e.status_code}): {e.message}")
 ```
 
@@ -127,17 +127,17 @@ except MetadataError as e:
 ### Basic Pattern
 
 ```python
-from ai_sdk import MetadataAI
+from ai_sdk import AiSdk
 from ai_sdk.exceptions import (
     AuthenticationError,
     AgentNotFoundError,
     AgentNotEnabledError,
     RateLimitError,
     AgentExecutionError,
-    MetadataError,
+    AiSdkError,
 )
 
-def invoke_agent(client: MetadataAI, agent_name: str, message: str) -> str:
+def invoke_agent(client: AiSdk, agent_name: str, message: str) -> str:
     try:
         response = client.agent(agent_name).call(message)
         return response.response
@@ -202,7 +202,7 @@ response = with_retry(
 
 ```python
 def safe_invoke(
-    client: MetadataAI,
+    client: AiSdk,
     agent_name: str,
     message: str,
     fallback: str = "Unable to process request",
@@ -219,7 +219,7 @@ def safe_invoke(
         print(f"Agent error: {e.message}")
         return fallback
 
-    except MetadataError as e:
+    except AiSdkError as e:
         print(f"SDK error: {e}")
         return fallback
 ```
@@ -230,7 +230,7 @@ def safe_invoke(
 import asyncio
 
 async def async_invoke(
-    client: MetadataAI,
+    client: AiSdk,
     agent_name: str,
     message: str,
 ) -> str:
@@ -253,7 +253,7 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-def logged_invoke(client: MetadataAI, agent_name: str, message: str) -> str:
+def logged_invoke(client: AiSdk, agent_name: str, message: str) -> str:
     try:
         response = client.agent(agent_name).call(message)
         logger.info("Agent %s invoked successfully", agent_name)
@@ -267,7 +267,7 @@ def logged_invoke(client: MetadataAI, agent_name: str, message: str) -> str:
         logger.warning("Agent not found: %s", e.agent_name)
         raise
 
-    except MetadataError as e:
+    except AiSdkError as e:
         logger.error(
             "Metadata error (status=%s): %s",
             e.status_code,
@@ -299,7 +299,7 @@ Input validation happens at initialization:
 
 ```python
 from ai_sdk.auth import TokenAuth
-from ai_sdk import MetadataConfig
+from ai_sdk import AiSdkConfig
 
 # Token validation
 try:
@@ -309,13 +309,13 @@ except ValueError as e:
 
 # Config validation
 try:
-    config = MetadataConfig(host="", token="valid")
+    config = AiSdkConfig(host="", token="valid")
 except ValueError as e:
     print(f"Invalid config: {e}")
 
 # Environment validation
 try:
-    config = MetadataConfig.from_env()  # Missing env vars
+    config = AiSdkConfig.from_env()  # Missing env vars
 except ValueError as e:
     print(f"Missing environment: {e}")
 ```

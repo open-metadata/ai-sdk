@@ -42,8 +42,8 @@ jobs:
       - name: Run dbt review
         if: steps.changes.outputs.files != ''
         env:
-          METADATA_HOST: ${{ secrets.METADATA_HOST }}
-          METADATA_TOKEN: ${{ secrets.METADATA_TOKEN }}
+          AI_SDK_HOST: ${{ secrets.AI_SDK_HOST }}
+          AI_SDK_TOKEN: ${{ secrets.AI_SDK_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GITHUB_BASE_REF: ${{ github.base_ref }}
         run: |

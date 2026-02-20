@@ -9,8 +9,8 @@ use std::io::{self, Write};
 
 /// Run interactive configuration setup.
 pub fn run_interactive() -> CliResult<()> {
-    println!("{}", "Metadata AI Configuration".bold());
-    println!("This will configure your Metadata AI CLI credentials.\n");
+    println!("{}", "AI SDK Configuration".bold());
+    println!("This will configure your AI SDK CLI credentials.\n");
 
     // Load existing config
     let mut config = load_config().unwrap_or_default();
@@ -19,9 +19,9 @@ pub fn run_interactive() -> CliResult<()> {
     // Prompt for host
     let current_host = config.default.host.clone().unwrap_or_default();
     print!(
-        "Metadata Host URL [{}]: ",
+        "Host URL [{}]: ",
         if current_host.is_empty() {
-            "https://your-metadata-instance.com"
+            "https://your-instance.getcollate.io"
         } else {
             &current_host
         }

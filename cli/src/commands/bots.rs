@@ -1,6 +1,6 @@
 //! Bot discovery commands.
 
-use crate::client::MetadataClient;
+use crate::client::AiSdkClient;
 use crate::config::ResolvedConfig;
 use crate::error::CliResult;
 use colored::Colorize;
@@ -8,7 +8,7 @@ use colored::Colorize;
 /// List all bots.
 pub async fn run_list(limit: Option<u32>, json: bool) -> CliResult<()> {
     let config = ResolvedConfig::load()?;
-    let client = MetadataClient::new(&config)?;
+    let client = AiSdkClient::new(&config)?;
 
     // Use pagination - pass limit to respect user-specified limit, or None to fetch all
     let bots = client.list_bots_with_limit(limit).await?;
@@ -55,7 +55,7 @@ pub async fn run_list(limit: Option<u32>, json: bool) -> CliResult<()> {
 /// Get detailed information about a specific bot.
 pub async fn run_get(name: &str, json: bool) -> CliResult<()> {
     let config = ResolvedConfig::load()?;
-    let client = MetadataClient::new(&config)?;
+    let client = AiSdkClient::new(&config)?;
 
     let bot = client.get_bot(name).await?;
 

@@ -79,7 +79,7 @@ export class AgentHandle {
    *
    * @param name - The agent name
    * @param http - HTTP client for API communication
-   * @internal This constructor is called by MetadataAI.agent()
+   * @internal This constructor is called by AiSdk.agent()
    */
   constructor(name: string, http: HttpClient) {
     this.agentName = name;

@@ -3,14 +3,14 @@
 import pytest
 from pytest_httpx import HTTPXMock
 
-from ai_sdk.client import MetadataAI
+from ai_sdk.client import AiSdk
 from ai_sdk.mcp.models import MCPTool
 
 
 @pytest.fixture
 def client():
-    """MetadataAI client fixture."""
-    c = MetadataAI(
+    """AiSdk client fixture."""
+    c = AiSdk(
         host="https://metadata.example.com",
         token="test-token",
         max_retries=0,

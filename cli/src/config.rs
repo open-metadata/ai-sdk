@@ -1,12 +1,12 @@
-//! Configuration management for Metadata AI CLI.
+//! Configuration management for AI SDK CLI.
 //!
 //! Configuration is stored in `~/.ai-sdk/` with separate files for settings and credentials:
 //! - `config.toml`: Host URL, timeout, and other settings
 //! - `credentials`: Authentication token (separate for security)
 //!
 //! Environment variables take precedence over file configuration:
-//! - `METADATA_HOST`: Server URL
-//! - `METADATA_TOKEN`: JWT token
+//! - `AI_SDK_HOST`: Server URL
+//! - `AI_SDK_TOKEN`: JWT token
 
 use crate::error::{CliError, CliResult};
 use serde::{Deserialize, Serialize};
@@ -75,8 +75,8 @@ impl ResolvedConfig {
     /// 1. Environment variables
     /// 2. Config files
     pub fn load() -> CliResult<Self> {
-        let env_host = std::env::var("METADATA_HOST").ok();
-        let env_token = std::env::var("METADATA_TOKEN").ok();
+        let env_host = std::env::var("AI_SDK_HOST").ok();
+        let env_token = std::env::var("AI_SDK_TOKEN").ok();
 
         // Load file config
         let config = load_config().unwrap_or_default();
@@ -238,8 +238,8 @@ pub fn list_config() -> CliResult<Vec<(String, String)>> {
     let mut values = Vec::new();
 
     // Check environment variables
-    let env_host = std::env::var("METADATA_HOST").ok();
-    let env_token = std::env::var("METADATA_TOKEN").ok();
+    let env_host = std::env::var("AI_SDK_HOST").ok();
+    let env_token = std::env::var("AI_SDK_TOKEN").ok();
 
     // Host
     let host_value = env_host

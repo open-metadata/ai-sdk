@@ -1,17 +1,17 @@
-"""Tests for the Metadata AI SDK client."""
+"""Tests for the AI SDK client."""
 
 import pytest
 from pytest_httpx import HTTPXMock
 
 from ai_sdk.agent import AgentHandle
-from ai_sdk.client import MetadataAI
+from ai_sdk.client import AiSdk
 from ai_sdk.models import AgentInfo
 
 
 @pytest.fixture
 def client():
-    """MetadataAI client fixture."""
-    c = MetadataAI(
+    """AiSdk client fixture."""
+    c = AiSdk(
         host="https://metadata.example.com",
         token="test-jwt-token",
     )
@@ -19,12 +19,12 @@ def client():
     c.close()
 
 
-class TestMetadataAIInit:
-    """Tests for MetadataAI initialization."""
+class TestAiSdkInit:
+    """Tests for AiSdk initialization."""
 
     def test_strips_trailing_slash(self):
         """Client strips trailing slash from host."""
-        client = MetadataAI(
+        client = AiSdk(
             host="https://metadata.example.com/",
             token="jwt-token",
         )
@@ -32,8 +32,8 @@ class TestMetadataAIInit:
         client.close()
 
 
-class TestMetadataAIAgent:
-    """Tests for MetadataAI.agent() method."""
+class TestAiSdkAgent:
+    """Tests for AiSdk.agent() method."""
 
     def test_returns_agent_handle(self, client):
         """agent() returns AgentHandle with correct name."""
@@ -43,8 +43,8 @@ class TestMetadataAIAgent:
         assert handle.name == "DataQualityAgent"
 
 
-class TestMetadataAIListAgents:
-    """Tests for MetadataAI.list_agents() method."""
+class TestAiSdkListAgents:
+    """Tests for AiSdk.list_agents() method."""
 
     def test_list_agents_returns_agent_info(
         self, client, httpx_mock: HTTPXMock, sample_agents_list_response
@@ -78,10 +78,10 @@ class TestMetadataAIListAgents:
         assert agents[0].name == "DataQualityPlannerAgent"
 
 
-class TestMetadataAIContextManager:
-    """Tests for MetadataAI context manager."""
+class TestAiSdkContextManager:
+    """Tests for AiSdk context manager."""
 
     def test_context_manager_works(self):
         """Client works as context manager."""
-        with MetadataAI(host="https://example.com", token="token") as client:
-            assert isinstance(client, MetadataAI)
+        with AiSdk(host="https://example.com", token="token") as client:
+            assert isinstance(client, AiSdk)

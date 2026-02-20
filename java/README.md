@@ -1,6 +1,6 @@
-# Metadata AI Java SDK
+# AI SDK for Java
 
-Java SDK for interacting with Metadata AI Agents.
+Java SDK for interacting with AI Agents.
 
 ## Requirements
 
@@ -28,7 +28,7 @@ implementation 'io.openmetadata:ai-sdk:0.1.0'
 ## Quick Start
 
 ```java
-import io.openmetadata.ai.MetadataAI;
+import io.openmetadata.ai.AiSdk;
 import io.openmetadata.ai.models.InvokeResponse;
 import io.openmetadata.ai.models.StreamEvent;
 import io.openmetadata.ai.models.AgentInfo;
@@ -39,7 +39,7 @@ import java.util.List;
 public class Example {
     public static void main(String[] args) {
         // Create client
-        MetadataAI client = MetadataAI.builder()
+        AiSdk client = AiSdk.builder()
             .host("https://metadata.example.com")
             .token("your-jwt-token")
             .timeout(Duration.ofSeconds(120))  // optional
@@ -64,7 +64,7 @@ public class Example {
 ### Creating a Client
 
 ```java
-MetadataAI client = MetadataAI.builder()
+AiSdk client = AiSdk.builder()
     .host("https://metadata.example.com")  // Required
     .token("your-jwt-token")              // Required
     .timeout(Duration.ofSeconds(120))     // Optional, default: 120s
@@ -282,7 +282,7 @@ try {
     // Rate limit exceeded (HTTP 429)
     System.err.println("Rate limited. Retry after: " +
         e.getRetryAfter().orElse(60) + " seconds");
-} catch (MetadataException e) {
+} catch (AiSdkException e) {
     // Other API errors
     System.err.println("Error (status " + e.getStatusCode() + "): " + e.getMessage());
 }
@@ -293,7 +293,7 @@ try {
 The client implements `AutoCloseable`, so you can use try-with-resources:
 
 ```java
-try (MetadataAI client = MetadataAI.builder()
+try (AiSdk client = AiSdk.builder()
         .host("https://metadata.example.com")
         .token("your-jwt-token")
         .build()) {
@@ -306,7 +306,7 @@ try (MetadataAI client = MetadataAI.builder()
 
 ## Thread Safety
 
-The `MetadataAI` client and `AgentHandle` are thread-safe and can be shared across multiple threads. It's recommended to create a single client instance and reuse it throughout your application.
+The `AiSdk` client and `AgentHandle` are thread-safe and can be shared across multiple threads. It's recommended to create a single client instance and reuse it throughout your application.
 
 ## Building from Source
 

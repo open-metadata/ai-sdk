@@ -2,7 +2,7 @@
 
 use super::app::{App, DisplayMessage, Status};
 use super::markdown::render_markdown;
-use crate::client::MetadataClient;
+use crate::client::AiSdkClient;
 use crate::config::ResolvedConfig;
 use crate::error::{CliError, CliResult};
 use crate::streaming::{process_stream, Sender};
@@ -46,7 +46,7 @@ enum AsyncEvent {
 pub async fn run_tui(agent_name: Option<&str>, conversation_id: Option<String>) -> CliResult<()> {
     // Load config and create client first (needed for agent list)
     let config = ResolvedConfig::load()?;
-    let client = MetadataClient::new(&config)?;
+    let client = AiSdkClient::new(&config)?;
 
     // Setup terminal
     enable_raw_mode().map_err(|e| CliError::Other(e.to_string()))?;
@@ -105,7 +105,7 @@ pub async fn run_tui(agent_name: Option<&str>, conversation_id: Option<String>) 
 async fn run_main_loop(
     terminal: &mut Terminal<CrosstermBackend<io::Stdout>>,
     app: &mut App,
-    client: &MetadataClient,
+    client: &AiSdkClient,
 ) -> CliResult<()> {
     let (async_tx, mut async_rx) = mpsc::channel::<AsyncEvent>(100);
     let mut event_stream = EventStream::new();
@@ -272,7 +272,7 @@ async fn run_main_loop(
 /// Spawn a task to stream agent response.
 async fn stream_agent_response(
     tx: mpsc::Sender<AsyncEvent>,
-    client: MetadataClient,
+    client: AiSdkClient,
     agent: String,
     message: String,
     conversation_id: Option<String>,

@@ -15,16 +15,15 @@ import org.junit.jupiter.api.Test;
 import io.openmetadata.ai.exceptions.*;
 import io.openmetadata.ai.models.*;
 
-/** Unit tests for the Metadata AI SDK. */
-class MetadataAITest {
+/** Unit tests for the AI SDK. */
+class AiSdkTest {
 
   // ==================== Builder Tests ====================
 
   @Test
   @DisplayName("Builder creates client with required parameters")
   void builderCreatesClientWithRequiredParameters() {
-    MetadataAI client =
-        MetadataAI.builder().host("https://metadata.example.com").token("test-token").build();
+    AiSdk client = AiSdk.builder().host("https://metadata.example.com").token("test-token").build();
 
     assertNotNull(client);
     client.close();
@@ -33,8 +32,7 @@ class MetadataAITest {
   @Test
   @DisplayName("Builder throws exception when host is null")
   void builderThrowsWhenHostIsNull() {
-    assertThrows(
-        NullPointerException.class, () -> MetadataAI.builder().token("test-token").build());
+    assertThrows(NullPointerException.class, () -> AiSdk.builder().token("test-token").build());
   }
 
   @Test
@@ -42,22 +40,21 @@ class MetadataAITest {
   void builderThrowsWhenTokenIsNull() {
     assertThrows(
         NullPointerException.class,
-        () -> MetadataAI.builder().host("https://metadata.example.com").build());
+        () -> AiSdk.builder().host("https://metadata.example.com").build());
   }
 
   @Test
   @DisplayName("Builder throws exception when host is empty")
   void builderThrowsWhenHostIsEmpty() {
     assertThrows(
-        IllegalArgumentException.class,
-        () -> MetadataAI.builder().host("").token("test-token").build());
+        IllegalArgumentException.class, () -> AiSdk.builder().host("").token("test-token").build());
   }
 
   @Test
   @DisplayName("Builder accepts optional timeout")
   void builderAcceptsOptionalTimeout() {
-    MetadataAI client =
-        MetadataAI.builder()
+    AiSdk client =
+        AiSdk.builder()
             .host("https://metadata.example.com")
             .token("test-token")
             .timeout(Duration.ofSeconds(60))
@@ -70,8 +67,8 @@ class MetadataAITest {
   @Test
   @DisplayName("Builder accepts optional maxRetries")
   void builderAcceptsOptionalMaxRetries() {
-    MetadataAI client =
-        MetadataAI.builder()
+    AiSdk client =
+        AiSdk.builder()
             .host("https://metadata.example.com")
             .token("test-token")
             .maxRetries(5)
@@ -84,8 +81,8 @@ class MetadataAITest {
   @Test
   @DisplayName("Builder accepts optional retryDelay")
   void builderAcceptsOptionalRetryDelay() {
-    MetadataAI client =
-        MetadataAI.builder()
+    AiSdk client =
+        AiSdk.builder()
             .host("https://metadata.example.com")
             .token("test-token")
             .retryDelay(Duration.ofSeconds(2))
@@ -98,8 +95,8 @@ class MetadataAITest {
   @Test
   @DisplayName("Builder accepts all optional parameters")
   void builderAcceptsAllOptionalParameters() {
-    MetadataAI client =
-        MetadataAI.builder()
+    AiSdk client =
+        AiSdk.builder()
             .host("https://metadata.example.com")
             .token("test-token")
             .timeout(Duration.ofSeconds(60))
@@ -116,8 +113,7 @@ class MetadataAITest {
   @Test
   @DisplayName("Agent method returns a handle")
   void agentMethodReturnsHandle() {
-    MetadataAI client =
-        MetadataAI.builder().host("https://metadata.example.com").token("test-token").build();
+    AiSdk client = AiSdk.builder().host("https://metadata.example.com").token("test-token").build();
 
     AgentHandle handle = client.agent("test-agent");
     assertNotNull(handle);
@@ -127,8 +123,7 @@ class MetadataAITest {
   @Test
   @DisplayName("Agent method throws on null name")
   void agentMethodThrowsOnNullName() {
-    MetadataAI client =
-        MetadataAI.builder().host("https://metadata.example.com").token("test-token").build();
+    AiSdk client = AiSdk.builder().host("https://metadata.example.com").token("test-token").build();
 
     assertThrows(NullPointerException.class, () -> client.agent(null));
     client.close();
@@ -139,8 +134,7 @@ class MetadataAITest {
   @Test
   @DisplayName("getBot method throws on null name")
   void getBotMethodThrowsOnNullName() {
-    MetadataAI client =
-        MetadataAI.builder().host("https://metadata.example.com").token("test-token").build();
+    AiSdk client = AiSdk.builder().host("https://metadata.example.com").token("test-token").build();
 
     assertThrows(NullPointerException.class, () -> client.getBot(null));
     client.close();
@@ -151,8 +145,7 @@ class MetadataAITest {
   @Test
   @DisplayName("getPersona method throws on null name")
   void getPersonaMethodThrowsOnNullName() {
-    MetadataAI client =
-        MetadataAI.builder().host("https://metadata.example.com").token("test-token").build();
+    AiSdk client = AiSdk.builder().host("https://metadata.example.com").token("test-token").build();
 
     assertThrows(NullPointerException.class, () -> client.getPersona(null));
     client.close();
@@ -161,8 +154,7 @@ class MetadataAITest {
   @Test
   @DisplayName("createPersona method throws on null request")
   void createPersonaMethodThrowsOnNullRequest() {
-    MetadataAI client =
-        MetadataAI.builder().host("https://metadata.example.com").token("test-token").build();
+    AiSdk client = AiSdk.builder().host("https://metadata.example.com").token("test-token").build();
 
     assertThrows(NullPointerException.class, () -> client.createPersona(null));
     client.close();
@@ -173,8 +165,7 @@ class MetadataAITest {
   @Test
   @DisplayName("getAbility method throws on null name")
   void getAbilityMethodThrowsOnNullName() {
-    MetadataAI client =
-        MetadataAI.builder().host("https://metadata.example.com").token("test-token").build();
+    AiSdk client = AiSdk.builder().host("https://metadata.example.com").token("test-token").build();
 
     assertThrows(NullPointerException.class, () -> client.getAbility(null));
     client.close();
@@ -185,8 +176,8 @@ class MetadataAITest {
   @Test
   @DisplayName("Client can be used with try-with-resources")
   void clientCanBeUsedWithTryWithResources() {
-    try (MetadataAI client =
-        MetadataAI.builder().host("https://metadata.example.com").token("test-token").build()) {
+    try (AiSdk client =
+        AiSdk.builder().host("https://metadata.example.com").token("test-token").build()) {
       assertNotNull(client);
     }
   }
@@ -550,9 +541,9 @@ class MetadataAITest {
   // ==================== Exception Tests ====================
 
   @Test
-  @DisplayName("MetadataException contains status code")
+  @DisplayName("AiSdkException contains status code")
   void metadataExceptionContainsStatusCode() {
-    MetadataException exception = new MetadataException("Test error", 500);
+    AiSdkException exception = new AiSdkException("Test error", 500);
     assertEquals(500, exception.getStatusCode());
     assertEquals("Test error", exception.getMessage());
   }

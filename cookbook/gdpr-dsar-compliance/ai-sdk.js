@@ -148,7 +148,7 @@ var AgentHandle = class {
    *
    * @param name - The agent name
    * @param http - HTTP client for API communication
-   * @internal This constructor is called by MetadataAI.agent()
+   * @internal This constructor is called by AiSdk.agent()
    */
   constructor(name, http) {
     this.agentName = name;
@@ -298,25 +298,25 @@ var AgentHandle = class {
 };
 
 // typescript/src/errors.ts
-var MetadataError = class extends Error {
+var AiSdkError = class extends Error {
   /** HTTP status code associated with the error */
   statusCode;
   constructor(message, statusCode) {
     super(message);
-    this.name = "MetadataError";
+    this.name = "AiSdkError";
     this.statusCode = statusCode;
     if (Error.captureStackTrace) {
       Error.captureStackTrace(this, this.constructor);
     }
   }
 };
-var AuthenticationError = class extends MetadataError {
+var AuthenticationError = class extends AiSdkError {
   constructor(message = "Invalid or expired token") {
     super(message, 401);
     this.name = "AuthenticationError";
   }
 };
-var AgentNotFoundError = class extends MetadataError {
+var AgentNotFoundError = class extends AiSdkError {
   /** The name of the agent that was not found */
   agentName;
   constructor(agentName) {
@@ -325,7 +325,7 @@ var AgentNotFoundError = class extends MetadataError {
     this.agentName = agentName;
   }
 };
-var AgentNotEnabledError = class extends MetadataError {
+var AgentNotEnabledError = class extends AiSdkError {
   /** The name of the agent that is not enabled */
   agentName;
   constructor(agentName) {
@@ -337,7 +337,7 @@ var AgentNotEnabledError = class extends MetadataError {
     this.agentName = agentName;
   }
 };
-var RateLimitError = class extends MetadataError {
+var RateLimitError = class extends AiSdkError {
   /** Number of seconds to wait before retrying (from Retry-After header) */
   retryAfter;
   constructor(message = "Rate limit exceeded", retryAfter) {
@@ -346,7 +346,7 @@ var RateLimitError = class extends MetadataError {
     this.retryAfter = retryAfter;
   }
 };
-var AgentExecutionError = class extends MetadataError {
+var AgentExecutionError = class extends AiSdkError {
   /** The name of the agent that failed (if known) */
   agentName;
   constructor(message, agentName) {
@@ -355,7 +355,7 @@ var AgentExecutionError = class extends MetadataError {
     this.agentName = agentName;
   }
 };
-var NetworkError = class extends MetadataError {
+var NetworkError = class extends AiSdkError {
   /** The original error that caused the network failure */
   cause;
   constructor(message, cause) {
@@ -364,7 +364,7 @@ var NetworkError = class extends MetadataError {
     this.cause = cause;
   }
 };
-var TimeoutError = class extends MetadataError {
+var TimeoutError = class extends AiSdkError {
   /** The timeout duration in milliseconds */
   timeoutMs;
   constructor(timeoutMs) {
@@ -373,7 +373,7 @@ var TimeoutError = class extends MetadataError {
     this.timeoutMs = timeoutMs;
   }
 };
-var BotNotFoundError = class extends MetadataError {
+var BotNotFoundError = class extends AiSdkError {
   /** The name of the bot that was not found */
   botName;
   constructor(botName) {
@@ -382,7 +382,7 @@ var BotNotFoundError = class extends MetadataError {
     this.botName = botName;
   }
 };
-var PersonaNotFoundError = class extends MetadataError {
+var PersonaNotFoundError = class extends AiSdkError {
   /** The name of the persona that was not found */
   personaName;
   constructor(personaName) {
@@ -391,7 +391,7 @@ var PersonaNotFoundError = class extends MetadataError {
     this.personaName = personaName;
   }
 };
-var AbilityNotFoundError = class extends MetadataError {
+var AbilityNotFoundError = class extends AiSdkError {
   /** The name of the ability that was not found */
   abilityName;
   constructor(abilityName) {
@@ -488,7 +488,7 @@ var HttpClient = class {
       if (agentName) {
         throw new AgentNotEnabledError(agentName);
       }
-      throw new MetadataError("Access forbidden", 403);
+      throw new AiSdkError("Access forbidden", 403);
     }
     if (status === 404) {
       if (entityType === "bot" && entityName) {
@@ -503,7 +503,7 @@ var HttpClient = class {
       if (agentName) {
         throw new AgentNotFoundError(agentName);
       }
-      throw new MetadataError("Resource not found", 404);
+      throw new AiSdkError("Resource not found", 404);
     }
     if (status === 429) {
       const retryAfter = response.headers.get("Retry-After");
@@ -598,12 +598,12 @@ var HttpClient = class {
         await this.handleError(response, agentName, requestId);
       }
       if (!response.body) {
-        throw new MetadataError("No response body for streaming request");
+        throw new AiSdkError("No response body for streaming request");
       }
       return response.body;
     } catch (error) {
       clearTimeout(timeoutId);
-      if (error instanceof MetadataError) {
+      if (error instanceof AiSdkError) {
         throw error;
       }
       if (error instanceof Error) {
@@ -649,7 +649,7 @@ var HttpClient = class {
         await this.handleError(response, agentName, requestId);
       } catch (error) {
         clearTimeout(timeoutId);
-        if (error instanceof MetadataError) {
+        if (error instanceof AiSdkError) {
           throw error;
         }
         if (error instanceof Error) {
@@ -723,7 +723,7 @@ var HttpClient = class {
         await this.handleError(response, void 0, requestId, entityType, entityName);
       } catch (error) {
         clearTimeout(timeoutId);
-        if (error instanceof MetadataError) {
+        if (error instanceof AiSdkError) {
           throw error;
         }
         if (error instanceof Error) {
@@ -794,11 +794,11 @@ function mapAbilityInfo(data) {
     tools: data.tools || []
   };
 }
-var MetadataAI = class {
+var AiSdk = class {
   hostUrl;
   http;
   /**
-   * Create a new MetadataAI client.
+   * Create a new AiSdk client.
    *
    * @param options - Client configuration options
    *
@@ -807,13 +807,13 @@ var MetadataAI = class {
    * @example
    * ```typescript
    * // Basic initialization
-   * const client = new MetadataAI({
+   * const client = new AiSdk({
    *   host: 'https://openmetadata.example.com',
    *   token: 'your-jwt-token',
    * });
    *
    * // With custom options
-   * const client = new MetadataAI({
+   * const client = new AiSdk({
    *   host: 'https://openmetadata.example.com',
    *   token: 'your-jwt-token',
    *   timeout: 60000,      // 60 seconds
@@ -1164,7 +1164,7 @@ var MetadataAI = class {
    * String representation of the client.
    */
   toString() {
-    return `MetadataAI(host="${this.hostUrl}")`;
+    return `AiSdk(host="${this.hostUrl}")`;
   }
 };
 export {
@@ -1175,8 +1175,8 @@ export {
   AgentNotFoundError,
   AuthenticationError,
   BotNotFoundError,
-  MetadataAI,
-  MetadataError,
+  AiSdk,
+  AiSdkError,
   NetworkError,
   PersonaNotFoundError,
   RateLimitError,

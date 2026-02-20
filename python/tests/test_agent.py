@@ -1,11 +1,11 @@
-"""Tests for the Metadata AI SDK agent handle."""
+"""Tests for the AI SDK agent handle."""
 
 import json
 
 import pytest
 from pytest_httpx import HTTPXMock
 
-from ai_sdk.client import MetadataAI
+from ai_sdk.client import AiSdk
 from ai_sdk.exceptions import (
     AgentNotEnabledError,
     AgentNotFoundError,
@@ -16,8 +16,8 @@ from ai_sdk.models import AgentInfo, InvokeResponse
 
 @pytest.fixture
 def client():
-    """MetadataAI client fixture."""
-    c = MetadataAI(
+    """AiSdk client fixture."""
+    c = AiSdk(
         host="https://metadata.example.com",
         token="test-jwt-token",
     )

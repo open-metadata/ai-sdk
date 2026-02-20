@@ -1,6 +1,6 @@
 //! Agent invocation commands.
 
-use crate::client::{InvokeResponse, MetadataClient};
+use crate::client::{AiSdkClient, InvokeResponse};
 use crate::config::ResolvedConfig;
 use crate::error::CliResult;
 use crate::streaming::{process_stream_with_debug, Sender};
@@ -15,7 +15,7 @@ pub async fn run_invoke(
     json_output: bool,
 ) -> CliResult<()> {
     let config = ResolvedConfig::load()?;
-    let client = MetadataClient::new(&config)?;
+    let client = AiSdkClient::new(&config)?;
 
     let response = client.invoke(agent_name, message, conversation_id).await?;
 
@@ -38,7 +38,7 @@ pub async fn run_stream(
     debug: bool,
 ) -> CliResult<()> {
     let config = ResolvedConfig::load()?;
-    let client = MetadataClient::new(&config)?;
+    let client = AiSdkClient::new(&config)?;
 
     let response = client.stream(agent_name, message, conversation_id).await?;
 

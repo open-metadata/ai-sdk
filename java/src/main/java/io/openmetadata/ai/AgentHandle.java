@@ -4,7 +4,7 @@ import java.util.Map;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
-import io.openmetadata.ai.internal.MetadataHttpClient;
+import io.openmetadata.ai.internal.AiSdkHttpClient;
 import io.openmetadata.ai.models.AgentInfo;
 import io.openmetadata.ai.models.InvokeRequest;
 import io.openmetadata.ai.models.InvokeResponse;
@@ -13,12 +13,12 @@ import io.openmetadata.ai.models.StreamEvent;
 /**
  * Handle for interacting with a specific AI agent.
  *
- * <p>Instances are obtained via {@link MetadataAI#agent(String)}.
+ * <p>Instances are obtained via {@link AiSdk#agent(String)}.
  *
  * <p>Example usage:
  *
  * <pre>{@code
- * MetadataAI client = MetadataAI.builder()
+ * AiSdk client = AiSdk.builder()
  *     .host("https://metadata.example.com")
  *     .token("your-jwt-token")
  *     .build();
@@ -36,12 +36,12 @@ import io.openmetadata.ai.models.StreamEvent;
  */
 public class AgentHandle {
 
-  private final MetadataHttpClient httpClient;
+  private final AiSdkHttpClient httpClient;
   private final String agentName;
   private String conversationId;
   private Map<String, Object> parameters;
 
-  AgentHandle(MetadataHttpClient httpClient, String agentName) {
+  AgentHandle(AiSdkHttpClient httpClient, String agentName) {
     this.httpClient = httpClient;
     this.agentName = agentName;
   }

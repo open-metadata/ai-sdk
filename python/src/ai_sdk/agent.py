@@ -1,4 +1,4 @@
-"""Agent handle for the Metadata AI SDK."""
+"""Agent handle for the AI SDK."""
 
 from __future__ import annotations
 
@@ -137,7 +137,7 @@ class AgentHandle:
         if self._async_http is None:
             raise RuntimeError(
                 "Async HTTP client not available. "
-                "Use MetadataAI with enable_async=True for async operations."
+                "Use AiSdk with enable_async=True for async operations."
             )
 
         request = InvokeRequest(
@@ -218,7 +218,7 @@ class AgentHandle:
         if self._async_http is None:
             raise RuntimeError(
                 "Async HTTP client not available. "
-                "Use MetadataAI with enable_async=True for async operations."
+                "Use AiSdk with enable_async=True for async operations."
             )
 
         request = InvokeRequest(
@@ -262,7 +262,7 @@ class AgentHandle:
         if self._async_http is None:
             raise RuntimeError(
                 "Async HTTP client not available. "
-                "Use MetadataAI with enable_async=True for async operations."
+                "Use AiSdk with enable_async=True for async operations."
             )
 
         data = await self._async_http.get(f"/name/{self._name}", agent_name=self._name)

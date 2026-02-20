@@ -1,17 +1,17 @@
-"""Tests for persona operations in the Metadata AI SDK."""
+"""Tests for persona operations in the AI SDK."""
 
 import pytest
 from pytest_httpx import HTTPXMock
 
-from ai_sdk.client import MetadataAI
+from ai_sdk.client import AiSdk
 from ai_sdk.exceptions import PersonaNotFoundError
 from ai_sdk.models import CreatePersonaRequest, PersonaInfo
 
 
 @pytest.fixture
 def client():
-    """MetadataAI client fixture."""
-    c = MetadataAI(
+    """AiSdk client fixture."""
+    c = AiSdk(
         host="https://metadata.example.com",
         token="test-jwt-token",
     )
@@ -21,8 +21,8 @@ def client():
 
 @pytest.fixture
 def async_client():
-    """MetadataAI client fixture with async enabled."""
-    c = MetadataAI(
+    """AiSdk client fixture with async enabled."""
+    c = AiSdk(
         host="https://metadata.example.com",
         token="test-jwt-token",
         enable_async=True,

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Example: Using Metadata AI Agents with LangChain
+Example: Using AI Agents with LangChain
 
 This example demonstrates how to use the SemanticLayerAgent as a tool
 in a LangChain pipeline to query metrics and explore your semantic layer.
@@ -9,8 +9,8 @@ Prerequisites:
     pip install ai-sdk[langchain]
 
 Environment variables:
-    METADATA_HOST: Your Metadata server URL
-    METADATA_TOKEN: Your bot JWT token
+    AI_SDK_HOST: Your server URL
+    AI_SDK_TOKEN: Your bot JWT token
     OPENAI_API_KEY: Your OpenAI API key
 
 Usage:
@@ -24,19 +24,19 @@ import sys
 
 from langchain.agents import create_agent
 
-from ai_sdk import MetadataAI, set_debug
+from ai_sdk import AiSdk, set_debug
 from ai_sdk.exceptions import (
     AgentNotEnabledError,
     AgentNotFoundError,
     AuthenticationError,
-    MetadataError,
+    AiSdkError,
 )
-from ai_sdk.integrations.langchain import MetadataAgentTool
+from ai_sdk.integrations.langchain import AiSdkAgentTool
 
 
 def main():
     # Parse command line arguments
-    parser = argparse.ArgumentParser(description="Metadata AI SDK Example")
+    parser = argparse.ArgumentParser(description="AI SDK Example")
     parser.add_argument(
         "--debug",
         action="store_true",
@@ -50,20 +50,20 @@ def main():
         print("[DEBUG MODE ENABLED]")
 
     # Configuration from environment
-    metadata_host = os.getenv("METADATA_HOST", "http://localhost:8585")
-    metadata_token = os.getenv("METADATA_TOKEN")
+    metadata_host = os.getenv("AI_SDK_HOST", "http://localhost:8585")
+    metadata_token = os.getenv("AI_SDK_TOKEN")
 
     if not metadata_token:
-        print("Error: METADATA_TOKEN environment variable is required")
+        print("Error: AI_SDK_TOKEN environment variable is required")
         sys.exit(1)
 
     if not os.getenv("OPENAI_API_KEY"):
         print("Error: OPENAI_API_KEY environment variable is required")
         sys.exit(1)
 
-    # Initialize Metadata client
-    print(f"Connecting to Metadata server at {metadata_host}...")
-    client = MetadataAI(
+    # Initialize client
+    print(f"Connecting to server at {metadata_host}...")
+    client = AiSdk(
         host=metadata_host,
         token=metadata_token,
     )
@@ -71,7 +71,7 @@ def main():
     try:
         # Create a LangChain tool from the SemanticLayerAgent
         print("Setting up SemanticLayerAgent...")
-        semantic_layer_tool = MetadataAgentTool.from_client(
+        semantic_layer_tool = AiSdkAgentTool.from_client(
             client,
             "SemanticLayerAgent",
             name="semantic_layer",
@@ -154,8 +154,8 @@ DO NOT HALLUCINATE. DO NOT MAKE UP DATA. ONLY USE ACTUAL TOOL RESPONSES.""",
         print(f"Error: Agent '{e.agent_name}' is not API-enabled")
         sys.exit(1)
 
-    except MetadataError as e:
-        print(f"Metadata error: {e}")
+    except AiSdkError as e:
+        print(f"AI SDK error: {e}")
         sys.exit(1)
 
     finally:

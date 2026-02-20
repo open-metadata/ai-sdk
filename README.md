@@ -24,9 +24,9 @@ OpenMetadata exposes an [MCP server](https://modelcontextprotocol.io/) at `/mcp`
 
 ```python
 # Build a custom LangChain agent backed by your catalog
-from ai_sdk import MetadataAI, MetadataConfig
+from ai_sdk import AiSdk, AiSdkConfig
 
-client = MetadataAI.from_config(MetadataConfig.from_env())
+client = AiSdk.from_config(AiSdkConfig.from_env())
 
 # Convert catalog tools to LangChain format — one line
 tools = client.mcp.as_langchain_tools()
@@ -40,9 +40,9 @@ result = client.mcp.call_tool("search_metadata", {"query": "customers"})
 With [Collate](https://www.getcollate.io), you get access to **AI Studio** — a platform for creating and managing AI agents that are purpose-built for data teams. Each agent combines a persona, a set of abilities, and full catalog access into a ready-to-use assistant you can invoke from any SDK:
 
 ```python
-from ai_sdk import MetadataAI
+from ai_sdk import AiSdk
 
-client = MetadataAI(
+client = AiSdk(
     host="https://your-org.getcollate.io",
     token="your-bot-jwt-token"
 )
@@ -65,10 +65,10 @@ pip install ai-sdk
 ```
 
 ```python
-from ai_sdk import MetadataAI, MetadataConfig
+from ai_sdk import AiSdk, AiSdkConfig
 
-config = MetadataConfig.from_env()  # reads METADATA_HOST and METADATA_TOKEN
-client = MetadataAI.from_config(config)
+config = AiSdkConfig.from_env()  # reads AI_SDK_HOST and AI_SDK_TOKEN
+client = AiSdk.from_config(config)
 
 # Invoke an agent
 response = client.agent("DataQualityPlannerAgent").call(
@@ -89,9 +89,9 @@ npm install @openmetadata/ai-sdk
 ```
 
 ```typescript
-import { MetadataAI } from '@openmetadata/ai-sdk';
+import { AiSdk } from '@openmetadata/ai-sdk';
 
-const client = new MetadataAI({
+const client = new AiSdk({
   host: 'https://your-org.getcollate.io',
   token: 'your-bot-jwt-token'
 });
@@ -122,9 +122,9 @@ Zero runtime dependencies. Works in Node.js 18+, browsers, Deno, and Bun.
 ```
 
 ```java
-import io.openmetadata.ai.MetadataAI;
+import io.openmetadata.ai.AiSdk;
 
-MetadataAI client = new MetadataAI.Builder()
+AiSdk client = new AiSdk.Builder()
     .host("https://your-org.getcollate.io")
     .token("your-bot-jwt-token")
     .build();
@@ -196,7 +196,7 @@ All SDKs share a consistent API surface with language-idiomatic patterns:
 make build-all         # Build all SDKs
 make lint              # Lint all SDKs
 make test-all          # Run unit tests
-make test-integration  # Run integration tests (requires METADATA_HOST, METADATA_TOKEN)
+make test-integration  # Run integration tests (requires AI_SDK_HOST, AI_SDK_TOKEN)
 ```
 
 See [Releasing](docs/releasing.md) for version management and publishing.

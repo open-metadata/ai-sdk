@@ -31,8 +31,8 @@ pip install ai-sdk[langchain] langchain langchain-openai
 
 ```bash
 # OpenMetadata credentials
-export METADATA_HOST="https://your-openmetadata.com"
-export METADATA_TOKEN="your-jwt-token"
+export AI_SDK_HOST="https://your-openmetadata.com"
+export AI_SDK_TOKEN="your-jwt-token"
 
 # LLM API key
 export OPENAI_API_KEY="your-openai-key"
@@ -45,13 +45,13 @@ export SLACK_WEBHOOK_URL="https://hooks.slack.com/services/T00/B00/xxxx"
 
 The interactive agent is implemented in [`impact_analyzer.py`](./impact_analyzer.py). Here's how it works:
 
-1. **MCP tool selection** - It initializes a `MetadataAI` client and loads only the read-only MCP tools (`search_metadata`, `get_entity_details`, `get_entity_lineage`). Mutation tools are excluded so the agent can never modify your catalog during analysis.
+1. **MCP tool selection** - It initializes an `AiSdk` client and loads only the read-only MCP tools (`search_metadata`, `get_entity_details`, `get_entity_lineage`). Mutation tools are excluded so the agent can never modify your catalog during analysis.
 
 2. **System prompt** - A structured prompt instructs the LLM to follow a repeatable workflow: find the asset, trace lineage, identify owners, assess risk, and summarize the impact. The prompt also enforces a consistent output format with sections for affected assets, risk assessment, and recommended actions.
 
 3. **LangChain agent loop** - The tools and prompt are wired into a LangChain `AgentExecutor` with `max_iterations=10`, giving the LLM enough room to chain multiple tool calls (e.g., search for a table, get its details, then traverse its lineage).
 
-4. **Entity links** - The system prompt is configured with your `METADATA_HOST` so every entity in the report is a clickable link back to OpenMetadata (e.g., `[dim_customers](https://your-host/table/jaffle_shop.public.dim_customers)`).
+4. **Entity links** - The system prompt is configured with your `AI_SDK_HOST` so every entity in the report is a clickable link back to OpenMetadata (e.g., `[dim_customers](https://your-host/table/jaffle_shop.public.dim_customers)`).
 
 5. **Interactive REPL** - The `main()` function provides a terminal loop where you describe a planned change in plain English and receive a structured impact report.
 
@@ -293,8 +293,8 @@ jobs:
 
       - name: Run impact analysis
         env:
-          METADATA_HOST: ${{ secrets.METADATA_HOST }}
-          METADATA_TOKEN: ${{ secrets.METADATA_TOKEN }}
+          AI_SDK_HOST: ${{ secrets.AI_SDK_HOST }}
+          AI_SDK_TOKEN: ${{ secrets.AI_SDK_TOKEN }}
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
         run: python batch_analyzer.py changes.diff > impact_report.md
 

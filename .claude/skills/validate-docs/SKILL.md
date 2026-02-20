@@ -22,7 +22,7 @@ If no path provided, validates all docs in `docs/`.
 
 - [ ] **Environment variables are explicit**: Any `from_env()` usage must be preceded by showing which env vars to set
 - [ ] **Prerequisites section exists**: Each guide explains what the user needs before starting
-- [ ] **Credentials explained**: How to get `METADATA_HOST` and `METADATA_TOKEN` is documented
+- [ ] **Credentials explained**: How to get `AI_SDK_HOST` and `AI_SDK_TOKEN` is documented
 - [ ] **No assumed knowledge**: Don't assume user knows what "bot JWT token", "Dynamic Agent", etc. means
 
 ### 2. Code Examples
@@ -66,7 +66,7 @@ cd docs && for f in *.md; do grep -o '\[.*\]([^)]*\.md)' "$f" | while read link;
 done; done
 
 # Check for undefined env var usage
-grep -r "from_env()" docs/ --include="*.md" -B5 | grep -v "METADATA_HOST\|METADATA_TOKEN\|export"
+grep -r "from_env()" docs/ --include="*.md" -B5 | grep -v "AI_SDK_HOST\|AI_SDK_TOKEN\|export"
 
 # Check for placeholder URLs that should be more explicit
 grep -r "example\.com\|your-server\|your-instance" docs/ --include="*.md"
@@ -76,7 +76,7 @@ grep -r "example\.com\|your-server\|your-instance" docs/ --include="*.md"
 
 | Issue | Bad | Good |
 |-------|-----|------|
-| Unexplained env vars | `config = MetadataConfig.from_env()` | Show `export METADATA_HOST=...` first |
+| Unexplained env vars | `config = AiSdkConfig.from_env()` | Show `export AI_SDK_HOST=...` first |
 | Vague host URL | `https://metadata.example.com` | `https://your-org.getcollate.io` |
 | Undefined terms | "Use your bot JWT token" | "Use your bot's JWT token (from Settings > Bots)" |
 | Missing prereqs | Jump straight to code | Start with "Prerequisites" section |

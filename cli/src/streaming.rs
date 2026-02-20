@@ -1,6 +1,6 @@
 //! Server-Sent Events (SSE) parser for streaming responses.
 //!
-//! Parses the Metadata SSE format:
+//! Parses the SSE format:
 //! ```
 //! event: message
 //! data: {"streamId": "...", "conversationId": "...", "data": {"message": ChatMessage}}

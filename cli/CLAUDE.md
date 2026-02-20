@@ -30,7 +30,7 @@ cli/
 │   │   ├── app.rs       # Application state
 │   │   ├── ui.rs        # Layout and rendering
 │   │   └── markdown.rs  # Markdown renderer with syntax highlighting
-│   ├── client.rs        # HTTP client for Metadata API
+│   ├── client.rs        # HTTP client for AI SDK API
 │   ├── config.rs        # Config file management (~/.ai-sdk/)
 │   ├── streaming.rs     # SSE parser
 │   └── error.rs         # Error types
@@ -42,7 +42,7 @@ cli/
 
 - `~/.ai-sdk/config.toml` - Host and settings
 - `~/.ai-sdk/credentials` - Token (0600 permissions)
-- Environment override: `METADATA_HOST`, `METADATA_TOKEN`
+- Environment override: `AI_SDK_HOST`, `AI_SDK_TOKEN`
 
 ## Key Dependencies
 

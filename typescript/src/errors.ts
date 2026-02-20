@@ -8,13 +8,13 @@
 /**
  * Base error class for all Metadata AI SDK errors.
  */
-export class MetadataError extends Error {
+export class AiSdkError extends Error {
   /** HTTP status code associated with the error */
   public readonly statusCode?: number;
 
   constructor(message: string, statusCode?: number) {
     super(message);
-    this.name = 'MetadataError';
+    this.name = 'AiSdkError';
     this.statusCode = statusCode;
     // Maintains proper stack trace for where error was thrown (V8 engines)
     if (Error.captureStackTrace) {
@@ -28,7 +28,7 @@ export class MetadataError extends Error {
  *
  * This typically indicates an invalid or expired JWT token.
  */
-export class AuthenticationError extends MetadataError {
+export class AuthenticationError extends AiSdkError {
   constructor(message = 'Invalid or expired token') {
     super(message, 401);
     this.name = 'AuthenticationError';
@@ -38,7 +38,7 @@ export class AuthenticationError extends MetadataError {
 /**
  * Error thrown when the specified agent is not found (404).
  */
-export class AgentNotFoundError extends MetadataError {
+export class AgentNotFoundError extends AiSdkError {
   /** The name of the agent that was not found */
   public readonly agentName: string;
 
@@ -54,7 +54,7 @@ export class AgentNotFoundError extends MetadataError {
  *
  * Enable API access for the agent by setting apiEnabled=true in the agent configuration.
  */
-export class AgentNotEnabledError extends MetadataError {
+export class AgentNotEnabledError extends AiSdkError {
   /** The name of the agent that is not enabled */
   public readonly agentName: string;
 
@@ -71,7 +71,7 @@ export class AgentNotEnabledError extends MetadataError {
 /**
  * Error thrown when rate limit is exceeded (429).
  */
-export class RateLimitError extends MetadataError {
+export class RateLimitError extends AiSdkError {
   /** Number of seconds to wait before retrying (from Retry-After header) */
   public readonly retryAfter?: number;
 
@@ -85,7 +85,7 @@ export class RateLimitError extends MetadataError {
 /**
  * Error thrown when agent execution fails (500).
  */
-export class AgentExecutionError extends MetadataError {
+export class AgentExecutionError extends AiSdkError {
   /** The name of the agent that failed (if known) */
   public readonly agentName?: string;
 
@@ -99,7 +99,7 @@ export class AgentExecutionError extends MetadataError {
 /**
  * Error thrown when a network or connection error occurs.
  */
-export class NetworkError extends MetadataError {
+export class NetworkError extends AiSdkError {
   /** The original error that caused the network failure */
   public readonly cause?: Error;
 
@@ -113,7 +113,7 @@ export class NetworkError extends MetadataError {
 /**
  * Error thrown when a request times out.
  */
-export class TimeoutError extends MetadataError {
+export class TimeoutError extends AiSdkError {
   /** The timeout duration in milliseconds */
   public readonly timeoutMs: number;
 
@@ -127,7 +127,7 @@ export class TimeoutError extends MetadataError {
 /**
  * Error thrown when the specified bot is not found (404).
  */
-export class BotNotFoundError extends MetadataError {
+export class BotNotFoundError extends AiSdkError {
   /** The name of the bot that was not found */
   public readonly botName: string;
 
@@ -141,7 +141,7 @@ export class BotNotFoundError extends MetadataError {
 /**
  * Error thrown when the specified persona is not found (404).
  */
-export class PersonaNotFoundError extends MetadataError {
+export class PersonaNotFoundError extends AiSdkError {
   /** The name of the persona that was not found */
   public readonly personaName: string;
 
@@ -155,7 +155,7 @@ export class PersonaNotFoundError extends MetadataError {
 /**
  * Error thrown when the specified ability is not found (404).
  */
-export class AbilityNotFoundError extends MetadataError {
+export class AbilityNotFoundError extends AiSdkError {
   /** The name of the ability that was not found */
   public readonly abilityName: string;
 

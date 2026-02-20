@@ -1,12 +1,12 @@
 """
-Integration tests for Metadata AI Python SDK.
+Integration tests for AI SDK Python SDK.
 
-These tests run against a real Metadata instance and require:
-- METADATA_HOST: Base URL of the Metadata instance
-- METADATA_TOKEN: JWT authentication token
+These tests run against a real OpenMetadata instance and require:
+- AI_SDK_HOST: Base URL of the OpenMetadata instance
+- AI_SDK_TOKEN: JWT authentication token
 
 Optional:
-- METADATA_RUN_CHAT_TESTS: Set to "true" to run chat tests - invoke and streaming (uses AI tokens)
+- AI_SDK_RUN_CHAT_TESTS: Set to "true" to run chat tests - invoke and streaming (uses AI tokens)
 
 Run with: pytest tests/integration/ -v
 """
@@ -16,7 +16,7 @@ import uuid
 
 import pytest
 
-from ai_sdk import MetadataAI
+from ai_sdk import AiSdk
 from ai_sdk.exceptions import (
     AuthenticationError,
     PersonaNotFoundError,
@@ -25,15 +25,15 @@ from ai_sdk.models import CreateAgentRequest, CreatePersonaRequest
 
 # Skip all tests if credentials not configured
 pytestmark = pytest.mark.skipif(
-    not os.getenv("METADATA_HOST") or not os.getenv("METADATA_TOKEN"),
-    reason="Integration tests require METADATA_HOST and METADATA_TOKEN environment variables",
+    not os.getenv("AI_SDK_HOST") or not os.getenv("AI_SDK_TOKEN"),
+    reason="Integration tests require AI_SDK_HOST and AI_SDK_TOKEN environment variables",
 )
 
 # Check if chat tests should run (invoke + streaming - they use AI tokens)
-CHAT_TESTS_ENABLED = os.getenv("METADATA_RUN_CHAT_TESTS", "").lower() == "true"
+CHAT_TESTS_ENABLED = os.getenv("AI_SDK_RUN_CHAT_TESTS", "").lower() == "true"
 skip_chat = pytest.mark.skipif(
     not CHAT_TESTS_ENABLED,
-    reason="Chat tests disabled (set METADATA_RUN_CHAT_TESTS=true to enable)",
+    reason="Chat tests disabled (set AI_SDK_RUN_CHAT_TESTS=true to enable)",
 )
 
 
@@ -43,33 +43,33 @@ def unique_name(prefix: str) -> str:
 
 
 @pytest.fixture
-def client() -> MetadataAI:
-    """Create a MetadataAI client from environment variables."""
-    return MetadataAI(
-        host=os.environ["METADATA_HOST"],
-        token=os.environ["METADATA_TOKEN"],
+def client() -> AiSdk:
+    """Create an AiSdk client from environment variables."""
+    return AiSdk(
+        host=os.environ["AI_SDK_HOST"],
+        token=os.environ["AI_SDK_TOKEN"],
     )
 
 
 @pytest.fixture
-def async_client() -> MetadataAI:
-    """Create a MetadataAI client with async support."""
-    return MetadataAI(
-        host=os.environ["METADATA_HOST"],
-        token=os.environ["METADATA_TOKEN"],
+def async_client() -> AiSdk:
+    """Create an AiSdk client with async support."""
+    return AiSdk(
+        host=os.environ["AI_SDK_HOST"],
+        token=os.environ["AI_SDK_TOKEN"],
         enable_async=True,
     )
 
 
 @pytest.fixture
-def test_agent_name(client: MetadataAI) -> str | None:
+def test_agent_name(client: AiSdk) -> str | None:
     """Get or create a test agent for invoke/stream tests.
 
     Creates a new agent using an existing persona so it has LLM backend configured.
     Includes the discoveryAndSearch ability for proper testing.
     """
     # First check if there's a manually specified test agent
-    if name := os.getenv("METADATA_TEST_AGENT"):
+    if name := os.getenv("AI_SDK_TEST_AGENT"):
         return name
 
     # Get an existing persona to use (they have LLM configured)
@@ -100,14 +100,14 @@ def test_agent_name(client: MetadataAI) -> str | None:
 
 
 class TestConnection:
-    """Test basic connectivity to Metadata instance."""
+    """Test basic connectivity to OpenMetadata instance."""
 
-    def test_client_creation(self, client: MetadataAI) -> None:
+    def test_client_creation(self, client: AiSdk) -> None:
         """Test that client can be created with valid credentials."""
         assert client is not None
-        assert client.host == os.environ["METADATA_HOST"].rstrip("/")
+        assert client.host == os.environ["AI_SDK_HOST"].rstrip("/")
 
-    def test_list_agents(self, client: MetadataAI) -> None:
+    def test_list_agents(self, client: AiSdk) -> None:
         """Test that we can list agents (validates auth works)."""
         agents = client.list_agents()
         # Should return a list (may be empty, but shouldn't error)
@@ -116,8 +116,8 @@ class TestConnection:
 
     def test_invalid_token_rejected(self) -> None:
         """Test that invalid tokens are rejected."""
-        client = MetadataAI(
-            host=os.environ["METADATA_HOST"],
+        client = AiSdk(
+            host=os.environ["AI_SDK_HOST"],
             token="invalid-token-12345",
         )
         with pytest.raises(AuthenticationError):
@@ -127,7 +127,7 @@ class TestConnection:
 class TestAgentOperations:
     """Test agent operations against a real agent."""
 
-    def test_get_agent_info(self, client: MetadataAI, test_agent_name: str | None) -> None:
+    def test_get_agent_info(self, client: AiSdk, test_agent_name: str | None) -> None:
         """Test getting agent info."""
         if not test_agent_name:
             pytest.skip("No test agent available")
@@ -140,7 +140,7 @@ class TestAgentOperations:
         print(f"Agent '{test_agent_name}' info: {info.description or 'No description'}")
 
     @skip_chat
-    def test_invoke_agent(self, client: MetadataAI, test_agent_name: str | None) -> None:
+    def test_invoke_agent(self, client: AiSdk, test_agent_name: str | None) -> None:
         """Test invoking an agent with a simple message."""
         if not test_agent_name:
             pytest.skip("No test agent available")
@@ -154,7 +154,7 @@ class TestAgentOperations:
         print(f"Agent response: {response.response[:200]}...")
 
     @skip_chat
-    def test_stream_agent(self, client: MetadataAI, test_agent_name: str | None) -> None:
+    def test_stream_agent(self, client: AiSdk, test_agent_name: str | None) -> None:
         """Test streaming response from an agent."""
         if not test_agent_name:
             pytest.skip("No test agent available")
@@ -176,16 +176,14 @@ class TestAsyncOperations:
     """Test async operations."""
 
     @pytest.mark.asyncio
-    async def test_async_list_agents(self, async_client: MetadataAI) -> None:
+    async def test_async_list_agents(self, async_client: AiSdk) -> None:
         """Test async agent listing."""
         agents = await async_client.alist_agents()
         assert isinstance(agents, list)
 
     @skip_chat
     @pytest.mark.asyncio
-    async def test_async_invoke(
-        self, async_client: MetadataAI, test_agent_name: str | None
-    ) -> None:
+    async def test_async_invoke(self, async_client: AiSdk, test_agent_name: str | None) -> None:
         """Test async agent invocation."""
         if not test_agent_name:
             pytest.skip("No test agent available")
@@ -198,9 +196,7 @@ class TestAsyncOperations:
 
     @skip_chat
     @pytest.mark.asyncio
-    async def test_async_stream(
-        self, async_client: MetadataAI, test_agent_name: str | None
-    ) -> None:
+    async def test_async_stream(self, async_client: AiSdk, test_agent_name: str | None) -> None:
         """Test async streaming."""
         if not test_agent_name:
             pytest.skip("No test agent available")
@@ -221,19 +217,19 @@ class TestAsyncOperations:
 class TestPersonaOperations:
     """Test persona CRUD operations."""
 
-    def test_list_personas(self, client: MetadataAI) -> None:
+    def test_list_personas(self, client: AiSdk) -> None:
         """Test listing personas."""
         personas = client.list_personas()
         assert isinstance(personas, list)
         print(f"Found {len(personas)} personas")
 
-    def test_list_personas_with_limit(self, client: MetadataAI) -> None:
+    def test_list_personas_with_limit(self, client: AiSdk) -> None:
         """Test listing personas with limit."""
         personas = client.list_personas(limit=5)
         assert isinstance(personas, list)
         assert len(personas) <= 5
 
-    def test_get_persona(self, client: MetadataAI) -> None:
+    def test_get_persona(self, client: AiSdk) -> None:
         """Test getting a specific persona."""
         # First, list personas to get one that exists
         personas = client.list_personas()
@@ -247,13 +243,13 @@ class TestPersonaOperations:
         assert persona.name == persona_name
         print(f"Got persona: {persona.name} ({persona.display_name or 'No display name'})")
 
-    def test_get_persona_not_found(self, client: MetadataAI) -> None:
+    def test_get_persona_not_found(self, client: AiSdk) -> None:
         """Test that getting a non-existent persona raises error."""
         with pytest.raises(PersonaNotFoundError) as exc_info:
             client.get_persona("non-existent-persona-12345")
         assert exc_info.value.status_code == 404
 
-    def test_create_persona(self, client: MetadataAI) -> None:
+    def test_create_persona(self, client: AiSdk) -> None:
         """Test creating a new persona."""
         persona_name = unique_name("persona")
         request = CreatePersonaRequest(
@@ -271,13 +267,13 @@ class TestPersonaOperations:
         print(f"Created persona: {created.name}")
 
     @pytest.mark.asyncio
-    async def test_async_list_personas(self, async_client: MetadataAI) -> None:
+    async def test_async_list_personas(self, async_client: AiSdk) -> None:
         """Test async listing personas."""
         personas = await async_client.alist_personas()
         assert isinstance(personas, list)
 
     @pytest.mark.asyncio
-    async def test_async_get_persona(self, async_client: MetadataAI) -> None:
+    async def test_async_get_persona(self, async_client: AiSdk) -> None:
         """Test async getting a specific persona."""
         personas = await async_client.alist_personas()
         if not personas:
@@ -287,7 +283,7 @@ class TestPersonaOperations:
         assert persona is not None
 
     @pytest.mark.asyncio
-    async def test_async_create_persona(self, async_client: MetadataAI) -> None:
+    async def test_async_create_persona(self, async_client: AiSdk) -> None:
         """Test async creating a persona."""
         persona_name = unique_name("async-persona")
         request = CreatePersonaRequest(
@@ -304,19 +300,19 @@ class TestPersonaOperations:
 class TestBotOperations:
     """Test bot listing operations."""
 
-    def test_list_bots(self, client: MetadataAI) -> None:
+    def test_list_bots(self, client: AiSdk) -> None:
         """Test listing bots."""
         bots = client.list_bots()
         assert isinstance(bots, list)
         print(f"Found {len(bots)} bots")
 
-    def test_list_bots_with_limit(self, client: MetadataAI) -> None:
+    def test_list_bots_with_limit(self, client: AiSdk) -> None:
         """Test listing bots with limit."""
         bots = client.list_bots(limit=5)
         assert isinstance(bots, list)
         assert len(bots) <= 5
 
-    def test_get_bot(self, client: MetadataAI) -> None:
+    def test_get_bot(self, client: AiSdk) -> None:
         """Test getting a specific bot."""
         bots = client.list_bots()
         if not bots:
@@ -330,13 +326,13 @@ class TestBotOperations:
         print(f"Got bot: {bot.name} ({bot.display_name or 'No display name'})")
 
     @pytest.mark.asyncio
-    async def test_async_list_bots(self, async_client: MetadataAI) -> None:
+    async def test_async_list_bots(self, async_client: AiSdk) -> None:
         """Test async listing bots."""
         bots = await async_client.alist_bots()
         assert isinstance(bots, list)
 
     @pytest.mark.asyncio
-    async def test_async_get_bot(self, async_client: MetadataAI) -> None:
+    async def test_async_get_bot(self, async_client: AiSdk) -> None:
         """Test async getting a specific bot."""
         bots = await async_client.alist_bots()
         if not bots:
@@ -349,19 +345,19 @@ class TestBotOperations:
 class TestAbilityOperations:
     """Test ability listing operations."""
 
-    def test_list_abilities(self, client: MetadataAI) -> None:
+    def test_list_abilities(self, client: AiSdk) -> None:
         """Test listing abilities."""
         abilities = client.list_abilities()
         assert isinstance(abilities, list)
         print(f"Found {len(abilities)} abilities")
 
-    def test_list_abilities_with_limit(self, client: MetadataAI) -> None:
+    def test_list_abilities_with_limit(self, client: AiSdk) -> None:
         """Test listing abilities with limit."""
         abilities = client.list_abilities(limit=5)
         assert isinstance(abilities, list)
         assert len(abilities) <= 5
 
-    def test_ability_has_expected_fields(self, client: MetadataAI) -> None:
+    def test_ability_has_expected_fields(self, client: AiSdk) -> None:
         """Test that abilities have expected fields."""
         abilities = client.list_abilities()
         if not abilities:
@@ -373,7 +369,7 @@ class TestAbilityOperations:
         print(f"Ability: {ability.name}")
 
     @pytest.mark.asyncio
-    async def test_async_list_abilities(self, async_client: MetadataAI) -> None:
+    async def test_async_list_abilities(self, async_client: AiSdk) -> None:
         """Test async listing abilities."""
         abilities = await async_client.alist_abilities()
         assert isinstance(abilities, list)
@@ -382,7 +378,7 @@ class TestAbilityOperations:
 class TestAgentCRUDOperations:
     """Test agent CRUD operations."""
 
-    def test_create_agent(self, client: MetadataAI) -> None:
+    def test_create_agent(self, client: AiSdk) -> None:
         """Test creating a new agent."""
         # First, get a persona to use
         personas = client.list_personas()
@@ -404,7 +400,7 @@ class TestAgentCRUDOperations:
         assert created.name == agent_name
         print(f"Created agent: {created.name}")
 
-    def test_create_agent_with_abilities(self, client: MetadataAI) -> None:
+    def test_create_agent_with_abilities(self, client: AiSdk) -> None:
         """Test creating an agent with abilities."""
         personas = client.list_personas()
         abilities = client.list_abilities()
@@ -433,7 +429,7 @@ class TestAgentCRUDOperations:
         print(f"Created agent with abilities: {created.name}")
 
     @pytest.mark.asyncio
-    async def test_async_create_agent(self, async_client: MetadataAI) -> None:
+    async def test_async_create_agent(self, async_client: AiSdk) -> None:
         """Test async creating an agent."""
         personas = await async_client.alist_personas()
         if not personas:

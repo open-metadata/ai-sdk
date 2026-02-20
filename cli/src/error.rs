@@ -1,4 +1,4 @@
-//! Error types for the Metadata AI CLI.
+//! Error types for the AI SDK CLI.
 
 use colored::Colorize;
 use serde::Deserialize;
@@ -10,7 +10,7 @@ pub enum CliError {
     #[error("Authentication failed. Run: ai-sdk configure")]
     AuthenticationFailed,
 
-    #[error("Agent '{0}' is not API-enabled. Enable API access in the Metadata UI.")]
+    #[error("Agent '{0}' is not API-enabled. Enable API access in the OpenMetadata UI.")]
     AgentNotEnabled(String),
 
     #[error("Agent '{0}' not found. Run: ai-sdk agents list")]

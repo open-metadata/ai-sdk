@@ -1,7 +1,7 @@
 package io.openmetadata.ai.exceptions;
 
 /** Exception thrown when an agent is not found (HTTP 404). */
-public class AgentNotFoundException extends MetadataException {
+public class AgentNotFoundException extends AiSdkException {
 
   private final String agentName;
 

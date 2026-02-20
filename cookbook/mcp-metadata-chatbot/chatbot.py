@@ -18,8 +18,8 @@ Usage:
     python chatbot.py
 
 Environment variables required:
-    METADATA_HOST     - Your OpenMetadata server URL
-    METADATA_TOKEN    - Your bot's JWT token
+    AI_SDK_HOST       - Your OpenMetadata server URL
+    AI_SDK_TOKEN      - Your bot's JWT token
     OPENAI_API_KEY    - OpenAI API key (or configure different LLM)
 """
 
@@ -30,7 +30,7 @@ from langchain_core.callbacks import CallbackManagerForToolRun
 from langchain_core.tools import BaseTool
 from pydantic import BaseModel, Field
 
-from ai_sdk import MetadataAI, MetadataConfig
+from ai_sdk import AiSdk, AiSdkConfig
 from ai_sdk.mcp.models import MCPTool
 
 
@@ -165,7 +165,7 @@ Rules:
 # ---------------------------------------------------------------------------
 
 def _create_specialist(
-    client: MetadataAI,
+    client: AiSdk,
     tools: list[MCPTool],
     system_prompt: str,
 ):
@@ -304,12 +304,12 @@ class UpdateMetadataTool(BaseTool):
 def create_chatbot():
     """Create the multi-agent metadata chatbot.
 
-    Returns the orchestrator agent and the MetadataAI client.
+    Returns the orchestrator agent and the AiSdk client.
     The orchestrator delegates to three specialist agents (Discovery,
     Lineage, Curator), each with their own MCP tools.
     """
-    config = MetadataConfig.from_env()
-    client = MetadataAI.from_config(config)
+    config = AiSdkConfig.from_env()
+    client = AiSdk.from_config(config)
     host = config.host.rstrip("/")
 
     # Create specialist agents, each with a focused set of MCP tools

@@ -19,7 +19,7 @@ npm run lint         # Run ESLint
 typescript/
 ├── src/
 │   ├── index.ts      # Public exports
-│   ├── client.ts     # MetadataAI main client
+│   ├── client.ts     # AiSdk main client
 │   ├── agent.ts      # AgentHandle class
 │   ├── models.ts     # TypeScript interfaces
 │   ├── errors.ts     # Error classes
@@ -41,7 +41,7 @@ typescript/
 ## API Pattern
 
 ```typescript
-const client = new MetadataAI({ host, token });
+const client = new AiSdk({ host, token });
 const response = await client.agent('name').invoke('message');
 
 // Streaming

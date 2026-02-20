@@ -1,4 +1,4 @@
-"""Tests for the Metadata AI SDK authentication."""
+"""Tests for the AI SDK authentication."""
 
 import pytest
 

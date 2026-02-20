@@ -6,9 +6,9 @@
  *   node cookbook/gdpr-dsar-compliance/serve.js
  *
  * Environment variables:
- *   METADATA_HOST   (default: http://localhost:8585)
- *   METADATA_TOKEN  (default: dev JWT)
- *   METADATA_AGENT  (default: GDPRComplianceAnalyzer)
+ *   AI_SDK_HOST     (default: http://localhost:8585)
+ *   AI_SDK_TOKEN    (default: dev JWT)
+ *   AI_SDK_AGENT    (default: GDPRComplianceAnalyzer)
  *   PORT            (default: 8080)
  */
 
@@ -16,19 +16,19 @@ import { createServer } from "node:http";
 import { readFile } from "node:fs/promises";
 import { join, extname } from "node:path";
 import { fileURLToPath } from "node:url";
-import { MetadataAI } from "./ai-sdk.js";
+import { AiSdk } from "./ai-sdk.js";
 
-const HOST = (process.env.METADATA_HOST || "http://localhost:8585").replace(/\/$/, "");
+const HOST = (process.env.AI_SDK_HOST || "http://localhost:8585").replace(/\/$/, "");
 const TOKEN =
-  process.env.METADATA_TOKEN ||
+  process.env.AI_SDK_TOKEN ||
   "eyJraWQiOiJHYjM4OWEtOWY3Ni1nZGpzLWE5MmotMDI0MmJrOTQzNTYiLCJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlzQm90IjpmYWxzZSwiaXNzIjoib3Blbi1tZXRhZGF0YS5vcmciLCJpYXQiOjE2NjM5Mzg0NjIsImVtYWlsIjoiYWRtaW5Ab3Blbm1ldGFkYXRhLm9yZyJ9.tS8um_5DKu7HgzGBzS1VTA5uUjKWOCU0B_j08WXBiEC0mr0zNREkqVfwFDD-d24HlNEbrqioLsBuFRiwIWKc1m_ZlVQbG7P36RUxhuv2vbSp80FKyNM-Tj93FDzq91jsyNmsQhyNv_fNr3TXfzzSPjHt8Go0FMMP66weoKMgW2PbXlhVKwEuXUHyakLLzewm9UMeQaEiRzhiTMU3UkLXcKbYEJJvfNFcLwSl9W8JCO_l0Yj3ud-qt_nQYEZwqW6u5nfdQllN133iikV4fM5QZsMCnm8Rq1mvLR0y9bmJiD7fwM1tmJ791TUWqmKaTnP49U493VanKpUAfzIiOiIbhg";
-const AGENT_NAME = process.env.METADATA_AGENT || "GDPRComplianceAnalyzer";
+const AGENT_NAME = process.env.AI_SDK_AGENT || "GDPRComplianceAnalyzer";
 const PORT = parseInt(process.env.PORT || "8080", 10);
 const DIR = fileURLToPath(new URL(".", import.meta.url));
 const MIME = { ".html": "text/html", ".js": "text/javascript" };
 
 // ── SDK client (same pattern as the Rust TUI) ──────────────────────
-const client = new MetadataAI({ host: HOST, token: TOKEN });
+const client = new AiSdk({ host: HOST, token: TOKEN });
 const agent = client.agent(AGENT_NAME);
 
 // A real report is at least this long; anything shorter is the agent

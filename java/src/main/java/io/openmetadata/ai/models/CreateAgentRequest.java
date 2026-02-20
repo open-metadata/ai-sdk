@@ -294,7 +294,7 @@ public class CreateAgentRequest {
       if (!mode.equals("chat") && !mode.equals("agent") && !mode.equals("both")) {
         throw new IllegalArgumentException("mode must be one of: chat, agent, both");
       }
-      // Create request with null references - they will be resolved by MetadataAI.createAgent()
+      // Create request with null references - they will be resolved by AiSdk.createAgent()
       return new CreateAgentRequest(
           name,
           description,
@@ -312,8 +312,7 @@ public class CreateAgentRequest {
     }
 
     /**
-     * Build the request with resolved entity references. Used internally by
-     * MetadataAI.createAgent().
+     * Build the request with resolved entity references. Used internally by AiSdk.createAgent().
      */
     public CreateAgentRequest build(EntityReference persona, List<EntityReference> abilities) {
       if (name == null || name.isEmpty()) {

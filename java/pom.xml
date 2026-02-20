@@ -10,8 +10,8 @@
     <version>0.0.2</version>
     <packaging>jar</packaging>
 
-    <name>Metadata AI SDK</name>
-    <description>Java SDK for Metadata AI Agents</description>
+    <name>AI SDK</name>
+    <description>Java SDK for AI Agents</description>
     <url>https://github.com/open-metadata/metadata-ai-sdk</url>
 
     <licenses>

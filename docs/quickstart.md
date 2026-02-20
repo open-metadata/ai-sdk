@@ -1,6 +1,6 @@
-# Metadata AI SDK - Quick Start
+# AI SDK - Quick Start
 
-Get started with the Metadata AI SDK in under 5 minutes.
+Get started with the AI SDK in under 5 minutes.
 
 ## Prerequisites
 
@@ -23,11 +23,11 @@ pip install ai-sdk
 # Examples:
 #   Collate Cloud: https://your-org.getcollate.io
 #   Self-hosted:   https://openmetadata.yourcompany.com
-export METADATA_HOST="https://your-org.getcollate.io"
+export AI_SDK_HOST="https://your-org.getcollate.io"
 
 # Your bot's JWT token (from Settings > Bots in your instance)
 # This is a long base64-encoded string starting with "eyJ..."
-export METADATA_TOKEN="eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9..."
+export AI_SDK_TOKEN="eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9..."
 ```
 
 **Note:** Never commit tokens to version control. Use environment variables, `.env` files (with `.gitignore`), or secrets management.
@@ -35,11 +35,11 @@ export METADATA_TOKEN="eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9..."
 ## Basic Usage
 
 ```python
-from ai_sdk import MetadataAI, MetadataConfig
+from ai_sdk import AiSdk, AiSdkConfig
 
 # Create client from environment
-config = MetadataConfig.from_env()
-client = MetadataAI.from_config(config)
+config = AiSdkConfig.from_env()
+client = AiSdk.from_config(config)
 
 # Invoke an agent
 response = client.agent("DataQualityPlannerAgent").call(
@@ -75,8 +75,8 @@ for event in client.agent("SqlQueryAgent").stream("Generate a query"):
 import asyncio
 
 async def main():
-    client = MetadataAI.from_config(
-        MetadataConfig.from_env(enable_async=True)
+    client = AiSdk.from_config(
+        AiSdkConfig.from_env(enable_async=True)
     )
     response = await client.agent("MyAgent").acall("Hello")
     print(response.response)
@@ -122,13 +122,13 @@ agent = client.create_agent(CreateAgentRequest(
 
 ## Troubleshooting
 
-### "Missing METADATA_HOST environment variable"
+### "Missing AI_SDK_HOST environment variable"
 
 You haven't set the required environment variables. Run:
 
 ```bash
-export METADATA_HOST="https://your-org.getcollate.io"
-export METADATA_TOKEN="your-jwt-token"
+export AI_SDK_HOST="https://your-org.getcollate.io"
+export AI_SDK_TOKEN="your-jwt-token"
 ```
 
 ### "Authentication failed" or 401 error
@@ -136,7 +136,7 @@ export METADATA_TOKEN="your-jwt-token"
 Your JWT token is invalid or expired. Generate a new one:
 1. Go to Settings > Bots in your OpenMetadata/Collate instance
 2. Select your bot and regenerate the token
-3. Update your `METADATA_TOKEN` environment variable
+3. Update your `AI_SDK_TOKEN` environment variable
 
 ### "Agent not found" or 404 error
 
@@ -158,7 +158,7 @@ The agent exists but isn't enabled for API use:
 If using self-hosted OpenMetadata with self-signed certificates:
 
 ```python
-client = MetadataAI(
+client = AiSdk(
     host="https://your-server.com",
     token="your-token",
     verify_ssl=False  # Disable SSL verification (not recommended for production)
@@ -168,7 +168,7 @@ client = MetadataAI(
 Or set the environment variable:
 
 ```bash
-export METADATA_VERIFY_SSL="false"
+export AI_SDK_VERIFY_SSL="false"
 ```
 
 ## Need Help?

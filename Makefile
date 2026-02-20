@@ -267,13 +267,13 @@ test-all:  ## Run unit tests for all SDKs
 	cd java && mvn test -q
 	@echo "All unit tests completed"
 
-test-integration:  ## Run integration tests (requires METADATA_HOST and METADATA_TOKEN)
-	@if [ -z "$(METADATA_HOST)" ] || [ -z "$(METADATA_TOKEN)" ]; then \
-		echo "Error: METADATA_HOST and METADATA_TOKEN must be set"; \
-		echo "Usage: METADATA_HOST=https://... METADATA_TOKEN=... make test-integration"; \
+test-integration:  ## Run integration tests (requires AI_SDK_HOST and AI_SDK_TOKEN)
+	@if [ -z "$(AI_SDK_HOST)" ] || [ -z "$(AI_SDK_TOKEN)" ]; then \
+		echo "Error: AI_SDK_HOST and AI_SDK_TOKEN must be set"; \
+		echo "Usage: AI_SDK_HOST=https://... AI_SDK_TOKEN=... make test-integration"; \
 		exit 1; \
 	fi
-	@echo "Running integration tests against $(METADATA_HOST)..."
+	@echo "Running integration tests against $(AI_SDK_HOST)..."
 	@echo ""
 	@echo "=== Python SDK ==="
 	cd python && pytest tests/integration/ -v --tb=short

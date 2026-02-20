@@ -1,21 +1,21 @@
-"""Tests for the Metadata AI SDK exceptions."""
+"""Tests for the AI SDK exceptions."""
 
 from ai_sdk.exceptions import (
     AgentExecutionError,
     AgentNotEnabledError,
     AgentNotFoundError,
+    AiSdkError,
     AuthenticationError,
-    MetadataError,
     RateLimitError,
 )
 
 
-class TestMetadataError:
-    """Tests for base MetadataError."""
+class TestAiSdkError:
+    """Tests for base AiSdkError."""
 
     def test_stores_message_and_status_code(self):
-        """MetadataError stores message and status code."""
-        error = MetadataError("Something went wrong", status_code=500)
+        """AiSdkError stores message and status code."""
+        error = AiSdkError("Something went wrong", status_code=500)
 
         assert str(error) == "Something went wrong"
         assert error.message == "Something went wrong"

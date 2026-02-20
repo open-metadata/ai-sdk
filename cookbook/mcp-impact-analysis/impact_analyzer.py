@@ -11,8 +11,8 @@ Usage:
     python impact_analyzer.py
 
 Environment variables required:
-    METADATA_HOST     - Your OpenMetadata server URL
-    METADATA_TOKEN    - Your bot's JWT token
+    AI_SDK_HOST       - Your OpenMetadata server URL
+    AI_SDK_TOKEN      - Your bot's JWT token
     OPENAI_API_KEY    - OpenAI API key (or configure different LLM)
 
 Optional:
@@ -26,7 +26,7 @@ import urllib.error
 
 from langchain.agents import create_agent
 
-from ai_sdk import MetadataAI, MetadataConfig
+from ai_sdk import AiSdk, AiSdkConfig
 from ai_sdk.mcp.models import MCPTool
 
 
@@ -77,8 +77,8 @@ Use the available tools to gather accurate, real-time metadata.
 def create_impact_analyzer():
     """Create an impact analysis agent with MCP tools."""
 
-    config = MetadataConfig.from_env()
-    client = MetadataAI.from_config(config)
+    config = AiSdkConfig.from_env()
+    client = AiSdk.from_config(config)
 
     # Use read-only MCP tools for safety
     tools = client.mcp.as_langchain_tools(

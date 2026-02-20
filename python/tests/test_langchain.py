@@ -1,24 +1,24 @@
-"""Tests for the Metadata AI SDK LangChain integration."""
+"""Tests for the AI SDK LangChain integration."""
 
 import json
 
 import pytest
 from pytest_httpx import HTTPXMock
 
-from ai_sdk.client import MetadataAI
+from ai_sdk.client import AiSdk
 
 pytest.importorskip("langchain_core")
 
 from ai_sdk.integrations.langchain import (
-    MetadataAgentTool,
-    create_metadata_tools,
+    AiSdkAgentTool,
+    create_ai_sdk_tools,
 )
 
 
 @pytest.fixture
 def client():
-    """MetadataAI client fixture with retries disabled for testing."""
-    c = MetadataAI(
+    """AiSdk client fixture with retries disabled for testing."""
+    c = AiSdk(
         host="https://metadata.example.com",
         token="test-jwt-token",
         max_retries=0,
@@ -55,12 +55,12 @@ def mock_agent_invoke(httpx_mock: HTTPXMock):
     )
 
 
-class TestMetadataAgentToolInit:
-    """Tests for MetadataAgentTool initialization."""
+class TestAiSdkAgentToolInit:
+    """Tests for AiSdkAgentTool initialization."""
 
     def test_from_client_creates_tool_with_auto_description(self, client, mock_agent_info):
         """from_client creates tool with name and auto-generated description."""
-        tool = MetadataAgentTool.from_client(client, "DataQualityAgent")
+        tool = AiSdkAgentTool.from_client(client, "DataQualityAgent")
 
         assert tool.name == "metadata_DataQualityAgent"
         assert "data quality" in tool.description.lower()
@@ -69,7 +69,7 @@ class TestMetadataAgentToolInit:
 
     def test_from_client_accepts_custom_name_and_description(self, client, mock_agent_info):
         """from_client accepts custom name and description."""
-        tool = MetadataAgentTool.from_client(
+        tool = AiSdkAgentTool.from_client(
             client,
             "DataQualityAgent",
             name="my_custom_tool",
@@ -86,20 +86,20 @@ class TestMetadataAgentToolInit:
             status_code=500,
         )
 
-        tool = MetadataAgentTool.from_client(client, "UnknownAgent")
+        tool = AiSdkAgentTool.from_client(client, "UnknownAgent")
 
         assert tool.name == "metadata_UnknownAgent"
         assert "UnknownAgent" in tool.description
 
 
-class TestMetadataAgentToolRun:
-    """Tests for MetadataAgentTool._run() method."""
+class TestAiSdkAgentToolRun:
+    """Tests for AiSdkAgentTool._run() method."""
 
     def test_run_invokes_agent_and_returns_response(
         self, client, mock_agent_info, mock_agent_invoke
     ):
         """_run invokes agent and returns response text."""
-        tool = MetadataAgentTool.from_client(client, "DataQualityAgent")
+        tool = AiSdkAgentTool.from_client(client, "DataQualityAgent")
 
         result = tool._run("Check data quality of customers table")
 
@@ -116,7 +116,7 @@ class TestMetadataAgentToolRun:
             json={"conversationId": "conv-first", "response": "Second response"},
         )
 
-        tool = MetadataAgentTool.from_client(client, "DataQualityAgent")
+        tool = AiSdkAgentTool.from_client(client, "DataQualityAgent")
         tool._run("First query")
         tool._run("Second query")
 
@@ -134,7 +134,7 @@ class TestMetadataAgentToolRun:
             json={"conversationId": "conv-to-reset", "response": "OK"},
         )
 
-        tool = MetadataAgentTool.from_client(client, "DataQualityAgent")
+        tool = AiSdkAgentTool.from_client(client, "DataQualityAgent")
         tool._run("Query")
         assert tool._conversation_id == "conv-to-reset"
 
@@ -142,12 +142,12 @@ class TestMetadataAgentToolRun:
         assert tool._conversation_id is None
 
 
-class TestMetadataAgentToolLangChainInterface:
+class TestAiSdkAgentToolLangChainInterface:
     """Tests for LangChain BaseTool interface compliance."""
 
     def test_invoke_method_works(self, client, mock_agent_info, mock_agent_invoke):
         """Tool works with LangChain invoke() method."""
-        tool = MetadataAgentTool.from_client(client, "DataQualityAgent")
+        tool = AiSdkAgentTool.from_client(client, "DataQualityAgent")
 
         result = tool.invoke({"query": "Test query"})
 
@@ -155,11 +155,11 @@ class TestMetadataAgentToolLangChainInterface:
         assert "data quality" in result.lower()
 
 
-class TestCreateMetadataTools:
-    """Tests for create_metadata_tools helper function."""
+class TestCreateAiSdkTools:
+    """Tests for create_ai_sdk_tools helper function."""
 
     def test_creates_tools_for_specific_agents(self, client, httpx_mock: HTTPXMock):
-        """create_metadata_tools creates tools for specified agent names."""
+        """create_ai_sdk_tools creates tools for specified agent names."""
         httpx_mock.add_response(
             url="https://metadata.example.com/api/v1/agents/dynamic/name/Agent1",
             json={
@@ -181,14 +181,14 @@ class TestCreateMetadataTools:
             },
         )
 
-        tools = create_metadata_tools(client, agent_names=["Agent1", "Agent2"])
+        tools = create_ai_sdk_tools(client, agent_names=["Agent1", "Agent2"])
 
         assert len(tools) == 2
         assert tools[0].name == "metadata_Agent1"
         assert tools[1].name == "metadata_Agent2"
 
     def test_creates_tools_for_api_enabled_agents_only(self, client, httpx_mock: HTTPXMock):
-        """create_metadata_tools with None fetches only API-enabled agents."""
+        """create_ai_sdk_tools with None fetches only API-enabled agents."""
         httpx_mock.add_response(
             url="https://metadata.example.com/api/v1/agents/dynamic/?apiEnabled=true&limit=100",
             json={
@@ -209,7 +209,7 @@ class TestCreateMetadataTools:
             },
         )
 
-        tools = create_metadata_tools(client)
+        tools = create_ai_sdk_tools(client)
 
         assert len(tools) == 1
         assert tools[0].name == "metadata_EnabledAgent"

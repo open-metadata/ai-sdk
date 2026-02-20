@@ -1,2 +1,2 @@
-export * from './nodes/MetadataAgent/MetadataAgent.node';
-export * from './credentials/MetadataApi.credentials';
+export * from './nodes/AiSdkAgent/AiSdkAgent.node';
+export * from './credentials/AiSdkApi.credentials';

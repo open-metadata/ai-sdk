@@ -6,9 +6,9 @@
  */
 
 /**
- * Configuration options for the MetadataAI client.
+ * Configuration options for the AiSdk client.
  */
-export interface MetadataAIOptions {
+export interface AiSdkOptions {
   /** The OpenMetadata server URL (e.g., "https://openmetadata.example.com") */
   host: string;
   /** JWT bot token for authentication */

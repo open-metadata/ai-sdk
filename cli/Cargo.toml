@@ -2,7 +2,7 @@
 name = "ai-sdk"
 version = "0.0.2"
 edition = "2021"
-description = "Command-line tool for Metadata AI Agents"
+description = "Command-line tool for OpenMetadata AI Agents"
 authors = ["OpenMetadata <support@open-metadata.org>"]
 license = "LicenseRef-Collate-Community-1.0"
 repository = "https://github.com/open-metadata/metadata-ai-sdk"

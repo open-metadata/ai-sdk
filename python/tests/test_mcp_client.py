@@ -3,7 +3,7 @@
 import pytest
 from pytest_httpx import HTTPXMock
 
-from ai_sdk.client import MetadataAI
+from ai_sdk.client import AiSdk
 from ai_sdk.exceptions import MCPError, MCPToolExecutionError
 from ai_sdk.mcp._client import MCPClient
 from ai_sdk.mcp.models import MCPTool, ToolInfo
@@ -11,8 +11,8 @@ from ai_sdk.mcp.models import MCPTool, ToolInfo
 
 @pytest.fixture
 def client():
-    """MetadataAI client fixture."""
-    c = MetadataAI(
+    """AiSdk client fixture."""
+    c = AiSdk(
         host="https://metadata.example.com",
         token="test-token",
         max_retries=0,
@@ -25,7 +25,7 @@ class TestMCPClientInit:
     """Tests for MCPClient initialization."""
 
     def test_mcp_client_created_from_metadata_client(self, client):
-        """MCPClient can be created from MetadataAI client."""
+        """MCPClient can be created from AiSdk client."""
         mcp = MCPClient(client._host, client._auth, client._http)
         assert mcp is not None
 
@@ -184,16 +184,16 @@ class TestMCPClientCallTool:
         assert "Tool execution failed" in str(exc_info.value)
 
 
-class TestMetadataAIMCPProperty:
-    """Tests for MetadataAI.mcp property."""
+class TestAiSdkMCPProperty:
+    """Tests for AiSdk.mcp property."""
 
     def test_mcp_property_returns_mcp_client(self, client):
-        """MetadataAI.mcp returns MCPClient instance."""
+        """AiSdk.mcp returns MCPClient instance."""
         mcp = client.mcp
         assert isinstance(mcp, MCPClient)
 
     def test_mcp_property_is_cached(self, client):
-        """MetadataAI.mcp returns same instance on repeated access."""
+        """AiSdk.mcp returns same instance on repeated access."""
         mcp1 = client.mcp
         mcp2 = client.mcp
         assert mcp1 is mcp2
