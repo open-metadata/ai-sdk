@@ -1,0 +1,39 @@
+[package]
+name = "ai-sdk"
+version = "0.0.2"
+edition = "2021"
+description = "Command-line tool for Metadata AI Agents"
+authors = ["OpenMetadata <support@open-metadata.org>"]
+license = "LicenseRef-Collate-Community-1.0"
+repository = "https://github.com/open-metadata/metadata-ai-sdk"
+keywords = ["cli", "ai", "agents", "metadata"]
+categories = ["command-line-utilities"]
+
+[dependencies]
+clap = { version = "4", features = ["derive"] }
+reqwest = { version = "0.12", default-features = false, features = ["json", "stream", "rustls-tls"] }
+tokio = { version = "1", features = ["full"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+toml = "0.8"
+dirs = "5"
+anyhow = "1"
+thiserror = "1"
+colored = "2"
+futures-util = "0.3"
+urlencoding = "2.1"
+
+# TUI dependencies
+ratatui = "0.26"
+crossterm = { version = "0.27", features = ["event-stream"] }
+syntect = { version = "5.2", default-features = false, features = ["default-syntaxes", "default-themes", "regex-onig"] }
+pulldown-cmark = "0.10"
+
+[dev-dependencies]
+uuid = { version = "1", features = ["v4"] }
+
+[profile.release]
+opt-level = "z"
+lto = true
+codegen-units = 1
+strip = true

@@ -1,0 +1,110 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "ai-sdk"
+version = "0.0.2"
+description = "Python SDK for Metadata AI Agents - Semantic Intelligence for AI builders"
+readme = "README.md"
+license = {file = "LICENSE"}
+requires-python = ">=3.10"
+authors = [
+    { name = "Collate", email = "dev@getcollate.io" }
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: Other/Proprietary License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+keywords = ["ai", "agents", "metadata", "semantic", "llm", "langchain", "openmetadata"]
+
+dependencies = [
+    "httpx>=0.25.0",
+    "pydantic>=2.0.0",
+]
+
+[project.optional-dependencies]
+langchain = [
+    "langchain>=0.1.0",
+    "langchain-core>=0.1.0",
+    "langchain-openai>=0.1.0",
+]
+dev = [
+    "pytest>=7.0",
+    "pytest-asyncio>=0.21",
+    "pytest-httpx>=0.30",
+    "ruff>=0.8.0",
+    "ty>=0.0.1a7",
+    "datamodel-code-generator>=0.25.0",
+]
+all = [
+    "ai-sdk[langchain,dev]",
+]
+
+[project.urls]
+Homepage = "https://open-metadata.org"
+Documentation = "https://docs.open-metadata.org/sdk"
+Repository = "https://github.com/open-metadata/metadata-ai-sdk"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/ai_sdk"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+src = ["src", "tests"]
+exclude = ["src/ai_sdk/generated"]
+
+[tool.ruff.lint]
+select = [
+    "E",      # pycodestyle errors
+    "W",      # pycodestyle warnings
+    "F",      # Pyflakes
+    "I",      # isort
+    "B",      # flake8-bugbear
+    "C4",     # flake8-comprehensions
+    "UP",     # pyupgrade
+    "SIM",    # flake8-simplify
+    "PTH",    # flake8-use-pathlib
+    "RUF",    # Ruff-specific rules
+]
+ignore = [
+    "E501",   # line too long (handled by formatter)
+    "B008",   # do not perform function calls in argument defaults
+    "B904",   # raise from in except (not always desirable)
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["ARG"]  # unused arguments common in test fixtures
+
+[tool.ruff.lint.isort]
+known-first-party = ["ai_sdk"]
+force-single-line = false
+combine-as-imports = true
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+skip-magic-trailing-comma = false
+line-ending = "auto"
+docstring-code-format = true
+
+[tool.ty.environment]
+python-version = "3.10"
+
+[tool.ty.rules]
+# Ignore unresolved imports for external packages (they're installed but ty can't find them in CI)
+unresolved-import = "ignore"
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
+addopts = "-p no:openmetadata"

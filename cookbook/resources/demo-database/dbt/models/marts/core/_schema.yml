@@ -1,0 +1,63 @@
+version: 2
+
+models:
+  - name: dim_customers
+    description: |
+      Customer dimension table with lifetime metrics and segmentation.
+      Use for customer analysis, cohort analysis, and targeting.
+    columns:
+      - name: customer_id
+        description: Unique customer identifier
+        data_tests:
+          - unique
+          - not_null
+      - name: email
+        description: Customer email (PII - may be null for data quality issues)
+        meta:
+          contains_pii: true
+      - name: lifetime_value
+        description: Total revenue from this customer
+      - name: value_segment
+        description: Customer value tier (High/Medium/Low/No Purchases)
+        data_tests:
+          - accepted_values:
+              values: ['High Value', 'Medium Value', 'Low Value', 'No Purchases']
+      - name: customer_type
+        description: Customer loyalty tier (Loyal/Repeat/New/Prospect)
+        data_tests:
+          - accepted_values:
+              values: ['Loyal', 'Repeat', 'New', 'Prospect']
+
+  - name: dim_products
+    description: |
+      Product dimension with review aggregates and sales performance.
+      Use for product analysis and inventory decisions.
+    columns:
+      - name: product_id
+        description: Unique product identifier
+        data_tests:
+          - unique
+          - not_null
+      - name: sku
+        description: Stock keeping unit code
+        data_tests:
+          - unique
+      - name: sales_tier
+        description: Product performance tier based on units sold
+      - name: rating_tier
+        description: Product quality tier based on reviews
+
+  - name: fct_orders
+    description: |
+      Order fact table with all order details and calculated metrics.
+      Central fact table for revenue and order analysis.
+    columns:
+      - name: order_id
+        description: Unique order identifier
+        data_tests:
+          - unique
+          - not_null
+      - name: net_order_value
+        description: Final order value after discounts plus shipping
+      - name: order_status
+        description: Current status of the order

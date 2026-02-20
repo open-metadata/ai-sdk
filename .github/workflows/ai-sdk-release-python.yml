@@ -1,0 +1,82 @@
+name: Release Metadata AI SDK Python
+
+on:
+  push:
+    tags:
+      - 'python-v*'
+  workflow_call:
+    inputs:
+      version:
+        required: true
+        type: string
+        description: 'Version to release (e.g., 0.2.0)'
+
+permissions:
+  contents: read
+  id-token: write
+
+concurrency:
+  group: release-python-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-and-publish:
+    name: Build and Publish to PyPI
+    runs-on: ubuntu-latest
+    environment: publish
+    defaults:
+      run:
+        working-directory: python
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+          cache: 'pip'
+          cache-dependency-path: python/pyproject.toml
+
+      - name: Install build dependencies
+        run: pip install build twine
+
+      - name: Install package with dev dependencies
+        run: pip install -e ".[dev]"
+
+      - name: Run tests
+        run: pytest --ignore=tests/integration
+
+      - name: Extract version
+        id: version
+        run: |
+          INPUT_VERSION="${{ inputs.version || '' }}"
+          if [ -n "$INPUT_VERSION" ]; then
+            echo "version=$INPUT_VERSION" >> $GITHUB_OUTPUT
+          else
+            echo "version=${GITHUB_REF#refs/tags/python-v}" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Verify package version matches tag
+        run: |
+          PACKAGE_VERSION=$(python -c "from importlib.metadata import version; print(version('ai-sdk'))")
+          TAG_VERSION=${{ steps.version.outputs.version }}
+          # Compare only first 3 components (major.minor.patch)
+          PKG_BASE=$(echo "$PACKAGE_VERSION" | cut -d. -f1-3)
+          TAG_BASE=$(echo "$TAG_VERSION" | cut -d. -f1-3)
+          if [ "$PKG_BASE" != "$TAG_BASE" ]; then
+            echo "Error: pyproject.toml version ($PACKAGE_VERSION) does not match tag version ($TAG_VERSION)"
+            exit 1
+          fi
+
+      - name: Build package
+        run: python -m build
+
+      - name: Check package
+        run: twine check dist/*
+
+      - name: Publish to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          packages-dir: python/dist/
