@@ -74,7 +74,7 @@ result = client.mcp.call_tool(
 ## Documentation
 
 - [Full SDK docs](https://docs.open-metadata.org/sdk)
-- [Source & all SDKs](https://github.com/open-metadata/metadata-ai-sdk)
+- [Source & all SDKs](https://github.com/open-metadata/ai-sdk)
 
 ## License
 

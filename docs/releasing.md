@@ -7,7 +7,7 @@ This document explains how to release the AI SDK. A single release publishes all
 | Python SDK | [PyPI](https://pypi.org/project/ai-sdk/) | `ai-sdk` |
 | TypeScript SDK | [npm](https://www.npmjs.com/package/@openmetadata/ai-sdk) | `@openmetadata/ai-sdk` |
 | Java SDK | [Maven Central](https://central.sonatype.com/) | `io.openmetadata:ai-sdk` |
-| CLI | [GitHub Releases](https://github.com/open-metadata/metadata-ai-sdk/releases) | Pre-built binaries (6 platforms) |
+| CLI | [GitHub Releases](https://github.com/open-metadata/ai-sdk/releases) | Pre-built binaries (6 platforms) |
 
 ## TL;DR
 
@@ -198,7 +198,7 @@ A GitHub environment named **`publish`** must exist (**Settings > Environments >
 The Python SDK authenticates to PyPI via OIDC (no API tokens). Configure the trusted publisher at [pypi.org](https://pypi.org/manage/project/ai-sdk/settings/publishing/):
 
 - **Owner:** `open-metadata`
-- **Repository:** `metadata-ai-sdk`
+- **Repository:** `ai-sdk`
 - **Workflow:** `ai-sdk-release-python.yml`
 - **Environment:** `publish`
 

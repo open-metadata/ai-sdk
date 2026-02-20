@@ -1,4 +1,4 @@
-name: Release Metadata AI SDK Java
+name: Release AI SDK Java
 
 on:
   push:

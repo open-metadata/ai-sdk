@@ -1,4 +1,4 @@
-name: Release Metadata AI SDK CLI
+name: Release AI SDK CLI
 
 on:
   push:
@@ -171,7 +171,7 @@ jobs:
         with:
           name: CLI v${{ steps.version.outputs.version }}
           body: |
-            ## Metadata AI CLI v${{ steps.version.outputs.version }}
+            ## AI SDK CLI v${{ steps.version.outputs.version }}
 
             ### Installation
 

@@ -175,4 +175,4 @@ export AI_SDK_VERIFY_SSL="false"
 
 - [OpenMetadata Documentation](https://docs.open-metadata.org/)
 - [Collate Documentation](https://docs.getcollate.io/)
-- [GitHub Issues](https://github.com/open-metadata/metadata-ai-sdk/issues)
+- [GitHub Issues](https://github.com/open-metadata/ai-sdk/issues)

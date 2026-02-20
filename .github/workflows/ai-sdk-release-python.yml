@@ -1,4 +1,4 @@
-name: Release Metadata AI SDK Python
+name: Release AI SDK Python
 
 on:
   push:

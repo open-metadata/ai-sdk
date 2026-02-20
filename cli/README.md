@@ -1,6 +1,6 @@
 # AI SDK CLI
 
-Command-line tool for interacting with Metadata AI Agents.
+Command-line tool for interacting with AI Agents.
 
 ## Installation
 
@@ -9,7 +9,7 @@ Command-line tool for interacting with Metadata AI Agents.
 Install the AI SDK CLI with a single command:
 
 ```bash
-curl -sSL https://raw.githubusercontent.com/open-metadata/metadata-ai-sdk/main/cli/install.sh | sh
+curl -sSL https://raw.githubusercontent.com/open-metadata/ai-sdk/main/cli/install.sh | sh
 ```
 
 This script will:
@@ -39,7 +39,7 @@ cargo install --path .
 
 ### Manual Download
 
-Download the appropriate binary for your platform from the [releases page](https://github.com/open-metadata/metadata-ai-sdk/releases):
+Download the appropriate binary for your platform from the [releases page](https://github.com/open-metadata/ai-sdk/releases):
 
 | Platform | Architecture | Download |
 |----------|--------------|----------|

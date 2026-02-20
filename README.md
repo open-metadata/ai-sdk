@@ -7,7 +7,7 @@ Bring AI to your metadata. The OpenMetadata AI SDK gives you programmatic access
 | Python | [`ai-sdk`](https://pypi.org/project/ai-sdk/) | `pip install ai-sdk` |
 | TypeScript | [`@openmetadata/ai-sdk`](https://www.npmjs.com/package/@openmetadata/ai-sdk) | `npm install @openmetadata/ai-sdk` |
 | Java | [`io.openmetadata:ai-sdk`](https://central.sonatype.com/artifact/io.openmetadata/ai-sdk) | Maven / Gradle |
-| CLI | [`ai-sdk`](https://github.com/open-metadata/metadata-ai-sdk/releases) | [Install script](#cli-1) |
+| CLI | [`ai-sdk`](https://github.com/open-metadata/ai-sdk/releases) | [Install script](#cli-1) |
 | n8n | [`n8n-nodes-metadata`](n8n-nodes-metadata/) | n8n community node |
 
 ## Why This SDK?
@@ -138,7 +138,7 @@ System.out.println(response.getResponse());
 
 ```bash
 # Install
-curl -sSL https://raw.githubusercontent.com/open-metadata/metadata-ai-sdk/main/cli/install.sh | sh
+curl -sSL https://raw.githubusercontent.com/open-metadata/ai-sdk/main/cli/install.sh | sh
 
 # Configure
 ai-sdk configure

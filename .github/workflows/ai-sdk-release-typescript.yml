@@ -1,4 +1,4 @@
-name: Release Metadata AI SDK TypeScript
+name: Release AI SDK TypeScript
 
 on:
   push:

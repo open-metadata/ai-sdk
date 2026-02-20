@@ -1,9 +1,9 @@
 #!/bin/sh
-# Metadata AI CLI Installer
-# https://github.com/open-metadata/ai-sdk-sdk
+# AI SDK CLI Installer
+# https://github.com/open-metadata/ai-sdk
 #
 # Usage:
-#   curl -sSL https://raw.githubusercontent.com/open-metadata/ai-sdk-sdk/main/cli/install.sh | sh
+#   curl -sSL https://raw.githubusercontent.com/open-metadata/ai-sdk/main/cli/install.sh | sh
 #
 # This script detects your OS and architecture, downloads the appropriate
 # binary from GitHub releases, and installs it to a location in your PATH.
@@ -28,7 +28,7 @@ else
 fi
 
 # Configuration
-GITHUB_REPO="open-metadata/ai-sdk-sdk"
+GITHUB_REPO="open-metadata/ai-sdk"
 BINARY_NAME="ai-sdk"
 INSTALL_DIR_PRIMARY="$HOME/.local/bin"
 INSTALL_DIR_FALLBACK="/usr/local/bin"
@@ -236,7 +236,7 @@ print_path_instructions() {
 # Main installation function
 main() {
     echo ""
-    printf "${BOLD}Metadata AI CLI Installer${NC}\n"
+    printf "${BOLD}AI SDK CLI Installer${NC}\n"
     echo "========================="
     echo ""
 
@@ -350,10 +350,10 @@ main() {
 
     # Print success message
     echo ""
-    printf "${GREEN}${BOLD}Successfully installed Metadata AI CLI!${NC}\n"
+    printf "${GREEN}${BOLD}Successfully installed AI SDK CLI!${NC}\n"
     echo ""
     echo "Next steps:"
-    echo "  1. Configure the CLI with your Metadata instance:"
+    echo "  1. Configure the CLI with your OpenMetadata instance:"
     echo "     ${BOLD}ai-sdk configure${NC}"
     echo ""
     echo "  2. List available agents:"
