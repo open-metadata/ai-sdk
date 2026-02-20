@@ -1,4 +1,4 @@
-# Metadata AI SDK
+# AI SDK
 
 SDKs and CLI for invoking Metadata Dynamic Agents from your AI applications.
 
