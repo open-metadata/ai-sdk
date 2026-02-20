@@ -6,7 +6,7 @@ This document explains how to release the AI SDK. A single release publishes all
 |-----------|----------|---------|
 | Python SDK | [PyPI](https://pypi.org/project/ai-sdk/) | `ai-sdk` |
 | TypeScript SDK | [npm](https://www.npmjs.com/package/@openmetadata/ai-sdk) | `@openmetadata/ai-sdk` |
-| Java SDK | [Maven Central](https://central.sonatype.com/) | `io.openmetadata:ai-sdk` |
+| Java SDK | [Maven Central](https://central.sonatype.com/) | `org.open-metadata:ai-sdk` |
 | CLI | [GitHub Releases](https://github.com/open-metadata/ai-sdk/releases) | Pre-built binaries (6 platforms) |
 
 ## TL;DR

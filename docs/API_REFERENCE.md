@@ -141,7 +141,7 @@ const client = new AiSdk({
 
 ---
 
-## Java SDK (`io.openmetadata:ai-sdk`)
+## Java SDK (`org.open-metadata:ai-sdk`)
 
 ### AiSdk Client
 

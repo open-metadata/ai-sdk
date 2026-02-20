@@ -6,7 +6,7 @@ Bring AI to your metadata. The OpenMetadata AI SDK gives you programmatic access
 |-----|---------|---------|
 | Python | [`ai-sdk`](https://pypi.org/project/ai-sdk/) | `pip install ai-sdk` |
 | TypeScript | [`@openmetadata/ai-sdk`](https://www.npmjs.com/package/@openmetadata/ai-sdk) | `npm install @openmetadata/ai-sdk` |
-| Java | [`io.openmetadata:ai-sdk`](https://central.sonatype.com/artifact/io.openmetadata/ai-sdk) | Maven / Gradle |
+| Java | [`org.open-metadata:ai-sdk`](https://central.sonatype.com/artifact/org.open-metadata/ai-sdk) | Maven / Gradle |
 | CLI | [`ai-sdk`](https://github.com/open-metadata/ai-sdk/releases) | [Install script](#cli-1) |
 | n8n | [`n8n-nodes-metadata`](n8n-nodes-metadata/) | n8n community node |
 
@@ -115,7 +115,7 @@ Zero runtime dependencies. Works in Node.js 18+, browsers, Deno, and Bun.
 
 ```xml
 <dependency>
-  <groupId>io.openmetadata</groupId>
+  <groupId>org.open-metadata</groupId>
   <artifactId>ai-sdk</artifactId>
   <version>0.1.0</version>
 </dependency>

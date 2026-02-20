@@ -12,7 +12,7 @@ metadata-ai-sdk/
 │   ├── tests/              # Unit and integration tests
 │   └── pyproject.toml      # Package config
 ├── typescript/             # TypeScript SDK (@openmetadata/ai-sdk on npm)
-├── java/                   # Java SDK (io.openmetadata:ai-sdk)
+├── java/                   # Java SDK (org.open-metadata:ai-sdk)
 ├── n8n-nodes-metadata/     # n8n community node (depends on TypeScript SDK)
 ├── cookbook/                # Guides, scripts, and resources for common use cases
 │   └── resources/

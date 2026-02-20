@@ -13,7 +13,7 @@ Java SDK for interacting with AI Agents.
 
 ```xml
 <dependency>
-    <groupId>io.openmetadata</groupId>
+    <groupId>org.open-metadata</groupId>
     <artifactId>ai-sdk</artifactId>
     <version>0.1.0</version>
 </dependency>
@@ -22,7 +22,7 @@ Java SDK for interacting with AI Agents.
 ### Gradle
 
 ```groovy
-implementation 'io.openmetadata:ai-sdk:0.1.0'
+implementation 'org.open-metadata:ai-sdk:0.1.0'
 ```
 
 ## Quick Start
