@@ -262,55 +262,46 @@ python batch_analyzer.py changes.diff
 
 ### GitHub Actions Integration
 
-```yaml
-# .github/workflows/impact-analysis.yml
-name: Data Impact Analysis
+This repository includes a ready-to-use workflow at [`.github/workflows/impact-analysis.yml`](../../.github/workflows/impact-analysis.yml). It:
 
-on:
-  pull_request:
-    paths:
-      - 'dbt/models/**'
+1. **Triggers automatically** on PRs that modify dbt models under `cookbook/resources/demo-database/dbt/models/`.
+2. **Supports manual dispatch** via the Actions tab — useful for demos or ad-hoc runs on any branch.
+3. **Generates a diff** between the PR branch and `origin/main`.
+4. **Runs the batch analyzer** against the diff to produce a Markdown impact report.
+5. **Posts a PR comment** with the full report (or writes to the GitHub Step Summary for manual runs).
 
-jobs:
-  analyze:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
+The workflow uses an HTML comment marker (`<!-- impact-analysis-bot -->`) to find and update its own comment on subsequent pushes, so you only ever see one impact analysis comment per PR.
 
-      - name: Setup Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
+#### Required Secrets
 
-      - name: Install dependencies
-        run: pip install ai-sdk[langchain] langchain langchain-openai
+Configure these in your repository settings under **Settings > Secrets and variables > Actions**:
 
-      - name: Get changed files
-        run: |
-          git diff origin/main...HEAD > changes.diff
+| Secret | Description |
+|--------|-------------|
+| `AI_SDK_HOST` | Your OpenMetadata server URL (e.g. `https://your-instance.getcollate.io`) |
+| `AI_SDK_TOKEN` | A bot JWT token with read access to metadata |
+| `OPENAI_API_KEY` | OpenAI API key for the LLM |
 
-      - name: Run impact analysis
-        env:
-          AI_SDK_HOST: ${{ secrets.AI_SDK_HOST }}
-          AI_SDK_TOKEN: ${{ secrets.AI_SDK_TOKEN }}
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-        run: python batch_analyzer.py changes.diff > impact_report.md
+#### Demo Walkthrough
 
-      - name: Post comment
-        uses: actions/github-script@v7
-        with:
-          script: |
-            const fs = require('fs');
-            const report = fs.readFileSync('impact_report.md', 'utf8');
-            github.rest.issues.createComment({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              issue_number: context.issue.number,
-              body: `## Data Impact Analysis\n\n${report}`
-            });
-```
+To see the workflow in action:
+
+1. Create a feature branch and modify a dbt model:
+   ```bash
+   git checkout -b demo/impact-analysis
+   # Edit a model, e.g. add a column to stg_jaffle_shop__orders
+   vim cookbook/resources/demo-database/dbt/models/staging/stg_jaffle_shop__orders.sql
+   git add -A && git commit -m "demo: modify staging orders model"
+   git push -u origin demo/impact-analysis
+   ```
+
+2. Open a PR against `main`. The **Data Impact Analysis** workflow triggers automatically.
+
+3. After the job finishes, a comment appears on the PR with the full impact report — affected assets, risk assessment, and recommended actions, all with clickable OpenMetadata links.
+
+4. Push additional commits to the same PR and the comment updates in place.
+
+Alternatively, trigger a manual run from the **Actions** tab and review the output in the Step Summary.
 
 ## Configuration Options
 
