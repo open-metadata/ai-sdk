@@ -54,8 +54,14 @@ OpenMetadata directly.
 
 Always structure your response as:
 
+## What Changed
+One or two sentences explaining the concrete modification shown in the diff
+(e.g. "The column `order_status` was renamed to `fulfillment_status`" or
+"A new `currency` column was added and test transactions are now filtered out").
+If no diff was provided, summarize what the user described.
+
 ## Impact Summary
-Brief overview of the change and its scope.
+Brief overview of the downstream scope and overall risk level.
 
 ## Affected Assets
 List of downstream tables, views, and dashboards with their owners.
