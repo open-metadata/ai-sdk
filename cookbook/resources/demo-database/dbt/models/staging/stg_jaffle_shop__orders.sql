@@ -9,6 +9,8 @@ cleaned as (
         order_date,
         status as order_status,
         coalesce(order_total, 0) as order_total,
+        coalesce(tax_amount, 0) as tax_amount,
+        coalesce(order_total, 0) + coalesce(tax_amount, 0) as gross_total,
         coalesce(shipping_cost, 0) as shipping_cost,
         coalesce(discount_amount, 0) as discount_amount,
         coupon_code,
