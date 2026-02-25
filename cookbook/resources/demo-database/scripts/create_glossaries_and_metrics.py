@@ -6,8 +6,8 @@ Requires:
     pip install openmetadata-ingestion
 
 Usage:
-    export METADATA_HOST=http://localhost:8585
-    export METADATA_TOKEN=<your-jwt-token>
+    export AI_SDK_HOST=http://localhost:8585
+    export AI_SDK_TOKEN=<your-jwt-token>
     python create_glossaries_and_metrics.py
 
     # Or pass arguments directly:
@@ -924,13 +924,13 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument(
         "--host",
-        default=os.getenv("METADATA_HOST", "http://localhost:8585"),
-        help="OpenMetadata API host (default: $METADATA_HOST or http://localhost:8585)",
+        default=os.getenv("AI_SDK_HOST", "http://localhost:8585"),
+        help="OpenMetadata API host (default: $AI_SDK_HOST or http://localhost:8585)",
     )
     parser.add_argument(
         "--token",
-        default=os.getenv("METADATA_TOKEN", ""),
-        help="JWT token for authentication (default: $METADATA_TOKEN)",
+        default=os.getenv("AI_SDK_TOKEN", ""),
+        help="JWT token for authentication (default: $AI_SDK_TOKEN)",
     )
     return parser.parse_args()
 
@@ -942,7 +942,7 @@ def main() -> None:
 
     if not args.token:
         logger.error(
-            "No token provided. Set METADATA_TOKEN or pass --token."
+            "No token provided. Set AI_SDK_TOKEN or pass --token."
         )
         sys.exit(1)
 

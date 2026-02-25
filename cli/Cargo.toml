@@ -1,6 +1,6 @@
 [package]
 name = "ai-sdk"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2021"
 description = "Command-line tool for OpenMetadata AI Agents"
 authors = ["OpenMetadata <support@open-metadata.org>"]

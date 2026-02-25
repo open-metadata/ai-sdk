@@ -7,12 +7,12 @@
 #   - OpenMetadata ingestion installed (pip install "openmetadata-ingestion[postgres,dbt]")
 #
 # Required environment variables:
-#   METADATA_HOST  - OpenMetadata server URL (e.g. https://your-instance.getcollate.io)
-#   METADATA_TOKEN - JWT token for authentication
+#   AI_SDK_HOST  - OpenMetadata server URL (e.g. https://your-instance.getcollate.io)
+#   AI_SDK_TOKEN - JWT token for authentication
 #
 # Usage:
-#   export METADATA_HOST=https://your-instance.getcollate.io
-#   export METADATA_TOKEN=your-jwt-token
+#   export AI_SDK_HOST=https://your-instance.getcollate.io
+#   export AI_SDK_TOKEN=your-jwt-token
 #   ./scripts/ingest_metadata.sh
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
@@ -23,15 +23,15 @@ DBT_TARGET_DIR="${DBT_DIR}/target"
 
 # --- Validate environment ---
 
-if [ -z "$METADATA_HOST" ]; then
-    echo "Error: METADATA_HOST is not set."
-    echo "  export METADATA_HOST=https://your-instance.getcollate.io"
+if [ -z "$AI_SDK_HOST" ]; then
+    echo "Error: AI_SDK_HOST is not set."
+    echo "  export AI_SDK_HOST=https://your-instance.getcollate.io"
     exit 1
 fi
 
-if [ -z "$METADATA_TOKEN" ]; then
-    echo "Error: METADATA_TOKEN is not set."
-    echo "  export METADATA_TOKEN=your-jwt-token"
+if [ -z "$AI_SDK_TOKEN" ]; then
+    echo "Error: AI_SDK_TOKEN is not set."
+    echo "  export AI_SDK_TOKEN=your-jwt-token"
     exit 1
 fi
 
@@ -106,7 +106,7 @@ fi
 
 # --- Run ingestion workflows ---
 
-echo "Ingesting demo metadata into ${METADATA_HOST}"
+echo "Ingesting demo metadata into ${AI_SDK_HOST}"
 
 # 1. PostgreSQL metadata (tables, views, schemas)
 run_ingestion "PostgreSQL Metadata" "${INGESTION_DIR}/postgres.yaml"
@@ -139,5 +139,5 @@ if [ $FAILED -gt 0 ]; then
     exit 1
 else
     echo "  All workflows passed."
-    echo "  Open ${METADATA_HOST} to explore the ingested metadata."
+    echo "  Open ${AI_SDK_HOST} to explore the ingested metadata."
 fi

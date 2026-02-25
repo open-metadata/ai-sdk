@@ -148,11 +148,11 @@ To test the node:
 
 ## SDK Dependency
 
-This node uses the TypeScript SDK (`@openmetadata/ai-sdk`) as a local dependency:
+This node uses the TypeScript SDK (`@openmetadata/ai-sdk`) from npm:
 
 ```json
 "dependencies": {
-  "@openmetadata/ai-sdk": "file:../typescript"
+  "@openmetadata/ai-sdk": "^0.1.0"
 }
 ```
 

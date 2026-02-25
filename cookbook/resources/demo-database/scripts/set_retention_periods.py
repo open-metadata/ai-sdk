@@ -9,8 +9,8 @@ Requires:
     pip install openmetadata-ingestion
 
 Usage:
-    export METADATA_HOST=http://localhost:8585
-    export METADATA_TOKEN=<your-jwt-token>
+    export AI_SDK_HOST=http://localhost:8585
+    export AI_SDK_TOKEN=<your-jwt-token>
     python set_retention_periods.py
 
     # Or pass arguments directly:
@@ -313,23 +313,23 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument(
         "--host",
-        default=os.getenv("METADATA_HOST", "http://localhost:8585"),
-        help="OpenMetadata API host (default: $METADATA_HOST or http://localhost:8585)",
+        default=os.getenv("AI_SDK_HOST", "http://localhost:8585"),
+        help="OpenMetadata API host (default: $AI_SDK_HOST or http://localhost:8585)",
     )
     parser.add_argument(
         "--token",
-        default=os.getenv("METADATA_TOKEN", ""),
-        help="JWT token for authentication (default: $METADATA_TOKEN)",
+        default=os.getenv("AI_SDK_TOKEN", ""),
+        help="JWT token for authentication (default: $AI_SDK_TOKEN)",
     )
     parser.add_argument(
         "--service",
-        default=os.getenv("METADATA_SERVICE", "jaffle shop"),
-        help="Database service name in OpenMetadata (default: $METADATA_SERVICE or 'jaffle shop')",
+        default=os.getenv("AI_SDK_SERVICE", "jaffle shop"),
+        help="Database service name in OpenMetadata (default: $AI_SDK_SERVICE or 'jaffle shop')",
     )
     parser.add_argument(
         "--database",
-        default=os.getenv("METADATA_DATABASE", "jaffle_shop"),
-        help="Database name (default: $METADATA_DATABASE or 'jaffle_shop')",
+        default=os.getenv("AI_SDK_DATABASE", "jaffle_shop"),
+        help="Database name (default: $AI_SDK_DATABASE or 'jaffle_shop')",
     )
     return parser.parse_args()
 
@@ -340,7 +340,7 @@ def main() -> None:
     args = parse_args()
 
     if not args.token:
-        logger.error("No token provided. Set METADATA_TOKEN or pass --token.")
+        logger.error("No token provided. Set AI_SDK_TOKEN or pass --token.")
         sys.exit(1)
 
     metadata = get_metadata_client(args.host, args.token)

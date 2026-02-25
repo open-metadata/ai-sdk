@@ -212,16 +212,13 @@ demo-dbt:  ## Run dbt models against the demo database
 	@echo ""
 	@echo "dbt models and tests completed"
 
-demo-gdpr:  ## Start the GDPR DSAR compliance demo (bundles SDK + starts server)
-	@echo "Bundling TypeScript SDK..."
-	@npx esbuild typescript/src/index.ts --bundle --format=esm \
-		--outfile=cookbook/gdpr-dsar-compliance/ai-sdk.js --target=es2022 --log-level=warning
+demo-gdpr:  ## Start the GDPR DSAR compliance demo
+	@echo "Installing dependencies..."
+	@cd cookbook/gdpr-dsar-compliance && npm install --silent
 	@echo "Starting server (SDK runs server-side)..."
 	@node cookbook/gdpr-dsar-compliance/serve.js
 
 demo-n8n:  ## Build n8n node and start n8n with it loaded
-	@echo "Building TypeScript SDK..."
-	@cd typescript && npm install --silent && npm run build
 	@echo "Building n8n node..."
 	@cd n8n-nodes-metadata && npm install --silent && npm run build
 	@echo ""

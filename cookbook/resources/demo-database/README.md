@@ -176,8 +176,8 @@ A single script runs all ingestion workflows (PostgreSQL metadata, dbt, lineage,
 pip install "openmetadata-ingestion[postgres,dbt]"
 
 # Set your OpenMetadata credentials
-export METADATA_HOST=https://your-instance.getcollate.io
-export METADATA_TOKEN=your-jwt-token
+export AI_SDK_HOST=https://your-instance.getcollate.io
+export AI_SDK_TOKEN=your-jwt-token
 
 # Run all ingestion workflows
 cd cookbook/resources/demo-database

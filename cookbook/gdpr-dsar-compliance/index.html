@@ -245,8 +245,6 @@
   </div>
 
   <script>
-    // The TypeScript SDK runs server-side in serve.js (same as Rust TUI).
-    // This page just sends the message and renders the result.
     const responseCard    = document.getElementById("response");
     const responseContent = document.getElementById("response-content");
     const toolsBar        = document.getElementById("tools-bar");
@@ -269,7 +267,7 @@
       responseContent.innerHTML = "";
       responseCard.classList.add("visible");
       toolsBar.classList.add("visible");
-      toolsLabel.textContent = "Agent is analyzing (this may take a minute)...";
+      toolsLabel.textContent = "Agent is analyzing (this may take a few minutes)...";
       submitBtn.disabled = true;
 
       try {

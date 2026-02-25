@@ -1,6 +1,6 @@
 {
   "name": "n8n-nodes-metadata",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "n8n node to invoke OpenMetadata DynamicAgents",
   "keywords": [
     "n8n-community-node-package",
@@ -17,7 +17,8 @@
   },
   "main": "dist/index.js",
   "scripts": {
-    "build": "tsc && npm run copy:icons",
+    "clean": "rm -rf dist",
+    "build": "npm run clean && tsc && npm run copy:icons",
     "copy:icons": "find nodes \\( -name '*.svg' -o -name '*.png' \\) -exec cp {} dist/nodes/AISdkAgent/ \\;",
     "dev": "tsc --watch",
     "lint": "eslint nodes credentials --ext .ts",
@@ -48,7 +49,7 @@
     "vitest": "^1.0.0"
   },
   "dependencies": {
-    "@openmetadata/ai-sdk": "file:../typescript"
+    "@openmetadata/ai-sdk": "^0.1.1"
   },
   "peerDependencies": {
     "n8n-workflow": "*"

@@ -54,17 +54,14 @@ ai-sdk personas create \
 
 When a customer requests data deletion, execute ALL of these steps:
 
-STEP 1 — SEARCH: Search for tables where the customer's data likely resides (e.g., 'customers', 'payments', 'orders'). Use the search tools to find them.
-
-STEP 2 — TRACE LINEAGE: For EACH table found in Step 1, trace its lineage (both upstream and downstream). Do this yourself — call the lineage tools for every table. This will reveal derived views, staging tables, marts, and analytics tables that also contain customer data.
-
-STEP 3 — INSPECT TABLE DETAILS: For EACH table discovered (from both Step 1 and Step 2), get its full details — columns, tags, classifications, and retention period. Do not skip any table.
-
-STEP 4 — PRODUCE THE FULL COMPLIANCE REPORT with these sections:
-  a) A table listing every affected asset with: table name, PII columns found, retention period, and whether there is a retention conflict
-  b) Retention conflicts: flag every case where a downstream table has a longer retention than its source (e.g., a view with P5Y retention pulling email from a P90D source table)
-  c) Recommended deletion order respecting foreign key dependencies
-  d) Risk flags: orphaned FK references, free-text fields with unstructured PII, PII duplicated across tables with different retention
+1. STEP 1 — SEARCH: Search for tables where the customer's data likely resides (e.g., 'customers', 'payments', 'orders'). Use the search tools to find them.
+2. STEP 2 — TRACE LINEAGE: For EACH table found in Step 1, trace its lineage (both upstream and downstream). Do this yourself — call the lineage tools for every table. This will reveal derived views, staging tables, marts, and analytics tables that also contain customer data.
+3. STEP 3 — INSPECT TABLE DETAILS: For EACH table discovered (from both Step 1 and Step 2), get its full details — columns, tags, classifications, and retention period. Do not skip any table.
+4. STEP 4 — PRODUCE THE FULL COMPLIANCE REPORT with these sections:
+  - A table listing every affected asset with: table name, PII columns found, retention period, and whether there is a retention conflict
+  - Retention conflicts: flag every case where a downstream table has a longer retention than its source (e.g., a view with P5Y retention pulling email from a P90D source table)
+  - Recommended deletion order respecting foreign key dependencies
+  - Risk flags: orphaned FK references, free-text fields with unstructured PII, PII duplicated across tables with different retention
 
 IMPORTANT: Do not present intermediate findings and ask the user for next steps. Execute the full workflow and deliver the complete report."
 
@@ -88,10 +85,15 @@ const TOKEN = "your-jwt-token";
 ## Step 3: Start the Demo
 
 ```bash
-# From the repo root — bundles the SDK and starts the server
+# Install dependencies and start the server
+cd cookbook/gdpr-dsar-compliance
+npm install
+node serve.js
+
+# Or from the repo root:
 make demo-gdpr
 
-# Or override the OpenMetadata host / port:
+# Override the OpenMetadata host / port:
 AI_SDK_HOST=https://your-instance.getcollate.io PORT=3000 make demo-gdpr
 ```
 
@@ -141,7 +143,7 @@ policies are compatible with a 90-day customer data retention window.
 
 ## How It Works
 
-The HTML file imports the [TypeScript SDK](../../typescript/) as a browser ES module bundled with esbuild. It uses the SDK's `agent().invoke()` method to get the complete compliance report after the agent finishes all tool calls (search, lineage, detail inspection):
+The server uses the [TypeScript SDK](../../typescript/) (`@openmetadata/ai-sdk` on npm). It uses the SDK's `agent().invoke()` method to get the complete compliance report after the agent finishes all tool calls (search, lineage, detail inspection):
 
 ```javascript
 import { AISdk } from './ai-sdk.js';
