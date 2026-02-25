@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "ai-sdk"
-version = "0.0.2"
+version = "0.1.0"
 description = "Python SDK for AI Agents - Semantic Intelligence for AI builders"
 readme = "README.md"
 license = {file = "LICENSE"}
