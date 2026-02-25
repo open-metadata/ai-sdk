@@ -1,0 +1,88 @@
+version: 2
+
+models:
+  - name: stg_jaffle_shop__customers
+    description: Cleaned customer data with validated emails and addresses
+    columns:
+      - name: customer_id
+        description: Unique customer identifier
+        data_tests:
+          - unique
+          - not_null
+      - name: email
+        description: Validated email address (null if invalid format)
+      - name: date_of_birth
+        description: Customer DOB (null if unrealistic date)
+
+  - name: stg_jaffle_shop__orders
+    description: Cleaned orders with standardized status values
+    columns:
+      - name: order_id
+        description: Unique order identifier
+        data_tests:
+          - unique
+          - not_null
+      - name: order_status
+        description: Current order status
+        data_tests:
+          - accepted_values:
+              values: ['completed', 'pending', 'cancelled', 'shipped', 'processing', 'return_pending']
+
+  - name: stg_jaffle_shop__order_items
+    description: Order line items with calculated line totals
+    columns:
+      - name: order_item_id
+        data_tests:
+          - unique
+          - not_null
+      - name: line_total
+        description: Quantity * unit price
+
+  - name: stg_stripe__payments
+    description: Payment transactions with risk scoring
+    columns:
+      - name: payment_id
+        data_tests:
+          - unique
+          - not_null
+      - name: payment_status
+        data_tests:
+          - accepted_values:
+              values: ['success', 'failed', 'pending', 'refunded']
+
+  - name: stg_stripe__refunds
+    description: Refund transactions
+
+  - name: stg_inventory__products
+    description: Product catalog with margin calculations
+    columns:
+      - name: product_id
+        data_tests:
+          - unique
+          - not_null
+      - name: unit_margin
+        description: Unit price minus unit cost
+      - name: margin_percent
+        description: Profit margin as percentage
+
+  - name: stg_marketing__campaigns
+    description: Marketing campaign definitions
+
+  - name: stg_marketing__ad_spend
+    description: Daily advertising spend with performance metrics
+    columns:
+      - name: click_through_rate
+        description: CTR as percentage
+      - name: conversion_rate
+        description: Conversion rate as percentage
+      - name: cost_per_click
+        description: CPC in dollars
+
+  - name: stg_support__tickets
+    description: Support tickets with resolution time
+    columns:
+      - name: resolution_hours
+        description: Time to resolution in hours
+
+  - name: stg_support__reviews
+    description: Product reviews filtered to valid ratings

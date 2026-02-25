@@ -1,0 +1,41 @@
+source:
+  type: postgres
+  serviceName: jaffle shop
+  serviceConnection:
+    config:
+      type: Postgres
+      username: openmetadata_user
+      authType:
+        password: openmetadata_pass
+      hostPort: localhost:5433
+      database: jaffle_shop
+  sourceConfig:
+    config:
+      type: DatabaseMetadata
+      includeTables: true
+      includeViews: true
+      schemaFilterPattern:
+        includes:
+          - raw_jaffle_shop
+          - raw_stripe
+          - raw_inventory
+          - raw_marketing
+          - raw_support
+          - analytics
+          - staging
+          - intermediate
+          - marts_core
+          - marts_finance
+          - marts_marketing
+
+sink:
+  type: metadata-rest
+  config: {}
+
+workflowConfig:
+  loggerLevel: INFO
+  openMetadataServerConfig:
+    hostPort: ${METADATA_HOST}/api
+    authProvider: openmetadata
+    securityConfig:
+      jwtToken: ${METADATA_TOKEN}

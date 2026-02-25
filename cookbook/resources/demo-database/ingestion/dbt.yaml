@@ -1,0 +1,26 @@
+source:
+  type: dbt
+  serviceName: jaffle shop
+  sourceConfig:
+    config:
+      type: DBT
+      dbtConfigSource:
+        dbtConfigType: local
+        dbtManifestFilePath: ${DBT_TARGET_DIR}/manifest.json
+        dbtCatalogFilePath: ${DBT_TARGET_DIR}/catalog.json
+        dbtRunResultsFilePath: ${DBT_TARGET_DIR}/run_results.json
+      dbtUpdateDescriptions: true
+      dbtUpdateOwners: true
+      includeTags: true
+
+sink:
+  type: metadata-rest
+  config: {}
+
+workflowConfig:
+  loggerLevel: INFO
+  openMetadataServerConfig:
+    hostPort: ${METADATA_HOST}/api
+    authProvider: openmetadata
+    securityConfig:
+      jwtToken: ${METADATA_TOKEN}

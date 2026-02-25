@@ -1,0 +1,52 @@
+# GitHub Actions workflow for dbt model PR reviews
+# Copy this file to .github/workflows/dbt-review.yml in your repository
+
+name: dbt Model Review
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+    paths:
+      - 'models/**/*.sql'
+
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Need full history for diff
+
+      - name: Get changed models
+        id: changes
+        run: |
+          FILES=$(git diff --name-only origin/${{ github.base_ref }}...HEAD -- 'models/**/*.sql')
+          echo "files<<EOF" >> $GITHUB_OUTPUT
+          echo "$FILES" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      - name: Setup Python
+        if: steps.changes.outputs.files != ''
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        if: steps.changes.outputs.files != ''
+        run: pip install ai-sdk
+
+      - name: Run dbt review
+        if: steps.changes.outputs.files != ''
+        env:
+          AI_SDK_HOST: ${{ secrets.AI_SDK_HOST }}
+          AI_SDK_TOKEN: ${{ secrets.AI_SDK_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_BASE_REF: ${{ github.base_ref }}
+        run: |
+          python .github/scripts/dbt_review.py \
+            --pr-number ${{ github.event.pull_request.number }} \
+            --changed-files "${{ steps.changes.outputs.files }}"

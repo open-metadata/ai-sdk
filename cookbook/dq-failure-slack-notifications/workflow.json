@@ -1,0 +1,130 @@
+{
+  "name": "DQ Failure Slack Notifications",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "7f2b5b67-37d0-4e73-8b4e-2c7270b9cfa8",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "1937d413-01a3-4a9d-a9a3-8388f071df87",
+      "name": "Webhook",
+      "webhookId": "7f2b5b67-37d0-4e73-8b4e-2c7270b9cfa8"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Extract relevant fields from Collate ChangeEvent\n  // n8n wraps the webhook payload in a body property\n  const event = $input.first().json.body;\n\n  const fieldUpdate = event.changeDescription?.fieldsUpdated?.find(\n    f => f.name === 'testCaseResult'\n  );\n\n  if (!fieldUpdate) {\n    return []; // Not a test result update\n  }\n\n  const result = fieldUpdate.newValue;\n\n  // Only process failures\n  if (result.testCaseStatus !== 'Failed') {\n    return [];\n  }\n\n  // Parse table FQN from test case FQN\n  // Format: service.database.schema.table.test_name\n  const fqnParts = event.entityFullyQualifiedName.split('.');\n  const tableFqn = fqnParts.slice(0, -1).join('.');\n  const testName = fqnParts[fqnParts.length - 1];\n\n  return [{\n    json: {\n      tableFqn,\n      testName,\n      testCaseFqn: result.testCaseFQN,\n      status: result.testCaseStatus,\n      failureMessage: result.result,\n      failedRows: result.failedRows,\n      failedRowsPercentage: result.failedRowsPercentage,\n      sampleData: result.sampleData,\n      timestamp: result.timestamp,\n      incidentId: result.incidentId\n    }\n  }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        208,
+        0
+      ],
+      "id": "1415733e-0b8b-4a90-b619-55749e667a35",
+      "name": "Extract Fields"
+    },
+    {
+      "parameters": {
+        "agentName": "DataQualityAnalyzer",
+        "message": "=Data Quality test \"{{ $json.tableFqn }}.{{ $json.testName }}\" has FAILED.\n\nFailure details:\n- Table: {{ $json.tableFqn }}\n- Test: {{ $json.testName }}\n- Result: {{ $json.failureMessage }}\n\nPlease:\n1. Identify the affected table and its purpose\n2. Explore downstream lineage to find impacted assets\n3. Check upstream lineage for potential root causes\n4. Summarize the impact and recommend next steps"
+      },
+      "type": "CUSTOM.metadataAgent",
+      "typeVersion": 1,
+      "position": [
+        416,
+        0
+      ],
+      "id": "6c151d33-ba91-4593-b81b-e1eddd6cce9b",
+      "name": "Metadata Agent",
+      "credentials": {
+        "metadataApi": {
+          "id": "CONFIGURE_ME",
+          "name": "OpenMetadata account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "value": "CONFIGURE_ME",
+          "mode": "name"
+        },
+        "text": "=:rotating_light: *Data Quality Alert*\n\n*Table:* `{{ $('Extract Fields').item.json.tableFqn }}`\n*Test:* {{ $('Extract Fields').item.json.testName }}\n*Status:* Failed\n\n---\n\n*Analysis:*\n{{ $json.response }}\n\n---\n\n:bar_chart: <https://your-collate-instance/test/{{ $('Extract Fields').item.json.testCaseFqn }}|View Test Details>",
+        "otherOptions": {}
+      },
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.4,
+      "position": [
+        624,
+        0
+      ],
+      "id": "4158fb62-9dfe-4a7e-8dd6-cb1a5e1268c6",
+      "name": "Send a message",
+      "webhookId": "f5e6a5ac-f4b7-44c0-a1bc-dd6aa13c9cb0",
+      "credentials": {
+        "slackApi": {
+          "id": "CONFIGURE_ME",
+          "name": "Slack account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Extract Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Fields": {
+      "main": [
+        [
+          {
+            "node": "Metadata Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Metadata Agent": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "07cb6dba-a78d-45ea-a06b-9e481ba294f6",
+  "meta": {
+    "templateCredsSetupCompleted": false,
+    "instanceId": ""
+  },
+  "id": "dq-failure-slack-notifications",
+  "tags": []
+}

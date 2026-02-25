@@ -1,0 +1,110 @@
+name: Release AI SDK Java
+
+on:
+  push:
+    tags:
+      - 'java-v*'
+  workflow_dispatch:
+    inputs:
+      version:
+        required: true
+        type: string
+        description: 'Version to release (e.g., 0.2.0)'
+  workflow_call:
+    inputs:
+      version:
+        required: true
+        type: string
+        description: 'Version to release (e.g., 0.2.0)'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release-java-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-and-publish:
+    name: Build and Publish to Maven Central
+    runs-on: ubuntu-latest
+    environment: publish
+    defaults:
+      run:
+        working-directory: java
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          java-version: '11'
+          distribution: 'temurin'
+          cache: 'maven'
+          server-id: central
+          server-username: MAVEN_USERNAME
+          server-password: MAVEN_PASSWORD
+          gpg-private-key: ${{ secrets.OSSRH_GPG_SECRET_KEY }}
+          gpg-passphrase: MAVEN_GPG_PASSPHRASE
+
+      - name: Setup settings-security.xml
+        run: |
+          rm -rf ~/.m2/settings-security.xml
+          echo "<settingsSecurity><master>${{ secrets.MAVEN_MASTER_PASSWORD }}</master></settingsSecurity>" > ~/.m2/settings-security.xml
+
+      - name: Verify GPG key is valid
+        working-directory: .
+        run: |
+          echo "Checking imported GPG keys..."
+          gpg --list-secret-keys --keyid-format LONG
+          # Check the validity field (field 2) in colon-delimited output
+          # 'e' = expired, 'r' = revoked
+          VALIDITY=$(gpg --list-secret-keys --with-colons 2>/dev/null | awk -F: '/^sec/{print $2}')
+          if [ -z "$VALIDITY" ]; then
+            echo "::error::No GPG secret key found. Ensure OSSRH_GPG_SECRET_KEY is configured in the 'publish' environment."
+            exit 1
+          fi
+          if [ "$VALIDITY" = "e" ]; then
+            echo "::error::GPG signing key is expired. Generate a new key and update the OSSRH_GPG_SECRET_KEY secret."
+            exit 1
+          fi
+          echo "GPG key is valid (validity=$VALIDITY)."
+
+      - name: Extract version
+        id: version
+        run: |
+          INPUT_VERSION="${{ inputs.version || '' }}"
+          if [ -n "$INPUT_VERSION" ]; then
+            echo "version=$INPUT_VERSION" >> $GITHUB_OUTPUT
+          else
+            echo "version=${GITHUB_REF#refs/tags/java-v}" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Verify pom.xml version matches tag
+        run: |
+          POM_VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
+          TAG_VERSION=${{ steps.version.outputs.version }}
+          # Compare only first 3 components (major.minor.patch)
+          POM_BASE=$(echo "$POM_VERSION" | cut -d. -f1-3)
+          TAG_BASE=$(echo "$TAG_VERSION" | cut -d. -f1-3)
+          if [ "$POM_BASE" != "$TAG_BASE" ]; then
+            echo "Error: pom.xml version ($POM_VERSION) does not match tag version ($TAG_VERSION)"
+            exit 1
+          fi
+
+      - name: Build and test
+        run: mvn clean verify
+
+      - name: Deploy to Maven Central
+        run: |
+          mvn deploy -Prelease \
+            --no-transfer-progress \
+            --batch-mode \
+            -DskipTests \
+            -Dgpg.passphrase=${{ secrets.OSSRH_GPG_SECRET_KEY_PASSWORD }}
+        env:
+          MAVEN_USERNAME: ${{ secrets.MAVEN_USERNAME }}
+          MAVEN_PASSWORD: ${{ secrets.MAVEN_MASTER_PASSWORD }}
+          MAVEN_GPG_PASSPHRASE: ${{ secrets.OSSRH_GPG_SECRET_KEY_PASSWORD }}

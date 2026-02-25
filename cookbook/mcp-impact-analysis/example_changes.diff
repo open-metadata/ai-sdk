@@ -1,0 +1,35 @@
+diff --git a/cookbook/resources/demo-database/dbt/models/staging/stg_jaffle_shop__orders.sql b/cookbook/resources/demo-database/dbt/models/staging/stg_jaffle_shop__orders.sql
+index abc1234..def5678 100644
+--- a/cookbook/resources/demo-database/dbt/models/staging/stg_jaffle_shop__orders.sql
++++ b/cookbook/resources/demo-database/dbt/models/staging/stg_jaffle_shop__orders.sql
+@@ -5,7 +5,7 @@ cleaned as (
+     select
+         id as order_id,
+         customer_id,
+         order_date,
+-        status as order_status,
++        status as fulfillment_status,
+         coalesce(order_total, 0) as order_total,
+         coalesce(shipping_cost, 0) as shipping_cost,
+         coalesce(discount_amount, 0) as discount_amount,
+diff --git a/cookbook/resources/demo-database/dbt/models/staging/stg_stripe__payments.sql b/cookbook/resources/demo-database/dbt/models/staging/stg_stripe__payments.sql
+index 1a2b3c4..5d6e7f8 100644
+--- a/cookbook/resources/demo-database/dbt/models/staging/stg_stripe__payments.sql
++++ b/cookbook/resources/demo-database/dbt/models/staging/stg_stripe__payments.sql
+@@ -7,13 +7,15 @@ cleaned as (
+         order_id,
+         payment_method,
+         amount as payment_amount,
++        coalesce(currency, 'USD') as currency,
+         status as payment_status,
+         created_at as payment_created_at,
+         card_last_four,
+         card_brand,
+         billing_email,
+         ip_address::text as ip_address,
+         risk_score
+     from source
+     where id is not null
+       and amount > 0
++      and coalesce(is_test, false) = false
+ )

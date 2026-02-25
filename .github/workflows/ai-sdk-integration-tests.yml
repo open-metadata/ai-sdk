@@ -1,0 +1,53 @@
+#  Copyright 2021 Collate
+#  Licensed under the Apache License, Version 2.0 (the "License");
+#  you may not use this file except in compliance with the License.
+#  You may obtain a copy of the License at
+#  http://www.apache.org/licenses/LICENSE-2.0
+#  Unless required by applicable law or agreed to in writing, software
+#  distributed under the License is distributed on an "AS IS" BASIS,
+#  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#  See the License for the specific language governing permissions and
+#  limitations under the License.
+
+name: Integration Tests
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+    inputs:
+      run_chat_tests:
+        description: 'Run chat tests - agent invoke and SSE streaming (uses AI tokens)'
+        required: false
+        default: false
+        type: boolean
+
+permissions:
+  contents: read
+  checks: write
+
+concurrency:
+  group: ai-sdk-integration-tests-${{ github.head_ref || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  integration-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Trigger Collate Integration Tests & wait
+        uses: the-actions-org/workflow-dispatch@v4
+        with:
+          workflow: AI SDK Integration Tests
+          ref: main
+          repo: open-metadata/openmetadata-collate
+          token: ${{ secrets.COLLATE_PAT }}
+          wait-for-completion: true
+          wait-for-completion-timeout: 90m
+          inputs: '{ "sha": "${{ github.event.pull_request.head.sha || github.sha }}", "event": "${{ github.event_name }}", "run_chat_tests": "${{ inputs.run_chat_tests || false }}" }'

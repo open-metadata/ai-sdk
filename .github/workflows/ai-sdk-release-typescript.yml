@@ -1,0 +1,87 @@
+name: Release AI SDK TypeScript
+
+on:
+  push:
+    tags:
+      - 'typescript-v*'
+  workflow_dispatch:
+    inputs:
+      version:
+        required: true
+        type: string
+        description: 'Version to release (e.g., 0.2.0)'
+  workflow_call:
+    inputs:
+      version:
+        required: true
+        type: string
+        description: 'Version to release (e.g., 0.2.0)'
+
+permissions:
+  contents: read
+  id-token: write
+
+concurrency:
+  group: release-typescript-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-and-publish:
+    name: Build and Publish to npm
+    runs-on: ubuntu-latest
+    environment: publish
+    defaults:
+      run:
+        working-directory: typescript
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22.14'
+          registry-url: 'https://registry.npmjs.org'
+          cache: 'npm'
+          cache-dependency-path: typescript/package-lock.json
+
+      - name: Upgrade npm for trusted publishing
+        working-directory: .
+        run: |
+          npm install -g npm@latest
+          echo "npm version: $(npm --version)"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run tests
+        run: npm test
+
+      - name: Build
+        run: npm run build
+
+      - name: Extract version
+        id: version
+        run: |
+          INPUT_VERSION="${{ inputs.version || '' }}"
+          if [ -n "$INPUT_VERSION" ]; then
+            echo "version=$INPUT_VERSION" >> $GITHUB_OUTPUT
+          else
+            echo "version=${GITHUB_REF#refs/tags/typescript-v}" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Verify package version matches tag
+        run: |
+          PACKAGE_VERSION=$(node -p "require('./package.json').version")
+          TAG_VERSION=${{ steps.version.outputs.version }}
+          # Compare only first 3 components (major.minor.patch)
+          PKG_BASE=$(echo "$PACKAGE_VERSION" | cut -d. -f1-3)
+          TAG_BASE=$(echo "$TAG_VERSION" | cut -d. -f1-3)
+          if [ "$PKG_BASE" != "$TAG_BASE" ]; then
+            echo "Error: package.json version ($PACKAGE_VERSION) does not match tag version ($TAG_VERSION)"
+            exit 1
+          fi
+
+      - name: Publish to npm
+        run: npm publish --access public --provenance
