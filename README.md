@@ -60,8 +60,6 @@ Agents support **streaming**, **multi-turn conversations**, and **async** out of
 
 ### Python
 
-🚧 Release for python `ai-sdk` is WIP. In the meantime, you can install from source.
-
 ```bash
 pip install ai-sdk
 ```
