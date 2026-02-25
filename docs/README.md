@@ -117,7 +117,7 @@ client.close()
 
 ## Links
 
-- [GitHub](https://github.com/open-metadata/metadata-ai-sdk)
+- [GitHub](https://github.com/open-metadata/ai-sdk)
 - [PyPI](https://pypi.org/project/ai-sdk/)
 - [OpenMetadata Documentation](https://docs.open-metadata.org/)
 - [Collate Documentation](https://docs.getcollate.io/)

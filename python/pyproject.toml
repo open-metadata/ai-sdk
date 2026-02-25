@@ -52,7 +52,7 @@ all = [
 [project.urls]
 Homepage = "https://open-metadata.org"
 Documentation = "https://docs.open-metadata.org/sdk"
-Repository = "https://github.com/open-metadata/metadata-ai-sdk"
+Repository = "https://github.com/open-metadata/ai-sdk"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/ai_sdk"]

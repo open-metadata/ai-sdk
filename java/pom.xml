@@ -12,7 +12,7 @@
 
     <name>AI SDK</name>
     <description>Java SDK for AI Agents</description>
-    <url>https://github.com/open-metadata/metadata-ai-sdk</url>
+    <url>https://github.com/open-metadata/ai-sdk</url>
 
     <licenses>
         <license>
@@ -32,9 +32,9 @@
     </developers>
 
     <scm>
-        <url>https://github.com/open-metadata/metadata-ai-sdk</url>
-        <connection>scm:git:https://github.com/open-metadata/metadata-ai-sdk.git</connection>
-        <developerConnection>scm:git:git@github.com:open-metadata/metadata-ai-sdk.git</developerConnection>
+        <url>https://github.com/open-metadata/ai-sdk</url>
+        <connection>scm:git:https://github.com/open-metadata/ai-sdk.git</connection>
+        <developerConnection>scm:git:git@github.com:open-metadata/ai-sdk.git</developerConnection>
     </scm>
 
     <properties>

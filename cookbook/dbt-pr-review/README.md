@@ -182,7 +182,7 @@ Changes to `orders.sql` affect 2 dashboards and 1 downstream model. One DQ test 
 3. Review the DQ test bounds on `total_amount`
 
 ---
-*Powered by [Metadata AI](https://github.com/open-metadata/metadata-ai-sdk)*
+*Powered by [Metadata AI](https://github.com/open-metadata/ai-sdk)*
 ```
 
 ## Customization

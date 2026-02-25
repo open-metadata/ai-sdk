@@ -10,10 +10,10 @@
     "metadata"
   ],
   "license": "SEE LICENSE IN LICENSE",
-  "homepage": "https://github.com/open-metadata/metadata-ai-sdk",
+  "homepage": "https://github.com/open-metadata/ai-sdk",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/open-metadata/metadata-ai-sdk.git"
+    "url": "git+https://github.com/open-metadata/ai-sdk.git"
   },
   "main": "dist/index.js",
   "scripts": {
