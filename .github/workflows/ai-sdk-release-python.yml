@@ -66,7 +66,7 @@ jobs:
 
       - name: Verify package version matches tag
         run: |
-          PACKAGE_VERSION=$(python -c "from importlib.metadata import version; print(version('ai-sdk'))")
+          PACKAGE_VERSION=$(python -c "from importlib.metadata import version; print(version('data-ai-sdk'))")
           TAG_VERSION=${{ steps.version.outputs.version }}
           # Compare only first 3 components (major.minor.patch)
           PKG_BASE=$(echo "$PACKAGE_VERSION" | cut -d. -f1-3)
