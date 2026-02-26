@@ -8,6 +8,7 @@ cleaned as (
         order_id,
         payment_method,
         amount as payment_amount,
+        'USD' as currency,
         status as payment_status,
         created_at as payment_created_at,
         card_last_four,
@@ -18,6 +19,7 @@ cleaned as (
     from source
     where id is not null
       and amount > 0
+      and billing_email not like '%@test.com'
 )
 
 select * from cleaned
