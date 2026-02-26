@@ -97,7 +97,7 @@ jobs:
       - name: Check if already published
         id: check
         run: |
-          HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" https://repo1.maven.org/maven2/io/metadata/ai/ai-sdk/${{ steps.version.outputs.version }}/ai-sdk-${{ steps.version.outputs.version }}.pom)
+          HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" https://repo1.maven.org/maven2/org/open-metadata/ai-sdk/${{ steps.version.outputs.version }}/ai-sdk-${{ steps.version.outputs.version }}.pom)
           if [ "$HTTP_STATUS" = "200" ]; then
             echo "Version ${{ steps.version.outputs.version }} already published to Maven Central. Skipping."
             echo "published=true" >> $GITHUB_OUTPUT
