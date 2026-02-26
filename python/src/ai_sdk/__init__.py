@@ -119,7 +119,7 @@ Import Guide:
 
 from __future__ import annotations
 
-__version__ = "0.0.2"
+__version__ = "0.1.2"
 
 # Re-export main classes for convenient imports
 from ai_sdk.client import AISdk
