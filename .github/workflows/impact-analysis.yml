@@ -1,9 +1,10 @@
 name: Data Impact Analysis
 
 on:
-  pull_request:
-    paths:
-      - 'cookbook/resources/demo-database/dbt/models/**'
+  # Disabling trigger, keeping it for demos
+  # pull_request:
+  #   paths:
+  #     - 'cookbook/resources/demo-database/dbt/models/**'
   workflow_dispatch:
 
 concurrency:
