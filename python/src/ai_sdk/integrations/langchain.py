@@ -49,7 +49,7 @@ try:
     from pydantic import BaseModel, Field
 except ImportError as e:
     raise ImportError(
-        "LangChain integration requires langchain-core. Install with: pip install ai-sdk[langchain]"
+        "LangChain integration requires langchain-core. Install with: pip install data-ai-sdk[langchain]"
     ) from e
 
 from ai_sdk.agent import AgentHandle

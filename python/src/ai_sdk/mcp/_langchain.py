@@ -1,6 +1,6 @@
 """LangChain adapter for MCP tools.
 
-Requires: pip install ai-sdk[langchain]
+Requires: pip install data-ai-sdk[langchain]
 """
 
 from __future__ import annotations
@@ -17,7 +17,7 @@ try:
     from pydantic import BaseModel, Field, create_model
 except ImportError as e:
     raise ImportError(
-        "LangChain integration requires langchain-core. Install with: pip install ai-sdk[langchain]"
+        "LangChain integration requires langchain-core. Install with: pip install data-ai-sdk[langchain]"
     ) from e
 
 from ai_sdk.exceptions import MCPToolExecutionError

@@ -4,7 +4,7 @@ Bring AI to your metadata. The OpenMetadata AI SDK gives you programmatic access
 
 | SDK | Package | Install |
 |-----|---------|---------|
-| Python | [`ai-sdk`](https://pypi.org/project/ai-sdk/) | `pip install ai-sdk` |
+| Python | [`data-ai-sdk`](https://pypi.org/project/data-ai-sdk/) | `pip install data-ai-sdk` |
 | TypeScript | [`@openmetadata/ai-sdk`](https://www.npmjs.com/package/@openmetadata/ai-sdk) | `npm install @openmetadata/ai-sdk` |
 | Java | [`org.open-metadata:ai-sdk`](https://central.sonatype.com/artifact/org.open-metadata/ai-sdk) | Maven / Gradle |
 | CLI | [`ai-sdk`](https://github.com/open-metadata/ai-sdk/releases) | [Install script](#cli-1) |
@@ -61,7 +61,7 @@ Agents support **streaming**, **multi-turn conversations**, and **async** out of
 ### Python
 
 ```bash
-pip install ai-sdk
+pip install data-ai-sdk
 ```
 
 ```python

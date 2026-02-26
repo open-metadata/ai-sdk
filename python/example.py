@@ -6,7 +6,7 @@ This example demonstrates how to use the SemanticLayerAgent as a tool
 in a LangChain pipeline to query metrics and explore your semantic layer.
 
 Prerequisites:
-    pip install ai-sdk[langchain]
+    pip install data-ai-sdk[langchain]
 
 Environment variables:
     AI_SDK_HOST: Your server URL

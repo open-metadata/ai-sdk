@@ -122,7 +122,7 @@ jobs:
 
       - name: Install dependencies
         if: steps.changes.outputs.files != ''
-        run: pip install ai-sdk
+        run: pip install data-ai-sdk
 
       - name: Run dbt review
         if: steps.changes.outputs.files != ''

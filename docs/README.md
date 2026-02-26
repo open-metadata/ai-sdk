@@ -54,13 +54,13 @@ Your `AI_SDK_HOST` is your OpenMetadata/Collate server URL:
 
 ```bash
 # Core SDK (standalone)
-pip install ai-sdk
+pip install data-ai-sdk
 
 # With LangChain support
-pip install ai-sdk[langchain]
+pip install data-ai-sdk[langchain]
 
 # All optional dependencies
-pip install ai-sdk[all]
+pip install data-ai-sdk[all]
 ```
 
 ## Quick Example
@@ -118,6 +118,6 @@ client.close()
 ## Links
 
 - [GitHub](https://github.com/open-metadata/ai-sdk)
-- [PyPI](https://pypi.org/project/ai-sdk/)
+- [PyPI](https://pypi.org/project/data-ai-sdk/)
 - [OpenMetadata Documentation](https://docs.open-metadata.org/)
 - [Collate Documentation](https://docs.getcollate.io/)

@@ -208,7 +208,7 @@ class MCPClient:
         """
         Get tools formatted for LangChain.
 
-        Requires: pip install ai-sdk[langchain]
+        Requires: pip install data-ai-sdk[langchain]
 
         Args:
             include: Only include these tools (allowlist)

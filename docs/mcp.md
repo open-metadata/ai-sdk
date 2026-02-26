@@ -27,10 +27,10 @@ OpenMetadata exposes an MCP server at the `/mcp` endpoint that provides tools fo
 
 ```bash
 # Core SDK
-pip install ai-sdk
+pip install data-ai-sdk
 
 # With LangChain support
-pip install ai-sdk[langchain]
+pip install data-ai-sdk[langchain]
 ```
 
 ## Set Environment Variables
@@ -352,7 +352,7 @@ The MCP endpoint may not be available:
 Ensure you have LangChain installed:
 
 ```bash
-pip install ai-sdk[langchain]
+pip install data-ai-sdk[langchain]
 ```
 
 If you see "langchain-core is required", the optional dependency is missing.

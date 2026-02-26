@@ -24,7 +24,7 @@ Automate impact analysis for schema changes using OpenMetadata's MCP tools. This
 ## Installation
 
 ```bash
-pip install ai-sdk[langchain] langchain langchain-openai
+pip install data-ai-sdk[langchain] langchain langchain-openai
 ```
 
 ## Environment Setup

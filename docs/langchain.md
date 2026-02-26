@@ -9,7 +9,7 @@ This guide covers using AI SDK agents as tools in LangChain pipelines.
 Install the SDK with LangChain support:
 
 ```bash
-pip install ai-sdk[langchain]
+pip install data-ai-sdk[langchain]
 ```
 
 This installs `langchain-core` as a dependency.

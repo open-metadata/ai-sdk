@@ -5,13 +5,13 @@ Python SDK for invoking [Metadata](https://open-metadata.org) Dynamic Agents fro
 ## Installation
 
 ```bash
-pip install ai-sdk
+pip install data-ai-sdk
 ```
 
 With LangChain integration:
 
 ```bash
-pip install ai-sdk[langchain]
+pip install data-ai-sdk[langchain]
 ```
 
 ## Quick Start

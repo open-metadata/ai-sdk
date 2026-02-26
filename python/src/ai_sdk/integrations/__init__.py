@@ -4,15 +4,15 @@ Integrations for the AI SDK with popular AI frameworks.
 Available integrations:
 
 - **langchain**: LangChain tool wrapper
-  Install: pip install ai-sdk[langchain]
+  Install: pip install data-ai-sdk[langchain]
   Usage:
       from ai_sdk.integrations.langchain import AISdkAgentTool
 
 - **llamaindex**: LlamaIndex tool wrapper (coming soon)
-  Install: pip install ai-sdk[llamaindex]
+  Install: pip install data-ai-sdk[llamaindex]
 
 - **crewai**: CrewAI tool wrapper (coming soon)
-  Install: pip install ai-sdk[crewai]
+  Install: pip install data-ai-sdk[crewai]
 
 All integrations extend the BaseAgentWrapper class which provides:
 - Agent info fetching with graceful fallback
@@ -68,7 +68,7 @@ def __getattr__(name: str) -> object:
         except ImportError as e:
             raise ImportError(
                 f"Integration '{name}' requires additional dependencies. "
-                f"Install with: pip install ai-sdk[{name}]"
+                f"Install with: pip install data-ai-sdk[{name}]"
             ) from e
 
     raise AttributeError(f"module {__name__!r} has no attribute {name!r}")

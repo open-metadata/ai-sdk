@@ -63,7 +63,7 @@ Async Usage:
     print(response.response)
 
 Framework Integrations:
-    # LangChain (pip install ai-sdk[langchain])
+    # LangChain (pip install data-ai-sdk[langchain])
     from ai_sdk.integrations.langchain import AISdkAgentTool
     tool = AISdkAgentTool.from_client(client, "MyAgent")
 

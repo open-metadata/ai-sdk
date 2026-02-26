@@ -13,7 +13,7 @@ If you don't have a token yet, see [Getting Your Credentials](README.md#getting-
 ## Installation
 
 ```bash
-pip install ai-sdk
+pip install data-ai-sdk
 ```
 
 ## Set Environment Variables

@@ -16,7 +16,7 @@ See [Getting Your Credentials](README.md#getting-your-credentials) for detailed 
 Install the SDK with minimal dependencies:
 
 ```bash
-pip install ai-sdk
+pip install data-ai-sdk
 ```
 
 Core dependencies are only `httpx` and `pydantic` - no framework lock-in.
