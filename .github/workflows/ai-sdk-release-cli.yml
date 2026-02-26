@@ -174,9 +174,23 @@ jobs:
             echo "version=${GITHUB_REF#refs/tags/cli-v}" >> $GITHUB_OUTPUT
           fi
 
+      - name: Check if binaries already uploaded
+        id: check
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          TAG="${{ inputs.release_tag || format('cli-v{0}', steps.version.outputs.version) }}"
+          ASSET_COUNT=$(gh release view "$TAG" --json assets -q '.assets | length' 2>/dev/null || echo "0")
+          if [ "$ASSET_COUNT" -ge "6" ]; then
+            echo "CLI binaries already attached to release $TAG ($ASSET_COUNT assets). Skipping."
+            echo "published=true" >> $GITHUB_OUTPUT
+          else
+            echo "published=false" >> $GITHUB_OUTPUT
+          fi
+
       # When triggered directly by a cli-v* tag: create a new GitHub Release
       - name: Create Release
-        if: ${{ !inputs.release_tag }}
+        if: ${{ !inputs.release_tag && steps.check.outputs.published == 'false' }}
         uses: softprops/action-gh-release@v2
         with:
           name: CLI v${{ steps.version.outputs.version }}
@@ -236,7 +250,7 @@ jobs:
 
       # When called from the orchestrator: upload binaries to the existing release
       - name: Upload CLI binaries to existing release
-        if: ${{ inputs.release_tag }}
+        if: ${{ inputs.release_tag && steps.check.outputs.published == 'false' }}
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ inputs.release_tag }}
