@@ -5,10 +5,11 @@ name: Release
 #   - Python SDK → PyPI
 #   - TypeScript SDK → npm
 #   - Java SDK → Maven Central
+#   - n8n Node → npm (after TypeScript SDK)
 #   - CLI binaries → attached to the GitHub Release
 #
 # For individual SDK releases, push SDK-specific tags instead:
-#   python-v0.2.0, typescript-v0.2.0, java-v0.2.0, cli-v0.2.0
+#   python-v0.2.0, typescript-v0.2.0, java-v0.2.0, n8n-v0.2.0, cli-v0.2.0
 
 on:
   release:
@@ -89,6 +90,14 @@ jobs:
     name: Java SDK
     needs: validate
     uses: ./.github/workflows/ai-sdk-release-java.yml
+    with:
+      version: ${{ needs.validate.outputs.version }}
+    secrets: inherit
+
+  release-n8n:
+    name: n8n Node
+    needs: [validate, release-typescript]
+    uses: ./.github/workflows/ai-sdk-release-n8n.yml
     with:
       version: ${{ needs.validate.outputs.version }}
     secrets: inherit

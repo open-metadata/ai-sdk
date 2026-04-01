@@ -9,11 +9,13 @@
     "ai",
     "metadata"
   ],
+  "author": "OpenMetadata",
   "license": "SEE LICENSE IN LICENSE",
   "homepage": "https://github.com/open-metadata/ai-sdk",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/open-metadata/ai-sdk.git"
+    "url": "git+https://github.com/open-metadata/ai-sdk.git",
+    "directory": "n8n-nodes-metadata"
   },
   "main": "dist/index.js",
   "scripts": {
@@ -40,6 +42,7 @@
     ]
   },
   "devDependencies": {
+    "@n8n/node-cli": "^0.23.0",
     "@types/node": "^20.10.0",
     "@typescript-eslint/eslint-plugin": "^6.0.0",
     "@typescript-eslint/parser": "^6.0.0",

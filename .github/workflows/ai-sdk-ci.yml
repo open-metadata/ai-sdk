@@ -63,7 +63,7 @@ jobs:
       - name: Install n8n dependencies
         run: |
           cd typescript && npm run build
-          cd ../n8n-nodes-metadata && npm install
+          cd ../n8n-nodes-metadata && npm install --legacy-peer-deps
 
       # ==================== Linting (via Makefile) ====================
 

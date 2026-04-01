@@ -172,6 +172,7 @@ release:  ## Create a GitHub Release (usage: make release [B=branch])
 	@echo "  - Publish Python SDK to PyPI"
 	@echo "  - Publish TypeScript SDK to npm"
 	@echo "  - Publish Java SDK to Maven Central"
+	@echo "  - Publish n8n node to npm (after TypeScript SDK)"
 	@echo "  - Build CLI binaries and attach to release"
 
 # Development helpers
