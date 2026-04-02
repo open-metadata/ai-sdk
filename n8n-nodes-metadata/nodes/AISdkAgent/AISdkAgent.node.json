@@ -1,0 +1,14 @@
+{
+	"node": "n8n-nodes-metadata.aiSdkAgent",
+	"nodeVersion": "1.0",
+	"codexVersion": "1.0",
+	"categories": ["Miscellaneous"],
+	"alias": ["openmetadata", "metadata", "agent", "ai", "dynamic agent", "data catalog"],
+	"resources": {
+		"primaryDocumentation": [
+			{
+				"url": "https://docs.open-metadata.org"
+			}
+		]
+	}
+}

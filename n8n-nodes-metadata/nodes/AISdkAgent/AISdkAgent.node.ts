@@ -5,6 +5,7 @@ import {
 	INodeType,
 	INodeTypeDescription,
 	NodeApiError,
+	NodeConnectionTypes,
 	NodeOperationError,
 } from 'n8n-workflow';
 
@@ -24,13 +25,14 @@ export class AISdkAgent implements INodeType {
 		icon: 'file:metadata.png',
 		group: ['transform'],
 		version: 1,
+		usableAsTool: true,
 		subtitle: '={{$parameter["agentName"]}}',
-		description: 'Invoke an OpenMetadata DynamicAgent',
+		description: 'Invoke an OpenMetadata DynamicAgent.',
 		defaults: {
 			name: 'AI SDK Agent',
 		},
-		inputs: ['main'],
-		outputs: ['main'],
+		inputs: [NodeConnectionTypes.Main],
+		outputs: [NodeConnectionTypes.Main],
 		credentials: [
 			{
 				name: 'aiSdkApi',
@@ -44,7 +46,7 @@ export class AISdkAgent implements INodeType {
 				type: 'string',
 				default: '',
 				placeholder: 'my-agent',
-				description: 'The name of the DynamicAgent to invoke',
+				description: 'The name of the DynamicAgent to invoke.',
 				required: true,
 			},
 			{
@@ -56,7 +58,7 @@ export class AISdkAgent implements INodeType {
 				},
 				default: '',
 				placeholder: 'Enter your message or query for the agent',
-				description: 'The message to send to the agent',
+				description: 'The message to send to the agent.',
 				required: true,
 			},
 			{
@@ -65,7 +67,7 @@ export class AISdkAgent implements INodeType {
 				type: 'string',
 				default: '',
 				placeholder: 'Optional: continue a conversation',
-				description: 'Optional conversation ID for multi-turn conversations',
+				description: 'Optional conversation ID for multi-turn conversations.',
 				required: false,
 			},
 		],
@@ -124,51 +126,59 @@ export class AISdkAgent implements INodeType {
 					pairedItem: { item: i },
 				});
 			} catch (error) {
+				// Convert SDK errors to n8n NodeApiError with descriptive messages
+				if (!(error instanceof NodeApiError) && !(error instanceof NodeOperationError)) {
+					const agentName = this.getNodeParameter('agentName', i) as string;
+					let errorMessage: string;
+					let httpCode: string;
+
+					if (error instanceof AuthenticationError) {
+						errorMessage = 'Authentication failed: Invalid or expired JWT token';
+						httpCode = '401';
+					} else if (error instanceof AgentNotEnabledError) {
+						errorMessage = 'Agent is not API-enabled. Enable API access in the OpenMetadata UI.';
+						httpCode = '403';
+					} else if (error instanceof AgentNotFoundError) {
+						errorMessage = `Agent "${agentName}" not found`;
+						httpCode = '404';
+					} else if (error instanceof AgentExecutionError) {
+						errorMessage = 'Agent execution failed. Check the agent configuration in OpenMetadata.';
+						httpCode = '500';
+					} else if (error instanceof AISdkError) {
+						errorMessage = error.message || 'OpenMetadata API error occurred';
+						httpCode = String(error.statusCode || 500);
+					} else {
+						const unknownError = error as { message?: string; statusCode?: number };
+						errorMessage = unknownError.message || 'Unknown error occurred';
+						httpCode = String(unknownError.statusCode || 500);
+					}
+
+					// eslint-disable-next-line @typescript-eslint/no-explicit-any
+					const errorPayload = { message: errorMessage } as any;
+					const nodeError = new NodeApiError(
+						this.getNode(),
+						errorPayload,
+						{ httpCode, itemIndex: i },
+					);
+
+					if (this.continueOnFail()) {
+						returnData.push({
+							json: { error: nodeError.message },
+							pairedItem: { item: i },
+						});
+						continue;
+					}
+					throw nodeError;
+				}
+
 				if (this.continueOnFail()) {
-					const errorMessage = error instanceof Error ? error.message : 'Unknown error';
 					returnData.push({
-						json: { error: errorMessage },
+						json: { error: (error as NodeApiError).message },
 						pairedItem: { item: i },
 					});
 					continue;
 				}
-
-				if (error instanceof NodeApiError || error instanceof NodeOperationError) {
-					throw error;
-				}
-
-				// Convert SDK errors to n8n NodeApiError with descriptive messages
-				const agentName = this.getNodeParameter('agentName', i) as string;
-				let errorMessage: string;
-				let httpCode: string;
-
-				if (error instanceof AuthenticationError) {
-					errorMessage = 'Authentication failed: Invalid or expired JWT token';
-					httpCode = '401';
-				} else if (error instanceof AgentNotEnabledError) {
-					errorMessage = 'Agent is not API-enabled. Enable API access in the OpenMetadata UI.';
-					httpCode = '403';
-				} else if (error instanceof AgentNotFoundError) {
-					errorMessage = `Agent "${agentName}" not found`;
-					httpCode = '404';
-				} else if (error instanceof AgentExecutionError) {
-					errorMessage = 'Agent execution failed. Check the agent configuration in OpenMetadata.';
-					httpCode = '500';
-				} else if (error instanceof AISdkError) {
-					errorMessage = error.message || 'OpenMetadata API error occurred';
-					httpCode = String(error.statusCode || 500);
-				} else {
-					const unknownError = error as { message?: string; statusCode?: number };
-					errorMessage = unknownError.message || 'Unknown error occurred';
-					httpCode = String(unknownError.statusCode || 500);
-				}
-
-				throw new NodeApiError(this.getNode(), {
-					message: errorMessage,
-					httpCode,
-				}, {
-					itemIndex: i,
-				});
+				throw error;
 			}
 		}
 
