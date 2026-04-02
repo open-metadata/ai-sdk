@@ -98,3 +98,10 @@ jobs:
       - name: Publish to npm
         if: steps.check.outputs.published == 'false'
         run: npm publish --access public --provenance
+
+      - name: Verify with n8n community package scanner
+        if: steps.check.outputs.published == 'false'
+        working-directory: .
+        run: |
+          sleep 10  # Wait for npm registry to propagate
+          npx --yes @n8n/scan-community-package n8n-nodes-metadata

@@ -9,6 +9,7 @@ export class AISdkApi implements ICredentialType {
 	name = 'aiSdkApi';
 	displayName = 'OpenMetadata API';
 	documentationUrl = 'https://docs.open-metadata.org';
+	icon = 'file:metadata.png' as const;
 	properties: INodeProperties[] = [
 		{
 			displayName: 'Server URL',
@@ -16,7 +17,7 @@ export class AISdkApi implements ICredentialType {
 			type: 'string',
 			default: '',
 			placeholder: 'https://your-openmetadata-instance.com',
-			description: 'The URL of your OpenMetadata instance',
+			description: 'The URL of your OpenMetadata instance.',
 			required: true,
 		},
 		{
@@ -27,7 +28,7 @@ export class AISdkApi implements ICredentialType {
 				password: true,
 			},
 			default: '',
-			description: 'JWT token for authentication (bot token or personal access token)',
+			description: 'JWT token for authentication (bot token or personal access token).',
 			required: true,
 		},
 	];
