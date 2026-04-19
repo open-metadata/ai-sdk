@@ -1,10 +1,11 @@
 name: Data Impact Analysis
 
 on:
-  # Disabling trigger, keeping it for demos
-  # pull_request:
-  #   paths:
-  #     - 'cookbook/resources/demo-database/dbt/models/**'
+  pull_request:
+    paths:
+      - "cookbook/resources/demo-database/dbt/models/**/*.sql"
+      - "cookbook/resources/demo-database/dbt/models/**/*.yml"
+      - "cookbook/resources/demo-database/dbt/models/**/*.yaml"
   workflow_dispatch:
 
 concurrency:
@@ -13,15 +14,13 @@ concurrency:
 
 permissions:
   contents: read
+  pull-requests: write
+  issues: write
 
 jobs:
   analyze:
     name: Impact Analysis
     runs-on: ubuntu-latest
-    environment: test
-    permissions:
-      contents: read
-      pull-requests: write
 
     steps:
       - name: Checkout code
@@ -29,42 +28,59 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Setup Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
-          cache: 'pip'
-          cache-dependency-path: python/pyproject.toml
-
-      - name: Install dependencies
-        run: |
-          pip install -e python/[langchain]
-          pip install langchain langchain-openai
-
       - name: Generate diff
+        shell: bash
         run: |
-          git diff origin/main...HEAD > changes.diff
-          echo "--- Diff contents ---"
-          cat changes.diff
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            git diff "${{ github.event.pull_request.base.sha }}...HEAD" > changes.diff
+          else
+            git fetch origin main --depth=1
+            git diff origin/main...HEAD > changes.diff
+          fi
 
-      - name: Run impact analysis
-        working-directory: cookbook/mcp-impact-analysis
-        env:
-          AI_SDK_HOST: ${{ secrets.AI_SDK_HOST }}
-          AI_SDK_TOKEN: ${{ secrets.AI_SDK_TOKEN }}
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-        run: python batch_analyzer.py ../../changes.diff > ../../impact_report.md
+      - name: Run OpenMetadata impact analysis
+        id: impact
+        uses: ./.github/actions/openmetadata-impact-analysis
+        with:
+          diff-path: changes.diff
+          metadata-host: ${{ secrets.AI_SDK_HOST }}
+          metadata-token: ${{ secrets.AI_SDK_TOKEN }}
+          openai-api-key: ${{ secrets.OPENAI_API_KEY }}
+          paths: "cookbook/resources/demo-database/dbt/models/**/*.sql,cookbook/resources/demo-database/dbt/models/**/*.yml,cookbook/resources/demo-database/dbt/models/**/*.yaml"
+
+      - name: Find existing PR comment
+        if: github.event_name == 'pull_request'
+        uses: peter-evans/find-comment@v3
+        id: find-comment
+        with:
+          issue-number: ${{ github.event.pull_request.number }}
+          comment-author: github-actions[bot]
+          body-includes: openmetadata-impact-analysis
 
       - name: Post PR comment
         if: github.event_name == 'pull_request'
         uses: peter-evans/create-or-update-comment@v4
         with:
+          comment-id: ${{ steps.find-comment.outputs.comment-id }}
           issue-number: ${{ github.event.pull_request.number }}
-          body-path: impact_report.md
+          body-path: ${{ steps.impact.outputs.report-path }}
+          edit-mode: replace
 
-      - name: Write to step summary (manual trigger)
-        if: github.event_name == 'workflow_dispatch'
+      - name: Write to step summary
+        shell: bash
         run: |
-          echo "## Data Impact Analysis" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          cat impact_report.md >> $GITHUB_STEP_SUMMARY
+          echo "## Data Impact Analysis" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Risk: \`${{ steps.impact.outputs.risk-level }}\`" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Affected assets: \`${{ steps.impact.outputs.affected-count }}\`" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          cat "${{ steps.impact.outputs.report-path }}" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload impact report artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: openmetadata-impact-analysis
+          path: |
+            ${{ steps.impact.outputs.report-path }}
+            ${{ steps.impact.outputs.html-report-path }}
+            impact_metadata.json

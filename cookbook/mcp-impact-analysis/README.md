@@ -248,29 +248,49 @@ Assets that could benefit from `loyalty_tier`:
 
 The [`batch_analyzer.py`](./batch_analyzer.py) script extends the interactive agent for automated use in pull requests. It:
 
-1. Reads a `git diff` file and extracts every changed `.sql` file under a `models/` directory.
-2. Spins up the same agent from `impact_analyzer.py`.
-3. Iterates over each changed model and asks the agent for its downstream impact.
-4. Prints a combined Markdown report suitable for posting as a PR comment.
+1. Reads a `git diff` file and extracts changed dbt `.sql`, `.yml`, and `.yaml` files under a `models/` directory.
+2. Uses the MCP-backed agent from `impact_analyzer.py` when credentials are available.
+3. Falls back to a deterministic review report when AI credentials are missing, so CI still produces useful output.
+4. Scores risk from affected assets, data-quality signals, PII/governance terms, and critical business asset mentions.
+5. Writes Markdown, optional static HTML, and optional JSON metadata for GitHub Action outputs.
 
 Run it locally:
 
 ```bash
 git diff origin/main...HEAD > changes.diff
-python batch_analyzer.py changes.diff
+python batch_analyzer.py changes.diff \
+  --output impact_report.md \
+  --html-output impact_report.html \
+  --metadata-output impact_metadata.json
 ```
 
 ### GitHub Actions Integration
 
-This repository includes a ready-to-use workflow at [`.github/workflows/impact-analysis.yml`](../../.github/workflows/impact-analysis.yml). It:
+This repository includes a reusable composite action at [`.github/actions/openmetadata-impact-analysis/action.yml`](../../.github/actions/openmetadata-impact-analysis/action.yml) and a ready-to-use workflow at [`.github/workflows/impact-analysis.yml`](../../.github/workflows/impact-analysis.yml). The workflow:
 
 1. **Triggers automatically** on PRs that modify dbt models under `cookbook/resources/demo-database/dbt/models/`.
 2. **Supports manual dispatch** via the Actions tab — useful for demos or ad-hoc runs on any branch.
 3. **Generates a diff** between the PR branch and `origin/main`.
-4. **Runs the batch analyzer** against the diff to produce a Markdown impact report.
-5. **Posts a PR comment** with the full report (or writes to the GitHub Step Summary for manual runs).
+4. **Runs the reusable action** against the diff to produce Markdown, HTML, and JSON outputs.
+5. **Posts or updates one PR comment** with the full report.
+6. **Uploads the HTML report** as a workflow artifact for review and demos.
 
-The workflow uses an HTML comment marker (`<!-- impact-analysis-bot -->`) to find and update its own comment on subsequent pushes, so you only ever see one impact analysis comment per PR.
+The report uses an HTML comment marker (`<!-- openmetadata-impact-analysis -->`) to find and update its own comment on subsequent pushes, so you only ever see one impact analysis comment per PR.
+
+#### Reusable Action
+
+Add this action to another repository after checking out code and generating a diff:
+
+```yaml
+- name: Run OpenMetadata impact analysis
+  uses: open-metadata/ai-sdk/.github/actions/openmetadata-impact-analysis@main
+  with:
+    diff-path: changes.diff
+    metadata-host: ${{ secrets.AI_SDK_HOST }}
+    metadata-token: ${{ secrets.AI_SDK_TOKEN }}
+    openai-api-key: ${{ secrets.OPENAI_API_KEY }}
+    paths: "**/models/**/*.sql,**/models/**/*.yml,**/models/**/*.yaml"
+```
 
 #### Required Secrets
 
@@ -281,6 +301,8 @@ Configure these in your repository settings under **Settings > Secrets and varia
 | `AI_SDK_HOST` | Your OpenMetadata server URL (e.g. `https://your-instance.getcollate.io`) |
 | `AI_SDK_TOKEN` | A bot JWT token with read access to metadata |
 | `OPENAI_API_KEY` | OpenAI API key for the LLM |
+
+If these secrets are not present, the action still completes and emits a fallback report that tells reviewers which changed models need manual OpenMetadata review.
 
 #### Demo Walkthrough
 
