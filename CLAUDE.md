@@ -70,10 +70,15 @@ make install-hooks     # Install pre-commit hooks
 
 ```
 client = AISdk(host, token)
+
+# Default platform agent (PLANNER / CHAT_MODE) — no name needed
+response = client.agent().invoke("message")
+
+# Named dynamic agent
 response = client.agent("agent-name").invoke("message")
 
-# Streaming
-for event in client.agent("agent-name").stream("message"):
+# Streaming (works with both)
+for event in client.agent().stream("message"):
     handle(event)
 ```
 

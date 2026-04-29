@@ -21,7 +21,10 @@ const client = new AISdk({
   token: 'your-bot-jwt-token',
 });
 
-// Invoke an agent
+// Default platform agent (PLANNER / CHAT_MODE) — no name needed
+const defaultResponse = await client.agent().invoke('What tables have quality issues?');
+
+// Named dynamic agent
 const response = await client.agent('DataQualityPlannerAgent')
   .invoke('What tables have quality issues?');
 

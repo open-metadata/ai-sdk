@@ -24,6 +24,11 @@ client = AISdk(
     token="your-bot-jwt-token"
 )
 
+# Default platform agent (PLANNER / CHAT_MODE)
+response = client.agent().call("What data quality tests should I add for the customers table?")
+print(response.response)
+
+# Named dynamic agent
 response = client.agent("DataQualityPlannerAgent").call(
     "What data quality tests should I add for the customers table?"
 )

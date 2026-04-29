@@ -46,7 +46,12 @@ public class Example {
             .maxRetries(3)                     // optional
             .build();
 
-        // Simple invocation
+        // Default platform agent (PLANNER / CHAT_MODE) — no name needed
+        InvokeResponse defaultResponse = client.agent()
+            .invoke("What tables exist?");
+        System.out.println(defaultResponse.getResponse());
+
+        // Named dynamic agent
         InvokeResponse response = client.agent("semantic-layer-agent")
             .invoke("What tables exist?");
 

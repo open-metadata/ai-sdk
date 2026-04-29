@@ -256,7 +256,11 @@ ai-sdk abilities get <ability-name> --json
 For scripting or single queries, use the `invoke` command:
 
 ```bash
-# Simple invocation
+# Default platform agent (PLANNER / CHAT_MODE) — no agent name required
+ai-sdk invoke --default "What tables are available?"
+ai-sdk invoke -D "What tables are available?"
+
+# Named dynamic agent
 ai-sdk invoke semantic-layer-agent "What tables are available?"
 
 # Stream response in real-time
