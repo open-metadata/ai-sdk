@@ -349,9 +349,8 @@ class SemanticsRule(BaseModel):
 
 
 class AgentTypeEnum(Enum):
-    CHAT = 'CHAT'
-    OBSERVABILITY = 'OBSERVABILITY'
-    CHART = 'CHART'
+    PLANNER = 'PLANNER'
+    INVENTORY = 'INVENTORY'
 
 
 class AgentModeEnum(Enum):
