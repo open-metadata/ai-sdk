@@ -162,10 +162,36 @@ class AISdk:
             user_agent=user_agent,
         )
 
+        # HTTP client for the default-agent endpoint (/api/v1/agents)
+        default_agent_base_url = f"{self._host}/api/v1/agents"
+        self._default_http = HTTPClient(
+            base_url=default_agent_base_url,
+            auth=self._auth,
+            timeout=timeout,
+            verify_ssl=verify_ssl,
+            max_retries=max_retries,
+            retry_delay=retry_delay,
+            user_agent=user_agent,
+        )
+
+        # HTTP client for chat-conversation creation (/api/v1/assistants)
+        chat_conv_base_url = f"{self._host}/api/v1/assistants"
+        self._chat_conv_http = HTTPClient(
+            base_url=chat_conv_base_url,
+            auth=self._auth,
+            timeout=timeout,
+            verify_ssl=verify_ssl,
+            max_retries=max_retries,
+            retry_delay=retry_delay,
+            user_agent=user_agent,
+        )
+
         self._async_http: AsyncHTTPClient | None = None
         self._async_personas_http: AsyncHTTPClient | None = None
         self._async_bots_http: AsyncHTTPClient | None = None
         self._async_abilities_http: AsyncHTTPClient | None = None
+        self._async_default_http: AsyncHTTPClient | None = None
+        self._async_chat_conv_http: AsyncHTTPClient | None = None
         if enable_async:
             self._async_http = AsyncHTTPClient(
                 base_url=agents_base_url,
@@ -196,6 +222,24 @@ class AISdk:
             )
             self._async_abilities_http = AsyncHTTPClient(
                 base_url=abilities_base_url,
+                auth=self._auth,
+                timeout=timeout,
+                verify_ssl=verify_ssl,
+                max_retries=max_retries,
+                retry_delay=retry_delay,
+                user_agent=user_agent,
+            )
+            self._async_default_http = AsyncHTTPClient(
+                base_url=default_agent_base_url,
+                auth=self._auth,
+                timeout=timeout,
+                verify_ssl=verify_ssl,
+                max_retries=max_retries,
+                retry_delay=retry_delay,
+                user_agent=user_agent,
+            )
+            self._async_chat_conv_http = AsyncHTTPClient(
+                base_url=chat_conv_base_url,
                 auth=self._auth,
                 timeout=timeout,
                 verify_ssl=verify_ssl,
@@ -308,23 +352,38 @@ class AISdk:
 
         return results
 
-    def agent(self, name: str) -> AgentHandle:
+    def agent(self, name: str | None = None) -> AgentHandle:
         """
-        Get a handle to a specific agent.
+        Get a handle to an agent.
+
+        - With a name: returns a handle for the named dynamic agent.
+        - Without a name: returns a handle for the platform's default agent
+          (PLANNER / CHAT_MODE). The default-agent handle auto-creates a chat
+          conversation when conversation_id is not supplied.
 
         Args:
-            name: The agent name (e.g., "DataQualityPlannerAgent")
+            name: Optional agent name. When None, the default agent is used.
 
         Returns:
-            AgentHandle for invoking the agent
+            AgentHandle for invoking the agent (or DefaultAgentHandle subclass).
 
         Example:
-            agent = client.agent("DataQualityPlannerAgent")
-            response = agent.call("What tests should I add?")
+            # Default agent
+            response = client.agent().call("Hello")
 
-            # Or async (if enable_async=True)
-            response = await agent.acall("What tests should I add?")
+            # Named dynamic agent
+            response = client.agent("DataQualityPlannerAgent").call("Analyze X")
         """
+        if name is None:
+            from ai_sdk._default_agent import DefaultAgentHandle
+
+            return DefaultAgentHandle(
+                chat_http=self._chat_conv_http,
+                chat_async_http=self._async_chat_conv_http,
+                default_http=self._default_http,
+                default_async_http=self._async_default_http,
+            )
+
         return AgentHandle(
             name=name,
             http=self._http,
@@ -838,6 +897,8 @@ class AISdk:
         self._personas_http.close()
         self._bots_http.close()
         self._abilities_http.close()
+        self._default_http.close()
+        self._chat_conv_http.close()
 
     async def aclose(self) -> None:
         """Close the async client and release resources."""
@@ -849,6 +910,10 @@ class AISdk:
             await self._async_bots_http.close()
         if self._async_abilities_http is not None:
             await self._async_abilities_http.close()
+        if self._async_default_http is not None:
+            await self._async_default_http.close()
+        if self._async_chat_conv_http is not None:
+            await self._async_chat_conv_http.close()
 
     def __enter__(self) -> AISdk:
         return self

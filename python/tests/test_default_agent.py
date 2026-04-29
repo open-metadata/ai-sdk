@@ -16,9 +16,7 @@ def client():
     c.close()
 
 
-def test_default_agent_call_creates_conversation_then_invokes(
-    client, httpx_mock: HTTPXMock
-):
+def test_default_agent_call_creates_conversation_then_invokes(client, httpx_mock: HTTPXMock):
     """client.agent().call(msg) should create a conversation, then call invoke."""
     httpx_mock.add_response(
         method="POST",
@@ -52,9 +50,7 @@ def test_default_agent_call_creates_conversation_then_invokes(
     assert invoke_body["agentMode"] == "CHAT_MODE"
 
 
-def test_default_agent_reuses_existing_conversation(
-    client, httpx_mock: HTTPXMock
-):
+def test_default_agent_reuses_existing_conversation(client, httpx_mock: HTTPXMock):
     """Passing conversation_id skips conversation creation."""
     httpx_mock.add_response(
         method="POST",

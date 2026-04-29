@@ -44,7 +44,7 @@ class DefaultAgentHandle(AgentHandle):
 
     def _create_conversation(self, title: str) -> str:
         body = {"title": title[:_TITLE_MAX_LEN]}
-        data = self._chat_http.post("/", json=body)
+        data = self._chat_http.post("/chatConversations", json=body)
         return data["id"]
 
     async def _acreate_conversation(self, title: str) -> str:
@@ -54,12 +54,10 @@ class DefaultAgentHandle(AgentHandle):
                 "Use AISdk with enable_async=True for async operations."
             )
         body = {"title": title[:_TITLE_MAX_LEN]}
-        data = await self._chat_async_http.post("/", json=body)
+        data = await self._chat_async_http.post("/chatConversations", json=body)
         return data["id"]
 
-    def _build_payload(
-        self, message: str | None, conversation_id: str
-    ) -> dict[str, Any]:
+    def _build_payload(self, message: str | None, conversation_id: str) -> dict[str, Any]:
         return {
             "message": message or "",
             "conversationId": conversation_id,
@@ -93,9 +91,7 @@ class DefaultAgentHandle(AgentHandle):
                 "Use AISdk with enable_async=True for async operations."
             )
         if conversation_id is None:
-            conversation_id = await self._acreate_conversation(
-                message or "New conversation"
-            )
+            conversation_id = await self._acreate_conversation(message or "New conversation")
         payload = self._build_payload(message, conversation_id)
         data = await self._async_http.post("/invoke", json=payload)
         return InvokeResponse.from_dict(data)
@@ -135,7 +131,7 @@ class DefaultAgentHandle(AgentHandle):
                 if chat_async_http is None:
                     raise RuntimeError("Async HTTP client not available.")
                 body = {"title": (message or "New conversation")[:_TITLE_MAX_LEN]}
-                data = await chat_async_http.post("/", json=body)
+                data = await chat_async_http.post("/chatConversations", json=body)
                 cid = data["id"]
             payload = {
                 "message": message or "",
@@ -156,9 +152,7 @@ class DefaultAgentHandle(AgentHandle):
         conversation_id: str | None = None,
         parameters: dict[str, Any] | None = None,
     ) -> Iterable[str]:
-        for event in self.stream(
-            message, conversation_id=conversation_id, parameters=parameters
-        ):
+        for event in self.stream(message, conversation_id=conversation_id, parameters=parameters):
             if event.type == EventType.CONTENT and event.content is not None:
                 yield event.content
 
