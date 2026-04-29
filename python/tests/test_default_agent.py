@@ -70,3 +70,50 @@ def test_default_agent_reuses_existing_conversation(client, httpx_mock: HTTPXMoc
     requests = httpx_mock.get_requests()
     assert len(requests) == 1  # no conversation creation
     assert "/agents/invoke" in str(requests[0].url)
+
+
+def test_default_agent_stream_content(client, httpx_mock: HTTPXMock, sample_sse_stream):
+    """Streaming default agent: creates conversation, streams to /run."""
+    httpx_mock.add_response(
+        method="POST",
+        url="https://metadata.example.com/api/v1/assistants/chatConversations",
+        json={"id": "33333333-3333-3333-3333-333333333333"},
+    )
+    httpx_mock.add_response(
+        method="POST",
+        url="https://metadata.example.com/api/v1/agents/run",
+        content=b"".join(sample_sse_stream),
+        headers={"content-type": "text/event-stream"},
+    )
+
+    chunks = list(client.agent().stream_content("Stream please"))
+    assert "".join(chunks) == "The customers table has 3 issues."
+
+
+@pytest.mark.asyncio
+async def test_default_agent_acall(httpx_mock: HTTPXMock):
+    """Async default-agent call: creates conversation, then async invoke."""
+    async_client = AISdk(
+        host="https://metadata.example.com",
+        token="test-jwt-token",
+        enable_async=True,
+    )
+    try:
+        httpx_mock.add_response(
+            method="POST",
+            url="https://metadata.example.com/api/v1/assistants/chatConversations",
+            json={"id": "44444444-4444-4444-4444-444444444444"},
+        )
+        httpx_mock.add_response(
+            method="POST",
+            url="https://metadata.example.com/api/v1/agents/invoke",
+            json={
+                "conversationId": "44444444-4444-4444-4444-444444444444",
+                "response": "async hi",
+            },
+        )
+        response = await async_client.agent().acall("Async test")
+        assert response.response == "async hi"
+    finally:
+        await async_client.aclose()
+        async_client.close()
