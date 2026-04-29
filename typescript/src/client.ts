@@ -5,7 +5,7 @@
  * for interacting with OpenMetadata Dynamic Agents.
  */
 
-import { AgentHandle } from './agent.js';
+import { AgentHandle, DefaultAgentHandle } from './agent.js';
 import { HttpClient } from './http.js';
 import {
   mapAgentInfo,
@@ -163,6 +163,8 @@ function mapAbilityInfo(data: ApiAbilityInfo): AbilityInfo {
 export class AISdk {
   private readonly hostUrl: string;
   private readonly http: HttpClient;
+  private readonly defaultAgentHttp: HttpClient;
+  private readonly chatConvHttp: HttpClient;
 
   /**
    * Create a new AISdk client.
@@ -203,6 +205,26 @@ export class AISdk {
     // Create HTTP client with base URL for agents API (consolidated endpoint)
     this.http = new HttpClient({
       baseUrl: `${this.hostUrl}/api/v1/agents/dynamic`,
+      token: options.token,
+      timeout: options.timeout ?? DEFAULT_TIMEOUT,
+      maxRetries: options.maxRetries ?? DEFAULT_MAX_RETRIES,
+      retryDelay: options.retryDelay ?? DEFAULT_RETRY_DELAY,
+    });
+
+    // HTTP client for the default agent (/api/v1/agents/invoke and /api/v1/agents/run)
+    this.defaultAgentHttp = new HttpClient({
+      baseUrl: `${this.hostUrl}/api/v1/agents`,
+      token: options.token,
+      timeout: options.timeout ?? DEFAULT_TIMEOUT,
+      maxRetries: options.maxRetries ?? DEFAULT_MAX_RETRIES,
+      retryDelay: options.retryDelay ?? DEFAULT_RETRY_DELAY,
+    });
+
+    // Note: base URL ends at /assistants so that POST '/chatConversations' lands on
+    // /api/v1/assistants/chatConversations (matches the Python SDK's pattern and
+    // avoids fetch's trailing-slash normalization quirks).
+    this.chatConvHttp = new HttpClient({
+      baseUrl: `${this.hostUrl}/api/v1/assistants`,
       token: options.token,
       timeout: options.timeout ?? DEFAULT_TIMEOUT,
       maxRetries: options.maxRetries ?? DEFAULT_MAX_RETRIES,
@@ -257,20 +279,32 @@ export class AISdk {
   }
 
   /**
-   * Get a handle to a specific agent.
+   * Get a handle to an agent.
    *
-   * @param name - The agent name (e.g., "DataQualityPlannerAgent")
-   * @returns AgentHandle for invoking the agent
+   * - With a name: handle for a named dynamic agent.
+   * - Without a name: handle for the platform's default agent (PLANNER/CHAT_MODE).
+   *   Auto-creates a chat conversation when conversationId is not supplied.
+   *
+   * @param name - The agent name (e.g., "DataQualityPlannerAgent"). Omit to use the default agent.
+   * @returns AgentHandle or DefaultAgentHandle for invoking the agent
    *
    * @example
    * ```typescript
+   * // Named agent
    * const agent = client.agent('DataQualityPlannerAgent');
-   *
-   * // Invoke the agent
    * const response = await agent.invoke('What tests should I add?');
+   *
+   * // Default agent (auto-creates a conversation)
+   * const defaultAgent = client.agent();
+   * const response = await defaultAgent.invoke('Hello!');
    * ```
    */
-  agent(name: string): AgentHandle {
+  agent(): DefaultAgentHandle;
+  agent(name: string): AgentHandle;
+  agent(name?: string): AgentHandle | DefaultAgentHandle {
+    if (name === undefined) {
+      return new DefaultAgentHandle(this.defaultAgentHttp, this.chatConvHttp);
+    }
     return new AgentHandle(name, this.http);
   }
 

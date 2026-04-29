@@ -916,6 +916,80 @@ describe('Persona operations', () => {
   });
 });
 
+describe('default agent', () => {
+  beforeEach(() => {
+    mockFetch.mockReset();
+  });
+
+  afterEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it('client.agent() creates a conversation then calls invoke', async () => {
+    mockFetch
+      .mockResolvedValueOnce({
+        ok: true,
+        json: () =>
+          Promise.resolve({ id: '11111111-1111-1111-1111-111111111111' }),
+      })
+      .mockResolvedValueOnce({
+        ok: true,
+        json: () =>
+          Promise.resolve({
+            conversationId: '11111111-1111-1111-1111-111111111111',
+            response: 'hello',
+            toolsUsed: [],
+          }),
+      });
+
+    const client = new AISdk({
+      host: 'https://metadata.example.com',
+      token: 'tkn',
+    });
+    const response = await client.agent().invoke('Say hi');
+    expect(response.response).toBe('hello');
+    expect(mockFetch).toHaveBeenCalledTimes(2);
+
+    const firstUrl = mockFetch.mock.calls[0][0] as string;
+    expect(firstUrl).toContain('/api/v1/assistants/chatConversations');
+
+    const secondUrl = mockFetch.mock.calls[1][0] as string;
+    expect(secondUrl).toContain('/api/v1/agents/invoke');
+
+    const requestInit = mockFetch.mock.calls[1][1] as RequestInit;
+    const body = JSON.parse(requestInit.body as string);
+    expect(body.message).toBe('Say hi');
+    expect(body.conversationId).toBe('11111111-1111-1111-1111-111111111111');
+    expect(body.agentType).toBe('PLANNER');
+    expect(body.agentMode).toBe('CHAT_MODE');
+  });
+
+  it('client.agent() reuses an existing conversation when conversationId is provided', async () => {
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      json: () =>
+        Promise.resolve({
+          conversationId: '22222222-2222-2222-2222-222222222222',
+          response: 'reuse ok',
+          toolsUsed: [],
+        }),
+    });
+
+    const client = new AISdk({
+      host: 'https://metadata.example.com',
+      token: 'tkn',
+    });
+    const response = await client
+      .agent()
+      .invoke('continue', { conversationId: '22222222-2222-2222-2222-222222222222' });
+
+    expect(response.response).toBe('reuse ok');
+    expect(mockFetch).toHaveBeenCalledTimes(1); // no conversation creation
+    const url = mockFetch.mock.calls[0][0] as string;
+    expect(url).toContain('/api/v1/agents/invoke');
+  });
+});
+
 describe('Agent creation', () => {
   beforeEach(() => {
     mockFetch.mockReset();

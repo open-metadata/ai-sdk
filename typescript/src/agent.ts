@@ -20,7 +20,7 @@ import { createStreamIterable } from './streaming.js';
 /**
  * Convert API invoke response to InvokeResponse.
  */
-function mapInvokeResponse(data: ApiInvokeResponse): InvokeResponse {
+export function mapInvokeResponse(data: ApiInvokeResponse): InvokeResponse {
   return {
     conversationId: data.conversationId,
     response: data.response,
@@ -265,5 +265,148 @@ export class AgentHandle {
    */
   toString(): string {
     return `AgentHandle(name="${this.agentName}")`;
+  }
+}
+
+const DEFAULT_AGENT_TYPE = 'PLANNER';
+const DEFAULT_AGENT_MODE = 'CHAT_MODE';
+const TITLE_MAX_LEN = 50;
+
+interface DefaultAgentInvokeBody {
+  message: string;
+  conversationId: string;
+  agentType: string;
+  agentMode: string;
+}
+
+/**
+ * Handle for the platform's default agent.
+ *
+ * Auto-creates a chat conversation when one is not supplied, then invokes
+ * /v1/agents/invoke (sync) or /v1/agents/run (SSE) with agentType=PLANNER,
+ * agentMode=CHAT_MODE.
+ *
+ * @example
+ * ```typescript
+ * // Simple invocation (auto-creates a conversation)
+ * const response = await client.agent().invoke('Hello!');
+ * console.log(response.response);
+ *
+ * // Reuse an existing conversation
+ * const r1 = await client.agent().invoke('Start conversation');
+ * const r2 = await client.agent().invoke('Continue', {
+ *   conversationId: r1.conversationId,
+ * });
+ *
+ * // Streaming
+ * for await (const event of client.agent().stream('Hello!')) {
+ *   if (event.type === 'content') {
+ *     process.stdout.write(event.content || '');
+ *   }
+ * }
+ * ```
+ */
+export class DefaultAgentHandle {
+  private readonly defaultHttp: HttpClient;
+  private readonly chatConvHttp: HttpClient;
+
+  /**
+   * Create a new default agent handle.
+   *
+   * @param defaultHttp - HTTP client for /api/v1/agents endpoints
+   * @param chatConvHttp - HTTP client for /api/v1/assistants endpoints
+   * @internal This constructor is called by AISdk.agent()
+   */
+  constructor(defaultHttp: HttpClient, chatConvHttp: HttpClient) {
+    this.defaultHttp = defaultHttp;
+    this.chatConvHttp = chatConvHttp;
+  }
+
+  /**
+   * Get the agent name (always '<default>').
+   */
+  get name(): string {
+    return '<default>';
+  }
+
+  private async createConversation(title: string): Promise<string> {
+    const body = { title: title.slice(0, TITLE_MAX_LEN) };
+    const data = await this.chatConvHttp.post<{ id: string }>(
+      '/chatConversations',
+      body
+    );
+    return data.id;
+  }
+
+  private buildPayload(
+    message: string | undefined,
+    conversationId: string
+  ): DefaultAgentInvokeBody {
+    return {
+      message: message ?? '',
+      conversationId,
+      agentType: DEFAULT_AGENT_TYPE,
+      agentMode: DEFAULT_AGENT_MODE,
+    };
+  }
+
+  /**
+   * Invoke the default agent synchronously.
+   *
+   * @param message - Optional query or instruction for the agent
+   * @param options - Optional invoke options (conversationId)
+   * @returns Promise resolving to the complete response
+   */
+  async invoke(message?: string, options?: InvokeOptions): Promise<InvokeResponse> {
+    const conversationId =
+      options?.conversationId ??
+      (await this.createConversation(message ?? 'New conversation'));
+    const payload = this.buildPayload(message, conversationId);
+    const data = await this.defaultHttp.post<ApiInvokeResponse>('/invoke', payload);
+    return mapInvokeResponse(data);
+  }
+
+  /**
+   * Invoke the default agent with streaming response.
+   *
+   * @param message - Optional query or instruction for the agent
+   * @param options - Optional invoke options (conversationId)
+   * @returns Async iterable of stream events
+   */
+  async *stream(
+    message?: string,
+    options?: InvokeOptions
+  ): AsyncGenerator<StreamEvent, void, unknown> {
+    const conversationId =
+      options?.conversationId ??
+      (await this.createConversation(message ?? 'New conversation'));
+    const payload = this.buildPayload(message, conversationId);
+    const byteStream = await this.defaultHttp.postStream('/run', payload);
+    yield* createStreamIterable(byteStream);
+  }
+
+  /**
+   * Stream only the text content from the default agent response.
+   *
+   * @param message - Optional query or instruction for the agent
+   * @param options - Optional invoke options (conversationId)
+   * @returns Async iterable of content strings
+   */
+  async *streamContent(
+    message?: string,
+    options?: InvokeOptions
+  ): AsyncGenerator<string, void, unknown> {
+    for await (const event of this.stream(message, options)) {
+      if (event.type === 'content' && event.content) {
+        yield event.content;
+      }
+    }
+  }
+
+  /**
+   * String representation of the default agent handle.
+   */
+  toString(): string {
+    return 'DefaultAgentHandle()';
   }
 }

@@ -48,8 +48,8 @@
 // Main client
 export { AISdk } from './client.js';
 
-// Agent handle
-export { AgentHandle } from './agent.js';
+// Agent handles
+export { AgentHandle, DefaultAgentHandle } from './agent.js';
 
 // Models and types
 export type {
