@@ -24,7 +24,7 @@ export class AISdkAgent implements INodeType {
 		icon: 'file:metadata.png',
 		group: ['transform'],
 		version: 1,
-		subtitle: '={{$parameter["agentName"]}}',
+		subtitle: '={{$parameter["useDefaultAgent"] ? "default" : $parameter["agentName"]}}',
 		description: 'Invoke an OpenMetadata DynamicAgent',
 		defaults: {
 			name: 'AI SDK Agent',
@@ -39,13 +39,24 @@ export class AISdkAgent implements INodeType {
 		],
 		properties: [
 			{
+				displayName: 'Use Default Agent',
+				name: 'useDefaultAgent',
+				type: 'boolean',
+				default: false,
+				description: 'Whether to invoke the platform default agent (no agent name needed)',
+			},
+			{
 				displayName: 'Agent Name',
 				name: 'agentName',
 				type: 'string',
 				default: '',
 				placeholder: 'my-agent',
 				description: 'The name of the DynamicAgent to invoke',
-				required: true,
+				displayOptions: {
+					show: {
+						useDefaultAgent: [false],
+					},
+				},
 			},
 			{
 				displayName: 'Message',
@@ -87,22 +98,34 @@ export class AISdkAgent implements INodeType {
 
 		for (let i = 0; i < items.length; i++) {
 			try {
-				const agentName = this.getNodeParameter('agentName', i) as string;
+				const useDefault = this.getNodeParameter('useDefaultAgent', i, false) as boolean;
 				const message = this.getNodeParameter('message', i) as string;
 				const conversationId = this.getNodeParameter('conversationId', i, '') as string;
 
 				// Validate required fields
-				if (!agentName) {
-					throw new NodeOperationError(this.getNode(), 'Agent Name is required', { itemIndex: i });
-				}
 				if (!message) {
 					throw new NodeOperationError(this.getNode(), 'Message is required', { itemIndex: i });
 				}
 
 				// Invoke the agent using the SDK
-				const response = await client.agent(agentName).invoke(message, {
-					conversationId: conversationId || undefined,
-				});
+				let response;
+				if (useDefault) {
+					response = await client.agent().invoke(message, {
+						conversationId: conversationId || undefined,
+					});
+				} else {
+					const agentName = this.getNodeParameter('agentName', i) as string;
+					if (!agentName) {
+						throw new NodeOperationError(
+							this.getNode(),
+							'Agent Name is required (or enable "Use Default Agent")',
+							{ itemIndex: i },
+						);
+					}
+					response = await client.agent(agentName).invoke(message, {
+						conversationId: conversationId || undefined,
+					});
+				}
 
 				// Build response object, excluding toolsUsed to match original behavior
 				const result: IDataObject = {
@@ -138,7 +161,10 @@ export class AISdkAgent implements INodeType {
 				}
 
 				// Convert SDK errors to n8n NodeApiError with descriptive messages
-				const agentName = this.getNodeParameter('agentName', i) as string;
+				const useDefault = this.getNodeParameter('useDefaultAgent', i, false) as boolean;
+				const agentLabel = useDefault
+					? '<default>'
+					: (this.getNodeParameter('agentName', i, '') as string);
 				let errorMessage: string;
 				let httpCode: string;
 
@@ -149,7 +175,7 @@ export class AISdkAgent implements INodeType {
 					errorMessage = 'Agent is not API-enabled. Enable API access in the OpenMetadata UI.';
 					httpCode = '403';
 				} else if (error instanceof AgentNotFoundError) {
-					errorMessage = `Agent "${agentName}" not found`;
+					errorMessage = `Agent "${agentLabel}" not found`;
 					httpCode = '404';
 				} else if (error instanceof AgentExecutionError) {
 					errorMessage = 'Agent execution failed. Check the agent configuration in OpenMetadata.';
