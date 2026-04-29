@@ -436,6 +436,114 @@ impl AISdkClient {
         serde_json::from_str(&body).map_err(|e| CliError::ParseError(e.to_string()))
     }
 
+    /// Create a new chat conversation for the default agent (PLANNER).
+    /// Returns the conversation ID.
+    /// The title is truncated to 50 characters to match the chat UI behaviour.
+    pub async fn create_chat_conversation(&self, title: &str) -> CliResult<String> {
+        let truncated: String = title.chars().take(50).collect();
+        let url = format!("{}/api/v1/assistants/chatConversations", self.base_url);
+        let body = serde_json::json!({ "title": truncated });
+
+        let response = self
+            .client
+            .post(&url)
+            .header("Authorization", self.auth_header())
+            .header("Content-Type", "application/json")
+            .json(&body)
+            .send()
+            .await
+            .map_err(CliError::from_reqwest)?;
+
+        let status = response.status().as_u16();
+        if !(200..300).contains(&status) {
+            let body = response.text().await.unwrap_or_default();
+            return Err(CliError::from_status(status, &body, None));
+        }
+
+        let json: serde_json::Value = response.json().await.map_err(|e| {
+            CliError::ParseError(format!("Failed to parse conversation response: {e}"))
+        })?;
+
+        json["id"]
+            .as_str()
+            .map(|s| s.to_string())
+            .ok_or_else(|| CliError::ParseError("Conversation response missing 'id' field".into()))
+    }
+
+    /// Synchronously invoke the platform's default agent (PLANNER / CHAT_MODE).
+    /// Auto-creates a chat conversation when no conversation ID is supplied.
+    pub async fn invoke_default_agent(
+        &self,
+        message: &str,
+        conversation_id: Option<&str>,
+    ) -> CliResult<InvokeResponse> {
+        let cid = match conversation_id {
+            Some(c) => c.to_string(),
+            None => self.create_chat_conversation(message).await?,
+        };
+
+        let url = format!("{}/api/v1/agents/invoke", self.base_url);
+        let body = serde_json::json!({
+            "message": message,
+            "conversationId": cid,
+            "agentType": "PLANNER",
+            "agentMode": "CHAT_MODE",
+        });
+
+        let response = self
+            .client
+            .post(&url)
+            .header("Authorization", self.auth_header())
+            .header("Content-Type", "application/json")
+            .json(&body)
+            .send()
+            .await
+            .map_err(CliError::from_reqwest)?;
+
+        let body_str = self.handle_response(response, None).await?;
+        serde_json::from_str(&body_str).map_err(|e| CliError::ParseError(e.to_string()))
+    }
+
+    /// Stream a response from the platform's default agent (PLANNER / CHAT_MODE).
+    /// Auto-creates a chat conversation when no conversation ID is supplied.
+    pub async fn stream_default_agent(
+        &self,
+        message: &str,
+        conversation_id: Option<&str>,
+    ) -> CliResult<Response> {
+        let cid = match conversation_id {
+            Some(c) => c.to_string(),
+            None => self.create_chat_conversation(message).await?,
+        };
+
+        let url = format!("{}/api/v1/agents/run", self.base_url);
+        let body = serde_json::json!({
+            "message": message,
+            "conversationId": cid,
+            "agentType": "PLANNER",
+            "agentMode": "CHAT_MODE",
+        });
+
+        let response = self
+            .client
+            .post(&url)
+            .header("Authorization", self.auth_header())
+            .header("Content-Type", "application/json")
+            .header("Accept", "text/event-stream")
+            .json(&body)
+            .send()
+            .await
+            .map_err(CliError::from_reqwest)?;
+
+        let status = response.status().as_u16();
+        if (200..300).contains(&status) {
+            Ok(response)
+        } else {
+            let body = response.text().await.unwrap_or_default();
+            Err(CliError::from_status(status, &body, None))
+        }
+    }
+
     /// Get a streaming response from an agent.
     /// Returns the raw response for SSE processing.
     pub async fn stream(
@@ -754,5 +862,127 @@ impl AISdkClient {
         let body = self.handle_response(response, None).await?;
 
         serde_json::from_str(&body).map_err(|e| CliError::ParseError(e.to_string()))
+    }
+}
+
+// ==================== Tests ====================
+
+#[cfg(test)]
+mod default_agent_tests {
+    use super::*;
+    use serde_json::json;
+    use wiremock::matchers::{method, path};
+    use wiremock::{Mock, MockServer, ResponseTemplate};
+
+    /// Build a test client that points at `base_url` with the given token.
+    fn make_client(base_url: &str, token: &str) -> AISdkClient {
+        let config = ResolvedConfig {
+            host: base_url.to_string(),
+            token: token.to_string(),
+            timeout: 30,
+        };
+        AISdkClient::new(&config).expect("failed to build test client")
+    }
+
+    #[tokio::test]
+    async fn create_chat_conversation_returns_id() {
+        let server = MockServer::start().await;
+
+        Mock::given(method("POST"))
+            .and(path("/api/v1/assistants/chatConversations"))
+            .respond_with(
+                ResponseTemplate::new(200)
+                    .set_body_json(json!({ "id": "aaaabbbb-1111-2222-3333-ccccddddeeee" })),
+            )
+            .mount(&server)
+            .await;
+
+        let client = make_client(&server.uri(), "test-token");
+        let id = client
+            .create_chat_conversation("Hello world")
+            .await
+            .unwrap();
+        assert_eq!(id, "aaaabbbb-1111-2222-3333-ccccddddeeee");
+    }
+
+    #[tokio::test]
+    async fn invoke_default_agent_creates_conversation_then_calls_invoke() {
+        let server = MockServer::start().await;
+
+        Mock::given(method("POST"))
+            .and(path("/api/v1/assistants/chatConversations"))
+            .respond_with(
+                ResponseTemplate::new(200)
+                    .set_body_json(json!({ "id": "11111111-1111-1111-1111-111111111111" })),
+            )
+            .mount(&server)
+            .await;
+
+        Mock::given(method("POST"))
+            .and(path("/api/v1/agents/invoke"))
+            .respond_with(ResponseTemplate::new(200).set_body_json(json!({
+                "conversationId": "11111111-1111-1111-1111-111111111111",
+                "response": "Hello from the default agent"
+            })))
+            .mount(&server)
+            .await;
+
+        let client = make_client(&server.uri(), "test-token");
+        let resp = client.invoke_default_agent("Say hi", None).await.unwrap();
+        assert_eq!(resp.conversation_id, "11111111-1111-1111-1111-111111111111");
+        assert_eq!(resp.response, "Hello from the default agent");
+    }
+
+    #[tokio::test]
+    async fn invoke_default_agent_reuses_supplied_conversation_id() {
+        let server = MockServer::start().await;
+
+        // Conversation creation must NOT be called when an ID is already supplied.
+        Mock::given(method("POST"))
+            .and(path("/api/v1/assistants/chatConversations"))
+            .respond_with(ResponseTemplate::new(500))
+            .mount(&server)
+            .await;
+
+        Mock::given(method("POST"))
+            .and(path("/api/v1/agents/invoke"))
+            .respond_with(ResponseTemplate::new(200).set_body_json(json!({
+                "conversationId": "existing-conv-id",
+                "response": "Reused conversation"
+            })))
+            .mount(&server)
+            .await;
+
+        let client = make_client(&server.uri(), "test-token");
+        // Supplying an existing conversation ID means no call to chatConversations.
+        let resp = client
+            .invoke_default_agent("Follow up", Some("existing-conv-id"))
+            .await
+            .unwrap();
+        assert_eq!(resp.conversation_id, "existing-conv-id");
+    }
+
+    #[tokio::test]
+    async fn stream_default_agent_creates_conversation_then_calls_run() {
+        let server = MockServer::start().await;
+
+        Mock::given(method("POST"))
+            .and(path("/api/v1/assistants/chatConversations"))
+            .respond_with(
+                ResponseTemplate::new(200).set_body_json(json!({ "id": "stream-conv-id" })),
+            )
+            .mount(&server)
+            .await;
+
+        Mock::given(method("POST"))
+            .and(path("/api/v1/agents/run"))
+            .respond_with(ResponseTemplate::new(200).set_body_string("data: done\n\n"))
+            .mount(&server)
+            .await;
+
+        let client = make_client(&server.uri(), "test-token");
+        let response = client.stream_default_agent("Stream me", None).await;
+        // We just need a successful HTTP response back — SSE parsing is tested elsewhere.
+        assert!(response.is_ok());
     }
 }

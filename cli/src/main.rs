@@ -19,6 +19,7 @@
 //! ai-sdk invoke <agent> "message" --stream    # Streaming output
 //! ai-sdk invoke <agent> "message" --json      # JSON output
 //! ai-sdk invoke <agent> "message" -c <id>     # Continue conversation
+//! ai-sdk invoke --default "message"           # Use platform default agent (PLANNER)
 //! ```
 
 mod client;
@@ -80,11 +81,15 @@ enum Commands {
 
     /// Invoke an agent with a message
     Invoke {
-        /// Name of the agent to invoke
-        agent: String,
+        /// Name of the agent to invoke (omit when --default is set)
+        agent: Option<String>,
 
         /// Message to send to the agent (optional - uses agent's default prompt if omitted)
         message: Option<String>,
+
+        /// Use the platform's default agent (PLANNER / CHAT_MODE) instead of a named agent
+        #[arg(short = 'D', long = "default")]
+        use_default: bool,
 
         /// Enable streaming output
         #[arg(short, long)]
@@ -109,8 +114,13 @@ enum Commands {
 
     /// Start an interactive chat session with an agent
     Chat {
-        /// Name of the agent to chat with (optional - select from menu if omitted)
+        /// Name of the agent to chat with (optional - select from menu if omitted,
+        /// or use --default for the platform's default agent)
         agent: Option<String>,
+
+        /// Use the platform's default agent (PLANNER / CHAT_MODE) instead of a named agent
+        #[arg(short = 'D', long = "default")]
+        use_default: bool,
 
         /// Continue an existing conversation
         #[arg(short = 'c', long = "conversation")]
@@ -419,6 +429,7 @@ async fn main() {
         Commands::Invoke {
             agent,
             message,
+            use_default,
             stream,
             json,
             conversation_id,
@@ -428,7 +439,8 @@ async fn main() {
             if stream || thinking {
                 commands::invoke::run_stream(
                     &cli.profile,
-                    &agent,
+                    agent.as_deref(),
+                    use_default,
                     message.as_deref(),
                     conversation_id.as_deref(),
                     json,
@@ -439,7 +451,8 @@ async fn main() {
             } else {
                 commands::invoke::run_invoke(
                     &cli.profile,
-                    &agent,
+                    agent.as_deref(),
+                    use_default,
                     message.as_deref(),
                     conversation_id.as_deref(),
                     json,
@@ -450,10 +463,16 @@ async fn main() {
 
         Commands::Chat {
             agent,
+            use_default,
             conversation_id,
         } => {
-            commands::chat::run_chat(&cli.profile, agent.as_deref(), conversation_id.as_deref())
-                .await
+            commands::chat::run_chat(
+                &cli.profile,
+                agent.as_deref(),
+                use_default,
+                conversation_id.as_deref(),
+            )
+            .await
         }
     };
 

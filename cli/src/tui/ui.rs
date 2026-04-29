@@ -42,10 +42,15 @@ enum AsyncEvent {
 }
 
 /// Run the TUI chat interface.
-/// If agent_name is None, shows agent selection menu on start.
+///
+/// Routing logic:
+/// - `use_default = true` → use the platform's default agent (PLANNER / CHAT_MODE).
+/// - `agent_name = Some(name)` → use the named dynamic agent (existing behaviour).
+/// - both `None` / `false` → show the agent-selection menu on start.
 pub async fn run_tui(
     profile: &str,
     agent_name: Option<&str>,
+    use_default: bool,
     conversation_id: Option<String>,
 ) -> CliResult<()> {
     // Load config and create client first (needed for agent list)
@@ -60,14 +65,18 @@ pub async fn run_tui(
     let backend = CrosstermBackend::new(stdout);
     let mut terminal = Terminal::new(backend).map_err(|e| CliError::Other(e.to_string()))?;
 
-    // Create app state
-    let mut app = App::new(
-        agent_name.map(String::from).unwrap_or_default(),
-        conversation_id,
-    );
+    // Determine the display name shown in the TUI header.
+    let display_name = if use_default {
+        "Default Agent".to_string()
+    } else {
+        agent_name.map(String::from).unwrap_or_default()
+    };
 
-    // If no agent specified, fetch agents and show selection menu
-    if agent_name.is_none() {
+    // Create app state
+    let mut app = App::new(display_name, conversation_id, use_default);
+
+    // If no agent specified and not using the default agent, fetch agents and show selection menu
+    if agent_name.is_none() && !use_default {
         match client.list_agents().await {
             Ok(agents) => {
                 let names: Vec<String> = agents
@@ -238,9 +247,10 @@ async fn run_main_loop(
                                     let client = client.clone();
                                     let agent = app.agent_name.clone();
                                     let conv_id = app.conversation_id.clone();
+                                    let use_default = app.use_default;
 
                                     tokio::spawn(async move {
-                                        stream_agent_response(tx, client, agent, message, conv_id).await;
+                                        stream_agent_response(tx, client, agent, use_default, message, conv_id).await;
                                     });
                                 }
                             }
@@ -274,16 +284,26 @@ async fn run_main_loop(
 }
 
 /// Spawn a task to stream agent response.
+///
+/// When `use_default` is `true`, routes through `stream_default_agent`
+/// (PLANNER / CHAT_MODE); otherwise uses the named dynamic-agent endpoint.
 async fn stream_agent_response(
     tx: mpsc::Sender<AsyncEvent>,
     client: AISdkClient,
     agent: String,
+    use_default: bool,
     message: String,
     conversation_id: Option<String>,
 ) {
-    let result = client
-        .stream(&agent, Some(message.as_str()), conversation_id.as_deref())
-        .await;
+    let result = if use_default {
+        client
+            .stream_default_agent(message.as_str(), conversation_id.as_deref())
+            .await
+    } else {
+        client
+            .stream(&agent, Some(message.as_str()), conversation_id.as_deref())
+            .await
+    };
 
     match result {
         Ok(response) => {

@@ -67,8 +67,10 @@ const SPINNER_FRAMES: &[char] = &['⠋', '⠙', '⠹', '⠸', '⠼', '⠴', '⠦
 
 /// Main application state.
 pub struct App {
-    /// Name of the agent being chatted with.
+    /// Name of the agent being chatted with (display label in TUI header).
     pub agent_name: String,
+    /// Whether to use the platform's default agent (PLANNER / CHAT_MODE).
+    pub use_default: bool,
     /// Conversation ID for multi-turn conversations.
     pub conversation_id: Option<String>,
     /// Chat message history.
@@ -99,11 +101,12 @@ pub struct App {
 
 impl App {
     /// Create a new app instance.
-    pub fn new(agent_name: String, conversation_id: Option<String>) -> Self {
+    pub fn new(agent_name: String, conversation_id: Option<String>, use_default: bool) -> Self {
         let mut agent_select = SingleSelect::new("Select Agent");
         agent_select.focused = true;
         Self {
             agent_name,
+            use_default,
             conversation_id,
             messages: Vec::new(),
             input: String::new(),
