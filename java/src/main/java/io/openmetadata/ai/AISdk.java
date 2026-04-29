@@ -105,6 +105,18 @@ public class AISdk implements AutoCloseable {
   }
 
   /**
+   * Gets a handle for the platform's default agent.
+   *
+   * <p>The default agent uses agentType=PLANNER, agentMode=CHAT_MODE. A chat conversation is
+   * auto-created when {@link DefaultAgentHandle#conversationId} is not set.
+   *
+   * @return a handle for the default agent
+   */
+  public DefaultAgentHandle agent() {
+    return new DefaultAgentHandle(httpClient);
+  }
+
+  /**
    * Lists all API-enabled agents. Automatically paginates through all results.
    *
    * @return a list of all agent information

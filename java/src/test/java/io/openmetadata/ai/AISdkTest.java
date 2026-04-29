@@ -1,6 +1,9 @@
 package io.openmetadata.ai;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.*;
 
 import java.time.Duration;
 import java.util.Arrays;
@@ -13,6 +16,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import io.openmetadata.ai.exceptions.*;
+import io.openmetadata.ai.internal.AISdkHttpClient;
 import io.openmetadata.ai.models.*;
 
 /** Unit tests for the AI SDK. */
@@ -655,5 +659,100 @@ class AISdkTest {
     assertNotNull(StreamEvent.Type.TOOL_USE);
     assertNotNull(StreamEvent.Type.ERROR);
     assertNotNull(StreamEvent.Type.END);
+  }
+
+  // ==================== Default Agent Handle Tests ====================
+
+  @Test
+  @DisplayName("No-arg agent() method returns a DefaultAgentHandle")
+  void noArgAgentMethodReturnsDefaultAgentHandle() {
+    AISdk client = AISdk.builder().host("https://metadata.example.com").token("test-token").build();
+
+    DefaultAgentHandle handle = client.agent();
+    assertNotNull(handle);
+    client.close();
+  }
+
+  @Test
+  @DisplayName("DefaultAgentHandle invoke auto-creates conversation then calls invokeDefaultAgent")
+  void defaultAgentInvokeCreatesConversationThenCallsInvoke() {
+    AISdkHttpClient mockHttpClient = mock(AISdkHttpClient.class);
+    String conversationId = "cccccccc-cccc-cccc-cccc-cccccccccccc";
+    InvokeResponse expectedResponse =
+        InvokeResponse.builder()
+            .conversationId(conversationId)
+            .response("hello")
+            .toolsUsed(Arrays.asList())
+            .build();
+
+    when(mockHttpClient.createChatConversation(anyString())).thenReturn(conversationId);
+    when(mockHttpClient.invokeDefaultAgent("Say hi", conversationId, "PLANNER", "CHAT_MODE"))
+        .thenReturn(expectedResponse);
+
+    DefaultAgentHandle handle = new DefaultAgentHandle(mockHttpClient);
+    InvokeResponse response = handle.invoke("Say hi");
+
+    assertEquals("hello", response.getResponse());
+    verify(mockHttpClient).createChatConversation("Say hi");
+    verify(mockHttpClient).invokeDefaultAgent("Say hi", conversationId, "PLANNER", "CHAT_MODE");
+  }
+
+  @Test
+  @DisplayName("DefaultAgentHandle reuses provided conversationId without creating a new one")
+  void defaultAgentHandleReusesProvidedConversationId() {
+    AISdkHttpClient mockHttpClient = mock(AISdkHttpClient.class);
+    String conversationId = "existing-conv-id";
+    InvokeResponse expectedResponse =
+        InvokeResponse.builder().conversationId(conversationId).response("ok").build();
+
+    when(mockHttpClient.invokeDefaultAgent(
+            anyString(), eq(conversationId), anyString(), anyString()))
+        .thenReturn(expectedResponse);
+
+    DefaultAgentHandle handle = new DefaultAgentHandle(mockHttpClient);
+    handle.conversationId(conversationId);
+    InvokeResponse response = handle.invoke("Follow-up");
+
+    assertEquals("ok", response.getResponse());
+    verify(mockHttpClient, never()).createChatConversation(anyString());
+    verify(mockHttpClient).invokeDefaultAgent("Follow-up", conversationId, "PLANNER", "CHAT_MODE");
+  }
+
+  @Test
+  @DisplayName("DefaultAgentHandle truncates long message to 50 chars for conversation title")
+  void defaultAgentHandleTruncatesLongTitleTo50Chars() {
+    AISdkHttpClient mockHttpClient = mock(AISdkHttpClient.class);
+    String longMessage = "This is a very long message that exceeds fifty characters by far";
+    String expectedTitle = longMessage.substring(0, 50);
+
+    when(mockHttpClient.createChatConversation(expectedTitle)).thenReturn("new-conv-id");
+    when(mockHttpClient.invokeDefaultAgent(anyString(), anyString(), anyString(), anyString()))
+        .thenReturn(InvokeResponse.builder().response("ok").build());
+
+    DefaultAgentHandle handle = new DefaultAgentHandle(mockHttpClient);
+    handle.invoke(longMessage);
+
+    verify(mockHttpClient).createChatConversation(expectedTitle);
+  }
+
+  @Test
+  @DisplayName("DefaultAgentHandle conversationId is retained across subsequent calls")
+  void defaultAgentHandleRetainsConversationIdAcrossCalls() {
+    AISdkHttpClient mockHttpClient = mock(AISdkHttpClient.class);
+    String conversationId = "auto-created-id";
+
+    when(mockHttpClient.createChatConversation(anyString())).thenReturn(conversationId);
+    when(mockHttpClient.invokeDefaultAgent(
+            anyString(), eq(conversationId), anyString(), anyString()))
+        .thenReturn(InvokeResponse.builder().response("first").build())
+        .thenReturn(InvokeResponse.builder().response("second").build());
+
+    DefaultAgentHandle handle = new DefaultAgentHandle(mockHttpClient);
+    handle.invoke("First message");
+    handle.invoke("Second message");
+
+    verify(mockHttpClient, times(1)).createChatConversation(anyString());
+    verify(mockHttpClient, times(2))
+        .invokeDefaultAgent(anyString(), eq(conversationId), anyString(), anyString());
   }
 }

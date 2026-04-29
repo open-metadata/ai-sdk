@@ -29,6 +29,9 @@ public class AISdkHttpClient implements AutoCloseable {
   private static final String BOTS_API_PATH = "/api/v1/bots";
   private static final String PERSONAS_API_PATH = "/api/v1/agents/personas";
   private static final String ABILITIES_API_PATH = "/api/v1/agents/abilities";
+  private static final String CHAT_CONVERSATIONS_PATH = "/api/v1/assistants/chatConversations";
+  private static final String DEFAULT_AGENT_INVOKE_PATH = "/api/v1/agents/invoke";
+  private static final String DEFAULT_AGENT_RUN_PATH = "/api/v1/agents/run";
   private static final String CONTENT_TYPE_JSON = "application/json";
   private static final String ACCEPT_SSE = "text/event-stream";
 
@@ -284,6 +287,143 @@ public class AISdkHttpClient implements AutoCloseable {
       }
       throw new AISdkException("Stream request failed: " + e.getMessage(), e);
     }
+  }
+
+  // ==================== Default Agent Operations ====================
+
+  public String createChatConversation(String title) {
+    String requestBody;
+    try {
+      requestBody =
+          objectMapper.writeValueAsString(java.util.Collections.singletonMap("title", title));
+    } catch (JsonProcessingException e) {
+      throw new AISdkException("Failed to serialize conversation create request", e);
+    }
+
+    HttpRequest request =
+        HttpRequest.newBuilder()
+            .uri(URI.create(host + CHAT_CONVERSATIONS_PATH))
+            .header("Authorization", "Bearer " + token)
+            .header("Content-Type", CONTENT_TYPE_JSON)
+            .header("Accept", CONTENT_TYPE_JSON)
+            .POST(HttpRequest.BodyPublishers.ofString(requestBody))
+            .build();
+
+    HttpResponse<String> response = executeWithRetry(request);
+    try {
+      JsonNode root = objectMapper.readTree(response.body());
+      JsonNode idNode = root.get("id");
+      if (idNode == null || idNode.isNull()) {
+        throw new AISdkException("Conversation create response missing 'id' field");
+      }
+      return idNode.asText();
+    } catch (JsonProcessingException e) {
+      throw new AISdkException("Failed to parse conversation create response", e);
+    }
+  }
+
+  public InvokeResponse invokeDefaultAgent(
+      String message, String conversationId, String agentType, String agentMode) {
+    java.util.Map<String, String> body = new java.util.LinkedHashMap<>();
+    body.put("message", message);
+    body.put("conversationId", conversationId);
+    body.put("agentType", agentType);
+    body.put("agentMode", agentMode);
+
+    String requestBody;
+    try {
+      requestBody = objectMapper.writeValueAsString(body);
+    } catch (JsonProcessingException e) {
+      throw new AISdkException("Failed to serialize default agent invoke request", e);
+    }
+
+    HttpRequest request =
+        HttpRequest.newBuilder()
+            .uri(URI.create(host + DEFAULT_AGENT_INVOKE_PATH))
+            .header("Authorization", "Bearer " + token)
+            .header("Content-Type", CONTENT_TYPE_JSON)
+            .header("Accept", CONTENT_TYPE_JSON)
+            .POST(HttpRequest.BodyPublishers.ofString(requestBody))
+            .build();
+
+    HttpResponse<String> response = executeWithRetry(request);
+    try {
+      return objectMapper.readValue(response.body(), InvokeResponse.class);
+    } catch (JsonProcessingException e) {
+      throw new AISdkException("Failed to parse default agent invoke response", e);
+    }
+  }
+
+  public void streamDefaultAgent(
+      String message,
+      String conversationId,
+      String agentType,
+      String agentMode,
+      Consumer<StreamEvent> eventConsumer) {
+    HttpRequest request =
+        buildDefaultAgentRunRequest(message, conversationId, agentType, agentMode);
+
+    try {
+      HttpResponse<InputStream> response =
+          httpClient.send(request, HttpResponse.BodyHandlers.ofInputStream());
+      handleErrorStatus(response.statusCode(), null, parseRetryAfter(response));
+
+      try (InputStream inputStream = response.body()) {
+        sseParser.parse(inputStream, eventConsumer);
+      }
+    } catch (AISdkException e) {
+      throw e;
+    } catch (IOException | InterruptedException e) {
+      if (e instanceof InterruptedException) {
+        Thread.currentThread().interrupt();
+      }
+      throw new AISdkException("Default agent stream request failed: " + e.getMessage(), e);
+    }
+  }
+
+  public Stream<StreamEvent> streamDefaultAgentIterator(
+      String message, String conversationId, String agentType, String agentMode) {
+    HttpRequest request =
+        buildDefaultAgentRunRequest(message, conversationId, agentType, agentMode);
+
+    try {
+      HttpResponse<InputStream> response =
+          httpClient.send(request, HttpResponse.BodyHandlers.ofInputStream());
+      handleErrorStatus(response.statusCode(), null, parseRetryAfter(response));
+
+      return sseParser.parseAsStream(response.body());
+    } catch (AISdkException e) {
+      throw e;
+    } catch (IOException | InterruptedException e) {
+      if (e instanceof InterruptedException) {
+        Thread.currentThread().interrupt();
+      }
+      throw new AISdkException("Default agent stream request failed: " + e.getMessage(), e);
+    }
+  }
+
+  private HttpRequest buildDefaultAgentRunRequest(
+      String message, String conversationId, String agentType, String agentMode) {
+    java.util.Map<String, String> body = new java.util.LinkedHashMap<>();
+    body.put("message", message);
+    body.put("conversationId", conversationId);
+    body.put("agentType", agentType);
+    body.put("agentMode", agentMode);
+
+    String requestBody;
+    try {
+      requestBody = objectMapper.writeValueAsString(body);
+    } catch (JsonProcessingException e) {
+      throw new AISdkException("Failed to serialize default agent run request", e);
+    }
+
+    return HttpRequest.newBuilder()
+        .uri(URI.create(host + DEFAULT_AGENT_RUN_PATH))
+        .header("Authorization", "Bearer " + token)
+        .header("Content-Type", CONTENT_TYPE_JSON)
+        .header("Accept", ACCEPT_SSE)
+        .POST(HttpRequest.BodyPublishers.ofString(requestBody))
+        .build();
   }
 
   // ==================== Bot Operations ====================
