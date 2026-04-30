@@ -440,6 +440,193 @@ class CreateAgentRequest(BaseModel):
         return d
 
 
+class MemoryType(str, Enum):
+    """High-level type of reusable memory."""
+
+    PREFERENCE = "Preference"
+    USE_CASE = "UseCase"
+    NOTE = "Note"
+    RUNBOOK = "Runbook"
+    FAQ = "Faq"
+
+
+class MemoryScope(str, Enum):
+    """Scope where the memory applies."""
+
+    USER_GLOBAL = "UserGlobal"
+    ENTITY_SCOPED = "EntityScoped"
+
+
+class MemoryVisibility(str, Enum):
+    """Visibility level for a memory."""
+
+    PRIVATE = "Private"
+    ENTITY = "Entity"
+    SHARED = "Shared"
+
+
+class CreateContextMemoryRequest(BaseModel):
+    """Request to create a Context Center memory."""
+
+    model_config = ConfigDict(populate_by_name=True)
+
+    name: str = Field(..., description="Stable system name for the memory")
+    question: str = Field(..., description="Canonical question / instruction")
+    answer: str = Field(..., description="Canonical answer / retained guidance")
+    title: str | None = Field(default=None, description="Short title shown in Context Center")
+    description: str | None = Field(default=None, description="Optional markdown description")
+    memory_type: MemoryType = Field(
+        default=MemoryType.NOTE,
+        alias="memoryType",
+        description="High-level memory type",
+    )
+    memory_scope: MemoryScope = Field(
+        default=MemoryScope.ENTITY_SCOPED,
+        alias="memoryScope",
+        description="Scope the memory applies to",
+    )
+    visibility: MemoryVisibility = Field(
+        default=MemoryVisibility.PRIVATE,
+        description="Visibility level (Private/Entity/Shared)",
+    )
+    primary_entity: EntityReference | None = Field(
+        default=None,
+        alias="primaryEntity",
+        description="Primary entity this memory attaches to",
+    )
+    related_entities: list[EntityReference] | None = Field(
+        default=None,
+        alias="relatedEntities",
+        description="Additional related entities",
+    )
+    tags: list[str] | None = Field(
+        default=None,
+        description="Tag FQN strings; wrapped to TagLabel on the wire",
+    )
+
+    def to_api_dict(self) -> dict[str, Any]:
+        """Convert to API request format (camelCase keys)."""
+        d: dict[str, Any] = {
+            "name": self.name,
+            "question": self.question,
+            "answer": self.answer,
+            "memoryType": self.memory_type.value,
+            "memoryScope": self.memory_scope.value,
+            "shareConfig": {"visibility": self.visibility.value},
+        }
+        if self.title is not None:
+            d["title"] = self.title
+        if self.description is not None:
+            d["description"] = self.description
+        if self.primary_entity is not None:
+            d["primaryEntity"] = self.primary_entity.to_api_dict()
+        if self.related_entities is not None:
+            d["relatedEntities"] = [e.to_api_dict() for e in self.related_entities]
+        if self.tags is not None:
+            d["tags"] = [
+                {
+                    "tagFQN": t,
+                    "labelType": "Manual",
+                    "state": "Confirmed",
+                    "source": "Classification",
+                }
+                for t in self.tags
+            ]
+        return d
+
+    @classmethod
+    def from_dict(cls, data: dict[str, Any]) -> CreateContextMemoryRequest:
+        """Create from API request format."""
+        return cls.model_validate(data)
+
+
+class ContextMemory(BaseModel):
+    """A Context Center memory."""
+
+    model_config = ConfigDict(populate_by_name=True)
+
+    id: str = Field(..., description="Unique identifier")
+    name: str = Field(..., description="Stable system name")
+    fully_qualified_name: str | None = Field(
+        default=None,
+        alias="fullyQualifiedName",
+        description="Fully qualified name",
+    )
+    title: str | None = Field(default=None, description="Short title")
+    question: str = Field(default="", description="Canonical question / instruction")
+    answer: str = Field(default="", description="Canonical answer / retained guidance")
+    summary: str | None = Field(default=None, description="Optional summary")
+    memory_type: MemoryType = Field(default=MemoryType.NOTE, alias="memoryType")
+    memory_scope: MemoryScope = Field(default=MemoryScope.ENTITY_SCOPED, alias="memoryScope")
+    visibility: MemoryVisibility = Field(
+        default=MemoryVisibility.PRIVATE,
+        description="Visibility (extracted from shareConfig.visibility)",
+    )
+    primary_entity: EntityReference | None = Field(default=None, alias="primaryEntity")
+    usage_count: int = Field(default=0, alias="usageCount")
+    last_used_at: int | None = Field(
+        default=None,
+        alias="lastUsedAt",
+        description="Last-used timestamp in epoch milliseconds",
+    )
+    deleted: bool = Field(default=False)
+
+    @classmethod
+    def from_dict(cls, data: dict[str, Any]) -> ContextMemory:
+        """Create from API response format. Flattens shareConfig.visibility."""
+        share_config = data.get("shareConfig") or {}
+        if isinstance(share_config, dict):
+            visibility = share_config.get("visibility", "Private")
+        else:
+            visibility = "Private"
+        flattened = {**data, "visibility": visibility}
+        return cls.model_validate(flattened)
+
+
+class MemorySearchHit(BaseModel):
+    """A single hit from a hybrid memory search."""
+
+    model_config = ConfigDict(populate_by_name=True)
+
+    memory: ContextMemory = Field(..., description="The matched memory")
+    score: float = Field(..., description="Relevance score from the search engine")
+
+    @classmethod
+    def from_dict(cls, data: dict[str, Any]) -> MemorySearchHit:
+        """Create from an OpenSearch hit."""
+        return cls(
+            memory=ContextMemory.from_dict(data.get("_source", {})),
+            score=float(data.get("_score", 0.0)),
+        )
+
+
+class MemorySearchResults(BaseModel):
+    """Results from a hybrid memory search."""
+
+    model_config = ConfigDict(populate_by_name=True)
+
+    total: int = Field(default=0, description="Total number of matching memories")
+    hits: list[MemorySearchHit] = Field(
+        default_factory=list,
+        description="Ranked search hits",
+    )
+
+    @classmethod
+    def from_dict(cls, data: dict[str, Any]) -> MemorySearchResults:
+        """Create from an OpenSearch response shape."""
+        hits_block = data.get("hits") or {}
+        total_block = hits_block.get("total", 0)
+        if isinstance(total_block, dict):
+            total = int(total_block.get("value", 0))
+        else:
+            total = int(total_block)
+        raw_hits = hits_block.get("hits") or []
+        return cls(
+            total=total,
+            hits=[MemorySearchHit.from_dict(h) for h in raw_hits],
+        )
+
+
 class AbilityInfo(BaseModel):
     """Represents an Ability."""
 
