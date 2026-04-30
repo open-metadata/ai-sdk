@@ -143,3 +143,106 @@ export interface AbilityInfo {
   /** List of tools provided by this ability */
   tools: string[];
 }
+
+/**
+ * High-level type of a Context Center memory.
+ */
+export type MemoryType = 'Preference' | 'UseCase' | 'Note' | 'Runbook' | 'Faq';
+
+/**
+ * Scope where a memory applies.
+ */
+export type MemoryScope = 'UserGlobal' | 'EntityScoped';
+
+/**
+ * Visibility level for a memory.
+ */
+export type MemoryVisibility = 'Private' | 'Entity' | 'Shared';
+
+/**
+ * Request body for creating a Context Center memory.
+ *
+ * `visibility` is flattened from the API's `shareConfig.visibility`; it is
+ * re-nested when the request is serialized to the wire format.
+ *
+ * `tags` accepts a list of tag FQN strings; each one is wrapped into the
+ * platform's TagLabel shape on the wire.
+ */
+export interface CreateContextMemoryRequest {
+  /** Stable system name for the memory */
+  name: string;
+  /** Canonical question / instruction (required) */
+  question: string;
+  /** Canonical answer / retained guidance (required) */
+  answer: string;
+  /** Short title shown in Context Center */
+  title?: string;
+  /** Optional markdown description */
+  description?: string;
+  /** High-level memory type (default: 'Note') */
+  memoryType?: MemoryType;
+  /** Scope the memory applies to (default: 'EntityScoped') */
+  memoryScope?: MemoryScope;
+  /** Visibility level (default: 'Private') */
+  visibility?: MemoryVisibility;
+  /** Primary entity this memory attaches to */
+  primaryEntity?: EntityReference;
+  /** Additional related entities */
+  relatedEntities?: EntityReference[];
+  /** Tag FQN strings; wrapped into TagLabel objects on the wire */
+  tags?: string[];
+}
+
+/**
+ * A Context Center memory.
+ */
+export interface ContextMemory {
+  /** Unique identifier */
+  id: string;
+  /** Stable system name */
+  name: string;
+  /** Fully qualified name */
+  fullyQualifiedName?: string;
+  /** Short title */
+  title?: string;
+  /** Canonical question / instruction */
+  question: string;
+  /** Canonical answer / retained guidance */
+  answer: string;
+  /** Optional summary */
+  summary?: string;
+  /** High-level memory type */
+  memoryType: MemoryType;
+  /** Scope the memory applies to */
+  memoryScope: MemoryScope;
+  /** Visibility (extracted from shareConfig.visibility) */
+  visibility: MemoryVisibility;
+  /** Primary entity this memory attaches to */
+  primaryEntity?: EntityReference;
+  /** Number of times this memory has been used */
+  usageCount: number;
+  /** Last-used timestamp in epoch milliseconds */
+  lastUsedAt?: number;
+  /** Whether the memory is soft-deleted */
+  deleted: boolean;
+}
+
+/**
+ * A single hit from a hybrid memory search.
+ */
+export interface MemorySearchHit {
+  /** The matched memory */
+  memory: ContextMemory;
+  /** Relevance score from the search engine */
+  score: number;
+}
+
+/**
+ * Results from a hybrid memory search.
+ */
+export interface MemorySearchResults {
+  /** Total number of matching memories */
+  total: number;
+  /** Ranked search hits */
+  hits: MemorySearchHit[];
+}
