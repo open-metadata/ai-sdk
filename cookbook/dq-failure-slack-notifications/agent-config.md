@@ -133,7 +133,7 @@ const client = new AISdk({
   token: 'your-jwt-token'
 });
 
-const agent = await client.createAgent({
+const agent = await client.agents.create({
   name: 'DataQualityAnalyzer',
   description: 'Analyzes DQ test failures, explores lineage impact, and suggests remediation steps',
   persona: 'DataAnalyst',
@@ -163,7 +163,7 @@ CreateAgentRequest request = CreateAgentRequest.builder()
     .apiEnabled(true)
     .build();
 
-Agent agent = client.createAgent(request);
+Agent agent = client.agents().create(request);
 System.out.println("Created agent: " + agent.getName());
 ```
 
