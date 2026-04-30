@@ -84,11 +84,10 @@ pub async fn run_tui(
                     .filter(|a| a.api_enabled)
                     .map(|a| a.name)
                     .collect();
-                if names.is_empty() {
-                    app.set_error("No API-enabled agents available".to_string());
-                } else {
-                    app.show_agents(names);
-                }
+                // The menu always shows the synthetic "AskCollate (default)"
+                // entry at the top, so it's useful even when there are no
+                // API-enabled named agents.
+                app.show_agents(names);
             }
             Err(e) => {
                 app.set_error(format!("Failed to fetch agents: {e}"));

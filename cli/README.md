@@ -118,7 +118,7 @@ ai-sdk chat semantic-layer-agent -c <conversation-id>
 ```
 
 **TUI Features:**
-- **Agent selection**: Type `/agents` or start without an agent to see available agents
+- **Agent selection**: Type `/agents` or start without an agent to see available agents. The list always has **AskCollate (default)** at the top — pick it to chat with the platform's default agent (no specific agent selected). Press `Enter` to confirm.
 - **Markdown rendering**: Bold, italic, headers, lists render properly
 - **Syntax-highlighted code blocks**: SQL, Python, JSON, and more
 - **Thinking/reasoning display**: Agent's thought process shown in grey
