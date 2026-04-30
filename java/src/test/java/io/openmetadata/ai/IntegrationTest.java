@@ -61,7 +61,7 @@ public class IntegrationTest {
     if (testAgentName == null || testAgentName.isEmpty()) {
       try {
         // First, try to find an existing persona with LLM configured
-        List<PersonaInfo> personas = client.listPersonas();
+        List<PersonaInfo> personas = client.personas().list();
         if (!personas.isEmpty()) {
           String personaName = personas.get(0).getName();
           // Create a test agent with discoveryAndSearch ability
@@ -74,12 +74,12 @@ public class IntegrationTest {
                   .mode("chat")
                   .apiEnabled(true) // Enable API access for invoke/stream
                   .abilities(Arrays.asList("discoveryAndSearch"));
-          client.createAgent(builder);
+          client.agents().create(builder);
           testAgentName = agentName;
           System.out.println("Created test agent: " + testAgentName);
         } else {
           // Fallback to first available agent
-          List<AgentInfo> agents = client.listAgents();
+          List<AgentInfo> agents = client.agents().list();
           if (!agents.isEmpty()) {
             testAgentName = agents.get(0).getName();
           }
@@ -101,14 +101,14 @@ public class IntegrationTest {
     @DisplayName("Client can be created and list agents")
     void testClientCreation() {
       assertNotNull(client);
-      List<AgentInfo> agents = client.listAgents();
+      List<AgentInfo> agents = client.agents().list();
       assertNotNull(agents);
     }
 
     @Test
     @DisplayName("List agents returns a list")
     void testListAgents() {
-      List<AgentInfo> agents = client.listAgents();
+      List<AgentInfo> agents = client.agents().list();
       assertNotNull(agents);
       System.out.println("Found " + agents.size() + " API-enabled agents");
     }
@@ -119,7 +119,7 @@ public class IntegrationTest {
       AISdk badClient =
           AISdk.builder().host(System.getenv("AI_SDK_HOST")).token("invalid-token-12345").build();
 
-      assertThrows(AuthenticationException.class, badClient::listAgents);
+      assertThrows(AuthenticationException.class, () -> badClient.agents().list());
     }
   }
 
@@ -251,7 +251,7 @@ public class IntegrationTest {
     @Test
     @DisplayName("List personas returns a list")
     void testListPersonas() {
-      List<PersonaInfo> personas = client.listPersonas();
+      List<PersonaInfo> personas = client.personas().list();
       assertNotNull(personas);
       System.out.println("Found " + personas.size() + " personas");
     }
@@ -259,7 +259,7 @@ public class IntegrationTest {
     @Test
     @DisplayName("List personas with limit respects limit")
     void testListPersonasWithLimit() {
-      List<PersonaInfo> personas = client.listPersonas(5);
+      List<PersonaInfo> personas = client.personas().list(5);
       assertNotNull(personas);
       assertTrue(personas.size() <= 5);
     }
@@ -267,14 +267,14 @@ public class IntegrationTest {
     @Test
     @DisplayName("Get persona by name returns correct persona")
     void testGetPersona() {
-      List<PersonaInfo> personas = client.listPersonas();
+      List<PersonaInfo> personas = client.personas().list();
       if (personas.isEmpty()) {
         System.out.println("Skipping: No personas available");
         return;
       }
 
       String personaName = personas.get(0).getName();
-      PersonaInfo persona = client.getPersona(personaName);
+      PersonaInfo persona = client.personas().get(personaName);
 
       assertNotNull(persona);
       assertEquals(personaName, persona.getName());
@@ -290,7 +290,8 @@ public class IntegrationTest {
     @DisplayName("Get non-existent persona throws PersonaNotFoundException")
     void testGetPersonaNotFound() {
       assertThrows(
-          PersonaNotFoundException.class, () -> client.getPersona("non-existent-persona-12345"));
+          PersonaNotFoundException.class,
+          () -> client.personas().get("non-existent-persona-12345"));
     }
 
     @Test
@@ -305,7 +306,7 @@ public class IntegrationTest {
               .displayName("Test Persona")
               .build();
 
-      PersonaInfo created = client.createPersona(request);
+      PersonaInfo created = client.personas().create(request);
 
       assertNotNull(created);
       assertEquals(personaName, created.getName());
@@ -323,7 +324,7 @@ public class IntegrationTest {
     @Test
     @DisplayName("List bots returns a list")
     void testListBots() {
-      List<BotInfo> bots = client.listBots();
+      List<BotInfo> bots = client.bots().list();
       assertNotNull(bots);
       System.out.println("Found " + bots.size() + " bots");
     }
@@ -331,7 +332,7 @@ public class IntegrationTest {
     @Test
     @DisplayName("List bots with limit respects limit")
     void testListBotsWithLimit() {
-      List<BotInfo> bots = client.listBots(5);
+      List<BotInfo> bots = client.bots().list(5);
       assertNotNull(bots);
       assertTrue(bots.size() <= 5);
     }
@@ -339,14 +340,14 @@ public class IntegrationTest {
     @Test
     @DisplayName("Get bot by name returns correct bot")
     void testGetBot() {
-      List<BotInfo> bots = client.listBots();
+      List<BotInfo> bots = client.bots().list();
       if (bots.isEmpty()) {
         System.out.println("Skipping: No bots available");
         return;
       }
 
       String botName = bots.get(0).getName();
-      BotInfo bot = client.getBot(botName);
+      BotInfo bot = client.bots().get(botName);
 
       assertNotNull(bot);
       assertEquals(botName, bot.getName());
@@ -361,7 +362,7 @@ public class IntegrationTest {
     @Test
     @DisplayName("Get non-existent bot throws BotNotFoundException")
     void testGetBotNotFound() {
-      assertThrows(BotNotFoundException.class, () -> client.getBot("non-existent-bot-12345"));
+      assertThrows(BotNotFoundException.class, () -> client.bots().get("non-existent-bot-12345"));
     }
   }
 
@@ -374,7 +375,7 @@ public class IntegrationTest {
     @Test
     @DisplayName("List abilities returns a list")
     void testListAbilities() {
-      List<AbilityInfo> abilities = client.listAbilities();
+      List<AbilityInfo> abilities = client.abilities().list();
       assertNotNull(abilities);
       System.out.println("Found " + abilities.size() + " abilities");
     }
@@ -382,7 +383,7 @@ public class IntegrationTest {
     @Test
     @DisplayName("List abilities with limit respects limit")
     void testListAbilitiesWithLimit() {
-      List<AbilityInfo> abilities = client.listAbilities(5);
+      List<AbilityInfo> abilities = client.abilities().list(5);
       assertNotNull(abilities);
       assertTrue(abilities.size() <= 5);
     }
@@ -390,7 +391,7 @@ public class IntegrationTest {
     @Test
     @DisplayName("Abilities have expected fields")
     void testAbilityFields() {
-      List<AbilityInfo> abilities = client.listAbilities();
+      List<AbilityInfo> abilities = client.abilities().list();
       if (abilities.isEmpty()) {
         System.out.println("Skipping: No abilities available");
         return;
@@ -411,7 +412,7 @@ public class IntegrationTest {
     @Test
     @DisplayName("Create agent creates new agent")
     void testCreateAgent() {
-      List<PersonaInfo> personas = client.listPersonas();
+      List<PersonaInfo> personas = client.personas().list();
       if (personas.isEmpty()) {
         System.out.println("Skipping: No personas available to create agent");
         return;
@@ -426,7 +427,7 @@ public class IntegrationTest {
               .mode("chat")
               .apiEnabled(true);
 
-      AgentInfo created = client.createAgent(builder);
+      AgentInfo created = client.agents().create(builder);
 
       assertNotNull(created);
       assertEquals(agentName, created.getName());
@@ -436,8 +437,8 @@ public class IntegrationTest {
     @Test
     @DisplayName("Create agent with abilities")
     void testCreateAgentWithAbilities() {
-      List<PersonaInfo> personas = client.listPersonas();
-      List<AbilityInfo> abilities = client.listAbilities();
+      List<PersonaInfo> personas = client.personas().list();
+      List<AbilityInfo> abilities = client.abilities().list();
 
       if (personas.isEmpty()) {
         System.out.println("Skipping: No personas available");
@@ -464,7 +465,7 @@ public class IntegrationTest {
               .abilities(abilityNames)
               .apiEnabled(true);
 
-      AgentInfo created = client.createAgent(builder);
+      AgentInfo created = client.agents().create(builder);
 
       assertNotNull(created);
       assertEquals(agentName, created.getName());

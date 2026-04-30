@@ -140,7 +140,7 @@ class AISdkTest {
   void getBotMethodThrowsOnNullName() {
     AISdk client = AISdk.builder().host("https://metadata.example.com").token("test-token").build();
 
-    assertThrows(NullPointerException.class, () -> client.getBot(null));
+    assertThrows(NullPointerException.class, () -> client.bots().get(null));
     client.close();
   }
 
@@ -151,7 +151,7 @@ class AISdkTest {
   void getPersonaMethodThrowsOnNullName() {
     AISdk client = AISdk.builder().host("https://metadata.example.com").token("test-token").build();
 
-    assertThrows(NullPointerException.class, () -> client.getPersona(null));
+    assertThrows(NullPointerException.class, () -> client.personas().get(null));
     client.close();
   }
 
@@ -160,7 +160,7 @@ class AISdkTest {
   void createPersonaMethodThrowsOnNullRequest() {
     AISdk client = AISdk.builder().host("https://metadata.example.com").token("test-token").build();
 
-    assertThrows(NullPointerException.class, () -> client.createPersona(null));
+    assertThrows(NullPointerException.class, () -> client.personas().create(null));
     client.close();
   }
 
@@ -171,7 +171,7 @@ class AISdkTest {
   void getAbilityMethodThrowsOnNullName() {
     AISdk client = AISdk.builder().host("https://metadata.example.com").token("test-token").build();
 
-    assertThrows(NullPointerException.class, () -> client.getAbility(null));
+    assertThrows(NullPointerException.class, () -> client.abilities().get(null));
     client.close();
   }
 
