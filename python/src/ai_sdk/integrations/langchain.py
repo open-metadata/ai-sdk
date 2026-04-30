@@ -305,7 +305,7 @@ def create_ai_sdk_tools(
     """
     if agent_names is None:
         # Get all API-enabled agents
-        agents = client.list_agents(limit=100)
+        agents = client.agents.list(limit=100)
         agent_names = [a.name for a in agents if a.api_enabled]
 
     return [AISdkAgentTool.from_client(client, name) for name in agent_names]

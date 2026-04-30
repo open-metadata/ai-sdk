@@ -74,7 +74,7 @@ class TestListPersonas:
             json=sample_personas_list_response,
         )
 
-        personas = client.list_personas()
+        personas = client.personas.list()
 
         assert len(personas) == 2
         assert all(isinstance(p, PersonaInfo) for p in personas)
@@ -92,7 +92,7 @@ class TestListPersonas:
         )
 
         # Request only 1 persona, even though API returns 2
-        personas = client.list_personas(limit=1)
+        personas = client.personas.list(limit=1)
 
         assert len(personas) == 1
         assert personas[0].name == "DataAnalyst"
@@ -107,7 +107,7 @@ class TestListPersonas:
             json=sample_personas_list_response,
         )
 
-        personas = await async_client.alist_personas()
+        personas = await async_client.personas.alist()
 
         assert len(personas) == 2
         assert all(isinstance(p, PersonaInfo) for p in personas)
@@ -126,7 +126,7 @@ class TestGetPersona:
             json=sample_persona_info_dict,
         )
 
-        persona = client.get_persona("DataAnalyst")
+        persona = client.personas.get("DataAnalyst")
 
         assert isinstance(persona, PersonaInfo)
         assert persona.name == "DataAnalyst"
@@ -144,7 +144,7 @@ class TestGetPersona:
         )
 
         with pytest.raises(PersonaNotFoundError) as exc_info:
-            client.get_persona("NonExistentPersona")
+            client.personas.get("NonExistentPersona")
 
         assert exc_info.value.persona_name == "NonExistentPersona"
         assert exc_info.value.status_code == 404
@@ -159,7 +159,7 @@ class TestGetPersona:
             json=sample_persona_info_dict,
         )
 
-        persona = await async_client.aget_persona("DataAnalyst")
+        persona = await async_client.personas.aget("DataAnalyst")
 
         assert isinstance(persona, PersonaInfo)
         assert persona.name == "DataAnalyst"
@@ -174,7 +174,7 @@ class TestGetPersona:
         )
 
         with pytest.raises(PersonaNotFoundError) as exc_info:
-            await async_client.aget_persona("NonExistentPersona")
+            await async_client.personas.aget("NonExistentPersona")
 
         assert exc_info.value.persona_name == "NonExistentPersona"
 
@@ -199,7 +199,7 @@ class TestCreatePersona:
             display_name="Data Analyst",
         )
 
-        persona = client.create_persona(request)
+        persona = client.personas.create(request)
 
         assert isinstance(persona, PersonaInfo)
         assert persona.name == "DataAnalyst"
@@ -227,7 +227,7 @@ class TestCreatePersona:
             display_name="New Persona",
         )
 
-        client.create_persona(request)
+        client.personas.create(request)
 
         http_request = httpx_mock.get_request()
         assert http_request.method == "POST"
@@ -253,7 +253,7 @@ class TestCreatePersona:
             prompt="You are a data analyst who helps users understand their data.",
         )
 
-        persona = await async_client.acreate_persona(request)
+        persona = await async_client.personas.acreate(request)
 
         assert isinstance(persona, PersonaInfo)
         assert persona.name == "DataAnalyst"
@@ -263,33 +263,33 @@ class TestAsyncClientRequirement:
     """Tests for async client requirement."""
 
     def test_alist_personas_without_async_raises_error(self, client):
-        """alist_personas raises RuntimeError without async enabled."""
-        with pytest.raises(RuntimeError) as exc_info:
-            import asyncio
+        """alist raises RuntimeError without async enabled."""
+        import asyncio
 
-            asyncio.get_event_loop().run_until_complete(client.alist_personas())
+        with pytest.raises(RuntimeError) as exc_info:
+            asyncio.run(client.personas.alist())
 
         assert "enable_async=True" in str(exc_info.value)
 
     def test_aget_persona_without_async_raises_error(self, client):
-        """aget_persona raises RuntimeError without async enabled."""
-        with pytest.raises(RuntimeError) as exc_info:
-            import asyncio
+        """aget raises RuntimeError without async enabled."""
+        import asyncio
 
-            asyncio.get_event_loop().run_until_complete(client.aget_persona("test"))
+        with pytest.raises(RuntimeError) as exc_info:
+            asyncio.run(client.personas.aget("test"))
 
         assert "enable_async=True" in str(exc_info.value)
 
     def test_acreate_persona_without_async_raises_error(self, client):
-        """acreate_persona raises RuntimeError without async enabled."""
-        with pytest.raises(RuntimeError) as exc_info:
-            import asyncio
+        """acreate raises RuntimeError without async enabled."""
+        import asyncio
 
-            request = CreatePersonaRequest(
-                name="Test",
-                description="Test",
-                prompt="Test",
-            )
-            asyncio.get_event_loop().run_until_complete(client.acreate_persona(request))
+        request = CreatePersonaRequest(
+            name="Test",
+            description="Test",
+            prompt="Test",
+        )
+        with pytest.raises(RuntimeError) as exc_info:
+            asyncio.run(client.personas.acreate(request))
 
         assert "enable_async=True" in str(exc_info.value)

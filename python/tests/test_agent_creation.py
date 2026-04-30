@@ -186,7 +186,7 @@ class TestCreateAgent:
             persona="DataAnalyst",
             mode="chat",
         )
-        result = client.create_agent(request)
+        result = client.agents.create(request)
 
         assert isinstance(result, AgentInfo)
         assert result.name == "MyTestAgent"
@@ -246,7 +246,7 @@ class TestCreateAgent:
             schedule="0 */6 * * *",
             api_enabled=True,
         )
-        result = client.create_agent(request)
+        result = client.agents.create(request)
 
         assert isinstance(result, AgentInfo)
         assert result.name == "FullAgent"
@@ -279,7 +279,7 @@ class TestCreateAgent:
             mode="chat",
             api_enabled=True,
         )
-        client.create_agent(request)
+        client.agents.create(request)
 
         # Get the POST request (second request, after persona GET)
         requests = httpx_mock.get_requests()
@@ -325,7 +325,7 @@ class TestAsyncCreateAgent:
             persona="DataAnalyst",
             mode="chat",
         )
-        result = await async_client.acreate_agent(request)
+        result = await async_client.agents.acreate(request)
 
         assert isinstance(result, AgentInfo)
         assert result.name == "MyTestAgent"
@@ -342,7 +342,7 @@ class TestAsyncCreateAgent:
         )
 
         with pytest.raises(RuntimeError) as exc_info:
-            await client.acreate_agent(request)
+            await client.agents.acreate(request)
 
         assert "Async HTTP client not available" in str(exc_info.value)
 

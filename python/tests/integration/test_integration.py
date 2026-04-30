@@ -73,7 +73,7 @@ def test_agent_name(client: AISdk) -> str | None:
         return name
 
     # Get an existing persona to use (they have LLM configured)
-    personas = client.list_personas()
+    personas = client.personas.list()
     if not personas:
         return None
 
@@ -88,12 +88,12 @@ def test_agent_name(client: AISdk) -> str | None:
             abilities=["discoveryAndSearch"],
             api_enabled=True,
         )
-        client.create_agent(request)
+        client.agents.create(request)
         return agent_name
     except Exception as e:
         print(f"Could not create test agent: {e}")
         # Fall back to first available agent
-        agents = client.list_agents()
+        agents = client.agents.list()
         if agents:
             return agents[0].name
         return None
@@ -109,7 +109,7 @@ class TestConnection:
 
     def test_list_agents(self, client: AISdk) -> None:
         """Test that we can list agents (validates auth works)."""
-        agents = client.list_agents()
+        agents = client.agents.list()
         # Should return a list (may be empty, but shouldn't error)
         assert isinstance(agents, list)
         print(f"Found {len(agents)} API-enabled agents")
@@ -121,7 +121,7 @@ class TestConnection:
             token="invalid-token-12345",
         )
         with pytest.raises(AuthenticationError):
-            client.list_agents()
+            client.agents.list()
 
 
 class TestAgentOperations:
@@ -178,7 +178,7 @@ class TestAsyncOperations:
     @pytest.mark.asyncio
     async def test_async_list_agents(self, async_client: AISdk) -> None:
         """Test async agent listing."""
-        agents = await async_client.alist_agents()
+        agents = await async_client.agents.alist()
         assert isinstance(agents, list)
 
     @skip_chat
@@ -219,25 +219,25 @@ class TestPersonaOperations:
 
     def test_list_personas(self, client: AISdk) -> None:
         """Test listing personas."""
-        personas = client.list_personas()
+        personas = client.personas.list()
         assert isinstance(personas, list)
         print(f"Found {len(personas)} personas")
 
     def test_list_personas_with_limit(self, client: AISdk) -> None:
         """Test listing personas with limit."""
-        personas = client.list_personas(limit=5)
+        personas = client.personas.list(limit=5)
         assert isinstance(personas, list)
         assert len(personas) <= 5
 
     def test_get_persona(self, client: AISdk) -> None:
         """Test getting a specific persona."""
         # First, list personas to get one that exists
-        personas = client.list_personas()
+        personas = client.personas.list()
         if not personas:
             pytest.skip("No personas available to test get_persona")
 
         persona_name = personas[0].name
-        persona = client.get_persona(persona_name)
+        persona = client.personas.get(persona_name)
 
         assert persona is not None
         assert persona.name == persona_name
@@ -246,7 +246,7 @@ class TestPersonaOperations:
     def test_get_persona_not_found(self, client: AISdk) -> None:
         """Test that getting a non-existent persona raises error."""
         with pytest.raises(PersonaNotFoundError) as exc_info:
-            client.get_persona("non-existent-persona-12345")
+            client.personas.get("non-existent-persona-12345")
         assert exc_info.value.status_code == 404
 
     def test_create_persona(self, client: AISdk) -> None:
@@ -259,7 +259,7 @@ class TestPersonaOperations:
             display_name="Test Persona",
         )
 
-        created = client.create_persona(request)
+        created = client.personas.create(request)
 
         assert created is not None
         assert created.name == persona_name
@@ -269,17 +269,17 @@ class TestPersonaOperations:
     @pytest.mark.asyncio
     async def test_async_list_personas(self, async_client: AISdk) -> None:
         """Test async listing personas."""
-        personas = await async_client.alist_personas()
+        personas = await async_client.personas.alist()
         assert isinstance(personas, list)
 
     @pytest.mark.asyncio
     async def test_async_get_persona(self, async_client: AISdk) -> None:
         """Test async getting a specific persona."""
-        personas = await async_client.alist_personas()
+        personas = await async_client.personas.alist()
         if not personas:
             pytest.skip("No personas available")
 
-        persona = await async_client.aget_persona(personas[0].name)
+        persona = await async_client.personas.aget(personas[0].name)
         assert persona is not None
 
     @pytest.mark.asyncio
@@ -292,7 +292,7 @@ class TestPersonaOperations:
             prompt="You are a helpful async test assistant.",
         )
 
-        created = await async_client.acreate_persona(request)
+        created = await async_client.personas.acreate(request)
         assert created is not None
         assert created.name == persona_name
 
@@ -302,24 +302,24 @@ class TestBotOperations:
 
     def test_list_bots(self, client: AISdk) -> None:
         """Test listing bots."""
-        bots = client.list_bots()
+        bots = client.bots.list()
         assert isinstance(bots, list)
         print(f"Found {len(bots)} bots")
 
     def test_list_bots_with_limit(self, client: AISdk) -> None:
         """Test listing bots with limit."""
-        bots = client.list_bots(limit=5)
+        bots = client.bots.list(limit=5)
         assert isinstance(bots, list)
         assert len(bots) <= 5
 
     def test_get_bot(self, client: AISdk) -> None:
         """Test getting a specific bot."""
-        bots = client.list_bots()
+        bots = client.bots.list()
         if not bots:
             pytest.skip("No bots available to test get_bot")
 
         bot_name = bots[0].name
-        bot = client.get_bot(bot_name)
+        bot = client.bots.get(bot_name)
 
         assert bot is not None
         assert bot.name == bot_name
@@ -328,17 +328,17 @@ class TestBotOperations:
     @pytest.mark.asyncio
     async def test_async_list_bots(self, async_client: AISdk) -> None:
         """Test async listing bots."""
-        bots = await async_client.alist_bots()
+        bots = await async_client.bots.alist()
         assert isinstance(bots, list)
 
     @pytest.mark.asyncio
     async def test_async_get_bot(self, async_client: AISdk) -> None:
         """Test async getting a specific bot."""
-        bots = await async_client.alist_bots()
+        bots = await async_client.bots.alist()
         if not bots:
             pytest.skip("No bots available")
 
-        bot = await async_client.aget_bot(bots[0].name)
+        bot = await async_client.bots.aget(bots[0].name)
         assert bot is not None
 
 
@@ -347,19 +347,19 @@ class TestAbilityOperations:
 
     def test_list_abilities(self, client: AISdk) -> None:
         """Test listing abilities."""
-        abilities = client.list_abilities()
+        abilities = client.abilities.list()
         assert isinstance(abilities, list)
         print(f"Found {len(abilities)} abilities")
 
     def test_list_abilities_with_limit(self, client: AISdk) -> None:
         """Test listing abilities with limit."""
-        abilities = client.list_abilities(limit=5)
+        abilities = client.abilities.list(limit=5)
         assert isinstance(abilities, list)
         assert len(abilities) <= 5
 
     def test_ability_has_expected_fields(self, client: AISdk) -> None:
         """Test that abilities have expected fields."""
-        abilities = client.list_abilities()
+        abilities = client.abilities.list()
         if not abilities:
             pytest.skip("No abilities available")
 
@@ -371,7 +371,7 @@ class TestAbilityOperations:
     @pytest.mark.asyncio
     async def test_async_list_abilities(self, async_client: AISdk) -> None:
         """Test async listing abilities."""
-        abilities = await async_client.alist_abilities()
+        abilities = await async_client.abilities.alist()
         assert isinstance(abilities, list)
 
 
@@ -381,7 +381,7 @@ class TestAgentCRUDOperations:
     def test_create_agent(self, client: AISdk) -> None:
         """Test creating a new agent."""
         # First, get a persona to use
-        personas = client.list_personas()
+        personas = client.personas.list()
         if not personas:
             pytest.skip("No personas available to create agent")
 
@@ -394,7 +394,7 @@ class TestAgentCRUDOperations:
             api_enabled=True,
         )
 
-        created = client.create_agent(request)
+        created = client.agents.create(request)
 
         assert created is not None
         assert created.name == agent_name
@@ -402,8 +402,8 @@ class TestAgentCRUDOperations:
 
     def test_create_agent_with_abilities(self, client: AISdk) -> None:
         """Test creating an agent with abilities."""
-        personas = client.list_personas()
-        abilities = client.list_abilities()
+        personas = client.personas.list()
+        abilities = client.abilities.list()
 
         if not personas:
             pytest.skip("No personas available")
@@ -422,7 +422,7 @@ class TestAgentCRUDOperations:
             api_enabled=True,
         )
 
-        created = client.create_agent(request)
+        created = client.agents.create(request)
 
         assert created is not None
         assert created.name == agent_name
@@ -431,7 +431,7 @@ class TestAgentCRUDOperations:
     @pytest.mark.asyncio
     async def test_async_create_agent(self, async_client: AISdk) -> None:
         """Test async creating an agent."""
-        personas = await async_client.alist_personas()
+        personas = await async_client.personas.alist()
         if not personas:
             pytest.skip("No personas available")
 
@@ -444,6 +444,6 @@ class TestAgentCRUDOperations:
             api_enabled=True,
         )
 
-        created = await async_client.acreate_agent(request)
+        created = await async_client.agents.acreate(request)
         assert created is not None
         assert created.name == agent_name

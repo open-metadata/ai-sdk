@@ -55,7 +55,7 @@ class TestAISdkListAgents:
             json=sample_agents_list_response,
         )
 
-        agents = client.list_agents()
+        agents = client.agents.list()
 
         assert len(agents) == 2
         assert all(isinstance(a, AgentInfo) for a in agents)
@@ -72,7 +72,7 @@ class TestAISdkListAgents:
         )
 
         # Request only 1 agent, even though API returns 2
-        agents = client.list_agents(limit=1)
+        agents = client.agents.list(limit=1)
 
         assert len(agents) == 1
         assert agents[0].name == "DataQualityPlannerAgent"

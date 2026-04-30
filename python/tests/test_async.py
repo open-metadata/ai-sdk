@@ -147,7 +147,7 @@ class TestAsyncListAgents:
             json=sample_agents_list_response,
         )
 
-        agents = await async_client.alist_agents()
+        agents = await async_client.agents.alist()
 
         assert len(agents) == 2
         assert all(isinstance(a, AgentInfo) for a in agents)

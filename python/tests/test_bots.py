@@ -76,7 +76,7 @@ class TestListBots:
             json=sample_bots_list_response,
         )
 
-        bots = client.list_bots()
+        bots = client.bots.list()
 
         assert len(bots) == 2
         assert all(isinstance(b, BotInfo) for b in bots)
@@ -92,7 +92,7 @@ class TestListBots:
         )
 
         # Request only 1 bot, even though API returns 2
-        bots = client.list_bots(limit=1)
+        bots = client.bots.list(limit=1)
 
         assert len(bots) == 1
         assert bots[0].name == "ingestion-bot"
@@ -104,7 +104,7 @@ class TestListBots:
             json={"data": []},
         )
 
-        bots = client.list_bots()
+        bots = client.bots.list()
 
         assert bots == []
 
@@ -119,7 +119,7 @@ class TestGetBot:
             json=sample_bot_info_dict,
         )
 
-        bot = client.get_bot("ingestion-bot")
+        bot = client.bots.get("ingestion-bot")
 
         assert isinstance(bot, BotInfo)
         assert bot.name == "ingestion-bot"
@@ -136,7 +136,7 @@ class TestGetBot:
         )
 
         with pytest.raises(BotNotFoundError) as exc_info:
-            client.get_bot("nonexistent-bot")
+            client.bots.get("nonexistent-bot")
 
         assert exc_info.value.bot_name == "nonexistent-bot"
         assert exc_info.value.status_code == 404
@@ -155,7 +155,7 @@ class TestAsyncListBots:
             json=sample_bots_list_response,
         )
 
-        bots = await async_client.alist_bots()
+        bots = await async_client.bots.alist()
 
         assert len(bots) == 2
         assert all(isinstance(b, BotInfo) for b in bots)
@@ -165,7 +165,7 @@ class TestAsyncListBots:
     async def test_alist_bots_without_async_enabled(self, client, httpx_mock: HTTPXMock):
         """alist_bots raises RuntimeError when async not enabled."""
         with pytest.raises(RuntimeError) as exc_info:
-            await client.alist_bots()
+            await client.bots.alist()
 
         assert "enable_async=True" in str(exc_info.value)
 
@@ -183,7 +183,7 @@ class TestAsyncGetBot:
             json=sample_bot_info_dict,
         )
 
-        bot = await async_client.aget_bot("ingestion-bot")
+        bot = await async_client.bots.aget("ingestion-bot")
 
         assert isinstance(bot, BotInfo)
         assert bot.name == "ingestion-bot"
@@ -198,7 +198,7 @@ class TestAsyncGetBot:
         )
 
         with pytest.raises(BotNotFoundError) as exc_info:
-            await async_client.aget_bot("nonexistent-bot")
+            await async_client.bots.aget("nonexistent-bot")
 
         assert exc_info.value.bot_name == "nonexistent-bot"
 
@@ -206,6 +206,6 @@ class TestAsyncGetBot:
     async def test_aget_bot_without_async_enabled(self, client, httpx_mock: HTTPXMock):
         """aget_bot raises RuntimeError when async not enabled."""
         with pytest.raises(RuntimeError) as exc_info:
-            await client.aget_bot("any-bot")
+            await client.bots.aget("any-bot")
 
         assert "enable_async=True" in str(exc_info.value)

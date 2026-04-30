@@ -24,7 +24,7 @@ client = AISdk(
     token="your-bot-jwt-token"
 )
 
-# Default platform agent (PLANNER / CHAT_MODE)
+# default AskCollate agent
 response = client.agent().call("What data quality tests should I add for the customers table?")
 print(response.response)
 
