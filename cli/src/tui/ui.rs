@@ -1,11 +1,11 @@
 //! UI layout and rendering for the TUI chat interface.
 
 use super::app::{App, DisplayMessage, Status};
-use super::markdown::render_markdown;
+use super::markdown::{render_markdown, render_markdown_dimmed};
 use crate::client::AISdkClient;
 use crate::config::ResolvedConfig;
 use crate::error::{CliError, CliResult};
-use crate::streaming::{process_stream, Sender};
+use crate::streaming::{process_stream, process_stream_with_debug_file, Sender};
 
 use crossterm::{
     event::{DisableMouseCapture, EnableMouseCapture, Event, EventStream, KeyCode, KeyModifiers},
@@ -22,6 +22,7 @@ use ratatui::{
     Frame, Terminal,
 };
 use std::io;
+use std::path::PathBuf;
 use std::time::Duration;
 use tokio::sync::mpsc;
 
@@ -52,10 +53,35 @@ pub async fn run_tui(
     agent_name: Option<&str>,
     use_default: bool,
     conversation_id: Option<String>,
+    debug_log_path: Option<PathBuf>,
 ) -> CliResult<()> {
     // Load config and create client first (needed for agent list)
     let config = ResolvedConfig::load(profile)?;
     let client = AISdkClient::new(&config)?;
+
+    // Truncate the debug log once per session and write a session header so
+    // multiple streams within this run accumulate under a single header.
+    if let Some(path) = debug_log_path.as_ref() {
+        if let Some(parent) = path.parent() {
+            std::fs::create_dir_all(parent)?;
+        }
+        use std::io::Write as _;
+        let mut f = std::fs::OpenOptions::new()
+            .create(true)
+            .write(true)
+            .truncate(true)
+            .open(path)?;
+        let agent_label = if use_default {
+            "default agent".to_string()
+        } else {
+            agent_name.unwrap_or("(menu)").to_string()
+        };
+        let _ = writeln!(
+            f,
+            "[DEBUG] Chat session started — agent={agent_label}, host={}",
+            config.host
+        );
+    }
 
     // Setup terminal
     enable_raw_mode().map_err(|e| CliError::Other(e.to_string()))?;
@@ -96,7 +122,7 @@ pub async fn run_tui(
     }
 
     // Run the main loop
-    let result = run_main_loop(&mut terminal, &mut app, &client).await;
+    let result = run_main_loop(&mut terminal, &mut app, &client, debug_log_path).await;
 
     // Restore terminal
     disable_raw_mode().map_err(|e| CliError::Other(e.to_string()))?;
@@ -118,6 +144,7 @@ async fn run_main_loop(
     terminal: &mut Terminal<CrosstermBackend<io::Stdout>>,
     app: &mut App,
     client: &AISdkClient,
+    debug_log_path: Option<PathBuf>,
 ) -> CliResult<()> {
     let (async_tx, mut async_rx) = mpsc::channel::<AsyncEvent>(100);
     let mut event_stream = EventStream::new();
@@ -247,9 +274,10 @@ async fn run_main_loop(
                                     let agent = app.agent_name.clone();
                                     let conv_id = app.conversation_id.clone();
                                     let use_default = app.use_default;
+                                    let debug_path = debug_log_path.clone();
 
                                     tokio::spawn(async move {
-                                        stream_agent_response(tx, client, agent, use_default, message, conv_id).await;
+                                        stream_agent_response(tx, client, agent, use_default, message, conv_id, debug_path).await;
                                     });
                                 }
                             }
@@ -286,6 +314,7 @@ async fn run_main_loop(
 ///
 /// When `use_default` is `true`, routes through `stream_default_agent`
 /// (PLANNER / CHAT_MODE); otherwise uses the named dynamic-agent endpoint.
+#[allow(clippy::too_many_arguments)]
 async fn stream_agent_response(
     tx: mpsc::Sender<AsyncEvent>,
     client: AISdkClient,
@@ -293,6 +322,7 @@ async fn stream_agent_response(
     use_default: bool,
     message: String,
     conversation_id: Option<String>,
+    debug_log_path: Option<PathBuf>,
 ) {
     let result = if use_default {
         client
@@ -308,7 +338,7 @@ async fn stream_agent_response(
         Ok(response) => {
             let mut final_conv_id = conversation_id;
 
-            let process_result = process_stream(response, |msg| {
+            let handler = |msg: crate::streaming::ChatMessage| {
                 final_conv_id = Some(msg.conversation_id.clone());
 
                 match msg.sender {
@@ -330,8 +360,12 @@ async fn stream_agent_response(
                     }
                     Sender::Human => {}
                 }
-            })
-            .await;
+            };
+
+            let process_result = match debug_log_path.as_ref() {
+                Some(path) => process_stream_with_debug_file(response, handler, path).await,
+                None => process_stream(response, handler).await,
+            };
 
             match process_result {
                 Ok(_) => {
@@ -423,6 +457,15 @@ fn render_header(frame: &mut Frame, app: &App, area: Rect) {
     frame.render_widget(Paragraph::new(header), area);
 }
 
+/// Prepend a two-space indent to a Line. Used for the thinking-block
+/// markdown so each rendered row is visually nested under "Thinking:".
+fn indent_two(line: Line<'static>) -> Line<'static> {
+    let mut spans = Vec::with_capacity(line.spans.len() + 1);
+    spans.push(Span::raw("  "));
+    spans.extend(line.spans);
+    Line::from(spans)
+}
+
 /// Render the chat message area.
 fn render_chat(frame: &mut Frame, app: &mut App, area: Rect) {
     let inner_width = area.width.saturating_sub(2) as usize;
@@ -438,12 +481,10 @@ fn render_chat(frame: &mut Frame, app: &mut App, area: Rect) {
                     .fg(Color::DarkGray)
                     .add_modifier(Modifier::ITALIC),
             )));
-            for line in thinking.lines() {
-                all_lines.push(Line::from(Span::styled(
-                    format!("  {line}"),
-                    Style::default().fg(Color::DarkGray),
-                )));
-            }
+            // Render thinking through markdown so links, bold, code blocks
+            // render properly — then indent each line two spaces.
+            let rendered = render_markdown_dimmed(thinking, inner_width.saturating_sub(2));
+            all_lines.extend(rendered.into_iter().map(indent_two));
             all_lines.push(Line::default());
         }
 
@@ -469,7 +510,7 @@ fn render_chat(frame: &mut Frame, app: &mut App, area: Rect) {
 
     // Render streaming content if any
     if app.is_streaming() || !app.streaming_content.is_empty() || !app.thinking_content.is_empty() {
-        // Show thinking content first (in grey)
+        // Show thinking content first (in grey, with markdown applied)
         if !app.thinking_content.is_empty() {
             all_lines.push(Line::from(Span::styled(
                 "Thinking: ",
@@ -477,13 +518,9 @@ fn render_chat(frame: &mut Frame, app: &mut App, area: Rect) {
                     .fg(Color::DarkGray)
                     .add_modifier(Modifier::ITALIC),
             )));
-            // Render thinking in grey
-            for line in app.thinking_content.lines() {
-                all_lines.push(Line::from(Span::styled(
-                    format!("  {line}"),
-                    Style::default().fg(Color::DarkGray),
-                )));
-            }
+            let rendered =
+                render_markdown_dimmed(&app.thinking_content, inner_width.saturating_sub(2));
+            all_lines.extend(rendered.into_iter().map(indent_two));
             all_lines.push(Line::default());
         }
 

@@ -26,6 +26,9 @@ pub fn render_markdown(text: &str, width: usize) -> Vec<Line<'static>> {
     let mut in_code_block = false;
     let mut code_lang: Option<String> = None;
     let mut code_content = String::new();
+    // Stack of link destination URLs so we can render `(url)` after the
+    // visible link text on TagEnd::Link. Stack-shaped to handle nesting.
+    let mut link_urls: Vec<String> = Vec::new();
 
     for event in parser {
         match event {
@@ -59,6 +62,14 @@ pub fn render_markdown(text: &str, width: usize) -> Vec<Line<'static>> {
                     }
                     Tag::Emphasis => {
                         style_stack.push(Style::default().add_modifier(Modifier::ITALIC));
+                    }
+                    Tag::Link { dest_url, .. } => {
+                        link_urls.push(dest_url.to_string());
+                        style_stack.push(
+                            Style::default()
+                                .fg(Color::Blue)
+                                .add_modifier(Modifier::UNDERLINED),
+                        );
                     }
                     Tag::List(_) => {}
                     Tag::Item => {
@@ -96,6 +107,16 @@ pub fn render_markdown(text: &str, width: usize) -> Vec<Line<'static>> {
                     }
                     TagEnd::Strong | TagEnd::Emphasis => {
                         style_stack.pop();
+                    }
+                    TagEnd::Link => {
+                        style_stack.pop();
+                        // Append " (url)" in dimmed text after the visible label.
+                        if let Some(url) = link_urls.pop() {
+                            current_spans.push(Span::styled(
+                                format!(" ({url})"),
+                                Style::default().fg(Color::DarkGray),
+                            ));
+                        }
                     }
                     TagEnd::Item => {
                         if !current_spans.is_empty() {
@@ -140,6 +161,31 @@ pub fn render_markdown(text: &str, width: usize) -> Vec<Line<'static>> {
     }
 
     lines
+}
+
+/// Render markdown with all foreground colors collapsed to dark gray —
+/// used for thinking steps so they keep the dimmed look while still
+/// applying bold/italic/link/code-block structure from the markdown.
+///
+/// Background colors and modifiers (bold/italic/underline) are preserved.
+pub fn render_markdown_dimmed(text: &str, width: usize) -> Vec<Line<'static>> {
+    let lines = render_markdown(text, width);
+    lines
+        .into_iter()
+        .map(|line| {
+            let spans: Vec<Span<'static>> = line
+                .spans
+                .into_iter()
+                .map(|span| {
+                    let dimmed = Style::default()
+                        .fg(Color::DarkGray)
+                        .add_modifier(span.style.add_modifier);
+                    Span::styled(span.content, dimmed)
+                })
+                .collect();
+            Line::from(spans)
+        })
+        .collect()
 }
 
 /// Render a code block with syntax highlighting and border.
@@ -231,5 +277,64 @@ mod tests {
         let md = "```sql\nSELECT * FROM users;\n```";
         let lines = render_markdown(md, 80);
         assert!(lines.len() > 1);
+    }
+
+    fn collect_text(lines: &[Line<'static>]) -> String {
+        lines
+            .iter()
+            .map(|l| {
+                l.spans
+                    .iter()
+                    .map(|s| s.content.as_ref())
+                    .collect::<String>()
+            })
+            .collect::<Vec<_>>()
+            .join("\n")
+    }
+
+    #[test]
+    fn link_renders_label_with_url_appended() {
+        let lines = render_markdown("see [docs](https://example.com)", 80);
+        let text = collect_text(&lines);
+        assert!(text.contains("docs"), "label missing in: {text}");
+        assert!(
+            text.contains("(https://example.com)"),
+            "url missing in: {text}"
+        );
+        // the bare `[docs](https://example.com)` literal should not appear
+        assert!(!text.contains("[docs]"), "raw markdown leaked in: {text}");
+    }
+
+    #[test]
+    fn link_label_uses_underline_modifier() {
+        let lines = render_markdown("[foo](http://x)", 80);
+        let label_span = lines
+            .iter()
+            .flat_map(|l| l.spans.iter())
+            .find(|s| s.content.as_ref() == "foo")
+            .expect("label span");
+        assert!(label_span.style.add_modifier.contains(Modifier::UNDERLINED));
+    }
+
+    #[test]
+    fn dimmed_renderer_keeps_modifiers_but_overrides_color() {
+        let lines = render_markdown_dimmed("**bold** and [link](http://x)", 80);
+        // Every span should have DarkGray foreground.
+        for line in &lines {
+            for span in &line.spans {
+                assert_eq!(
+                    span.style.fg,
+                    Some(Color::DarkGray),
+                    "span '{}' is not dimmed",
+                    span.content
+                );
+            }
+        }
+        // Modifiers preserved: bold span exists.
+        let bold_present = lines
+            .iter()
+            .flat_map(|l| l.spans.iter())
+            .any(|s| s.style.add_modifier.contains(Modifier::BOLD));
+        assert!(bold_present, "bold modifier was stripped");
     }
 }
