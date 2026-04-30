@@ -112,7 +112,7 @@ client = AISdk(
 )
 
 # Create the agent
-agent = client.create_agent(
+agent = client.agents.create(
     name="DataQualityAnalyzer",
     description="Analyzes DQ test failures, explores lineage impact, and suggests remediation steps",
     persona="DataAnalyst",

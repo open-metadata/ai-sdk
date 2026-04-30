@@ -124,7 +124,7 @@ client = AISdk(
 )
 
 # Create the agent
-agent = client.create_agent(
+agent = client.agents.create(
     name="GDPRComplianceAnalyzer",
     description="Handles GDPR deletion requests by searching for customer data, tracing lineage, and checking retention policies",
     persona="GDPRAnalyst",

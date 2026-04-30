@@ -33,7 +33,7 @@ All sync methods have async counterparts:
 
 | Sync | Async |
 |------|-------|
-| `client.list_agents()` | `await client.alist_agents()` |
+| `client.agents.list()` | `await client.agents.alist()` |
 | `agent.call()` | `await agent.acall()` |
 | `agent.stream()` | `await agent.astream()` |
 | `agent.get_info()` | `await agent.aget_info()` |
@@ -162,7 +162,7 @@ async def chat(client: AISdk):
 
 ```python
 async def list_all_agents(client: AISdk) -> list:
-    agents = await client.alist_agents(limit=100)
+    agents = await client.agents.alist(limit=100)
     return [a for a in agents if a.api_enabled]
 ```
 
