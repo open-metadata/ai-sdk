@@ -119,15 +119,15 @@ pub async fn run_stream(
             |message| {
                 match message.sender {
                     Sender::System => {
-                        // System messages are "thinking" content
+                        // System messages are "thinking" content. Each step
+                        // is a discrete reasoning event, so render one per
+                        // line for readability.
                         if show_thinking {
                             let text = message.text_content();
                             if !text.is_empty() {
-                                if !in_thinking {
-                                    in_thinking = true;
-                                }
-                                // Display thinking in grey
-                                print!("{}", text.bright_black());
+                                in_thinking = true;
+                                let trimmed = text.trim_end();
+                                println!("{}", trimmed.bright_black());
                                 let _ = io::stdout().flush();
                             }
                         }

@@ -161,8 +161,15 @@ impl App {
         self.streaming_content.push_str(content);
     }
 
-    /// Append thinking content during streaming.
+    /// Append a thinking step during streaming.
+    ///
+    /// Each call is a discrete reasoning step, so we ensure it lands on its
+    /// own line in the rendered output. If the buffer already has content
+    /// that doesn't end in a newline, we insert one before appending.
     pub fn append_thinking_content(&mut self, content: &str) {
+        if !self.thinking_content.is_empty() && !self.thinking_content.ends_with('\n') {
+            self.thinking_content.push('\n');
+        }
         self.thinking_content.push_str(content);
     }
 
@@ -372,6 +379,27 @@ mod tests {
         assert!(app.use_default);
         assert_eq!(app.agent_name, "AskCollate");
         assert!(!app.show_agent_menu);
+    }
+
+    #[test]
+    fn append_thinking_steps_separates_with_newlines() {
+        let mut app = fresh_app();
+        app.append_thinking_content("step 1");
+        app.append_thinking_content("step 2");
+        app.append_thinking_content("step 3");
+        assert_eq!(app.thinking_content, "step 1\nstep 2\nstep 3");
+        // .lines() should yield exactly three rendered lines.
+        let lines: Vec<&str> = app.thinking_content.lines().collect();
+        assert_eq!(lines, vec!["step 1", "step 2", "step 3"]);
+    }
+
+    #[test]
+    fn append_thinking_preserves_explicit_newlines() {
+        let mut app = fresh_app();
+        // A step that already ended in a newline shouldn't pick up an extra one.
+        app.append_thinking_content("step 1\n");
+        app.append_thinking_content("step 2");
+        assert_eq!(app.thinking_content, "step 1\nstep 2");
     }
 
     #[test]
