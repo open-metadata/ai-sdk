@@ -251,12 +251,59 @@ ai-sdk abilities get <ability-name>
 ai-sdk abilities get <ability-name> --json
 ```
 
+### Manage Memories
+
+Context Memories are reusable knowledge — preferences, use cases, runbooks, FAQs — that AI agents read on demand. The `memories` subcommand exposes the full lifecycle:
+
+```bash
+# List all memories (paginates server-side)
+ai-sdk memories list
+
+# Filter by entity FQN; cap with --limit
+ai-sdk memories list --entity-fqn prod.warehouse.orders --limit 20
+
+# Get a specific memory by ID
+ai-sdk memories get <memory-id>
+
+# Create
+ai-sdk memories create \
+  --name orders-grain \
+  --title "Orders grain" \
+  --question "What is the grain of the orders table?" \
+  --answer "One row per order_id." \
+  --memory-type note \
+  --memory-scope entity-scoped \
+  --visibility shared \
+  --primary-entity-id <table-uuid> \
+  --primary-entity-type table \
+  --primary-entity-fqn prod.warehouse.orders \
+  --tags Domain.Analytics
+
+# Hybrid NLQ search — natural-language query, ranked hits
+ai-sdk memories search "how do we measure order volume" --size 5
+
+# Soft delete by default; --hard removes permanently
+ai-sdk memories delete <memory-id>
+ai-sdk memories delete <memory-id> --hard
+```
+
+**Memory type values:** `preference`, `use-case`, `note` (default), `runbook`, `faq`
+**Memory scope values:** `entity-scoped` (default), `user-global`
+**Visibility values:** `private` (default), `entity`, `shared`
+
+All `memories` subcommands accept `--json` to emit machine-readable output for scripting:
+
+```bash
+# Pipe top hits into jq
+ai-sdk memories search "explain churn" --json | jq '.hits[].memory.title'
+```
+
 ### Invoke Agents (One-shot)
 
 For scripting or single queries, use the `invoke` command:
 
 ```bash
-# Default platform agent (PLANNER / CHAT_MODE) — no agent name required
+# default AskCollate agent
 ai-sdk invoke --default "What tables are available?"
 ai-sdk invoke -D "What tables are available?"
 
