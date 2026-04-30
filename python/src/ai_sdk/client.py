@@ -105,12 +105,8 @@ class AISdk:
             self._async_personas_http = AsyncHTTPClient(base_url=personas_url, **common_kwargs)
             self._async_bots_http = AsyncHTTPClient(base_url=bots_url, **common_kwargs)
             self._async_abilities_http = AsyncHTTPClient(base_url=abilities_url, **common_kwargs)
-            self._async_default_http = AsyncHTTPClient(
-                base_url=default_agent_url, **common_kwargs
-            )
-            self._async_chat_conv_http = AsyncHTTPClient(
-                base_url=chat_conv_url, **common_kwargs
-            )
+            self._async_default_http = AsyncHTTPClient(base_url=default_agent_url, **common_kwargs)
+            self._async_chat_conv_http = AsyncHTTPClient(base_url=chat_conv_url, **common_kwargs)
             self._async_memories_http = AsyncHTTPClient(base_url=memories_url, **common_kwargs)
             self._async_search_http = AsyncHTTPClient(base_url=search_url, **common_kwargs)
 
@@ -147,9 +143,7 @@ class AISdk:
     @property
     def abilities(self) -> AbilitiesAPI:
         if self._abilities_ns is None:
-            self._abilities_ns = AbilitiesAPI(
-                self._abilities_http, self._async_abilities_http
-            )
+            self._abilities_ns = AbilitiesAPI(self._abilities_http, self._async_abilities_http)
         return self._abilities_ns
 
     @property

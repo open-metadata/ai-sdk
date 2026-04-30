@@ -178,9 +178,7 @@ class TestSearch:
             }
         }
 
-    def test_search_minimal(
-        self, memories: MemoriesAPI, mock_search_http: MagicMock
-    ) -> None:
+    def test_search_minimal(self, memories: MemoriesAPI, mock_search_http: MagicMock) -> None:
         mock_search_http.get.return_value = self._search_response()
         result = memories.search("explain customer churn")
         assert isinstance(result, MemorySearchResults)
@@ -221,14 +219,17 @@ class TestAsyncRaisesWhenAsyncDisabled:
         self, mock_http: MagicMock, mock_search_http: MagicMock
     ) -> None:
         api = MemoriesAPI(
-            http=mock_http, async_http=None,
-            search_http=mock_search_http, search_async_http=None,
+            http=mock_http,
+            async_http=None,
+            search_http=mock_search_http,
+            search_async_http=None,
         )
 
         async def call() -> None:
             await api.alist()
 
         import asyncio
+
         with pytest.raises(RuntimeError, match="Async HTTP client not available"):
             asyncio.run(call())
 
@@ -258,27 +259,21 @@ class TestAsyncMethods:
         )
 
     @pytest.mark.asyncio
-    async def test_alist(
-        self, async_memories: MemoriesAPI, mock_async_http: AsyncMock
-    ) -> None:
+    async def test_alist(self, async_memories: MemoriesAPI, mock_async_http: AsyncMock) -> None:
         mock_async_http.get.return_value = {"data": [_memory_payload("m1")], "paging": {}}
         result = await async_memories.alist()
         assert len(result) == 1
         assert result[0].name == "m1"
 
     @pytest.mark.asyncio
-    async def test_acreate(
-        self, async_memories: MemoriesAPI, mock_async_http: AsyncMock
-    ) -> None:
+    async def test_acreate(self, async_memories: MemoriesAPI, mock_async_http: AsyncMock) -> None:
         mock_async_http.post.return_value = _memory_payload("m1")
         req = CreateContextMemoryRequest(name="m1", question="q", answer="a")
         result = await async_memories.acreate(req)
         assert result.name == "m1"
 
     @pytest.mark.asyncio
-    async def test_adelete(
-        self, async_memories: MemoriesAPI, mock_async_http: AsyncMock
-    ) -> None:
+    async def test_adelete(self, async_memories: MemoriesAPI, mock_async_http: AsyncMock) -> None:
         await async_memories.adelete("xyz", hard_delete=True)
         params = mock_async_http.delete.call_args.kwargs.get("params", {})
         assert params.get("hardDelete") is True
@@ -287,8 +282,6 @@ class TestAsyncMethods:
     async def test_asearch(
         self, async_memories: MemoriesAPI, mock_async_search_http: AsyncMock
     ) -> None:
-        mock_async_search_http.get.return_value = {
-            "hits": {"total": {"value": 0}, "hits": []}
-        }
+        mock_async_search_http.get.return_value = {"hits": {"total": {"value": 0}, "hits": []}}
         result = await async_memories.asearch("q")
         assert result.total == 0
