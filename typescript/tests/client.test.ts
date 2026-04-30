@@ -112,7 +112,7 @@ describe('AISdk', () => {
         token: 'test-token',
       });
 
-      const agents = await client.listAgents();
+      const agents = await client.agents.list();
 
       expect(agents).toHaveLength(2);
       expect(agents[0].name).toBe('DataQualityPlannerAgent');
@@ -139,7 +139,7 @@ describe('AISdk', () => {
         token: 'test-token',
       });
 
-      const agents = await client.listAgents({ limit: 5 });
+      const agents = await client.agents.list({ limit: 5 });
 
       expect(agents).toHaveLength(3);
       expect(mockFetch).toHaveBeenCalledTimes(1);
@@ -581,7 +581,7 @@ describe('Bot operations', () => {
         token: 'test-token',
       });
 
-      const bots = await client.listBots();
+      const bots = await client.bots.list();
 
       expect(bots).toHaveLength(2);
       expect(bots[0].name).toBe('ingestion-bot');
@@ -601,7 +601,7 @@ describe('Bot operations', () => {
         token: 'test-token',
       });
 
-      await client.listBots({ limit: 5 });
+      await client.bots.list({ limit: 5 });
 
       const url = mockFetch.mock.calls[0][0] as string;
       expect(url).toContain('https://openmetadata.example.com/api/v1/bots');
@@ -634,7 +634,7 @@ describe('Bot operations', () => {
         token: 'test-token',
       });
 
-      const bot = await client.getBot('ingestion-bot');
+      const bot = await client.bots.get('ingestion-bot');
 
       expect(bot.id).toBe('bot-1');
       expect(bot.name).toBe('ingestion-bot');
@@ -656,7 +656,7 @@ describe('Bot operations', () => {
         token: 'test-token',
       });
 
-      await client.getBot('my-bot');
+      await client.bots.get('my-bot');
 
       const url = mockFetch.mock.calls[0][0] as string;
       expect(url).toBe('https://openmetadata.example.com/api/v1/bots/name/my-bot');
@@ -676,7 +676,7 @@ describe('Bot operations', () => {
         token: 'test-token',
       });
 
-      await expect(client.getBot('non-existent-bot')).rejects.toThrow(
+      await expect(client.bots.get('non-existent-bot')).rejects.toThrow(
         BotNotFoundError
       );
     });
@@ -724,7 +724,7 @@ describe('Persona operations', () => {
         token: 'test-token',
       });
 
-      const personas = await client.listPersonas();
+      const personas = await client.personas.list();
 
       expect(personas).toHaveLength(2);
       expect(personas[0].name).toBe('data-analyst');
@@ -744,7 +744,7 @@ describe('Persona operations', () => {
         token: 'test-token',
       });
 
-      await client.listPersonas({ limit: 5 });
+      await client.personas.list({ limit: 5 });
 
       const url = mockFetch.mock.calls[0][0] as string;
       expect(url).toContain('https://openmetadata.example.com/api/v1/agents/personas');
@@ -774,7 +774,7 @@ describe('Persona operations', () => {
         token: 'test-token',
       });
 
-      const persona = await client.getPersona('data-analyst');
+      const persona = await client.personas.get('data-analyst');
 
       expect(persona.id).toBe('persona-1');
       expect(persona.name).toBe('data-analyst');
@@ -797,7 +797,7 @@ describe('Persona operations', () => {
         token: 'test-token',
       });
 
-      await client.getPersona('my-persona');
+      await client.personas.get('my-persona');
 
       const url = mockFetch.mock.calls[0][0] as string;
       expect(url).toBe('https://openmetadata.example.com/api/v1/agents/personas/name/my-persona');
@@ -817,7 +817,7 @@ describe('Persona operations', () => {
         token: 'test-token',
       });
 
-      await expect(client.getPersona('non-existent-persona')).rejects.toThrow(
+      await expect(client.personas.get('non-existent-persona')).rejects.toThrow(
         PersonaNotFoundError
       );
     });
@@ -844,7 +844,7 @@ describe('Persona operations', () => {
         token: 'test-token',
       });
 
-      const persona = await client.createPersona({
+      const persona = await client.personas.create({
         name: 'custom-analyst',
         description: 'A custom data analyst persona',
         prompt: 'You are a custom analyst...',
@@ -872,7 +872,7 @@ describe('Persona operations', () => {
         token: 'test-token',
       });
 
-      await client.createPersona({
+      await client.personas.create({
         name: 'test-persona',
         description: 'Test description',
         prompt: 'Test prompt',
@@ -904,7 +904,7 @@ describe('Persona operations', () => {
         token: 'test-token',
       });
 
-      await client.createPersona({
+      await client.personas.create({
         name: 'test-persona',
         description: 'Test',
         prompt: 'Test',
@@ -1101,7 +1101,7 @@ describe('Agent creation', () => {
         token: 'test-token',
       });
 
-      const agent = await client.createAgent({
+      const agent = await client.agents.create({
         name: 'my-custom-agent',
         description: 'A custom agent for data analysis',
         persona: 'data-analyst',
@@ -1147,7 +1147,7 @@ describe('Agent creation', () => {
         token: 'test-token',
       });
 
-      await client.createAgent({
+      await client.agents.create({
         name: 'test-agent',
         description: 'Test description',
         persona: 'my-persona',
@@ -1198,7 +1198,7 @@ describe('Agent creation', () => {
         token: 'test-token',
       });
 
-      await client.createAgent({
+      await client.agents.create({
         name: 'test-agent',
         description: 'Test',
         persona: 'test-persona',
@@ -1207,7 +1207,7 @@ describe('Agent creation', () => {
 
       // The POST request is the second call (after persona GET)
       const url = mockFetch.mock.calls[1][0] as string;
-      expect(url).toBe('https://openmetadata.example.com/api/v1/agents/dynamic');
+      expect(url).toBe('https://openmetadata.example.com/api/v1/agents/dynamic/');
     });
 
     it('should include knowledge scope when provided', async () => {
@@ -1240,7 +1240,7 @@ describe('Agent creation', () => {
         token: 'test-token',
       });
 
-      await client.createAgent({
+      await client.agents.create({
         name: 'test-agent',
         description: 'Test',
         persona: 'test-persona',

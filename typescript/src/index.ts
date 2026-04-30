@@ -26,22 +26,11 @@
  *   process.stdout.write(chunk);
  * }
  *
- * // Streaming (advanced - all events)
- * for await (const event of client.agent('DataQualityPlannerAgent')
- *   .stream('Analyze the orders table')) {
- *   if (event.type === 'content') {
- *     process.stdout.write(event.content || '');
- *   }
- * }
+ * // List available agents (namespaced)
+ * const agents = await client.agents.list();
  *
- * // Multi-turn conversation
- * const r1 = await client.agent('planner').invoke('Analyze orders');
- * const r2 = await client.agent('planner').invoke('Create tests', {
- *   conversationId: r1.conversationId,
- * });
- *
- * // List available agents
- * const agents = await client.listAgents();
+ * // Search Context Center memories
+ * const results = await client.memories.search('customer churn');
  * ```
  */
 
@@ -50,6 +39,21 @@ export { AISdk } from './client.js';
 
 // Agent handles
 export { AgentHandle, DefaultAgentHandle } from './agent.js';
+
+// Namespace classes
+export {
+  AbilitiesApi,
+  AgentsApi,
+  BotsApi,
+  MemoriesApi,
+  PersonasApi,
+  type AbilitiesListOptions,
+  type AgentsListOptions,
+  type BotsListOptions,
+  type MemoriesListOptions,
+  type MemoriesSearchOptions,
+  type PersonasListOptions,
+} from './api/index.js';
 
 // Models and types
 export type {
@@ -62,7 +66,7 @@ export type {
   AgentInfo,
 } from './models.js';
 
-// Extended types for bots, personas, agents, and abilities
+// Extended types for bots, personas, agents, abilities, and memories
 export type {
   EntityReference,
   BotInfo,
@@ -71,6 +75,13 @@ export type {
   KnowledgeScope,
   CreatePersonaRequest,
   CreateAgentRequest,
+  ContextMemory,
+  CreateContextMemoryRequest,
+  MemoryScope,
+  MemorySearchHit,
+  MemorySearchResults,
+  MemoryType,
+  MemoryVisibility,
 } from './types.js';
 
 // Error classes

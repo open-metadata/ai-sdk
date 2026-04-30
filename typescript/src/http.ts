@@ -81,8 +81,6 @@ export interface RequestOptions {
  */
 export class HttpClient {
   private readonly baseUrl: string;
-  /** The root host URL (without API path) — preserved for backward-compatible absolute-path helpers. */
-  public readonly hostUrl: string;
   private readonly token: string;
   private readonly timeout: number;
   private readonly maxRetries: number;
@@ -91,8 +89,6 @@ export class HttpClient {
 
   constructor(options: HttpClientOptions) {
     this.baseUrl = options.baseUrl.replace(/\/$/, '');
-    // Extract host URL from base URL (remove /api/v1/agents/dynamic suffix)
-    this.hostUrl = this.baseUrl.replace(/\/api\/v1\/agents\/dynamic$/, '');
     this.token = options.token;
     this.timeout = options.timeout;
     this.maxRetries = options.maxRetries;
@@ -290,50 +286,6 @@ export class HttpClient {
   }
 
   /**
-   * Make a GET request to a custom API path (relative to host URL).
-   *
-   * @deprecated Prefer constructing a dedicated HttpClient per entity and
-   * issuing relative GETs. This helper exists for backward compatibility
-   * during the namespace refactor.
-   */
-  async getAbsolute<T>(
-    apiPath: string,
-    params?: Record<string, string | number | boolean>,
-    entityType?: EntityType,
-    entityName?: string
-  ): Promise<T> {
-    return this.requestAbsolute<T>({
-      method: 'GET',
-      path: apiPath,
-      params,
-      entityType,
-      entityName,
-    });
-  }
-
-  /**
-   * Make a POST request to a custom API path (relative to host URL).
-   *
-   * @deprecated Prefer constructing a dedicated HttpClient per entity and
-   * issuing relative POSTs. This helper exists for backward compatibility
-   * during the namespace refactor.
-   */
-  async postAbsolute<T>(
-    apiPath: string,
-    body: unknown,
-    entityType?: EntityType,
-    entityName?: string
-  ): Promise<T> {
-    return this.requestAbsolute<T>({
-      method: 'POST',
-      path: apiPath,
-      body,
-      entityType,
-      entityName,
-    });
-  }
-
-  /**
    * Make a streaming POST request.
    *
    * Note: Streaming requests don't support automatic retry.
@@ -480,96 +432,6 @@ export class HttpClient {
     }
 
     // Should never reach here, but TypeScript needs this
-    throw lastError || new NetworkError('Request failed after retries');
-  }
-
-  /**
-   * Build URL with custom API path (relative to host URL).
-   */
-  private buildAbsoluteUrl(
-    apiPath: string,
-    params?: Record<string, string | number | boolean>
-  ): string {
-    const fullPath = apiPath.startsWith('/') ? apiPath : `/${apiPath}`;
-    const urlString = `${this.hostUrl}${fullPath}`;
-    const url = new URL(urlString);
-    if (params) {
-      for (const [key, value] of Object.entries(params)) {
-        url.searchParams.set(key, String(value));
-      }
-    }
-    return url.toString();
-  }
-
-  /**
-   * Internal request method for absolute paths with retry logic.
-   */
-  private async requestAbsolute<T>(options: RequestOptions): Promise<T> {
-    const { method, path, body, params, entityType, entityName } = options;
-    const requestId = generateRequestId();
-    const url = this.buildAbsoluteUrl(path, params);
-    const headers = this.getHeaders(requestId);
-
-    let lastError: Error | null = null;
-
-    for (let attempt = 0; attempt <= this.maxRetries; attempt++) {
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), this.timeout);
-
-      try {
-        const response = await fetch(url, {
-          method,
-          headers,
-          body: body ? JSON.stringify(body) : undefined,
-          signal: controller.signal,
-        });
-
-        clearTimeout(timeoutId);
-
-        if (response.ok) {
-          return await this.parseBody<T>(response);
-        }
-
-        if (this.shouldRetry(response.status, attempt)) {
-          const delay = this.getRetryDelay(
-            attempt,
-            response.headers.get('Retry-After')
-          );
-          await this.wait(delay);
-          continue;
-        }
-
-        await this.handleError(response, undefined, requestId, entityType, entityName);
-      } catch (error) {
-        clearTimeout(timeoutId);
-
-        if (error instanceof AISdkError) {
-          throw error;
-        }
-
-        if (error instanceof Error) {
-          if (error.name === 'AbortError') {
-            lastError = new TimeoutError(this.timeout);
-            if (attempt < this.maxRetries) {
-              const delay = this.retryDelay * Math.pow(2, attempt);
-              await this.wait(delay);
-              continue;
-            }
-            throw lastError;
-          }
-          lastError = new NetworkError(`Network error: ${error.message}`, error);
-          if (attempt < this.maxRetries) {
-            const delay = this.retryDelay * Math.pow(2, attempt);
-            await this.wait(delay);
-            continue;
-          }
-          throw lastError;
-        }
-
-        throw new NetworkError('Unknown network error');
-      }
-    }
-
     throw lastError || new NetworkError('Request failed after retries');
   }
 }
