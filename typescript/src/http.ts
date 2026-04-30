@@ -59,13 +59,13 @@ export type EntityType = 'agent' | 'bot' | 'persona' | 'ability';
  */
 export interface RequestOptions {
   /** HTTP method */
-  method: 'GET' | 'POST';
+  method: 'GET' | 'POST' | 'DELETE';
   /** Request path (appended to baseUrl) */
   path: string;
   /** Request body (for POST requests) */
   body?: unknown;
-  /** Query parameters (for GET requests) */
-  params?: Record<string, string | number>;
+  /** Query parameters (for GET/DELETE requests) */
+  params?: Record<string, string | number | boolean>;
   /** Agent name for error context */
   agentName?: string;
   /** Entity type for error context (default: 'agent') */
@@ -81,7 +81,7 @@ export interface RequestOptions {
  */
 export class HttpClient {
   private readonly baseUrl: string;
-  /** The root host URL (without API path) */
+  /** The root host URL (without API path) — preserved for backward-compatible absolute-path helpers. */
   public readonly hostUrl: string;
   private readonly token: string;
   private readonly timeout: number;
@@ -115,7 +115,10 @@ export class HttpClient {
   /**
    * Build full URL with query parameters.
    */
-  private buildUrl(path: string, params?: Record<string, string | number>): string {
+  private buildUrl(
+    path: string,
+    params?: Record<string, string | number | boolean>
+  ): string {
     // Construct full URL by appending path to base URL
     const fullPath = path.startsWith('/') ? path : `/${path}`;
     const urlString = `${this.baseUrl}${fullPath}`;
@@ -229,36 +232,73 @@ export class HttpClient {
    */
   async get<T>(
     path: string,
-    params?: Record<string, string | number>,
-    agentName?: string
+    params?: Record<string, string | number | boolean>,
+    agentName?: string,
+    entityType?: EntityType,
+    entityName?: string
   ): Promise<T> {
     return this.request<T>({
       method: 'GET',
       path,
       params,
       agentName,
+      entityType,
+      entityName,
     });
   }
 
   /**
    * Make a POST request with retry support.
    */
-  async post<T>(path: string, body: unknown, agentName?: string): Promise<T> {
+  async post<T>(
+    path: string,
+    body: unknown,
+    agentName?: string,
+    entityType?: EntityType,
+    entityName?: string
+  ): Promise<T> {
     return this.request<T>({
       method: 'POST',
       path,
       body,
       agentName,
+      entityType,
+      entityName,
+    });
+  }
+
+  /**
+   * Make a DELETE request with retry support.
+   *
+   * Returns void for empty responses; otherwise the parsed JSON body.
+   */
+  async delete<T = void>(
+    path: string,
+    params?: Record<string, string | number | boolean>,
+    agentName?: string,
+    entityType?: EntityType,
+    entityName?: string
+  ): Promise<T> {
+    return this.request<T>({
+      method: 'DELETE',
+      path,
+      params,
+      agentName,
+      entityType,
+      entityName,
     });
   }
 
   /**
    * Make a GET request to a custom API path (relative to host URL).
-   * This allows accessing endpoints outside the default /api/v1/agents/dynamic base.
+   *
+   * @deprecated Prefer constructing a dedicated HttpClient per entity and
+   * issuing relative GETs. This helper exists for backward compatibility
+   * during the namespace refactor.
    */
   async getAbsolute<T>(
     apiPath: string,
-    params?: Record<string, string | number>,
+    params?: Record<string, string | number | boolean>,
     entityType?: EntityType,
     entityName?: string
   ): Promise<T> {
@@ -273,7 +313,10 @@ export class HttpClient {
 
   /**
    * Make a POST request to a custom API path (relative to host URL).
-   * This allows accessing endpoints outside the default /api/v1/agents/dynamic base.
+   *
+   * @deprecated Prefer constructing a dedicated HttpClient per entity and
+   * issuing relative POSTs. This helper exists for backward compatibility
+   * during the namespace refactor.
    */
   async postAbsolute<T>(
     apiPath: string,
@@ -345,10 +388,29 @@ export class HttpClient {
   }
 
   /**
+   * Parse the response body. Returns undefined for empty / 204 responses
+   * (e.g. DELETE) so callers can declare a `void` return type.
+   */
+  private async parseBody<T>(response: Response): Promise<T> {
+    if (response.status === 204) {
+      return undefined as T;
+    }
+    const contentLength = response.headers?.get?.('content-length');
+    if (contentLength === '0') {
+      return undefined as T;
+    }
+    try {
+      return (await response.json()) as T;
+    } catch {
+      return undefined as T;
+    }
+  }
+
+  /**
    * Internal request method with retry logic.
    */
   private async request<T>(options: RequestOptions): Promise<T> {
-    const { method, path, body, params, agentName } = options;
+    const { method, path, body, params, agentName, entityType, entityName } = options;
     const requestId = generateRequestId();
     const url = this.buildUrl(path, params);
     const headers = this.getHeaders(requestId);
@@ -370,7 +432,7 @@ export class HttpClient {
         clearTimeout(timeoutId);
 
         if (response.ok) {
-          return (await response.json()) as T;
+          return await this.parseBody<T>(response);
         }
 
         // Check if we should retry
@@ -384,7 +446,7 @@ export class HttpClient {
         }
 
         // Non-retryable error
-        await this.handleError(response, agentName, requestId);
+        await this.handleError(response, agentName, requestId, entityType, entityName);
       } catch (error) {
         clearTimeout(timeoutId);
 
@@ -424,7 +486,10 @@ export class HttpClient {
   /**
    * Build URL with custom API path (relative to host URL).
    */
-  private buildAbsoluteUrl(apiPath: string, params?: Record<string, string | number>): string {
+  private buildAbsoluteUrl(
+    apiPath: string,
+    params?: Record<string, string | number | boolean>
+  ): string {
     const fullPath = apiPath.startsWith('/') ? apiPath : `/${apiPath}`;
     const urlString = `${this.hostUrl}${fullPath}`;
     const url = new URL(urlString);
@@ -462,10 +527,9 @@ export class HttpClient {
         clearTimeout(timeoutId);
 
         if (response.ok) {
-          return (await response.json()) as T;
+          return await this.parseBody<T>(response);
         }
 
-        // Check if we should retry
         if (this.shouldRetry(response.status, attempt)) {
           const delay = this.getRetryDelay(
             attempt,
@@ -475,7 +539,6 @@ export class HttpClient {
           continue;
         }
 
-        // Non-retryable error
         await this.handleError(response, undefined, requestId, entityType, entityName);
       } catch (error) {
         clearTimeout(timeoutId);
@@ -487,7 +550,6 @@ export class HttpClient {
         if (error instanceof Error) {
           if (error.name === 'AbortError') {
             lastError = new TimeoutError(this.timeout);
-            // Timeouts are retryable
             if (attempt < this.maxRetries) {
               const delay = this.retryDelay * Math.pow(2, attempt);
               await this.wait(delay);
@@ -496,7 +558,6 @@ export class HttpClient {
             throw lastError;
           }
           lastError = new NetworkError(`Network error: ${error.message}`, error);
-          // Network errors are retryable
           if (attempt < this.maxRetries) {
             const delay = this.retryDelay * Math.pow(2, attempt);
             await this.wait(delay);
@@ -509,7 +570,6 @@ export class HttpClient {
       }
     }
 
-    // Should never reach here, but TypeScript needs this
     throw lastError || new NetworkError('Request failed after retries');
   }
 }
