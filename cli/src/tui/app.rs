@@ -277,8 +277,7 @@ impl App {
         let mut items: Vec<SelectItem> = Vec::with_capacity(agents.len() + 1);
         items.push(
             SelectItem::new(DEFAULT_AGENT_ITEM_ID, "AskCollate")
-                .display_name("AskCollate (default)")
-                .description("The platform's default agent — no specific agent selected"),
+                .display_name("AskCollate (default)"),
         );
         items.extend(
             agents
