@@ -79,6 +79,12 @@ enum Commands {
         action: AbilitiesAction,
     },
 
+    /// Manage Context Center memories (CRUD + hybrid search)
+    Memories {
+        #[command(subcommand)]
+        action: commands::memories::MemoriesCommand,
+    },
+
     /// Invoke an agent with a message
     Invoke {
         /// Name of the agent to invoke (omit when --default is set)
@@ -425,6 +431,8 @@ async fn main() {
                 commands::abilities::run_get(&cli.profile, &name, json).await
             }
         },
+
+        Commands::Memories { action } => commands::memories::run(&cli.profile, action).await,
 
         Commands::Invoke {
             agent,
