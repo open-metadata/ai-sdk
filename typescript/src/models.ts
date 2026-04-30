@@ -13,7 +13,10 @@ export interface AISdkOptions {
   host: string;
   /** JWT bot token for authentication */
   token: string;
-  /** Request timeout in milliseconds (default: 120000) */
+  /** Request timeout in milliseconds for non-streaming requests (default: 900000).
+   *  Note: streaming requests (`stream` / `streamContent`) intentionally do not
+   *  apply this deadline — SSE runs can last many minutes and the stream's own
+   *  events signal liveness. */
   timeout?: number;
   /** Whether to verify SSL certificates (default: true, limited in Node fetch) */
   verifySsl?: boolean;
@@ -55,6 +58,8 @@ export interface InvokeResponse {
   response: string;
   /** List of tools used by the agent during execution */
   toolsUsed: string[];
+  /** Intermediate reasoning steps emitted by the agent (Sender.SYSTEM messages) */
+  thinkingSteps: string[];
   /** Optional token usage statistics */
   usage?: Usage;
 }
@@ -154,6 +159,7 @@ export interface ApiInvokeResponse {
   conversationId: string;
   response: string;
   toolsUsed?: string[];
+  thinkingSteps?: string[];
   usage?: {
     promptTokens?: number;
     completionTokens?: number;

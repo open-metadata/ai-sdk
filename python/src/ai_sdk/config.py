@@ -38,7 +38,7 @@ class AISdkConfig:
 
     host: str
     token: str
-    timeout: float = 120.0
+    timeout: float = 900.0
     verify_ssl: bool = True
     enable_async: bool = False
     max_retries: int = 3
@@ -72,7 +72,7 @@ class AISdkConfig:
         Environment variables:
             {PREFIX}_HOST: Server URL (required)
             {PREFIX}_TOKEN: JWT bot token (required)
-            {PREFIX}_TIMEOUT: Request timeout in seconds (default: 120)
+            {PREFIX}_TIMEOUT: Request timeout in seconds (default: 900)
             {PREFIX}_VERIFY_SSL: Verify SSL certificates (default: true)
             {PREFIX}_DEBUG: Enable debug logging (default: false)
 
@@ -124,7 +124,7 @@ class AISdkConfig:
         return cls(
             host=host,
             token=token,
-            timeout=overrides.get("timeout", get_float("TIMEOUT", 120.0)),
+            timeout=overrides.get("timeout", get_float("TIMEOUT", 900.0)),
             verify_ssl=overrides.get("verify_ssl", get_bool("VERIFY_SSL", True)),
             enable_async=overrides.get("enable_async", get_bool("ASYNC", False)),
             max_retries=overrides.get("max_retries", get_int("MAX_RETRIES", 3)),

@@ -10,6 +10,7 @@ from enum import Enum
 from typing import Any
 
 from pydantic import BaseModel, ConfigDict, Field
+from pydantic.alias_generators import to_camel
 
 
 class EventType(str, Enum):
@@ -25,7 +26,7 @@ class EventType(str, Enum):
 class InvokeRequest(BaseModel):
     """Request to invoke an agent."""
 
-    model_config = ConfigDict(populate_by_name=True)
+    model_config = ConfigDict(alias_generator=to_camel, validate_by_name=True)
 
     message: str | None = Field(
         default=None,
@@ -33,7 +34,6 @@ class InvokeRequest(BaseModel):
     )
     conversation_id: str | None = Field(
         default=None,
-        alias="conversationId",
         description="Optional conversation ID for multi-turn conversations",
     )
     parameters: dict[str, Any] = Field(
@@ -56,21 +56,18 @@ class InvokeRequest(BaseModel):
 class Usage(BaseModel):
     """Token usage statistics."""
 
-    model_config = ConfigDict(populate_by_name=True)
+    model_config = ConfigDict(alias_generator=to_camel, validate_by_name=True)
 
     prompt_tokens: int = Field(
         default=0,
-        alias="promptTokens",
         description="Number of tokens in the prompt",
     )
     completion_tokens: int = Field(
         default=0,
-        alias="completionTokens",
         description="Number of tokens in the completion",
     )
     total_tokens: int = Field(
         default=0,
-        alias="totalTokens",
         description="Total number of tokens used",
     )
 
@@ -83,18 +80,20 @@ class Usage(BaseModel):
 class InvokeResponse(BaseModel):
     """Response from invoking an agent."""
 
-    model_config = ConfigDict(populate_by_name=True)
+    model_config = ConfigDict(alias_generator=to_camel, validate_by_name=True)
 
     conversation_id: str = Field(
         ...,
-        alias="conversationId",
         description="The conversation ID for multi-turn conversations",
     )
     response: str = Field(..., description="The agent's response text")
     tools_used: list[str] = Field(
         default_factory=list,
-        alias="toolsUsed",
         description="List of tools used by the agent",
+    )
+    thinking_steps: list[str] = Field(
+        default_factory=list,
+        description="Intermediate reasoning steps emitted by the agent (Sender.SYSTEM messages)",
     )
     usage: Usage | None = Field(
         default=None,
@@ -110,18 +109,16 @@ class InvokeResponse(BaseModel):
 class StreamEvent(BaseModel):
     """Event from streaming agent response."""
 
-    model_config = ConfigDict(populate_by_name=True)
+    model_config = ConfigDict(alias_generator=to_camel, validate_by_name=True)
 
     type: EventType = Field(..., description="Event type: start, content, tool_use, end, error")
     content: str | None = Field(default=None, description="Content for content events")
     tool_name: str | None = Field(
         default=None,
-        alias="toolName",
         description="Tool name for tool_use events",
     )
     conversation_id: str | None = Field(
         default=None,
-        alias="conversationId",
         description="Conversation ID",
     )
     error: str | None = Field(default=None, description="Error message for error events")
@@ -156,12 +153,11 @@ class StreamEvent(BaseModel):
 class AgentInfo(BaseModel):
     """Agent metadata for SDK discovery."""
 
-    model_config = ConfigDict(populate_by_name=True)
+    model_config = ConfigDict(alias_generator=to_camel, validate_by_name=True)
 
     name: str = Field(..., description="Agent name (identifier)")
     display_name: str | None = Field(
         default=None,
-        alias="displayName",
         description="Human-readable display name",
     )
     description: str | None = Field(default=None, description="Agent description")
@@ -171,7 +167,6 @@ class AgentInfo(BaseModel):
     )
     api_enabled: bool = Field(
         default=False,
-        alias="apiEnabled",
         description="Whether the agent is enabled for API access",
     )
 
@@ -189,14 +184,13 @@ class AgentInfo(BaseModel):
 class EntityReference(BaseModel):
     """A reference to another entity."""
 
-    model_config = ConfigDict(populate_by_name=True)
+    model_config = ConfigDict(alias_generator=to_camel, validate_by_name=True)
 
     id: str = Field(..., description="Unique identifier of the referenced entity")
     type: str = Field(..., description="Type of the referenced entity")
     name: str | None = Field(default=None, description="Name of the referenced entity")
     display_name: str | None = Field(
         default=None,
-        alias="displayName",
         description="Display name of the referenced entity",
     )
 
@@ -218,19 +212,17 @@ class EntityReference(BaseModel):
 class BotInfo(BaseModel):
     """Represents a bot entity."""
 
-    model_config = ConfigDict(populate_by_name=True)
+    model_config = ConfigDict(alias_generator=to_camel, validate_by_name=True)
 
     id: str = Field(..., description="Unique identifier of the bot")
     name: str = Field(..., description="Name of the bot")
     display_name: str | None = Field(
         default=None,
-        alias="displayName",
         description="Human-readable display name",
     )
     description: str | None = Field(default=None, description="Description of the bot")
     bot_user: dict[str, Any] | None = Field(
         default=None,
-        alias="botUser",
         description="Reference to the user this bot acts as",
     )
 
@@ -254,13 +246,12 @@ class BotInfo(BaseModel):
 class PersonaInfo(BaseModel):
     """Represents an AI Persona."""
 
-    model_config = ConfigDict(populate_by_name=True)
+    model_config = ConfigDict(alias_generator=to_camel, validate_by_name=True)
 
     id: str = Field(..., description="Unique identifier of the persona")
     name: str = Field(..., description="Name of the persona")
     display_name: str | None = Field(
         default=None,
-        alias="displayName",
         description="Human-readable display name",
     )
     description: str | None = Field(default=None, description="Description of the persona")
@@ -292,11 +283,10 @@ class PersonaInfo(BaseModel):
 class KnowledgeScope(BaseModel):
     """Defines what data an agent can access."""
 
-    model_config = ConfigDict(populate_by_name=True)
+    model_config = ConfigDict(alias_generator=to_camel, validate_by_name=True)
 
     entity_types: list[str] | None = Field(
         default=None,
-        alias="entityTypes",
         description="List of entity types the agent can access",
     )
     services: list[EntityReference] | None = Field(
@@ -322,14 +312,13 @@ class KnowledgeScope(BaseModel):
 class CreatePersonaRequest(BaseModel):
     """Request to create a persona."""
 
-    model_config = ConfigDict(populate_by_name=True)
+    model_config = ConfigDict(alias_generator=to_camel, validate_by_name=True)
 
     name: str = Field(..., description="Name of the persona")
     description: str = Field(..., description="Description of the persona")
     prompt: str = Field(..., description="System prompt that defines the persona's behavior")
     display_name: str | None = Field(
         default=None,
-        alias="displayName",
         description="Human-readable display name",
     )
     provider: str = Field(
@@ -364,7 +353,7 @@ class CreatePersonaRequest(BaseModel):
 class CreateAgentRequest(BaseModel):
     """Request to create a dynamic agent."""
 
-    model_config = ConfigDict(populate_by_name=True)
+    model_config = ConfigDict(alias_generator=to_camel, validate_by_name=True)
 
     name: str = Field(..., description="Name of the agent")
     description: str = Field(..., description="Description of the agent")
@@ -372,13 +361,11 @@ class CreateAgentRequest(BaseModel):
     mode: str = Field(..., description="Agent mode: 'chat', 'agent', or 'both'")
     display_name: str | None = Field(
         default=None,
-        alias="displayName",
         description="Human-readable display name",
     )
     icon: str | None = Field(default=None, description="Icon for the agent")
     bot_name: str | None = Field(
         default=None,
-        alias="botName",
         description="Name of the bot that executes this agent",
     )
     abilities: list[str] | None = Field(
@@ -395,7 +382,6 @@ class CreateAgentRequest(BaseModel):
     )
     api_enabled: bool = Field(
         default=False,
-        alias="apiEnabled",
         description="Whether the agent is enabled for API access",
     )
     provider: str = Field(
@@ -435,16 +421,196 @@ class CreateAgentRequest(BaseModel):
         return d
 
 
+class MemoryType(str, Enum):
+    """High-level type of reusable memory."""
+
+    PREFERENCE = "Preference"
+    USE_CASE = "UseCase"
+    NOTE = "Note"
+    RUNBOOK = "Runbook"
+    FAQ = "Faq"
+
+
+class MemoryScope(str, Enum):
+    """Scope where the memory applies."""
+
+    USER_GLOBAL = "UserGlobal"
+    ENTITY_SCOPED = "EntityScoped"
+
+
+class MemoryVisibility(str, Enum):
+    """Visibility level for a memory."""
+
+    PRIVATE = "Private"
+    ENTITY = "Entity"
+    SHARED = "Shared"
+
+
+class CreateContextMemoryRequest(BaseModel):
+    """Request to create a Context Center memory."""
+
+    model_config = ConfigDict(alias_generator=to_camel, validate_by_name=True)
+
+    name: str = Field(..., description="Stable system name for the memory")
+    question: str = Field(..., description="Canonical question / instruction")
+    answer: str = Field(..., description="Canonical answer / retained guidance")
+    title: str | None = Field(default=None, description="Short title shown in Context Center")
+    description: str | None = Field(default=None, description="Optional markdown description")
+    memory_type: MemoryType = Field(
+        default=MemoryType.NOTE,
+        description="High-level memory type",
+    )
+    memory_scope: MemoryScope = Field(
+        default=MemoryScope.ENTITY_SCOPED,
+        description="Scope the memory applies to",
+    )
+    visibility: MemoryVisibility = Field(
+        default=MemoryVisibility.PRIVATE,
+        description="Visibility level (Private/Entity/Shared)",
+    )
+    primary_entity: EntityReference | None = Field(
+        default=None,
+        description="Primary entity this memory attaches to",
+    )
+    related_entities: list[EntityReference] | None = Field(
+        default=None,
+        description="Additional related entities",
+    )
+    tags: list[str] | None = Field(
+        default=None,
+        description="Tag FQN strings; wrapped to TagLabel on the wire",
+    )
+
+    def to_api_dict(self) -> dict[str, Any]:
+        """Convert to API request format (camelCase keys)."""
+        d: dict[str, Any] = {
+            "name": self.name,
+            "question": self.question,
+            "answer": self.answer,
+            "memoryType": self.memory_type.value,
+            "memoryScope": self.memory_scope.value,
+            "shareConfig": {"visibility": self.visibility.value},
+        }
+        if self.title is not None:
+            d["title"] = self.title
+        if self.description is not None:
+            d["description"] = self.description
+        if self.primary_entity is not None:
+            d["primaryEntity"] = self.primary_entity.to_api_dict()
+        if self.related_entities is not None:
+            d["relatedEntities"] = [e.to_api_dict() for e in self.related_entities]
+        if self.tags is not None:
+            d["tags"] = [
+                {
+                    "tagFQN": t,
+                    "labelType": "Manual",
+                    "state": "Confirmed",
+                    "source": "Classification",
+                }
+                for t in self.tags
+            ]
+        return d
+
+    @classmethod
+    def from_dict(cls, data: dict[str, Any]) -> CreateContextMemoryRequest:
+        """Create from API request format."""
+        return cls.model_validate(data)
+
+
+class ContextMemory(BaseModel):
+    """A Context Center memory."""
+
+    model_config = ConfigDict(alias_generator=to_camel, validate_by_name=True)
+
+    id: str = Field(..., description="Unique identifier")
+    name: str = Field(..., description="Stable system name")
+    fully_qualified_name: str | None = Field(
+        default=None,
+        description="Fully qualified name",
+    )
+    title: str | None = Field(default=None, description="Short title")
+    question: str = Field(default="", description="Canonical question / instruction")
+    answer: str = Field(default="", description="Canonical answer / retained guidance")
+    summary: str | None = Field(default=None, description="Optional summary")
+    memory_type: MemoryType = Field(default=MemoryType.NOTE)
+    memory_scope: MemoryScope = Field(default=MemoryScope.ENTITY_SCOPED)
+    visibility: MemoryVisibility = Field(
+        default=MemoryVisibility.PRIVATE,
+        description="Visibility (extracted from shareConfig.visibility)",
+    )
+    primary_entity: EntityReference | None = Field(default=None)
+    usage_count: int = Field(default=0)
+    last_used_at: int | None = Field(
+        default=None,
+        description="Last-used timestamp in epoch milliseconds",
+    )
+    deleted: bool = Field(default=False)
+
+    @classmethod
+    def from_dict(cls, data: dict[str, Any]) -> ContextMemory:
+        """Create from API response format. Flattens shareConfig.visibility."""
+        share_config = data.get("shareConfig") or {}
+        if isinstance(share_config, dict):
+            visibility = share_config.get("visibility", "Private")
+        else:
+            visibility = "Private"
+        flattened = {**data, "visibility": visibility}
+        return cls.model_validate(flattened)
+
+
+class MemorySearchHit(BaseModel):
+    """A single hit from a hybrid memory search."""
+
+    model_config = ConfigDict(alias_generator=to_camel, validate_by_name=True)
+
+    memory: ContextMemory = Field(..., description="The matched memory")
+    score: float = Field(..., description="Relevance score from the search engine")
+
+    @classmethod
+    def from_dict(cls, data: dict[str, Any]) -> MemorySearchHit:
+        """Create from an OpenSearch hit."""
+        return cls(
+            memory=ContextMemory.from_dict(data.get("_source", {})),
+            score=float(data.get("_score", 0.0)),
+        )
+
+
+class MemorySearchResults(BaseModel):
+    """Results from a hybrid memory search."""
+
+    model_config = ConfigDict(alias_generator=to_camel, validate_by_name=True)
+
+    total: int = Field(default=0, description="Total number of matching memories")
+    hits: list[MemorySearchHit] = Field(
+        default_factory=list,
+        description="Ranked search hits",
+    )
+
+    @classmethod
+    def from_dict(cls, data: dict[str, Any]) -> MemorySearchResults:
+        """Create from an OpenSearch response shape."""
+        hits_block = data.get("hits") or {}
+        total_block = hits_block.get("total", 0)
+        if isinstance(total_block, dict):
+            total = int(total_block.get("value", 0))
+        else:
+            total = int(total_block)
+        raw_hits = hits_block.get("hits") or []
+        return cls(
+            total=total,
+            hits=[MemorySearchHit.from_dict(h) for h in raw_hits],
+        )
+
+
 class AbilityInfo(BaseModel):
     """Represents an Ability."""
 
-    model_config = ConfigDict(populate_by_name=True)
+    model_config = ConfigDict(alias_generator=to_camel, validate_by_name=True)
 
     id: str = Field(..., description="Unique identifier of the ability")
     name: str = Field(..., description="Name of the ability")
     display_name: str | None = Field(
         default=None,
-        alias="displayName",
         description="Human-readable display name",
     )
     description: str | None = Field(default=None, description="Description of the ability")
@@ -454,7 +620,6 @@ class AbilityInfo(BaseModel):
     )
     fully_qualified_name: str | None = Field(
         default=None,
-        alias="fullyQualifiedName",
         description="Fully qualified name of the ability",
     )
     tools: list[str] = Field(

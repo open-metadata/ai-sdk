@@ -17,7 +17,7 @@ class TestAISdkConfigInit:
 
         assert config.host == "https://metadata.example.com"
         assert config.token == "test-token"
-        assert config.timeout == 120.0
+        assert config.timeout == 900.0
         assert config.verify_ssl is True
         assert config.enable_async is False
         assert config.max_retries == 3

@@ -100,7 +100,7 @@ client = AISdk(
 )
 
 # Create the agent
-agent = client.create_agent(
+agent = client.agents.create(
     name="DBTReviewer",
     description="Reviews dbt model PRs for downstream impact and DQ risks",
     persona="DBTReviewerPersona",
@@ -121,7 +121,7 @@ const client = new AISdk({
   token: 'your-jwt-token'
 });
 
-const agent = await client.createAgent({
+const agent = await client.agents.create({
   name: 'DBTReviewer',
   description: 'Reviews dbt model PRs for downstream impact and DQ risks',
   persona: 'DBTReviewerPersona',

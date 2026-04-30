@@ -70,14 +70,18 @@ from ai_sdk import AISdk, AISdkConfig
 config = AISdkConfig.from_env()  # reads AI_SDK_HOST and AI_SDK_TOKEN
 client = AISdk.from_config(config)
 
-# Invoke an agent
+# default AskCollate agent
+response = client.agent().call("What data quality tests should I add?")
+print(response.response)
+
+# Named dynamic agent
 response = client.agent("DataQualityPlannerAgent").call(
     "What data quality tests should I add for the customers table?"
 )
 print(response.response)
 
-# Stream responses in real time
-for event in client.agent("DataQualityPlannerAgent").stream("Analyze the orders table"):
+# Stream responses in real time (works with both)
+for event in client.agent().stream("Analyze the orders table"):
     if event.type == "content":
         print(event.content, end="", flush=True)
 ```
@@ -96,13 +100,18 @@ const client = new AISdk({
   token: 'your-bot-jwt-token'
 });
 
-const response = await client.agent('DataQualityPlannerAgent').call(
+// default AskCollate agent
+const defaultResponse = await client.agent().invoke('What tables have quality issues?');
+console.log(defaultResponse.response);
+
+// Named dynamic agent
+const response = await client.agent('DataQualityPlannerAgent').invoke(
   'What data quality tests should I add for the customers table?'
 );
 console.log(response.response);
 
-// Stream responses
-for await (const event of client.agent('DataQualityPlannerAgent').stream('Analyze data quality')) {
+// Stream responses (works with both)
+for await (const event of client.agent().stream('Analyze data quality')) {
   if (event.type === 'content') {
     process.stdout.write(event.content || '');
   }
@@ -129,8 +138,14 @@ AISdk client = new AISdk.Builder()
     .token("your-bot-jwt-token")
     .build();
 
+// default AskCollate agent
+InvokeResponse defaultResponse = client.agent()
+    .invoke("What data quality tests should I add?");
+System.out.println(defaultResponse.getResponse());
+
+// Named dynamic agent
 InvokeResponse response = client.agent("DataQualityPlannerAgent")
-    .call("What data quality tests should I add?");
+    .invoke("What data quality tests should I add?");
 System.out.println(response.getResponse());
 ```
 
@@ -143,11 +158,141 @@ curl -sSL https://raw.githubusercontent.com/open-metadata/ai-sdk/main/cli/instal
 # Configure
 ai-sdk configure
 
-# Invoke an agent
+# default AskCollate agent
+ai-sdk invoke --default "Analyze the customers table"
+
+# Named dynamic agent
 ai-sdk invoke DataQualityPlannerAgent "Analyze the customers table"
 ```
 
 Interactive TUI with markdown rendering and syntax highlighting.
+
+## Context Memories
+
+OpenMetadata's **Context Center** stores reusable knowledge — user preferences, use cases, runbooks, and FAQs — that any AI agent can read on demand. Each memory has a canonical question/answer pair, a type, and an optional `primaryEntity` so it can be retrieved when working with a specific table, dashboard, or pipeline.
+
+The `client.memories` namespace exposes the full lifecycle. **Hybrid search** combines vector similarity with keyword ranking over the `contextMemory` index — pass a natural-language query and an optional filter map; you get back hits ranked by relevance.
+
+### Python
+
+```python
+from ai_sdk import AISdk, CreateContextMemoryRequest, MemoryType, MemoryVisibility
+
+client = AISdk.from_config(AISdkConfig.from_env())
+
+# Create a memory tied to a specific table
+created = client.memories.create(CreateContextMemoryRequest(
+    name="orders-grain",
+    title="Orders grain",
+    question="What is the grain of the orders table?",
+    answer="One row per order_id; payments roll up to this grain.",
+    memory_type=MemoryType.NOTE,
+    visibility=MemoryVisibility.SHARED,
+    primary_entity=EntityReference(id="<table-uuid>", type="table"),
+))
+
+# List memories attached to that asset
+for m in client.memories.list(primary_entity_fqn="prod.warehouse.orders"):
+    print(m.title)
+
+# Hybrid NLQ search
+results = client.memories.search("how do we measure order volume", size=5)
+for hit in results.hits:
+    print(f"[{hit.score:.2f}] {hit.memory.title}")
+
+# Soft delete (use hard_delete=True to remove permanently)
+client.memories.delete(created.id)
+```
+
+### TypeScript
+
+```typescript
+const created = await client.memories.create({
+  name: 'orders-grain',
+  title: 'Orders grain',
+  question: 'What is the grain of the orders table?',
+  answer: 'One row per order_id; payments roll up to this grain.',
+  memoryType: 'Note',
+  visibility: 'Shared',
+  primaryEntity: { id: '<table-uuid>', type: 'table' },
+});
+
+for (const m of await client.memories.list({ primaryEntityFqn: 'prod.warehouse.orders' })) {
+  console.log(m.title);
+}
+
+const results = await client.memories.search('how do we measure order volume', { size: 5 });
+for (const hit of results.hits) {
+  console.log(`[${hit.score.toFixed(2)}] ${hit.memory.title}`);
+}
+
+await client.memories.delete(created.id);
+```
+
+### Java
+
+```java
+import io.openmetadata.ai.models.*;
+
+ContextMemory created = client.memories().create(
+    CreateContextMemoryRequest.builder()
+        .name("orders-grain")
+        .title("Orders grain")
+        .question("What is the grain of the orders table?")
+        .answer("One row per order_id; payments roll up to this grain.")
+        .memoryType(MemoryType.NOTE)
+        .visibility(MemoryVisibility.SHARED)
+        .primaryEntity(EntityReference.builder().id("<table-uuid>").type("table").build())
+        .build()
+);
+
+for (ContextMemory m : client.memories().list("prod.warehouse.orders", null)) {
+    System.out.println(m.getTitle());
+}
+
+MemorySearchResults results = client.memories().search(
+    "how do we measure order volume", null, 5, 0
+);
+for (MemorySearchHit hit : results.getHits()) {
+    System.out.printf("[%.2f] %s%n", hit.getScore(), hit.getMemory().getTitle());
+}
+
+client.memories().delete(created.getId());
+```
+
+### CLI
+
+```bash
+# Create
+ai-sdk memories create \
+  --name orders-grain \
+  --title "Orders grain" \
+  --question "What is the grain of the orders table?" \
+  --answer "One row per order_id; payments roll up to this grain." \
+  --memory-type note \
+  --visibility shared \
+  --primary-entity-id <table-uuid> --primary-entity-type table
+
+# List by entity
+ai-sdk memories list --entity-fqn prod.warehouse.orders
+
+# Hybrid NLQ search (use --json to pipe into jq)
+ai-sdk memories search "how do we measure order volume" --size 5 --json
+
+# Delete (add --hard for permanent)
+ai-sdk memories delete <memory-id>
+```
+
+**Filtering search results.** Pass a JSON filter map to scope by entity, visibility, or any indexed field:
+
+```python
+client.memories.search(
+    "explain churn",
+    filters={"primaryEntityId": ["<uuid>"], "visibility": ["Entity", "Shared"]},
+)
+```
+
+See each SDK's README for the full surface (sync + async, all enum values, model fields).
 
 ## Cookbook
 

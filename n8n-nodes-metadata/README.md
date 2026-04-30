@@ -44,7 +44,8 @@ The node requires OpenMetadata API credentials:
 
 | Parameter | Required | Description |
 |-----------|----------|-------------|
-| Agent Name | Yes | Name of the DynamicAgent to invoke |
+| Use Default Agent | No | Toggle on to invoke the platform's default agent (PLANNER / CHAT_MODE) without specifying a name |
+| Agent Name | Conditional | Name of the DynamicAgent to invoke. Not required when **Use Default Agent** is enabled |
 | Message | Yes | The query or message to send to the agent |
 | Conversation ID | No | For multi-turn conversations, pass the conversation ID from a previous response |
 | Parameters | No | Additional parameters as JSON object |

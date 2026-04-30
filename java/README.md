@@ -46,7 +46,12 @@ public class Example {
             .maxRetries(3)                     // optional
             .build();
 
-        // Simple invocation
+        // default AskCollate agent
+        InvokeResponse defaultResponse = client.agent()
+            .invoke("What tables exist?");
+        System.out.println(defaultResponse.getResponse());
+
+        // Named dynamic agent
         InvokeResponse response = client.agent("semantic-layer-agent")
             .invoke("What tables exist?");
 
@@ -156,7 +161,7 @@ InvokeResponse response = client.agent("semantic-layer-agent")
 ### Listing Agents
 
 ```java
-List<AgentInfo> agents = client.listAgents();
+List<AgentInfo> agents = client.agents().list();
 
 for (AgentInfo agent : agents) {
     System.out.println(agent.getName() + ": " + agent.getDescription());
@@ -189,7 +194,7 @@ CreateAgentRequest request = CreateAgentRequest.builder()
     .abilities(List.of("search", "query"))
     .build();
 
-AgentInfo newAgent = client.createAgent(request);
+AgentInfo newAgent = client.agents().create(request);
 System.out.println("Created agent: " + newAgent.getName());
 ```
 
@@ -199,13 +204,13 @@ System.out.println("Created agent: " + newAgent.getName());
 import io.openmetadata.ai.models.BotInfo;
 
 // List all bots
-List<BotInfo> bots = client.listBots();
+List<BotInfo> bots = client.bots().list();
 for (BotInfo bot : bots) {
     System.out.println(bot.getName() + ": " + bot.getDisplayName());
 }
 
 // Get a specific bot
-BotInfo bot = client.getBot("my-bot-name");
+BotInfo bot = client.bots().get("my-bot-name");
 System.out.println("Bot: " + bot.getName());
 ```
 
@@ -216,13 +221,13 @@ import io.openmetadata.ai.models.PersonaInfo;
 import io.openmetadata.ai.models.CreatePersonaRequest;
 
 // List all personas
-List<PersonaInfo> personas = client.listPersonas();
+List<PersonaInfo> personas = client.personas().list();
 for (PersonaInfo persona : personas) {
     System.out.println(persona.getName() + ": " + persona.getDescription());
 }
 
 // Get a specific persona
-PersonaInfo persona = client.getPersona("DataAnalyst");
+PersonaInfo persona = client.personas().get("DataAnalyst");
 
 // Create a new persona
 CreatePersonaRequest request = CreatePersonaRequest.builder()
@@ -231,7 +236,7 @@ CreatePersonaRequest request = CreatePersonaRequest.builder()
     .prompt("You are an expert data analyst who helps users understand their data...")
     .build();
 
-PersonaInfo newPersona = client.createPersona(request);
+PersonaInfo newPersona = client.personas().create(request);
 System.out.println("Created persona: " + newPersona.getName());
 ```
 
@@ -241,15 +246,83 @@ System.out.println("Created persona: " + newPersona.getName());
 import io.openmetadata.ai.models.AbilityInfo;
 
 // List all abilities
-List<AbilityInfo> abilities = client.listAbilities();
+List<AbilityInfo> abilities = client.abilities().list();
 for (AbilityInfo ability : abilities) {
     System.out.println(ability.getName() + ": " + ability.getDescription());
 }
 
 // Get a specific ability
-AbilityInfo ability = client.getAbility("search");
+AbilityInfo ability = client.abilities().get("search");
 System.out.println("Ability: " + ability.getName());
 ```
+
+### Context Memories
+
+The `client.memories()` namespace manages reusable Context Center knowledge — preferences, use cases, runbooks, and FAQs that any AI agent can read.
+
+```java
+import io.openmetadata.ai.models.*;
+import java.util.List;
+import java.util.Map;
+
+// Create
+ContextMemory created = client.memories().create(
+    CreateContextMemoryRequest.builder()
+        .name("orders-grain")
+        .title("Orders grain")
+        .question("What is the grain of the orders table?")
+        .answer("One row per order_id.")
+        .memoryType(MemoryType.NOTE)              // PREFERENCE | USE_CASE | NOTE | RUNBOOK | FAQ
+        .visibility(MemoryVisibility.SHARED)      // PRIVATE | ENTITY | SHARED
+        .primaryEntity(EntityReference.builder().id("<table-uuid>").type("table").build())
+        .tags(List.of("Domain.Analytics"))
+        .build()
+);
+
+// Get
+ContextMemory fetched = client.memories().get(created.getId());
+
+// List (optional FQN filter, optional limit)
+List<ContextMemory> all = client.memories().list();
+List<ContextMemory> forTable = client.memories().list("prod.warehouse.orders", 50);
+for (ContextMemory m : forTable) {
+    System.out.println(m.getTitle());
+}
+
+// Hybrid NLQ search — combines vector + keyword ranking over the contextMemory index
+MemorySearchResults results = client.memories().search("how do we measure order volume");
+for (MemorySearchHit hit : results.getHits()) {
+    System.out.printf("[%.2f] %s%n", hit.getScore(), hit.getMemory().getTitle());
+}
+
+// Search with filters and pagination
+MemorySearchResults filtered = client.memories().search(
+    "explain churn",
+    Map.of(
+        "primaryEntityId", List.of("<uuid>"),
+        "visibility", List.of("Entity", "Shared")
+    ),
+    20,   // size
+    0     // from
+);
+
+// Soft delete by default; pass true for hard delete
+client.memories().delete(created.getId());
+client.memories().delete(created.getId(), true);
+```
+
+**Stored fields:**
+
+| Field | Notes |
+|-------|-------|
+| `name` | Stable system name (required) |
+| `question` / `answer` | Canonical Q/A pair (required) — what an agent retrieves |
+| `title`, `description`, `summary` | Human-facing text, optional |
+| `memoryType` | `PREFERENCE`, `USE_CASE`, `NOTE`, `RUNBOOK`, or `FAQ` |
+| `memoryScope` | `ENTITY_SCOPED` (default) or `USER_GLOBAL` |
+| `visibility` | `PRIVATE`, `ENTITY`, or `SHARED` (controls who can read it) |
+| `primaryEntity` | Attaches the memory to a specific asset for entity-scoped recall |
+| `tags` | List of tag FQN strings (e.g. `"PII.Sensitive"`) |
 
 ## Error Handling
 

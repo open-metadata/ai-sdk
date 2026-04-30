@@ -6,9 +6,8 @@ Comprehensive reference of all SDK methods, server endpoints, data models, and f
 
 | Endpoint | Method | Description |
 |----------|--------|-------------|
-| `/api/v1/api/agents/` | GET | List API-enabled agents (paginated) |
-| `/api/v1/api/agents/{name}` | GET | Get agent info |
-| `/api/v1/agents/dynamic/` | POST | Create agent |
+| `/api/v1/agents/dynamic/` | GET/POST | List API-enabled agents / Create agent |
+| `/api/v1/agents/dynamic/{name}` | GET | Get agent info |
 | `/{agent_name}/invoke` | POST | Invoke agent (sync) |
 | `/{agent_name}/stream` | POST | Invoke agent (SSE streaming) |
 | `/api/v1/bots/` | GET | List bots (paginated) |
@@ -17,6 +16,9 @@ Comprehensive reference of all SDK methods, server endpoints, data models, and f
 | `/api/v1/agents/personas/name/{name}` | GET | Get persona by name |
 | `/api/v1/agents/abilities/` | GET | List abilities (paginated) |
 | `/api/v1/agents/abilities/name/{name}` | GET | Get ability by name |
+| `/api/v1/contextCenter/memories/` | GET/POST | List / Create memories (paginated, optional `primaryEntityFqn` filter) |
+| `/api/v1/contextCenter/memories/{id}` | GET/DELETE | Get / Delete memory by ID (`hardDelete=` query param on DELETE) |
+| `/api/v1/hybrid/nlq/search?index=contextMemory` | GET | Hybrid NLQ search over the memories index |
 | `/mcp` | POST | MCP JSON-RPC 2.0 (`tools/list`, `tools/call`) |
 
 ---
@@ -39,18 +41,25 @@ client = AISdk(
 )
 ```
 
+Entity CRUD lives on namespaces (`client.<entity>.<verb>()`). Each namespace exposes both sync and async methods.
+
 | Method | Endpoint | Streaming | Async |
 |--------|----------|-----------|-------|
-| `agent(name) -> AgentHandle` | -- (local) | -- | -- |
-| `list_agents(limit?) -> list[AgentInfo]` | `GET /api/v1/api/agents/` | No | `alist_agents()` |
-| `create_agent(request) -> AgentInfo` | `POST /api/v1/agents/dynamic/` | No | `acreate_agent()` |
-| `list_bots(limit?) -> list[BotInfo]` | `GET /api/v1/bots/` | No | `alist_bots()` |
-| `get_bot(name) -> BotInfo` | `GET /api/v1/bots/name/{name}` | No | `aget_bot()` |
-| `list_personas(limit?) -> list[PersonaInfo]` | `GET /api/v1/agents/personas/` | No | `alist_personas()` |
-| `get_persona(name) -> PersonaInfo` | `GET /api/v1/agents/personas/name/{name}` | No | `aget_persona()` |
-| `create_persona(request) -> PersonaInfo` | `POST /api/v1/agents/personas/` | No | `acreate_persona()` |
-| `list_abilities(limit?) -> list[AbilityInfo]` | `GET /api/v1/agents/abilities/` | No | `alist_abilities()` |
-| `get_ability(name) -> AbilityInfo` | `GET /api/v1/agents/abilities/name/{name}` | No | `aget_ability()` |
+| `agent(name?) -> AgentHandle` | -- (local) | -- | -- |
+| `agents.list(limit?) -> list[AgentInfo]` | `GET /api/v1/agents/dynamic/` | No | `agents.alist()` |
+| `agents.create(request) -> AgentInfo` | `POST /api/v1/agents/dynamic/` | No | `agents.acreate()` |
+| `bots.list(limit?) -> list[BotInfo]` | `GET /api/v1/bots/` | No | `bots.alist()` |
+| `bots.get(name) -> BotInfo` | `GET /api/v1/bots/name/{name}` | No | `bots.aget()` |
+| `personas.list(limit?) -> list[PersonaInfo]` | `GET /api/v1/agents/personas/` | No | `personas.alist()` |
+| `personas.get(name) -> PersonaInfo` | `GET /api/v1/agents/personas/name/{name}` | No | `personas.aget()` |
+| `personas.create(request) -> PersonaInfo` | `POST /api/v1/agents/personas/` | No | `personas.acreate()` |
+| `abilities.list(limit?) -> list[AbilityInfo]` | `GET /api/v1/agents/abilities/` | No | `abilities.alist()` |
+| `abilities.get(name) -> AbilityInfo` | `GET /api/v1/agents/abilities/name/{name}` | No | `abilities.aget()` |
+| `memories.list(primary_entity_fqn?, limit?) -> list[ContextMemory]` | `GET /api/v1/contextCenter/memories/` | No | `memories.alist()` |
+| `memories.get(id) -> ContextMemory` | `GET /api/v1/contextCenter/memories/{id}` | No | `memories.aget()` |
+| `memories.create(request) -> ContextMemory` | `POST /api/v1/contextCenter/memories/` | No | `memories.acreate()` |
+| `memories.delete(id, hard_delete=False) -> None` | `DELETE /api/v1/contextCenter/memories/{id}` | No | `memories.adelete()` |
+| `memories.search(query, filters?, size=15, from_=0) -> MemorySearchResults` | `GET /api/v1/hybrid/nlq/search?index=contextMemory` | No | `memories.asearch()` |
 | `.mcp` property -> `MCPClient` | -- (lazy init) | -- | -- |
 
 ### AgentHandle
@@ -118,18 +127,25 @@ const client = new AISdk({
 });
 ```
 
+Entity CRUD lives on namespace fields (`client.<entity>.<verb>()`).
+
 | Method | Endpoint | Streaming |
 |--------|----------|-----------|
-| `agent(name): AgentHandle` | -- (local) | -- |
-| `listAgents(options?): Promise<AgentInfo[]>` | `GET /api/v1/api/agents/` | No |
-| `createAgent(request): Promise<AgentInfo>` | `POST /api/v1/agents/dynamic/` | No |
-| `listBots(options?): Promise<BotInfo[]>` | `GET /api/v1/bots/` | No |
-| `getBot(name): Promise<BotInfo>` | `GET /api/v1/bots/name/{name}` | No |
-| `listPersonas(options?): Promise<PersonaInfo[]>` | `GET /api/v1/agents/personas/` | No |
-| `getPersona(name): Promise<PersonaInfo>` | `GET /api/v1/agents/personas/name/{name}` | No |
-| `createPersona(request): Promise<PersonaInfo>` | `POST /api/v1/agents/personas/` | No |
-| `listAbilities(options?): Promise<AbilityInfo[]>` | `GET /api/v1/agents/abilities/` | No |
-| `getAbility(name): Promise<AbilityInfo>` | `GET /api/v1/agents/abilities/name/{name}` | No |
+| `agent(name?): AgentHandle` | -- (local) | -- |
+| `agents.list(options?): Promise<AgentInfo[]>` | `GET /api/v1/agents/dynamic/` | No |
+| `agents.create(request): Promise<AgentInfo>` | `POST /api/v1/agents/dynamic/` | No |
+| `bots.list(options?): Promise<BotInfo[]>` | `GET /api/v1/bots/` | No |
+| `bots.get(name): Promise<BotInfo>` | `GET /api/v1/bots/name/{name}` | No |
+| `personas.list(options?): Promise<PersonaInfo[]>` | `GET /api/v1/agents/personas/` | No |
+| `personas.get(name): Promise<PersonaInfo>` | `GET /api/v1/agents/personas/name/{name}` | No |
+| `personas.create(request): Promise<PersonaInfo>` | `POST /api/v1/agents/personas/` | No |
+| `abilities.list(options?): Promise<AbilityInfo[]>` | `GET /api/v1/agents/abilities/` | No |
+| `abilities.get(name): Promise<AbilityInfo>` | `GET /api/v1/agents/abilities/name/{name}` | No |
+| `memories.list(options?): Promise<ContextMemory[]>` | `GET /api/v1/contextCenter/memories/` | No |
+| `memories.get(id): Promise<ContextMemory>` | `GET /api/v1/contextCenter/memories/{id}` | No |
+| `memories.create(request): Promise<ContextMemory>` | `POST /api/v1/contextCenter/memories/` | No |
+| `memories.delete(id, options?): Promise<void>` | `DELETE /api/v1/contextCenter/memories/{id}` | No |
+| `memories.search(query, options?): Promise<MemorySearchResults>` | `GET /api/v1/hybrid/nlq/search?index=contextMemory` | No |
 
 ### AgentHandle
 
@@ -155,18 +171,25 @@ AISdk client = AISdk.builder()
     .build();
 ```
 
+Entity CRUD lives on namespace accessor methods (`client.<entity>().<verb>()`).
+
 | Method | Endpoint | Streaming |
 |--------|----------|-----------|
 | `agent(name): AgentHandle` | -- (local) | -- |
-| `listAgents() / listAgents(limit)` | `GET /api/v1/api/agents/` | No |
-| `createAgent(builder): AgentInfo` | `POST /api/v1/agents/dynamic/` | No |
-| `listBots() / listBots(limit)` | `GET /api/v1/bots/` | No |
-| `getBot(name): BotInfo` | `GET /api/v1/bots/name/{name}` | No |
-| `listPersonas() / listPersonas(limit)` | `GET /api/v1/agents/personas/` | No |
-| `getPersona(name): PersonaInfo` | `GET /api/v1/agents/personas/name/{name}` | No |
-| `createPersona(request): PersonaInfo` | `POST /api/v1/agents/personas/` | No |
-| `listAbilities() / listAbilities(limit)` | `GET /api/v1/agents/abilities/` | No |
-| `getAbility(name): AbilityInfo` | `GET /api/v1/agents/abilities/name/{name}` | No |
+| `agents().list() / agents().list(limit)` | `GET /api/v1/agents/dynamic/` | No |
+| `agents().create(request): AgentInfo` | `POST /api/v1/agents/dynamic/` | No |
+| `bots().list() / bots().list(limit)` | `GET /api/v1/bots/` | No |
+| `bots().get(name): BotInfo` | `GET /api/v1/bots/name/{name}` | No |
+| `personas().list() / personas().list(limit)` | `GET /api/v1/agents/personas/` | No |
+| `personas().get(name): PersonaInfo` | `GET /api/v1/agents/personas/name/{name}` | No |
+| `personas().create(request): PersonaInfo` | `POST /api/v1/agents/personas/` | No |
+| `abilities().list() / abilities().list(limit)` | `GET /api/v1/agents/abilities/` | No |
+| `abilities().get(name): AbilityInfo` | `GET /api/v1/agents/abilities/name/{name}` | No |
+| `memories().list() / memories().list(fqn, limit)` | `GET /api/v1/contextCenter/memories/` | No |
+| `memories().get(id): ContextMemory` | `GET /api/v1/contextCenter/memories/{id}` | No |
+| `memories().create(request): ContextMemory` | `POST /api/v1/contextCenter/memories/` | No |
+| `memories().delete(id) / delete(id, hardDelete)` | `DELETE /api/v1/contextCenter/memories/{id}` | No |
+| `memories().search(query) / search(query, filters, size, from)` | `GET /api/v1/hybrid/nlq/search?index=contextMemory` | No |
 
 ### AgentHandle (fluent builder pattern)
 
@@ -212,6 +235,18 @@ AISdk client = AISdk.builder()
 |---------|----------|
 | `abilities list [--limit N] [--json]` | `GET /api/v1/agents/abilities/` |
 | `abilities get <name> [--json]` | `GET /api/v1/agents/abilities/name/{name}` |
+
+### Memory Commands
+
+| Command | Endpoint |
+|---------|----------|
+| `memories list [--entity-fqn FQN] [--limit N] [--json]` | `GET /api/v1/contextCenter/memories/` |
+| `memories get <id> [--json]` | `GET /api/v1/contextCenter/memories/{id}` |
+| `memories create --name N --question Q --answer A [...]` | `POST /api/v1/contextCenter/memories/` |
+| `memories delete <id> [--hard]` | `DELETE /api/v1/contextCenter/memories/{id}` |
+| `memories search <query> [--size N] [--from N] [--json]` | `GET /api/v1/hybrid/nlq/search?index=contextMemory` |
+
+**Memory create options:** `--title`, `--description`, `--memory-type=note` (preference|use-case|note|runbook|faq), `--memory-scope=entity-scoped` (entity-scoped|user-global), `--visibility=private` (private|entity|shared), `--primary-entity-{id,type,fqn}`, `--tags`
 
 ### Invoke & Chat
 
@@ -321,6 +356,74 @@ ai-sdk configure list                # List all config
   provider?: string
   fullyQualifiedName?: string
   tools: string[]
+}
+```
+
+### EntityReference
+
+```
+{
+  id: string
+  type: string                  // e.g., "table", "dashboard", "pipeline"
+  name?: string
+  fullyQualifiedName?: string
+  displayName?: string
+}
+```
+
+### CreateContextMemoryRequest
+
+```
+{
+  name: string                  // Required: stable system name
+  question: string              // Required: canonical question/instruction
+  answer: string                // Required: canonical answer/guidance
+  title?: string                // Short title shown in Context Center
+  description?: string          // Optional markdown description
+  memoryType?: 'Preference' | 'UseCase' | 'Note' | 'Runbook' | 'Faq'
+                                // Default: 'Note'
+  memoryScope?: 'UserGlobal' | 'EntityScoped'
+                                // Default: 'EntityScoped'
+  visibility?: 'Private' | 'Entity' | 'Shared'
+                                // Default: 'Private'
+  primaryEntity?: EntityReference
+  relatedEntities?: EntityReference[]
+  tags?: string[]               // Tag FQN strings; wrapped to TagLabel on the wire
+}
+```
+
+### ContextMemory
+
+```
+{
+  id: string
+  name: string
+  fullyQualifiedName?: string
+  title?: string
+  question: string
+  answer: string
+  summary?: string
+  memoryType: MemoryType
+  memoryScope: MemoryScope
+  visibility: MemoryVisibility  // Flattened from shareConfig.visibility
+  primaryEntity?: EntityReference
+  usageCount: number
+  lastUsedAt?: number           // Epoch milliseconds
+  deleted: boolean
+}
+```
+
+### MemorySearchHit / MemorySearchResults
+
+```
+MemorySearchHit {
+  memory: ContextMemory         // Parsed from _source
+  score: number                 // OpenSearch _score
+}
+
+MemorySearchResults {
+  total: number                 // Hit total (parsed from hits.total.value)
+  hits: MemorySearchHit[]
 }
 ```
 
@@ -463,11 +566,13 @@ Default: 3 retries with exponential backoff.
 |---------|--------|------------|------|----------|
 | Agent invoke | sync + async | async | sync | sync |
 | Agent stream | sync + async | async generator | callback + Stream | `--stream` flag |
+| Default agent (`client.agent()` no name) | yes | yes | yes | `--default` flag |
 | List agents | yes | yes | yes | yes |
 | Create agent | yes | yes | yes | yes (TUI + CLI) |
 | Bots (list + get) | yes | yes | yes | yes |
 | Personas (list + get + create) | yes | yes | yes | yes (TUI + CLI) |
 | Abilities (list + get) | yes | yes | yes | yes |
+| **Context Memories** (list + get + create + delete + search) | yes (sync + async) | yes | yes | yes |
 | Conversations | `Conversation` class | manual `conversationId` | fluent `.conversationId()` | `-c` flag |
 | **MCP tools** | **yes** | no | no | no |
 | Interactive chat | -- | -- | -- | TUI (`chat`) |

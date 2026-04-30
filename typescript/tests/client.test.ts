@@ -112,7 +112,7 @@ describe('AISdk', () => {
         token: 'test-token',
       });
 
-      const agents = await client.listAgents();
+      const agents = await client.agents.list();
 
       expect(agents).toHaveLength(2);
       expect(agents[0].name).toBe('DataQualityPlannerAgent');
@@ -139,7 +139,7 @@ describe('AISdk', () => {
         token: 'test-token',
       });
 
-      const agents = await client.listAgents({ limit: 5 });
+      const agents = await client.agents.list({ limit: 5 });
 
       expect(agents).toHaveLength(3);
       expect(mockFetch).toHaveBeenCalledTimes(1);
@@ -358,6 +358,58 @@ describe('AgentHandle', () => {
       }
 
       expect(chunks).toEqual([]);
+    });
+
+    it('should not abort a slow stream after the configured non-streaming timeout', async () => {
+      // Configure a deliberately tiny client-level timeout (50ms). The stream
+      // emits its first event after 80ms and runs for ~250ms total, both well
+      // beyond the timeout. With the old behavior the AbortController would
+      // fire mid-stream and the iterator would error; with the fix the stream
+      // must complete normally and yield every content chunk.
+      const encoder = new TextEncoder();
+      const stream = new ReadableStream({
+        start(controller) {
+          const enqueueAfter = (ms: number, data: string) =>
+            new Promise<void>((resolve) => {
+              setTimeout(() => {
+                controller.enqueue(encoder.encode(data));
+                resolve();
+              }, ms);
+            });
+
+          (async () => {
+            await enqueueAfter(80, 'event: stream-start\ndata: {"conversationId": "slow-1"}\n\n');
+            await enqueueAfter(80, 'event: message\ndata: {"content": "slow "}\n\n');
+            await enqueueAfter(80, 'event: message\ndata: {"content": "stream"}\n\n');
+            await enqueueAfter(20, 'event: stream-completed\ndata: {}\n\n');
+            controller.close();
+          })();
+        },
+      });
+
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        body: stream,
+        headers: new Headers({ 'content-type': 'text/event-stream' }),
+      });
+
+      const client = new AISdk({
+        host: 'https://openmetadata.example.com',
+        token: 'test-token',
+        timeout: 50,
+      });
+
+      const chunks: string[] = [];
+      for await (const chunk of client.agent('TestAgent').streamContent('Slow run')) {
+        chunks.push(chunk);
+      }
+
+      expect(chunks).toEqual(['slow ', 'stream']);
+
+      // The fetch call must not have been given an AbortSignal that would have
+      // fired on the timeout — the SDK no longer wires one for streaming.
+      const fetchInit = mockFetch.mock.calls[0][1] as RequestInit;
+      expect(fetchInit.signal).toBeUndefined();
     });
   });
 
@@ -581,7 +633,7 @@ describe('Bot operations', () => {
         token: 'test-token',
       });
 
-      const bots = await client.listBots();
+      const bots = await client.bots.list();
 
       expect(bots).toHaveLength(2);
       expect(bots[0].name).toBe('ingestion-bot');
@@ -601,7 +653,7 @@ describe('Bot operations', () => {
         token: 'test-token',
       });
 
-      await client.listBots({ limit: 5 });
+      await client.bots.list({ limit: 5 });
 
       const url = mockFetch.mock.calls[0][0] as string;
       expect(url).toContain('https://openmetadata.example.com/api/v1/bots');
@@ -634,7 +686,7 @@ describe('Bot operations', () => {
         token: 'test-token',
       });
 
-      const bot = await client.getBot('ingestion-bot');
+      const bot = await client.bots.get('ingestion-bot');
 
       expect(bot.id).toBe('bot-1');
       expect(bot.name).toBe('ingestion-bot');
@@ -656,7 +708,7 @@ describe('Bot operations', () => {
         token: 'test-token',
       });
 
-      await client.getBot('my-bot');
+      await client.bots.get('my-bot');
 
       const url = mockFetch.mock.calls[0][0] as string;
       expect(url).toBe('https://openmetadata.example.com/api/v1/bots/name/my-bot');
@@ -676,7 +728,7 @@ describe('Bot operations', () => {
         token: 'test-token',
       });
 
-      await expect(client.getBot('non-existent-bot')).rejects.toThrow(
+      await expect(client.bots.get('non-existent-bot')).rejects.toThrow(
         BotNotFoundError
       );
     });
@@ -724,7 +776,7 @@ describe('Persona operations', () => {
         token: 'test-token',
       });
 
-      const personas = await client.listPersonas();
+      const personas = await client.personas.list();
 
       expect(personas).toHaveLength(2);
       expect(personas[0].name).toBe('data-analyst');
@@ -744,7 +796,7 @@ describe('Persona operations', () => {
         token: 'test-token',
       });
 
-      await client.listPersonas({ limit: 5 });
+      await client.personas.list({ limit: 5 });
 
       const url = mockFetch.mock.calls[0][0] as string;
       expect(url).toContain('https://openmetadata.example.com/api/v1/agents/personas');
@@ -774,7 +826,7 @@ describe('Persona operations', () => {
         token: 'test-token',
       });
 
-      const persona = await client.getPersona('data-analyst');
+      const persona = await client.personas.get('data-analyst');
 
       expect(persona.id).toBe('persona-1');
       expect(persona.name).toBe('data-analyst');
@@ -797,7 +849,7 @@ describe('Persona operations', () => {
         token: 'test-token',
       });
 
-      await client.getPersona('my-persona');
+      await client.personas.get('my-persona');
 
       const url = mockFetch.mock.calls[0][0] as string;
       expect(url).toBe('https://openmetadata.example.com/api/v1/agents/personas/name/my-persona');
@@ -817,7 +869,7 @@ describe('Persona operations', () => {
         token: 'test-token',
       });
 
-      await expect(client.getPersona('non-existent-persona')).rejects.toThrow(
+      await expect(client.personas.get('non-existent-persona')).rejects.toThrow(
         PersonaNotFoundError
       );
     });
@@ -844,7 +896,7 @@ describe('Persona operations', () => {
         token: 'test-token',
       });
 
-      const persona = await client.createPersona({
+      const persona = await client.personas.create({
         name: 'custom-analyst',
         description: 'A custom data analyst persona',
         prompt: 'You are a custom analyst...',
@@ -872,7 +924,7 @@ describe('Persona operations', () => {
         token: 'test-token',
       });
 
-      await client.createPersona({
+      await client.personas.create({
         name: 'test-persona',
         description: 'Test description',
         prompt: 'Test prompt',
@@ -904,7 +956,7 @@ describe('Persona operations', () => {
         token: 'test-token',
       });
 
-      await client.createPersona({
+      await client.personas.create({
         name: 'test-persona',
         description: 'Test',
         prompt: 'Test',
@@ -913,6 +965,132 @@ describe('Persona operations', () => {
       const requestBody = JSON.parse(mockFetch.mock.calls[0][1].body);
       expect(requestBody.provider).toBe('user');
     });
+  });
+});
+
+describe('default agent', () => {
+  beforeEach(() => {
+    mockFetch.mockReset();
+  });
+
+  afterEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it('client.agent() creates a conversation then calls invoke', async () => {
+    mockFetch
+      .mockResolvedValueOnce({
+        ok: true,
+        json: () =>
+          Promise.resolve({ id: '11111111-1111-1111-1111-111111111111' }),
+      })
+      .mockResolvedValueOnce({
+        ok: true,
+        json: () =>
+          Promise.resolve({
+            conversationId: '11111111-1111-1111-1111-111111111111',
+            response: 'hello',
+            toolsUsed: [],
+          }),
+      });
+
+    const client = new AISdk({
+      host: 'https://metadata.example.com',
+      token: 'tkn',
+    });
+    const response = await client.agent().invoke('Say hi');
+    expect(response.response).toBe('hello');
+    expect(mockFetch).toHaveBeenCalledTimes(2);
+
+    const firstUrl = mockFetch.mock.calls[0][0] as string;
+    expect(firstUrl).toContain('/api/v1/assistants/chatConversations');
+
+    const secondUrl = mockFetch.mock.calls[1][0] as string;
+    expect(secondUrl).toContain('/api/v1/agents/invoke');
+
+    const requestInit = mockFetch.mock.calls[1][1] as RequestInit;
+    const body = JSON.parse(requestInit.body as string);
+    expect(body.message).toBe('Say hi');
+    expect(body.conversationId).toBe('11111111-1111-1111-1111-111111111111');
+    expect(body.agentType).toBe('PLANNER');
+    expect(body.agentMode).toBe('CHAT_MODE');
+  });
+
+  it('client.agent() surfaces thinkingSteps from the response', async () => {
+    mockFetch
+      .mockResolvedValueOnce({
+        ok: true,
+        json: () =>
+          Promise.resolve({ id: '55555555-5555-5555-5555-555555555555' }),
+      })
+      .mockResolvedValueOnce({
+        ok: true,
+        json: () =>
+          Promise.resolve({
+            conversationId: '55555555-5555-5555-5555-555555555555',
+            response: 'Found it.',
+            toolsUsed: [],
+            thinkingSteps: ['Exploring assets...', 'Synthesizing answer...'],
+          }),
+      });
+
+    const client = new AISdk({
+      host: 'https://metadata.example.com',
+      token: 'tkn',
+    });
+    const response = await client.agent().invoke('question');
+    expect(response.response).toBe('Found it.');
+    expect(response.thinkingSteps).toEqual(['Exploring assets...', 'Synthesizing answer...']);
+  });
+
+  it('client.agent() defaults thinkingSteps to [] when absent', async () => {
+    mockFetch
+      .mockResolvedValueOnce({
+        ok: true,
+        json: () =>
+          Promise.resolve({ id: '11111111-1111-1111-1111-111111111111' }),
+      })
+      .mockResolvedValueOnce({
+        ok: true,
+        json: () =>
+          Promise.resolve({
+            conversationId: '11111111-1111-1111-1111-111111111111',
+            response: 'hello',
+            toolsUsed: [],
+          }),
+      });
+
+    const client = new AISdk({
+      host: 'https://metadata.example.com',
+      token: 'tkn',
+    });
+    const response = await client.agent().invoke('Say hi');
+    expect(response.thinkingSteps).toEqual([]);
+  });
+
+  it('client.agent() reuses an existing conversation when conversationId is provided', async () => {
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      json: () =>
+        Promise.resolve({
+          conversationId: '22222222-2222-2222-2222-222222222222',
+          response: 'reuse ok',
+          toolsUsed: [],
+        }),
+    });
+
+    const client = new AISdk({
+      host: 'https://metadata.example.com',
+      token: 'tkn',
+    });
+    const response = await client
+      .agent()
+      .invoke('continue', { conversationId: '22222222-2222-2222-2222-222222222222' });
+
+    expect(response.response).toBe('reuse ok');
+    expect(mockFetch).toHaveBeenCalledTimes(1); // no conversation creation
+    const url = mockFetch.mock.calls[0][0] as string;
+    expect(url).toContain('/api/v1/agents/invoke');
   });
 });
 
@@ -975,7 +1153,7 @@ describe('Agent creation', () => {
         token: 'test-token',
       });
 
-      const agent = await client.createAgent({
+      const agent = await client.agents.create({
         name: 'my-custom-agent',
         description: 'A custom agent for data analysis',
         persona: 'data-analyst',
@@ -1021,7 +1199,7 @@ describe('Agent creation', () => {
         token: 'test-token',
       });
 
-      await client.createAgent({
+      await client.agents.create({
         name: 'test-agent',
         description: 'Test description',
         persona: 'my-persona',
@@ -1072,7 +1250,7 @@ describe('Agent creation', () => {
         token: 'test-token',
       });
 
-      await client.createAgent({
+      await client.agents.create({
         name: 'test-agent',
         description: 'Test',
         persona: 'test-persona',
@@ -1081,7 +1259,7 @@ describe('Agent creation', () => {
 
       // The POST request is the second call (after persona GET)
       const url = mockFetch.mock.calls[1][0] as string;
-      expect(url).toBe('https://openmetadata.example.com/api/v1/agents/dynamic');
+      expect(url).toBe('https://openmetadata.example.com/api/v1/agents/dynamic/');
     });
 
     it('should include knowledge scope when provided', async () => {
@@ -1114,7 +1292,7 @@ describe('Agent creation', () => {
         token: 'test-token',
       });
 
-      await client.createAgent({
+      await client.agents.create({
         name: 'test-agent',
         description: 'Test',
         persona: 'test-persona',

@@ -10,7 +10,9 @@ import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
@@ -29,6 +31,9 @@ public class AISdkHttpClient implements AutoCloseable {
   private static final String BOTS_API_PATH = "/api/v1/bots";
   private static final String PERSONAS_API_PATH = "/api/v1/agents/personas";
   private static final String ABILITIES_API_PATH = "/api/v1/agents/abilities";
+  private static final String CHAT_CONVERSATIONS_PATH = "/api/v1/assistants/chatConversations";
+  private static final String DEFAULT_AGENT_INVOKE_PATH = "/api/v1/agents/invoke";
+  private static final String DEFAULT_AGENT_RUN_PATH = "/api/v1/agents/run";
   private static final String CONTENT_TYPE_JSON = "application/json";
   private static final String ACCEPT_SSE = "text/event-stream";
 
@@ -43,14 +48,37 @@ public class AISdkHttpClient implements AutoCloseable {
 
   public AISdkHttpClient(
       String host, String token, Duration timeout, int maxRetries, Duration retryDelay) {
+    this(host, token, timeout, maxRetries, retryDelay, API_BASE_PATH);
+  }
+
+  /** Variant that lets callers pin this client to a specific base path. */
+  public AISdkHttpClient(
+      String host,
+      String token,
+      Duration timeout,
+      int maxRetries,
+      Duration retryDelay,
+      String basePath) {
     this.host = normalizeHost(host);
-    this.baseUrl = this.host + API_BASE_PATH;
+    this.baseUrl = this.host + basePath;
     this.token = token;
+    // Only set connectTimeout (TCP connect). We deliberately do NOT call
+    // HttpRequest.Builder.timeout(...) on individual requests, because the
+    // per-request timeout bounds the entire response — including the body
+    // read — and that would cut long-running agent SSE streams mid-flight.
+    // SSE streams can run for many minutes; the stream's own events signal
+    // liveness. The same HttpClient is therefore safe to share across
+    // streaming and non-streaming calls.
     this.httpClient = HttpClient.newBuilder().connectTimeout(timeout).build();
     this.objectMapper = new ObjectMapper();
     this.sseParser = new SseParser(objectMapper);
     this.maxRetries = maxRetries;
     this.retryDelay = retryDelay;
+  }
+
+  /** Returns this client's resolved base URL (host + basePath). */
+  public String getBaseUrl() {
+    return baseUrl;
   }
 
   private String normalizeHost(String host) {
@@ -210,7 +238,12 @@ public class AISdkHttpClient implements AutoCloseable {
     }
   }
 
-  /** Invokes an agent with streaming, calling the consumer for each event. */
+  /**
+   * Invokes an agent with streaming, calling the consumer for each event.
+   *
+   * <p>Note: the {@link HttpRequest} below intentionally does NOT call {@code .timeout(...)} — SSE
+   * streams from agent runs can take many minutes, and the stream's own events signal liveness.
+   */
   public void stream(
       String agentName, InvokeRequest invokeRequest, Consumer<StreamEvent> eventConsumer) {
     String encodedName = URLEncoder.encode(agentName, StandardCharsets.UTF_8);
@@ -251,6 +284,9 @@ public class AISdkHttpClient implements AutoCloseable {
   /**
    * Invokes an agent with streaming, returning a Stream of events. The caller must close the
    * returned Stream when done.
+   *
+   * <p>Note: the {@link HttpRequest} below intentionally does NOT call {@code .timeout(...)} — SSE
+   * streams from agent runs can take many minutes, and the stream's own events signal liveness.
    */
   public Stream<StreamEvent> streamIterator(String agentName, InvokeRequest invokeRequest) {
     String encodedName = URLEncoder.encode(agentName, StandardCharsets.UTF_8);
@@ -284,6 +320,144 @@ public class AISdkHttpClient implements AutoCloseable {
       }
       throw new AISdkException("Stream request failed: " + e.getMessage(), e);
     }
+  }
+
+  // ==================== Default Agent Operations ====================
+
+  public String createChatConversation(String title) {
+    String requestBody;
+    try {
+      requestBody =
+          objectMapper.writeValueAsString(java.util.Collections.singletonMap("title", title));
+    } catch (JsonProcessingException e) {
+      throw new AISdkException("Failed to serialize conversation create request", e);
+    }
+
+    HttpRequest request =
+        HttpRequest.newBuilder()
+            .uri(URI.create(host + CHAT_CONVERSATIONS_PATH))
+            .header("Authorization", "Bearer " + token)
+            .header("Content-Type", CONTENT_TYPE_JSON)
+            .header("Accept", CONTENT_TYPE_JSON)
+            .POST(HttpRequest.BodyPublishers.ofString(requestBody))
+            .build();
+
+    HttpResponse<String> response = executeWithRetry(request);
+    try {
+      JsonNode root = objectMapper.readTree(response.body());
+      JsonNode idNode = root.get("id");
+      if (idNode == null || idNode.isNull()) {
+        throw new AISdkException("Conversation create response missing 'id' field");
+      }
+      return idNode.asText();
+    } catch (JsonProcessingException e) {
+      throw new AISdkException("Failed to parse conversation create response", e);
+    }
+  }
+
+  public InvokeResponse invokeDefaultAgent(
+      String message, String conversationId, String agentType, String agentMode) {
+    java.util.Map<String, String> body = new java.util.LinkedHashMap<>();
+    body.put("message", message);
+    body.put("conversationId", conversationId);
+    body.put("agentType", agentType);
+    body.put("agentMode", agentMode);
+
+    String requestBody;
+    try {
+      requestBody = objectMapper.writeValueAsString(body);
+    } catch (JsonProcessingException e) {
+      throw new AISdkException("Failed to serialize default agent invoke request", e);
+    }
+
+    HttpRequest request =
+        HttpRequest.newBuilder()
+            .uri(URI.create(host + DEFAULT_AGENT_INVOKE_PATH))
+            .header("Authorization", "Bearer " + token)
+            .header("Content-Type", CONTENT_TYPE_JSON)
+            .header("Accept", CONTENT_TYPE_JSON)
+            .POST(HttpRequest.BodyPublishers.ofString(requestBody))
+            .build();
+
+    HttpResponse<String> response = executeWithRetry(request);
+    try {
+      return objectMapper.readValue(response.body(), InvokeResponse.class);
+    } catch (JsonProcessingException e) {
+      throw new AISdkException("Failed to parse default agent invoke response", e);
+    }
+  }
+
+  public void streamDefaultAgent(
+      String message,
+      String conversationId,
+      String agentType,
+      String agentMode,
+      Consumer<StreamEvent> eventConsumer) {
+    HttpRequest request =
+        buildDefaultAgentRunRequest(message, conversationId, agentType, agentMode);
+
+    try {
+      HttpResponse<InputStream> response =
+          httpClient.send(request, HttpResponse.BodyHandlers.ofInputStream());
+      handleErrorStatus(response.statusCode(), null, parseRetryAfter(response));
+
+      try (InputStream inputStream = response.body()) {
+        sseParser.parse(inputStream, eventConsumer);
+      }
+    } catch (AISdkException e) {
+      throw e;
+    } catch (IOException | InterruptedException e) {
+      if (e instanceof InterruptedException) {
+        Thread.currentThread().interrupt();
+      }
+      throw new AISdkException("Default agent stream request failed: " + e.getMessage(), e);
+    }
+  }
+
+  public Stream<StreamEvent> streamDefaultAgentIterator(
+      String message, String conversationId, String agentType, String agentMode) {
+    HttpRequest request =
+        buildDefaultAgentRunRequest(message, conversationId, agentType, agentMode);
+
+    try {
+      HttpResponse<InputStream> response =
+          httpClient.send(request, HttpResponse.BodyHandlers.ofInputStream());
+      handleErrorStatus(response.statusCode(), null, parseRetryAfter(response));
+
+      return sseParser.parseAsStream(response.body());
+    } catch (AISdkException e) {
+      throw e;
+    } catch (IOException | InterruptedException e) {
+      if (e instanceof InterruptedException) {
+        Thread.currentThread().interrupt();
+      }
+      throw new AISdkException("Default agent stream request failed: " + e.getMessage(), e);
+    }
+  }
+
+  private HttpRequest buildDefaultAgentRunRequest(
+      String message, String conversationId, String agentType, String agentMode) {
+    java.util.Map<String, String> body = new java.util.LinkedHashMap<>();
+    body.put("message", message);
+    body.put("conversationId", conversationId);
+    body.put("agentType", agentType);
+    body.put("agentMode", agentMode);
+
+    String requestBody;
+    try {
+      requestBody = objectMapper.writeValueAsString(body);
+    } catch (JsonProcessingException e) {
+      throw new AISdkException("Failed to serialize default agent run request", e);
+    }
+
+    // Intentionally no .timeout(...) — see streamIterator() Javadoc.
+    return HttpRequest.newBuilder()
+        .uri(URI.create(host + DEFAULT_AGENT_RUN_PATH))
+        .header("Authorization", "Bearer " + token)
+        .header("Content-Type", CONTENT_TYPE_JSON)
+        .header("Accept", ACCEPT_SSE)
+        .POST(HttpRequest.BodyPublishers.ofString(requestBody))
+        .build();
   }
 
   // ==================== Bot Operations ====================
@@ -661,6 +835,91 @@ public class AISdkHttpClient implements AutoCloseable {
       Thread.sleep(duration.toMillis());
     } catch (InterruptedException e) {
       Thread.currentThread().interrupt();
+    }
+  }
+
+  // ==================== Generic Helpers (used by API namespaces) ====================
+
+  /** GETs a path relative to baseUrl, returning the parsed JSON body as a map. */
+  public Map<String, Object> getMap(String path, Map<String, Object> params) {
+    String url = buildUrl(path, params);
+    HttpRequest request =
+        HttpRequest.newBuilder()
+            .uri(URI.create(url))
+            .header("Authorization", "Bearer " + token)
+            .header("Accept", CONTENT_TYPE_JSON)
+            .GET()
+            .build();
+    HttpResponse<String> response = executeWithRetry(request);
+    return parseMap(response.body());
+  }
+
+  /** POSTs a JSON body to a path relative to baseUrl, returning the response as a map. */
+  public Map<String, Object> postMap(String path, Object body) {
+    String requestBody;
+    try {
+      requestBody = objectMapper.writeValueAsString(body);
+    } catch (JsonProcessingException e) {
+      throw new AISdkException("Failed to serialize request body", e);
+    }
+    String url = buildUrl(path, null);
+    HttpRequest request =
+        HttpRequest.newBuilder()
+            .uri(URI.create(url))
+            .header("Authorization", "Bearer " + token)
+            .header("Content-Type", CONTENT_TYPE_JSON)
+            .header("Accept", CONTENT_TYPE_JSON)
+            .POST(HttpRequest.BodyPublishers.ofString(requestBody))
+            .build();
+    HttpResponse<String> response = executeWithRetry(request);
+    return parseMap(response.body());
+  }
+
+  /** DELETEs a path relative to baseUrl with optional query parameters. */
+  public void delete(String path, Map<String, Object> params) {
+    String url = buildUrl(path, params);
+    HttpRequest request =
+        HttpRequest.newBuilder()
+            .uri(URI.create(url))
+            .header("Authorization", "Bearer " + token)
+            .header("Accept", CONTENT_TYPE_JSON)
+            .DELETE()
+            .build();
+    executeWithRetry(request);
+  }
+
+  private String buildUrl(String path, Map<String, Object> params) {
+    StringBuilder sb = new StringBuilder(baseUrl);
+    if (path != null && !path.isEmpty() && !path.equals("/")) {
+      if (!path.startsWith("/")) {
+        sb.append("/");
+      }
+      sb.append(path);
+    }
+    if (params != null && !params.isEmpty()) {
+      char sep = sb.indexOf("?") >= 0 ? '&' : '?';
+      for (Map.Entry<String, Object> entry : params.entrySet()) {
+        if (entry.getValue() == null) {
+          continue;
+        }
+        sb.append(sep);
+        sb.append(URLEncoder.encode(entry.getKey(), StandardCharsets.UTF_8));
+        sb.append('=');
+        sb.append(URLEncoder.encode(String.valueOf(entry.getValue()), StandardCharsets.UTF_8));
+        sep = '&';
+      }
+    }
+    return sb.toString();
+  }
+
+  private Map<String, Object> parseMap(String body) {
+    if (body == null || body.isEmpty()) {
+      return new LinkedHashMap<>();
+    }
+    try {
+      return objectMapper.readValue(body, new TypeReference<Map<String, Object>>() {});
+    } catch (JsonProcessingException e) {
+      throw new AISdkException("Failed to parse response body", e);
     }
   }
 

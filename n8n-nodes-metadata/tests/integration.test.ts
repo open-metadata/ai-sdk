@@ -37,7 +37,7 @@ describe.skipIf(!shouldRun)('n8n Node Integration Tests', () => {
     });
 
     it('should list agents via SDK', async () => {
-      const agents = await client.listAgents();
+      const agents = await client.agents.list();
       expect(Array.isArray(agents)).toBe(true);
       console.log(`SDK connection verified: Found ${agents.length} agents`);
     });

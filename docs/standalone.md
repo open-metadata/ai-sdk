@@ -257,7 +257,7 @@ for event in conv.stream("Analyze this table"):
 Discover available API-enabled agents:
 
 ```python
-agents = client.list_agents(limit=20)
+agents = client.agents.list(limit=20)
 
 for agent in agents:
     print(f"Name: {agent.name}")
@@ -287,7 +287,7 @@ Create new dynamic agents programmatically:
 from ai_sdk.models import CreateAgentRequest
 
 # Create a simple agent
-agent = client.create_agent(CreateAgentRequest(
+agent = client.agents.create(CreateAgentRequest(
     name="MyDataAgent",
     description="An agent for data analysis tasks",
     persona="DataAnalyst",  # Name of an existing persona
@@ -296,7 +296,7 @@ agent = client.create_agent(CreateAgentRequest(
 print(f"Created agent: {agent.name}")
 
 # Create an agent with full configuration
-agent = client.create_agent(CreateAgentRequest(
+agent = client.agents.create(CreateAgentRequest(
     name="AdvancedAgent",
     description="An advanced agent with custom configuration",
     persona="DataAnalyst",
@@ -333,12 +333,12 @@ Bots are service accounts used for API authentication and actions.
 
 ```python
 # List all bots
-bots = client.list_bots(limit=20)
+bots = client.bots.list(limit=20)
 for bot in bots:
     print(f"{bot.name}: {bot.display_name}")
 
 # Get a specific bot
-bot = client.get_bot("my-bot-name")
+bot = client.bots.get("my-bot-name")
 print(f"Bot: {bot.name}")
 print(f"Display Name: {bot.display_name}")
 ```
@@ -357,7 +357,7 @@ print(f"Display Name: {bot.display_name}")
 from ai_sdk.exceptions import BotNotFoundError
 
 try:
-    bot = client.get_bot("nonexistent-bot")
+    bot = client.bots.get("nonexistent-bot")
 except BotNotFoundError as e:
     print(f"Bot not found: {e.bot_name}")
 ```
@@ -370,17 +370,17 @@ Personas define the behavior and personality of agents.
 from ai_sdk.models import CreatePersonaRequest
 
 # List all personas
-personas = client.list_personas(limit=20)
+personas = client.personas.list(limit=20)
 for persona in personas:
     print(f"{persona.name}: {persona.description}")
 
 # Get a specific persona
-persona = client.get_persona("DataAnalyst")
+persona = client.personas.get("DataAnalyst")
 print(f"Persona: {persona.name}")
 print(f"Prompt: {persona.prompt[:100]}...")
 
 # Create a new persona
-new_persona = client.create_persona(CreatePersonaRequest(
+new_persona = client.personas.create(CreatePersonaRequest(
     name="CustomAnalyst",
     description="A specialized analyst for custom domains",
     prompt="You are an expert analyst who helps users understand complex data...",
@@ -413,7 +413,7 @@ print(f"Created persona: {new_persona.name}")
 from ai_sdk.exceptions import PersonaNotFoundError
 
 try:
-    persona = client.get_persona("nonexistent")
+    persona = client.personas.get("nonexistent")
 except PersonaNotFoundError as e:
     print(f"Persona not found: {e.persona_name}")
 ```
@@ -424,12 +424,12 @@ Abilities are capabilities that can be assigned to agents.
 
 ```python
 # List all abilities
-abilities = client.list_abilities(limit=50)
+abilities = client.abilities.list(limit=50)
 for ability in abilities:
     print(f"{ability.name}: {ability.description}")
 
 # Get a specific ability
-ability = client.get_ability("search")
+ability = client.abilities.get("search")
 print(f"Ability: {ability.name}")
 print(f"Description: {ability.description}")
 ```
@@ -448,7 +448,7 @@ print(f"Description: {ability.description}")
 from ai_sdk.exceptions import AbilityNotFoundError
 
 try:
-    ability = client.get_ability("nonexistent")
+    ability = client.abilities.get("nonexistent")
 except AbilityNotFoundError as e:
     print(f"Ability not found: {e.ability_name}")
 ```
@@ -480,7 +480,7 @@ async def main():
             print(event.content, end="")
 
     # Async list
-    agents = await client.alist_agents()
+    agents = await client.agents.alist()
 
     # Cleanup
     await client.aclose()
@@ -710,22 +710,22 @@ def main():
     try:
         # List available agents
         print("Available agents:")
-        for agent in client.list_agents():
+        for agent in client.agents.list():
             print(f"  - {agent.name}: {agent.description[:50]}...")
 
         # List bots
         print("\n--- Bots ---")
-        for bot in client.list_bots():
+        for bot in client.bots.list():
             print(f"  - {bot.name}: {bot.display_name}")
 
         # List personas
         print("\n--- Personas ---")
-        for persona in client.list_personas():
+        for persona in client.personas.list():
             print(f"  - {persona.name}: {persona.description[:50]}...")
 
         # List abilities
         print("\n--- Abilities ---")
-        for ability in client.list_abilities():
+        for ability in client.abilities.list():
             print(f"  - {ability.name}: {ability.description[:50]}...")
 
         # Simple invocation
@@ -750,7 +750,7 @@ def main():
 
         # Create a persona (uncomment to run)
         # print("\n--- Create Persona ---")
-        # persona = client.create_persona(CreatePersonaRequest(
+        # persona = client.personas.create(CreatePersonaRequest(
         #     name="MyCustomPersona",
         #     description="A custom persona for testing",
         #     prompt="You are a helpful assistant..."
@@ -759,7 +759,7 @@ def main():
 
         # Create an agent (uncomment to run)
         # print("\n--- Create Agent ---")
-        # new_agent = client.create_agent(CreateAgentRequest(
+        # new_agent = client.agents.create(CreateAgentRequest(
         #     name="MyCustomAgent",
         #     description="A custom agent for testing",
         #     persona="DataAnalyst",

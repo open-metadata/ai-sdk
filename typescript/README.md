@@ -21,7 +21,10 @@ const client = new AISdk({
   token: 'your-bot-jwt-token',
 });
 
-// Invoke an agent
+// default AskCollate agent
+const defaultResponse = await client.agent().invoke('What tables have quality issues?');
+
+// Named dynamic agent
 const response = await client.agent('DataQualityPlannerAgent')
   .invoke('What tables have quality issues?');
 
@@ -86,7 +89,7 @@ console.log(r2.response);
 ### List Available Agents
 
 ```typescript
-const agents = await client.listAgents();
+const agents = await client.agents.list();
 
 for (const agent of agents) {
   console.log(`${agent.displayName}: ${agent.description}`);
@@ -94,7 +97,7 @@ for (const agent of agents) {
 }
 
 // With pagination
-const moreAgents = await client.listAgents({ limit: 20, offset: 10 });
+const moreAgents = await client.agents.list({ limit: 20 });
 ```
 
 ### Get Agent Information
@@ -112,10 +115,11 @@ console.log('API Enabled:', info.apiEnabled);
 ### Create Agents
 
 ```typescript
-const newAgent = await client.createAgent({
+const newAgent = await client.agents.create({
   name: 'MyCustomAgent',
   description: 'A custom agent for data analysis',
   persona: 'DataAnalyst',
+  mode: 'chat',
   apiEnabled: true,
   abilities: ['search', 'query'],
 });
@@ -127,13 +131,13 @@ console.log('Created agent:', newAgent.name);
 
 ```typescript
 // List all bots
-const bots = await client.listBots();
+const bots = await client.bots.list();
 for (const bot of bots) {
   console.log(`${bot.name}: ${bot.displayName}`);
 }
 
 // Get a specific bot
-const bot = await client.getBot('my-bot-name');
+const bot = await client.bots.get('my-bot-name');
 console.log('Bot:', bot.name);
 ```
 
@@ -141,16 +145,16 @@ console.log('Bot:', bot.name);
 
 ```typescript
 // List all personas
-const personas = await client.listPersonas();
+const personas = await client.personas.list();
 for (const persona of personas) {
   console.log(`${persona.name}: ${persona.description}`);
 }
 
 // Get a specific persona
-const persona = await client.getPersona('DataAnalyst');
+const persona = await client.personas.get('DataAnalyst');
 
 // Create a new persona
-const newPersona = await client.createPersona({
+const newPersona = await client.personas.create({
   name: 'CustomAnalyst',
   description: 'A specialized data analyst',
   prompt: 'You are an expert data analyst who helps users understand their data...',
@@ -162,14 +166,49 @@ console.log('Created persona:', newPersona.name);
 
 ```typescript
 // List all abilities
-const abilities = await client.listAbilities();
+const abilities = await client.abilities.list();
 for (const ability of abilities) {
   console.log(`${ability.name}: ${ability.description}`);
 }
 
 // Get a specific ability
-const ability = await client.getAbility('search');
+const ability = await client.abilities.get('search');
 console.log('Ability:', ability.name);
+```
+
+### Context Memories
+
+```typescript
+// List memories
+const memories = await client.memories.list();
+
+// Filter by primary entity
+const tableMemories = await client.memories.list({
+  primaryEntityFqn: 'service.db.schema.tbl',
+});
+
+// Get one
+const memory = await client.memories.get(memories[0].id);
+
+// Create
+const created = await client.memories.create({
+  name: 'preferred-tooling',
+  question: 'Which tool should I use for transformations?',
+  answer: 'Use dbt for SQL-first transformations.',
+  memoryType: 'Preference',
+  visibility: 'Shared',
+  tags: ['Preference.Tooling'],
+});
+
+// Hybrid NLQ search
+const results = await client.memories.search('customer churn', { size: 10 });
+for (const hit of results.hits) {
+  console.log(`[${hit.score.toFixed(2)}] ${hit.memory.title}`);
+}
+
+// Delete (soft delete by default)
+await client.memories.delete(created.id);
+await client.memories.delete(created.id, { hardDelete: true });
 ```
 
 ## Configuration Options
@@ -181,7 +220,9 @@ const client = new AISdk({
   token: 'your-jwt-token',               // Bot JWT token
 
   // Optional
-  timeout: 120000,    // Request timeout in ms (default: 120000)
+  timeout: 900000,    // Non-streaming request timeout in ms (default: 900000).
+                      // Streaming (`stream` / `streamContent`) ignores this and runs
+                      // until the server closes the stream.
   maxRetries: 3,      // Max retry attempts (default: 3)
   retryDelay: 1000,   // Base retry delay in ms (default: 1000)
 });

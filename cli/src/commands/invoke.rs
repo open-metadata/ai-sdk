@@ -2,15 +2,19 @@
 
 use crate::client::{AISdkClient, InvokeResponse};
 use crate::config::ResolvedConfig;
-use crate::error::CliResult;
+use crate::error::{CliError, CliResult};
 use crate::streaming::{process_stream_with_debug, Sender};
 use colored::Colorize;
 use std::io::{self, Write};
 
 /// Invoke an agent synchronously.
+///
+/// When `use_default` is `true` (or `agent_name` is `None`), the platform's
+/// default agent (PLANNER / CHAT_MODE) is used instead of a named dynamic agent.
 pub async fn run_invoke(
     profile: &str,
-    agent_name: &str,
+    agent_name: Option<&str>,
+    use_default: bool,
     message: Option<&str>,
     conversation_id: Option<&str>,
     json_output: bool,
@@ -18,7 +22,15 @@ pub async fn run_invoke(
     let config = ResolvedConfig::load(profile)?;
     let client = AISdkClient::new(&config)?;
 
-    let response = client.invoke(agent_name, message, conversation_id).await?;
+    let response = match (use_default, agent_name) {
+        (false, Some(name)) => client.invoke(name, message, conversation_id).await?,
+        _ => {
+            let msg = message.ok_or_else(|| {
+                CliError::Other("A message is required when using the default agent".into())
+            })?;
+            client.invoke_default_agent(msg, conversation_id).await?
+        }
+    };
 
     if json_output {
         print_json(&response)?;
@@ -30,9 +42,14 @@ pub async fn run_invoke(
 }
 
 /// Invoke an agent with streaming output.
+///
+/// When `use_default` is `true` (or `agent_name` is `None`), the platform's
+/// default agent (PLANNER / CHAT_MODE) is used instead of a named dynamic agent.
+#[allow(clippy::too_many_arguments)]
 pub async fn run_stream(
     profile: &str,
-    agent_name: &str,
+    agent_name: Option<&str>,
+    use_default: bool,
     message: Option<&str>,
     conversation_id: Option<&str>,
     json_output: bool,
@@ -42,7 +59,15 @@ pub async fn run_stream(
     let config = ResolvedConfig::load(profile)?;
     let client = AISdkClient::new(&config)?;
 
-    let response = client.stream(agent_name, message, conversation_id).await?;
+    let response = match (use_default, agent_name) {
+        (false, Some(name)) => client.stream(name, message, conversation_id).await?,
+        _ => {
+            let msg = message.ok_or_else(|| {
+                CliError::Other("A message is required when using the default agent".into())
+            })?;
+            client.stream_default_agent(msg, conversation_id).await?
+        }
+    };
 
     if json_output {
         // For JSON output, collect all content and output as JSON at the end
@@ -80,6 +105,7 @@ pub async fn run_stream(
             conversation_id: final_conversation_id.unwrap_or_default(),
             response: full_content,
             tools_used,
+            thinking_steps: Vec::new(),
             usage: None,
         };
 
@@ -93,15 +119,15 @@ pub async fn run_stream(
             |message| {
                 match message.sender {
                     Sender::System => {
-                        // System messages are "thinking" content
+                        // System messages are "thinking" content. Each step
+                        // is a discrete reasoning event, so render one per
+                        // line for readability.
                         if show_thinking {
                             let text = message.text_content();
                             if !text.is_empty() {
-                                if !in_thinking {
-                                    in_thinking = true;
-                                }
-                                // Display thinking in grey
-                                print!("{}", text.bright_black());
+                                in_thinking = true;
+                                let trimmed = text.trim_end();
+                                println!("{}", trimmed.bright_black());
                                 let _ = io::stdout().flush();
                             }
                         }

@@ -11,7 +11,7 @@ def test_get_bot_encodes_name_with_slash():
     client._bots_http = MagicMock()
     client._bots_http.get.return_value = {"id": "123", "name": "test/bot"}
 
-    client.get_bot("test/bot")
+    client.bots.get("test/bot")
 
     client._bots_http.get.assert_called_once()
     call_args = client._bots_http.get.call_args
@@ -25,7 +25,7 @@ def test_get_bot_encodes_name_with_spaces():
     client._bots_http = MagicMock()
     client._bots_http.get.return_value = {"id": "123", "name": "my bot"}
 
-    client.get_bot("my bot")
+    client.bots.get("my bot")
 
     client._bots_http.get.assert_called_once()
     call_args = client._bots_http.get.call_args
@@ -43,7 +43,7 @@ def test_get_persona_encodes_name_with_special_chars():
         "provider": "user",
     }
 
-    client.get_persona("test&persona")
+    client.personas.get("test&persona")
 
     client._personas_http.get.assert_called_once()
     call_args = client._personas_http.get.call_args

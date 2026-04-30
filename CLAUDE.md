@@ -70,11 +70,27 @@ make install-hooks     # Install pre-commit hooks
 
 ```
 client = AISdk(host, token)
+
+# default AskCollate agent
+response = client.agent().invoke("message")
+
+# Named dynamic agent
 response = client.agent("agent-name").invoke("message")
 
-# Streaming
-for event in client.agent("agent-name").stream("message"):
+# Streaming (works with both)
+for event in client.agent().stream("message"):
     handle(event)
+
+# Entity CRUD lives on namespaces (composition pattern)
+client.agents.list()
+client.bots.get("ingestion-bot")
+client.personas.list()
+client.abilities.get("DataQuality")
+
+# Context Center memories
+client.memories.list(primary_entity_fqn="db.tbl")
+client.memories.create(CreateContextMemoryRequest(name="m1", question="...", answer="..."))
+results = client.memories.search("explain customer churn")
 ```
 
 ### Event Types (Streaming)

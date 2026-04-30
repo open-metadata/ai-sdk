@@ -6,4 +6,5 @@ pub mod bots;
 pub mod chat;
 pub mod configure;
 pub mod invoke;
+pub mod memories;
 pub mod personas;

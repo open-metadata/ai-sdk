@@ -65,10 +65,17 @@ impl DisplayMessage {
 /// Spinner animation frames.
 const SPINNER_FRAMES: &[char] = &['⠋', '⠙', '⠹', '⠸', '⠼', '⠴', '⠦', '⠧', '⠇', '⠏'];
 
+/// Sentinel id for the synthetic "AskCollate (default agent)" entry shown
+/// at the top of the agent selection menu. Selecting an item with this id
+/// routes the chat to the platform's default agent (no specific agent name).
+pub const DEFAULT_AGENT_ITEM_ID: &str = "__default_agent__";
+
 /// Main application state.
 pub struct App {
-    /// Name of the agent being chatted with.
+    /// Name of the agent being chatted with (display label in TUI header).
     pub agent_name: String,
+    /// Whether to use the platform's default agent (PLANNER / CHAT_MODE).
+    pub use_default: bool,
     /// Conversation ID for multi-turn conversations.
     pub conversation_id: Option<String>,
     /// Chat message history.
@@ -99,11 +106,12 @@ pub struct App {
 
 impl App {
     /// Create a new app instance.
-    pub fn new(agent_name: String, conversation_id: Option<String>) -> Self {
+    pub fn new(agent_name: String, conversation_id: Option<String>, use_default: bool) -> Self {
         let mut agent_select = SingleSelect::new("Select Agent");
         agent_select.focused = true;
         Self {
             agent_name,
+            use_default,
             conversation_id,
             messages: Vec::new(),
             input: String::new(),
@@ -153,8 +161,15 @@ impl App {
         self.streaming_content.push_str(content);
     }
 
-    /// Append thinking content during streaming.
+    /// Append a thinking step during streaming.
+    ///
+    /// Each call is a discrete reasoning step, so we ensure it lands on its
+    /// own line in the rendered output. If the buffer already has content
+    /// that doesn't end in a newline, we insert one before appending.
     pub fn append_thinking_content(&mut self, content: &str) {
+        if !self.thinking_content.is_empty() && !self.thinking_content.ends_with('\n') {
+            self.thinking_content.push('\n');
+        }
         self.thinking_content.push_str(content);
     }
 
@@ -261,20 +276,40 @@ impl App {
     }
 
     /// Show the agent selection menu.
+    ///
+    /// A synthetic "AskCollate" entry is prepended to the list as the
+    /// default option — selecting it routes the chat to the platform's
+    /// default agent rather than a named dynamic agent.
     pub fn show_agents(&mut self, agents: Vec<String>) {
-        let items: Vec<SelectItem> = agents
-            .into_iter()
-            .map(|name| SelectItem::new(name.clone(), name))
-            .collect();
+        let mut items: Vec<SelectItem> = Vec::with_capacity(agents.len() + 1);
+        items.push(
+            SelectItem::new(DEFAULT_AGENT_ITEM_ID, "AskCollate")
+                .display_name("AskCollate (default)"),
+        );
+        items.extend(
+            agents
+                .into_iter()
+                .map(|name| SelectItem::new(name.clone(), name)),
+        );
         self.agent_select.set_items(items);
         self.agent_select.focused = true;
         self.show_agent_menu = true;
     }
 
     /// Select the current agent from menu.
+    ///
+    /// If the user picked the synthetic default entry, switch the chat
+    /// to default-agent mode (`use_default = true`) and label the header
+    /// "AskCollate". Otherwise route to the named dynamic agent.
     pub fn select_agent(&mut self) {
         if let Some(agent) = self.agent_select.selected() {
-            self.agent_name = agent.name.clone();
+            if agent.id == DEFAULT_AGENT_ITEM_ID {
+                self.use_default = true;
+                self.agent_name = "AskCollate".to_string();
+            } else {
+                self.use_default = false;
+                self.agent_name = agent.name.clone();
+            }
             self.conversation_id = None; // Start fresh conversation with new agent
             self.messages.clear();
         }
@@ -300,5 +335,83 @@ impl App {
     #[allow(dead_code)]
     pub fn is_command(input: &str) -> bool {
         input.trim().starts_with('/')
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn fresh_app() -> App {
+        App::new(String::new(), None, false)
+    }
+
+    #[test]
+    fn show_agents_prepends_default_askcollate_entry() {
+        let mut app = fresh_app();
+        app.show_agents(vec!["agent-a".to_string(), "agent-b".to_string()]);
+
+        assert!(app.show_agent_menu);
+        let items = app.agent_select.filtered_items();
+        assert_eq!(items.len(), 3);
+        assert_eq!(items[0].id, DEFAULT_AGENT_ITEM_ID);
+        assert_eq!(items[0].display_name, "AskCollate (default)");
+        assert_eq!(items[1].id, "agent-a");
+        assert_eq!(items[2].id, "agent-b");
+    }
+
+    #[test]
+    fn show_agents_with_empty_list_still_offers_default() {
+        let mut app = fresh_app();
+        app.show_agents(vec![]);
+        let items = app.agent_select.filtered_items();
+        assert_eq!(items.len(), 1);
+        assert_eq!(items[0].id, DEFAULT_AGENT_ITEM_ID);
+    }
+
+    #[test]
+    fn select_default_entry_routes_to_default_agent() {
+        let mut app = fresh_app();
+        app.show_agents(vec!["agent-a".to_string()]);
+        // First item is the synthetic AskCollate entry — already preselected.
+        app.select_agent();
+
+        assert!(app.use_default);
+        assert_eq!(app.agent_name, "AskCollate");
+        assert!(!app.show_agent_menu);
+    }
+
+    #[test]
+    fn append_thinking_steps_separates_with_newlines() {
+        let mut app = fresh_app();
+        app.append_thinking_content("step 1");
+        app.append_thinking_content("step 2");
+        app.append_thinking_content("step 3");
+        assert_eq!(app.thinking_content, "step 1\nstep 2\nstep 3");
+        // .lines() should yield exactly three rendered lines.
+        let lines: Vec<&str> = app.thinking_content.lines().collect();
+        assert_eq!(lines, vec!["step 1", "step 2", "step 3"]);
+    }
+
+    #[test]
+    fn append_thinking_preserves_explicit_newlines() {
+        let mut app = fresh_app();
+        // A step that already ended in a newline shouldn't pick up an extra one.
+        app.append_thinking_content("step 1\n");
+        app.append_thinking_content("step 2");
+        assert_eq!(app.thinking_content, "step 1\nstep 2");
+    }
+
+    #[test]
+    fn select_named_agent_clears_default_flag() {
+        let mut app = fresh_app();
+        app.use_default = true; // start in default mode
+        app.show_agents(vec!["my-agent".to_string()]);
+        // Move past the synthetic default entry to "my-agent".
+        app.scroll_down();
+        app.select_agent();
+
+        assert!(!app.use_default);
+        assert_eq!(app.agent_name, "my-agent");
     }
 }

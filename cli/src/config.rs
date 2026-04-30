@@ -44,7 +44,7 @@ impl Default for ProfileConfig {
 }
 
 fn default_timeout() -> u64 {
-    120
+    900
 }
 
 /// Credentials structure (stored separately).

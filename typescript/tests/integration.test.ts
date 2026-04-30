@@ -45,11 +45,11 @@ describe.skipIf(!shouldRun)('Integration Tests', () => {
     });
 
     // Create a test agent with discoveryAndSearch ability for proper streaming tests
-    const personas = await client.listPersonas();
+    const personas = await client.personas.list();
     if (personas.length > 0) {
       const agentName = uniqueName('invoke-test-agent');
       try {
-        await client.createAgent({
+        await client.agents.create({
           name: agentName,
           description: 'Auto-created agent for integration testing',
           persona: personas[0].name,
@@ -61,7 +61,7 @@ describe.skipIf(!shouldRun)('Integration Tests', () => {
       } catch (e) {
         console.log(`Could not create test agent: ${e}`);
         // Fall back to first available agent
-        const agents = await client.listAgents();
+        const agents = await client.agents.list();
         if (agents.length > 0) {
           testAgentName = agents[0].name;
         }
@@ -76,7 +76,7 @@ describe.skipIf(!shouldRun)('Integration Tests', () => {
     });
 
     it('should list agents successfully', async () => {
-      const agents = await client.listAgents();
+      const agents = await client.agents.list();
       expect(Array.isArray(agents)).toBe(true);
       console.log(`Found ${agents.length} API-enabled agents`);
     });
@@ -87,7 +87,7 @@ describe.skipIf(!shouldRun)('Integration Tests', () => {
         token: 'invalid-token-12345',
       });
 
-      await expect(badClient.listAgents()).rejects.toThrow(AuthenticationError);
+      await expect(badClient.agents.list()).rejects.toThrow(AuthenticationError);
     });
   });
 
@@ -145,26 +145,26 @@ describe.skipIf(!shouldRun)('Integration Tests', () => {
 
   describe('Persona Operations', () => {
     it('should list personas', async () => {
-      const personas = await client.listPersonas();
+      const personas = await client.personas.list();
       expect(Array.isArray(personas)).toBe(true);
       console.log(`Found ${personas.length} personas`);
     });
 
     it('should list personas with limit', async () => {
-      const personas = await client.listPersonas({ limit: 5 });
+      const personas = await client.personas.list({ limit: 5 });
       expect(Array.isArray(personas)).toBe(true);
       expect(personas.length).toBeLessThanOrEqual(5);
     });
 
     it('should get persona by name', async () => {
-      const personas = await client.listPersonas();
+      const personas = await client.personas.list();
       if (personas.length === 0) {
         console.log('Skipping: No personas available');
         return;
       }
 
       const personaName = personas[0].name;
-      const persona = await client.getPersona(personaName);
+      const persona = await client.personas.get(personaName);
 
       expect(persona).toBeDefined();
       expect(persona.name).toBe(personaName);
@@ -172,14 +172,14 @@ describe.skipIf(!shouldRun)('Integration Tests', () => {
     });
 
     it('should throw PersonaNotFoundError for non-existent persona', async () => {
-      await expect(client.getPersona('non-existent-persona-12345')).rejects.toThrow(
+      await expect(client.personas.get('non-existent-persona-12345')).rejects.toThrow(
         PersonaNotFoundError
       );
     });
 
     it('should create a persona', async () => {
       const personaName = uniqueName('persona');
-      const created = await client.createPersona({
+      const created = await client.personas.create({
         name: personaName,
         description: 'Integration test persona',
         prompt: 'You are a helpful test assistant.',
@@ -195,26 +195,26 @@ describe.skipIf(!shouldRun)('Integration Tests', () => {
 
   describe('Bot Operations', () => {
     it('should list bots', async () => {
-      const bots = await client.listBots();
+      const bots = await client.bots.list();
       expect(Array.isArray(bots)).toBe(true);
       console.log(`Found ${bots.length} bots`);
     });
 
     it('should list bots with limit', async () => {
-      const bots = await client.listBots({ limit: 5 });
+      const bots = await client.bots.list({ limit: 5 });
       expect(Array.isArray(bots)).toBe(true);
       expect(bots.length).toBeLessThanOrEqual(5);
     });
 
     it('should get bot by name', async () => {
-      const bots = await client.listBots();
+      const bots = await client.bots.list();
       if (bots.length === 0) {
         console.log('Skipping: No bots available');
         return;
       }
 
       const botName = bots[0].name;
-      const bot = await client.getBot(botName);
+      const bot = await client.bots.get(botName);
 
       expect(bot).toBeDefined();
       expect(bot.name).toBe(botName);
@@ -222,25 +222,25 @@ describe.skipIf(!shouldRun)('Integration Tests', () => {
     });
 
     it('should throw BotNotFoundError for non-existent bot', async () => {
-      await expect(client.getBot('non-existent-bot-12345')).rejects.toThrow(BotNotFoundError);
+      await expect(client.bots.get('non-existent-bot-12345')).rejects.toThrow(BotNotFoundError);
     });
   });
 
   describe('Ability Operations', () => {
     it('should list abilities', async () => {
-      const abilities = await client.listAbilities();
+      const abilities = await client.abilities.list();
       expect(Array.isArray(abilities)).toBe(true);
       console.log(`Found ${abilities.length} abilities`);
     });
 
     it('should list abilities with limit', async () => {
-      const abilities = await client.listAbilities({ limit: 5 });
+      const abilities = await client.abilities.list({ limit: 5 });
       expect(Array.isArray(abilities)).toBe(true);
       expect(abilities.length).toBeLessThanOrEqual(5);
     });
 
     it('should have expected fields on abilities', async () => {
-      const abilities = await client.listAbilities();
+      const abilities = await client.abilities.list();
       if (abilities.length === 0) {
         console.log('Skipping: No abilities available');
         return;
@@ -254,14 +254,14 @@ describe.skipIf(!shouldRun)('Integration Tests', () => {
 
   describe('Agent CRUD Operations', () => {
     it('should create an agent', async () => {
-      const personas = await client.listPersonas();
+      const personas = await client.personas.list();
       if (personas.length === 0) {
         console.log('Skipping: No personas available to create agent');
         return;
       }
 
       const agentName = uniqueName('agent');
-      const created = await client.createAgent({
+      const created = await client.agents.create({
         name: agentName,
         description: 'Integration test agent',
         persona: personas[0].name,
@@ -275,8 +275,8 @@ describe.skipIf(!shouldRun)('Integration Tests', () => {
     });
 
     it('should create an agent with abilities', async () => {
-      const personas = await client.listPersonas();
-      const abilities = await client.listAbilities();
+      const personas = await client.personas.list();
+      const abilities = await client.abilities.list();
 
       if (personas.length === 0) {
         console.log('Skipping: No personas available');
@@ -290,7 +290,7 @@ describe.skipIf(!shouldRun)('Integration Tests', () => {
       const agentName = uniqueName('agent-abilities');
       const abilityNames = abilities.slice(0, 2).map((a) => a.name);
 
-      const created = await client.createAgent({
+      const created = await client.agents.create({
         name: agentName,
         description: 'Integration test agent with abilities',
         persona: personas[0].name,

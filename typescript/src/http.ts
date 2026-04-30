@@ -59,13 +59,13 @@ export type EntityType = 'agent' | 'bot' | 'persona' | 'ability';
  */
 export interface RequestOptions {
   /** HTTP method */
-  method: 'GET' | 'POST';
+  method: 'GET' | 'POST' | 'DELETE';
   /** Request path (appended to baseUrl) */
   path: string;
   /** Request body (for POST requests) */
   body?: unknown;
-  /** Query parameters (for GET requests) */
-  params?: Record<string, string | number>;
+  /** Query parameters (for GET/DELETE requests) */
+  params?: Record<string, string | number | boolean>;
   /** Agent name for error context */
   agentName?: string;
   /** Entity type for error context (default: 'agent') */
@@ -81,8 +81,6 @@ export interface RequestOptions {
  */
 export class HttpClient {
   private readonly baseUrl: string;
-  /** The root host URL (without API path) */
-  public readonly hostUrl: string;
   private readonly token: string;
   private readonly timeout: number;
   private readonly maxRetries: number;
@@ -91,8 +89,6 @@ export class HttpClient {
 
   constructor(options: HttpClientOptions) {
     this.baseUrl = options.baseUrl.replace(/\/$/, '');
-    // Extract host URL from base URL (remove /api/v1/agents/dynamic suffix)
-    this.hostUrl = this.baseUrl.replace(/\/api\/v1\/agents\/dynamic$/, '');
     this.token = options.token;
     this.timeout = options.timeout;
     this.maxRetries = options.maxRetries;
@@ -115,7 +111,10 @@ export class HttpClient {
   /**
    * Build full URL with query parameters.
    */
-  private buildUrl(path: string, params?: Record<string, string | number>): string {
+  private buildUrl(
+    path: string,
+    params?: Record<string, string | number | boolean>
+  ): string {
     // Construct full URL by appending path to base URL
     const fullPath = path.startsWith('/') ? path : `/${path}`;
     const urlString = `${this.baseUrl}${fullPath}`;
@@ -229,62 +228,58 @@ export class HttpClient {
    */
   async get<T>(
     path: string,
-    params?: Record<string, string | number>,
-    agentName?: string
-  ): Promise<T> {
-    return this.request<T>({
-      method: 'GET',
-      path,
-      params,
-      agentName,
-    });
-  }
-
-  /**
-   * Make a POST request with retry support.
-   */
-  async post<T>(path: string, body: unknown, agentName?: string): Promise<T> {
-    return this.request<T>({
-      method: 'POST',
-      path,
-      body,
-      agentName,
-    });
-  }
-
-  /**
-   * Make a GET request to a custom API path (relative to host URL).
-   * This allows accessing endpoints outside the default /api/v1/agents/dynamic base.
-   */
-  async getAbsolute<T>(
-    apiPath: string,
-    params?: Record<string, string | number>,
+    params?: Record<string, string | number | boolean>,
+    agentName?: string,
     entityType?: EntityType,
     entityName?: string
   ): Promise<T> {
-    return this.requestAbsolute<T>({
+    return this.request<T>({
       method: 'GET',
-      path: apiPath,
+      path,
       params,
+      agentName,
       entityType,
       entityName,
     });
   }
 
   /**
-   * Make a POST request to a custom API path (relative to host URL).
-   * This allows accessing endpoints outside the default /api/v1/agents/dynamic base.
+   * Make a POST request with retry support.
    */
-  async postAbsolute<T>(
-    apiPath: string,
+  async post<T>(
+    path: string,
     body: unknown,
+    agentName?: string,
     entityType?: EntityType,
     entityName?: string
   ): Promise<T> {
-    return this.requestAbsolute<T>({
+    return this.request<T>({
       method: 'POST',
-      path: apiPath,
+      path,
       body,
+      agentName,
+      entityType,
+      entityName,
+    });
+  }
+
+  /**
+   * Make a DELETE request with retry support.
+   *
+   * Returns void for empty responses; otherwise the parsed JSON body.
+   */
+  async delete<T = void>(
+    path: string,
+    params?: Record<string, string | number | boolean>,
+    agentName?: string,
+    entityType?: EntityType,
+    entityName?: string
+  ): Promise<T> {
+    return this.request<T>({
+      method: 'DELETE',
+      path,
+      params,
+      agentName,
       entityType,
       entityName,
     });
@@ -294,6 +289,13 @@ export class HttpClient {
    * Make a streaming POST request.
    *
    * Note: Streaming requests don't support automatic retry.
+   *
+   * Unlike non-streaming methods, `postStream` intentionally does NOT apply
+   * `this.timeout` as a request deadline. SSE streams can run for many
+   * minutes (long agent runs with multiple tool calls), and the stream's
+   * own events signal liveness. A fixed deadline would cut the stream
+   * mid-run regardless of progress. Callers that need cancellation can
+   * abort externally (e.g. close the underlying ReadableStream / Ctrl+C).
    */
   async postStream(
     path: string,
@@ -304,18 +306,12 @@ export class HttpClient {
     const url = this.buildUrl(path);
     const headers = this.getHeaders(requestId, true);
 
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), this.timeout);
-
     try {
       const response = await fetch(url, {
         method: 'POST',
         headers,
         body: JSON.stringify(body),
-        signal: controller.signal,
       });
-
-      clearTimeout(timeoutId);
 
       if (!response.ok) {
         await this.handleError(response, agentName, requestId);
@@ -327,14 +323,13 @@ export class HttpClient {
 
       return response.body;
     } catch (error) {
-      clearTimeout(timeoutId);
-
       if (error instanceof AISdkError) {
         throw error;
       }
 
       if (error instanceof Error) {
         if (error.name === 'AbortError') {
+          // Caller-initiated abort (no internal deadline is applied here).
           throw new TimeoutError(this.timeout);
         }
         throw new NetworkError(`Network error: ${error.message}`, error);
@@ -345,10 +340,29 @@ export class HttpClient {
   }
 
   /**
+   * Parse the response body. Returns undefined for empty / 204 responses
+   * (e.g. DELETE) so callers can declare a `void` return type.
+   */
+  private async parseBody<T>(response: Response): Promise<T> {
+    if (response.status === 204) {
+      return undefined as T;
+    }
+    const contentLength = response.headers?.get?.('content-length');
+    if (contentLength === '0') {
+      return undefined as T;
+    }
+    try {
+      return (await response.json()) as T;
+    } catch {
+      return undefined as T;
+    }
+  }
+
+  /**
    * Internal request method with retry logic.
    */
   private async request<T>(options: RequestOptions): Promise<T> {
-    const { method, path, body, params, agentName } = options;
+    const { method, path, body, params, agentName, entityType, entityName } = options;
     const requestId = generateRequestId();
     const url = this.buildUrl(path, params);
     const headers = this.getHeaders(requestId);
@@ -370,7 +384,7 @@ export class HttpClient {
         clearTimeout(timeoutId);
 
         if (response.ok) {
-          return (await response.json()) as T;
+          return await this.parseBody<T>(response);
         }
 
         // Check if we should retry
@@ -384,99 +398,7 @@ export class HttpClient {
         }
 
         // Non-retryable error
-        await this.handleError(response, agentName, requestId);
-      } catch (error) {
-        clearTimeout(timeoutId);
-
-        if (error instanceof AISdkError) {
-          throw error;
-        }
-
-        if (error instanceof Error) {
-          if (error.name === 'AbortError') {
-            lastError = new TimeoutError(this.timeout);
-            // Timeouts are retryable
-            if (attempt < this.maxRetries) {
-              const delay = this.retryDelay * Math.pow(2, attempt);
-              await this.wait(delay);
-              continue;
-            }
-            throw lastError;
-          }
-          lastError = new NetworkError(`Network error: ${error.message}`, error);
-          // Network errors are retryable
-          if (attempt < this.maxRetries) {
-            const delay = this.retryDelay * Math.pow(2, attempt);
-            await this.wait(delay);
-            continue;
-          }
-          throw lastError;
-        }
-
-        throw new NetworkError('Unknown network error');
-      }
-    }
-
-    // Should never reach here, but TypeScript needs this
-    throw lastError || new NetworkError('Request failed after retries');
-  }
-
-  /**
-   * Build URL with custom API path (relative to host URL).
-   */
-  private buildAbsoluteUrl(apiPath: string, params?: Record<string, string | number>): string {
-    const fullPath = apiPath.startsWith('/') ? apiPath : `/${apiPath}`;
-    const urlString = `${this.hostUrl}${fullPath}`;
-    const url = new URL(urlString);
-    if (params) {
-      for (const [key, value] of Object.entries(params)) {
-        url.searchParams.set(key, String(value));
-      }
-    }
-    return url.toString();
-  }
-
-  /**
-   * Internal request method for absolute paths with retry logic.
-   */
-  private async requestAbsolute<T>(options: RequestOptions): Promise<T> {
-    const { method, path, body, params, entityType, entityName } = options;
-    const requestId = generateRequestId();
-    const url = this.buildAbsoluteUrl(path, params);
-    const headers = this.getHeaders(requestId);
-
-    let lastError: Error | null = null;
-
-    for (let attempt = 0; attempt <= this.maxRetries; attempt++) {
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), this.timeout);
-
-      try {
-        const response = await fetch(url, {
-          method,
-          headers,
-          body: body ? JSON.stringify(body) : undefined,
-          signal: controller.signal,
-        });
-
-        clearTimeout(timeoutId);
-
-        if (response.ok) {
-          return (await response.json()) as T;
-        }
-
-        // Check if we should retry
-        if (this.shouldRetry(response.status, attempt)) {
-          const delay = this.getRetryDelay(
-            attempt,
-            response.headers.get('Retry-After')
-          );
-          await this.wait(delay);
-          continue;
-        }
-
-        // Non-retryable error
-        await this.handleError(response, undefined, requestId, entityType, entityName);
+        await this.handleError(response, agentName, requestId, entityType, entityName);
       } catch (error) {
         clearTimeout(timeoutId);
 

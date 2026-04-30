@@ -124,7 +124,7 @@ client = AISdk(
 )
 
 # Create the agent
-agent = client.create_agent(
+agent = client.agents.create(
     name="GDPRComplianceAnalyzer",
     description="Handles GDPR deletion requests by searching for customer data, tracing lineage, and checking retention policies",
     persona="GDPRAnalyst",
@@ -145,7 +145,7 @@ const client = new AISdk({
   token: 'your-jwt-token'
 });
 
-const agent = await client.createAgent({
+const agent = await client.agents.create({
   name: 'GDPRComplianceAnalyzer',
   description: 'Handles GDPR deletion requests by searching for customer data, tracing lineage, and checking retention policies',
   persona: 'GDPRAnalyst',
@@ -175,7 +175,7 @@ CreateAgentRequest request = CreateAgentRequest.builder()
     .apiEnabled(true)
     .build();
 
-Agent agent = client.createAgent(request);
+Agent agent = client.agents().create(request);
 System.out.println("Created agent: " + agent.getName());
 ```
 

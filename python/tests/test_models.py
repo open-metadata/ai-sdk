@@ -2,9 +2,17 @@
 
 from ai_sdk.models import (
     AgentInfo,
+    ContextMemory,
+    CreateContextMemoryRequest,
+    EntityReference,
     EventType,
     InvokeRequest,
     InvokeResponse,
+    MemoryScope,
+    MemorySearchHit,
+    MemorySearchResults,
+    MemoryType,
+    MemoryVisibility,
     StreamEvent,
     Usage,
 )
@@ -150,3 +158,120 @@ class TestAgentInfo:
         assert info.description is None  # None when not provided
         assert info.abilities == []
         assert info.api_enabled is False
+
+
+class TestCreateContextMemoryRequest:
+    """Tests for CreateContextMemoryRequest serialization."""
+
+    def test_minimal_to_api_dict(self):
+        req = CreateContextMemoryRequest(
+            name="my-memory",
+            question="What does X mean?",
+            answer="X means Y.",
+        )
+        d = req.to_api_dict()
+        assert d["name"] == "my-memory"
+        assert d["question"] == "What does X mean?"
+        assert d["answer"] == "X means Y."
+        assert d["memoryType"] == "Note"
+        assert d["memoryScope"] == "EntityScoped"
+        assert d["shareConfig"] == {"visibility": "Private"}
+
+    def test_with_primary_entity_and_tags(self):
+        req = CreateContextMemoryRequest(
+            name="m1",
+            question="q",
+            answer="a",
+            memory_type=MemoryType.PREFERENCE,
+            visibility=MemoryVisibility.SHARED,
+            primary_entity=EntityReference(id="abc", type="table"),
+            tags=["PII.Sensitive"],
+        )
+        d = req.to_api_dict()
+        assert d["memoryType"] == "Preference"
+        assert d["shareConfig"] == {"visibility": "Shared"}
+        assert d["primaryEntity"] == {"id": "abc", "type": "table"}
+        assert d["tags"] == [
+            {
+                "tagFQN": "PII.Sensitive",
+                "labelType": "Manual",
+                "state": "Confirmed",
+                "source": "Classification",
+            }
+        ]
+
+
+class TestContextMemory:
+    """Tests for ContextMemory parsing."""
+
+    def test_from_dict_extracts_visibility_from_share_config(self):
+        data = {
+            "id": "11111111-1111-1111-1111-111111111111",
+            "name": "m1",
+            "fullyQualifiedName": "m1",
+            "title": "T",
+            "question": "q",
+            "answer": "a",
+            "summary": None,
+            "memoryType": "Note",
+            "memoryScope": "EntityScoped",
+            "shareConfig": {"visibility": "Entity"},
+            "primaryEntity": {"id": "abc", "type": "table"},
+            "usageCount": 3,
+            "lastUsedAt": 1700000000000,
+            "deleted": False,
+        }
+        m = ContextMemory.from_dict(data)
+        assert m.id == "11111111-1111-1111-1111-111111111111"
+        assert m.visibility == MemoryVisibility.ENTITY
+        assert m.memory_scope == MemoryScope.ENTITY_SCOPED
+        assert m.usage_count == 3
+        assert m.last_used_at == 1700000000000
+
+    def test_from_dict_defaults_visibility_when_share_config_missing(self):
+        data = {"id": "x", "name": "m1"}
+        m = ContextMemory.from_dict(data)
+        assert m.visibility == MemoryVisibility.PRIVATE
+
+
+class TestMemorySearchResults:
+    """Tests for MemorySearchResults parsing."""
+
+    def test_from_opensearch_response(self):
+        resp = {
+            "hits": {
+                "total": {"value": 2},
+                "hits": [
+                    {
+                        "_score": 1.5,
+                        "_source": {
+                            "id": "11111111-1111-1111-1111-111111111111",
+                            "name": "m1",
+                            "fullyQualifiedName": "m1",
+                            "title": "T",
+                            "question": "q",
+                            "answer": "a",
+                            "summary": None,
+                            "memoryType": "Note",
+                            "memoryScope": "EntityScoped",
+                            "shareConfig": {"visibility": "Private"},
+                            "primaryEntity": None,
+                            "usageCount": 0,
+                            "lastUsedAt": None,
+                            "deleted": False,
+                        },
+                    }
+                ],
+            }
+        }
+        results = MemorySearchResults.from_dict(resp)
+        assert results.total == 2
+        assert len(results.hits) == 1
+        assert isinstance(results.hits[0], MemorySearchHit)
+        assert results.hits[0].score == 1.5
+        assert results.hits[0].memory.name == "m1"
+
+    def test_from_dict_handles_empty_hits(self):
+        results = MemorySearchResults.from_dict({"hits": {"total": {"value": 0}, "hits": []}})
+        assert results.total == 0
+        assert results.hits == []

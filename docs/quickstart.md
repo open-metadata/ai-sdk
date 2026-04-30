@@ -91,13 +91,13 @@ The SDK also supports creating and managing resources:
 
 ```python
 # List bots, personas, and abilities
-bots = client.list_bots()
-personas = client.list_personas()
-abilities = client.list_abilities()
+bots = client.bots.list()
+personas = client.personas.list()
+abilities = client.abilities.list()
 
 # Create a persona
 from ai_sdk.models import CreatePersonaRequest
-persona = client.create_persona(CreatePersonaRequest(
+persona = client.personas.create(CreatePersonaRequest(
     name="MyPersona",
     description="A helpful analyst",
     prompt="You are a helpful data analyst..."
@@ -105,7 +105,7 @@ persona = client.create_persona(CreatePersonaRequest(
 
 # Create an agent
 from ai_sdk.models import CreateAgentRequest
-agent = client.create_agent(CreateAgentRequest(
+agent = client.agents.create(CreateAgentRequest(
     name="MyAgent",
     description="Custom agent",
     persona="MyPersona",
