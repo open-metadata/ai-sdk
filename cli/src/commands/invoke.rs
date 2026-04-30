@@ -105,6 +105,7 @@ pub async fn run_stream(
             conversation_id: final_conversation_id.unwrap_or_default(),
             response: full_content,
             tools_used,
+            thinking_steps: Vec::new(),
             usage: None,
         };
 

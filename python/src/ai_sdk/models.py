@@ -96,6 +96,11 @@ class InvokeResponse(BaseModel):
         alias="toolsUsed",
         description="List of tools used by the agent",
     )
+    thinking_steps: list[str] = Field(
+        default_factory=list,
+        alias="thinkingSteps",
+        description="Intermediate reasoning steps emitted by the agent (Sender.SYSTEM messages)",
+    )
     usage: Usage | None = Field(
         default=None,
         description="Token usage statistics",

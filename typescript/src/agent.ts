@@ -25,6 +25,7 @@ export function mapInvokeResponse(data: ApiInvokeResponse): InvokeResponse {
     conversationId: data.conversationId,
     response: data.response,
     toolsUsed: data.toolsUsed || [],
+    thinkingSteps: data.thinkingSteps || [],
     usage: data.usage
       ? {
           promptTokens: data.usage.promptTokens || 0,

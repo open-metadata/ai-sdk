@@ -131,6 +131,7 @@ export class AISdkAgent implements INodeType {
 				const result: IDataObject = {
 					conversationId: response.conversationId,
 					response: response.response,
+					thinkingSteps: response.thinkingSteps || [],
 				};
 
 				// Include usage if present

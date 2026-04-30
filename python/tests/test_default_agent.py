@@ -38,6 +38,7 @@ def test_default_agent_call_creates_conversation_then_invokes(client, httpx_mock
     assert isinstance(response, InvokeResponse)
     assert response.conversation_id == "11111111-1111-1111-1111-111111111111"
     assert response.response == "hello"
+    assert response.thinking_steps == []  # backward-compat: absent field defaults to []
 
     requests = httpx_mock.get_requests()
     assert len(requests) == 2
@@ -88,6 +89,30 @@ def test_default_agent_stream_content(client, httpx_mock: HTTPXMock, sample_sse_
 
     chunks = list(client.agent().stream_content("Stream please"))
     assert "".join(chunks) == "The customers table has 3 issues."
+
+
+def test_default_agent_call_surfaces_thinking_steps(client, httpx_mock: HTTPXMock):
+    """Backend-supplied thinkingSteps are surfaced on the response object."""
+    httpx_mock.add_response(
+        method="POST",
+        url="https://metadata.example.com/api/v1/assistants/chatConversations",
+        json={"id": "55555555-5555-5555-5555-555555555555"},
+    )
+    httpx_mock.add_response(
+        method="POST",
+        url="https://metadata.example.com/api/v1/agents/invoke",
+        json={
+            "conversationId": "55555555-5555-5555-5555-555555555555",
+            "response": "Found it.",
+            "toolsUsed": [],
+            "thinkingSteps": ["Exploring assets...", "Synthesizing answer..."],
+        },
+    )
+
+    response = client.agent().call("question")
+
+    assert response.response == "Found it."
+    assert response.thinking_steps == ["Exploring assets...", "Synthesizing answer..."]
 
 
 @pytest.mark.asyncio

@@ -269,6 +269,8 @@ pub struct InvokeResponse {
     #[serde(default)]
     pub tools_used: Vec<String>,
     #[serde(default)]
+    pub thinking_steps: Vec<String>,
+    #[serde(default)]
     pub usage: Option<Usage>,
 }
 
@@ -960,6 +962,65 @@ mod default_agent_tests {
             .await
             .unwrap();
         assert_eq!(resp.conversation_id, "existing-conv-id");
+    }
+
+    #[tokio::test]
+    async fn invoke_default_agent_surfaces_thinking_steps() {
+        let server = MockServer::start().await;
+
+        Mock::given(method("POST"))
+            .and(path("/api/v1/assistants/chatConversations"))
+            .respond_with(
+                ResponseTemplate::new(200)
+                    .set_body_json(json!({ "id": "55555555-5555-5555-5555-555555555555" })),
+            )
+            .mount(&server)
+            .await;
+
+        Mock::given(method("POST"))
+            .and(path("/api/v1/agents/invoke"))
+            .respond_with(ResponseTemplate::new(200).set_body_json(json!({
+                "conversationId": "55555555-5555-5555-5555-555555555555",
+                "response": "Found it.",
+                "thinkingSteps": ["Exploring assets...", "Synthesizing answer..."]
+            })))
+            .mount(&server)
+            .await;
+
+        let client = make_client(&server.uri(), "test-token");
+        let resp = client.invoke_default_agent("question", None).await.unwrap();
+        assert_eq!(resp.response, "Found it.");
+        assert_eq!(
+            resp.thinking_steps,
+            vec!["Exploring assets...", "Synthesizing answer..."]
+        );
+    }
+
+    #[tokio::test]
+    async fn invoke_default_agent_defaults_thinking_steps_to_empty() {
+        let server = MockServer::start().await;
+
+        Mock::given(method("POST"))
+            .and(path("/api/v1/assistants/chatConversations"))
+            .respond_with(
+                ResponseTemplate::new(200)
+                    .set_body_json(json!({ "id": "11111111-1111-1111-1111-111111111111" })),
+            )
+            .mount(&server)
+            .await;
+
+        Mock::given(method("POST"))
+            .and(path("/api/v1/agents/invoke"))
+            .respond_with(ResponseTemplate::new(200).set_body_json(json!({
+                "conversationId": "11111111-1111-1111-1111-111111111111",
+                "response": "Hello from the default agent"
+            })))
+            .mount(&server)
+            .await;
+
+        let client = make_client(&server.uri(), "test-token");
+        let resp = client.invoke_default_agent("Say hi", None).await.unwrap();
+        assert!(resp.thinking_steps.is_empty());
     }
 
     #[tokio::test]

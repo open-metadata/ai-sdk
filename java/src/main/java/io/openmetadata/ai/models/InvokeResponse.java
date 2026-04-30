@@ -18,16 +18,24 @@ public class InvokeResponse {
   @JsonProperty("toolsUsed")
   private List<String> toolsUsed;
 
+  @JsonProperty("thinkingSteps")
+  private List<String> thinkingSteps;
+
   @JsonProperty("usage")
   private Usage usage;
 
   public InvokeResponse() {}
 
   public InvokeResponse(
-      String conversationId, String response, List<String> toolsUsed, Usage usage) {
+      String conversationId,
+      String response,
+      List<String> toolsUsed,
+      List<String> thinkingSteps,
+      Usage usage) {
     this.conversationId = conversationId;
     this.response = response;
     this.toolsUsed = toolsUsed;
+    this.thinkingSteps = thinkingSteps;
     this.usage = usage;
   }
 
@@ -55,6 +63,14 @@ public class InvokeResponse {
     this.toolsUsed = toolsUsed;
   }
 
+  public List<String> getThinkingSteps() {
+    return thinkingSteps != null ? thinkingSteps : java.util.Collections.emptyList();
+  }
+
+  public void setThinkingSteps(List<String> thinkingSteps) {
+    this.thinkingSteps = thinkingSteps;
+  }
+
   public Usage getUsage() {
     return usage;
   }
@@ -72,6 +88,7 @@ public class InvokeResponse {
     private String conversationId;
     private String response;
     private List<String> toolsUsed;
+    private List<String> thinkingSteps;
     private Usage usage;
 
     public Builder conversationId(String conversationId) {
@@ -89,13 +106,18 @@ public class InvokeResponse {
       return this;
     }
 
+    public Builder thinkingSteps(List<String> thinkingSteps) {
+      this.thinkingSteps = thinkingSteps;
+      return this;
+    }
+
     public Builder usage(Usage usage) {
       this.usage = usage;
       return this;
     }
 
     public InvokeResponse build() {
-      return new InvokeResponse(conversationId, response, toolsUsed, usage);
+      return new InvokeResponse(conversationId, response, toolsUsed, thinkingSteps, usage);
     }
   }
 
@@ -110,6 +132,8 @@ public class InvokeResponse {
         + '\''
         + ", toolsUsed="
         + toolsUsed
+        + ", thinkingSteps="
+        + thinkingSteps
         + ", usage="
         + usage
         + '}';

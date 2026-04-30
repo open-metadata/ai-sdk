@@ -234,6 +234,32 @@ class AISdkTest {
   }
 
   @Test
+  @DisplayName("InvokeResponse surfaces thinkingSteps when present")
+  void invokeResponseSurfacesThinkingSteps() {
+    List<String> steps = Arrays.asList("Exploring assets...", "Synthesizing answer...");
+
+    InvokeResponse response =
+        InvokeResponse.builder()
+            .conversationId("conv-456")
+            .response("Found it.")
+            .thinkingSteps(steps)
+            .build();
+
+    assertEquals("Found it.", response.getResponse());
+    assertEquals(steps, response.getThinkingSteps());
+  }
+
+  @Test
+  @DisplayName("InvokeResponse defaults thinkingSteps to empty list when absent")
+  void invokeResponseDefaultsThinkingStepsToEmptyList() {
+    InvokeResponse response =
+        InvokeResponse.builder().conversationId("conv-789").response("ok").build();
+
+    assertNotNull(response.getThinkingSteps());
+    assertTrue(response.getThinkingSteps().isEmpty());
+  }
+
+  @Test
   @DisplayName("StreamEvent can be built with all fields")
   void streamEventCanBeBuiltWithAllFields() {
     StreamEvent event =

@@ -964,6 +964,58 @@ describe('default agent', () => {
     expect(body.agentMode).toBe('CHAT_MODE');
   });
 
+  it('client.agent() surfaces thinkingSteps from the response', async () => {
+    mockFetch
+      .mockResolvedValueOnce({
+        ok: true,
+        json: () =>
+          Promise.resolve({ id: '55555555-5555-5555-5555-555555555555' }),
+      })
+      .mockResolvedValueOnce({
+        ok: true,
+        json: () =>
+          Promise.resolve({
+            conversationId: '55555555-5555-5555-5555-555555555555',
+            response: 'Found it.',
+            toolsUsed: [],
+            thinkingSteps: ['Exploring assets...', 'Synthesizing answer...'],
+          }),
+      });
+
+    const client = new AISdk({
+      host: 'https://metadata.example.com',
+      token: 'tkn',
+    });
+    const response = await client.agent().invoke('question');
+    expect(response.response).toBe('Found it.');
+    expect(response.thinkingSteps).toEqual(['Exploring assets...', 'Synthesizing answer...']);
+  });
+
+  it('client.agent() defaults thinkingSteps to [] when absent', async () => {
+    mockFetch
+      .mockResolvedValueOnce({
+        ok: true,
+        json: () =>
+          Promise.resolve({ id: '11111111-1111-1111-1111-111111111111' }),
+      })
+      .mockResolvedValueOnce({
+        ok: true,
+        json: () =>
+          Promise.resolve({
+            conversationId: '11111111-1111-1111-1111-111111111111',
+            response: 'hello',
+            toolsUsed: [],
+          }),
+      });
+
+    const client = new AISdk({
+      host: 'https://metadata.example.com',
+      token: 'tkn',
+    });
+    const response = await client.agent().invoke('Say hi');
+    expect(response.thinkingSteps).toEqual([]);
+  });
+
   it('client.agent() reuses an existing conversation when conversationId is provided', async () => {
     mockFetch.mockResolvedValueOnce({
       ok: true,

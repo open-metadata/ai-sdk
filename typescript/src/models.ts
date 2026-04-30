@@ -55,6 +55,8 @@ export interface InvokeResponse {
   response: string;
   /** List of tools used by the agent during execution */
   toolsUsed: string[];
+  /** Intermediate reasoning steps emitted by the agent (Sender.SYSTEM messages) */
+  thinkingSteps: string[];
   /** Optional token usage statistics */
   usage?: Usage;
 }
@@ -154,6 +156,7 @@ export interface ApiInvokeResponse {
   conversationId: string;
   response: string;
   toolsUsed?: string[];
+  thinkingSteps?: string[];
   usage?: {
     promptTokens?: number;
     completionTokens?: number;
