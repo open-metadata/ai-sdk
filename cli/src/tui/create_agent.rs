@@ -787,10 +787,8 @@ async fn run_wizard_loop(
                                         wizard.next_step();
                                     }
                                 }
-                                KeyCode::BackTab => {
-                                    if wizard.step == Step::BasicDetails {
-                                        wizard.toggle_basic_focus();
-                                    }
+                                KeyCode::BackTab if wizard.step == Step::BasicDetails => {
+                                    wizard.toggle_basic_focus();
                                 }
                                 KeyCode::Backspace => {
                                     wizard.handle_backspace();

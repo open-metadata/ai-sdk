@@ -433,10 +433,8 @@ async fn run_wizard_loop(
                                         wizard.next_step();
                                     }
                                 }
-                                KeyCode::BackTab => {
-                                    if wizard.step == Step::BasicDetails {
-                                        wizard.toggle_basic_focus();
-                                    }
+                                KeyCode::BackTab if wizard.step == Step::BasicDetails => {
+                                    wizard.toggle_basic_focus();
                                 }
                                 KeyCode::Backspace => {
                                     if wizard.step == Step::BasicDetails && wizard.basic_focus == BasicDetailsFocus::Name && wizard.name_input.value.is_empty() {
@@ -456,19 +454,17 @@ async fn run_wizard_loop(
                                 KeyCode::Right => {
                                     wizard.handle_right();
                                 }
-                                KeyCode::Up => {
+                                KeyCode::Up
                                     if wizard.step == Step::BasicDetails
-                                        && wizard.basic_focus == BasicDetailsFocus::Description
-                                    {
-                                        wizard.toggle_basic_focus();
-                                    }
+                                        && wizard.basic_focus == BasicDetailsFocus::Description =>
+                                {
+                                    wizard.toggle_basic_focus();
                                 }
-                                KeyCode::Down => {
+                                KeyCode::Down
                                     if wizard.step == Step::BasicDetails
-                                        && wizard.basic_focus == BasicDetailsFocus::Name
-                                    {
-                                        wizard.toggle_basic_focus();
-                                    }
+                                        && wizard.basic_focus == BasicDetailsFocus::Name =>
+                                {
+                                    wizard.toggle_basic_focus();
                                 }
                                 KeyCode::Char(c) => {
                                     wizard.handle_char(c);

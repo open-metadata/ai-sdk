@@ -118,10 +118,8 @@ pub fn render_markdown(text: &str, width: usize) -> Vec<Line<'static>> {
                             ));
                         }
                     }
-                    TagEnd::Item => {
-                        if !current_spans.is_empty() {
-                            lines.push(Line::from(std::mem::take(&mut current_spans)));
-                        }
+                    TagEnd::Item if !current_spans.is_empty() => {
+                        lines.push(Line::from(std::mem::take(&mut current_spans)));
                     }
                     _ => {}
                 }
@@ -141,10 +139,8 @@ pub fn render_markdown(text: &str, width: usize) -> Vec<Line<'static>> {
                     Style::default().bg(Color::DarkGray).fg(Color::White),
                 ));
             }
-            Event::SoftBreak | Event::HardBreak => {
-                if !current_spans.is_empty() {
-                    lines.push(Line::from(std::mem::take(&mut current_spans)));
-                }
+            Event::SoftBreak | Event::HardBreak if !current_spans.is_empty() => {
+                lines.push(Line::from(std::mem::take(&mut current_spans)));
             }
             _ => {}
         }
