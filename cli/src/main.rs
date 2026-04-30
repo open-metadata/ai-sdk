@@ -131,6 +131,11 @@ enum Commands {
         /// Continue an existing conversation
         #[arg(short = 'c', long = "conversation")]
         conversation_id: Option<String>,
+
+        /// Write SSE debug events to a file. Pass --debug alone to use the
+        /// default path (~/.ai-sdk/chat-debug.log) or --debug PATH to override.
+        #[arg(long, value_name = "PATH", num_args = 0..=1, default_missing_value = "")]
+        debug: Option<String>,
     },
 }
 
@@ -473,12 +478,14 @@ async fn main() {
             agent,
             use_default,
             conversation_id,
+            debug,
         } => {
             commands::chat::run_chat(
                 &cli.profile,
                 agent.as_deref(),
                 use_default,
                 conversation_id.as_deref(),
+                debug,
             )
             .await
         }

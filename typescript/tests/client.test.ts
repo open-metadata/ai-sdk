@@ -359,6 +359,58 @@ describe('AgentHandle', () => {
 
       expect(chunks).toEqual([]);
     });
+
+    it('should not abort a slow stream after the configured non-streaming timeout', async () => {
+      // Configure a deliberately tiny client-level timeout (50ms). The stream
+      // emits its first event after 80ms and runs for ~250ms total, both well
+      // beyond the timeout. With the old behavior the AbortController would
+      // fire mid-stream and the iterator would error; with the fix the stream
+      // must complete normally and yield every content chunk.
+      const encoder = new TextEncoder();
+      const stream = new ReadableStream({
+        start(controller) {
+          const enqueueAfter = (ms: number, data: string) =>
+            new Promise<void>((resolve) => {
+              setTimeout(() => {
+                controller.enqueue(encoder.encode(data));
+                resolve();
+              }, ms);
+            });
+
+          (async () => {
+            await enqueueAfter(80, 'event: stream-start\ndata: {"conversationId": "slow-1"}\n\n');
+            await enqueueAfter(80, 'event: message\ndata: {"content": "slow "}\n\n');
+            await enqueueAfter(80, 'event: message\ndata: {"content": "stream"}\n\n');
+            await enqueueAfter(20, 'event: stream-completed\ndata: {}\n\n');
+            controller.close();
+          })();
+        },
+      });
+
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        body: stream,
+        headers: new Headers({ 'content-type': 'text/event-stream' }),
+      });
+
+      const client = new AISdk({
+        host: 'https://openmetadata.example.com',
+        token: 'test-token',
+        timeout: 50,
+      });
+
+      const chunks: string[] = [];
+      for await (const chunk of client.agent('TestAgent').streamContent('Slow run')) {
+        chunks.push(chunk);
+      }
+
+      expect(chunks).toEqual(['slow ', 'stream']);
+
+      // The fetch call must not have been given an AbortSignal that would have
+      // fired on the timeout — the SDK no longer wires one for streaming.
+      const fetchInit = mockFetch.mock.calls[0][1] as RequestInit;
+      expect(fetchInit.signal).toBeUndefined();
+    });
   });
 
   describe('getInfo()', () => {

@@ -220,7 +220,9 @@ const client = new AISdk({
   token: 'your-jwt-token',               // Bot JWT token
 
   // Optional
-  timeout: 120000,    // Request timeout in ms (default: 120000)
+  timeout: 900000,    // Non-streaming request timeout in ms (default: 900000).
+                      // Streaming (`stream` / `streamContent`) ignores this and runs
+                      // until the server closes the stream.
   maxRetries: 3,      // Max retry attempts (default: 3)
   retryDelay: 1000,   // Base retry delay in ms (default: 1000)
 });

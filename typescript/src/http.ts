@@ -289,6 +289,13 @@ export class HttpClient {
    * Make a streaming POST request.
    *
    * Note: Streaming requests don't support automatic retry.
+   *
+   * Unlike non-streaming methods, `postStream` intentionally does NOT apply
+   * `this.timeout` as a request deadline. SSE streams can run for many
+   * minutes (long agent runs with multiple tool calls), and the stream's
+   * own events signal liveness. A fixed deadline would cut the stream
+   * mid-run regardless of progress. Callers that need cancellation can
+   * abort externally (e.g. close the underlying ReadableStream / Ctrl+C).
    */
   async postStream(
     path: string,
@@ -299,18 +306,12 @@ export class HttpClient {
     const url = this.buildUrl(path);
     const headers = this.getHeaders(requestId, true);
 
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), this.timeout);
-
     try {
       const response = await fetch(url, {
         method: 'POST',
         headers,
         body: JSON.stringify(body),
-        signal: controller.signal,
       });
-
-      clearTimeout(timeoutId);
 
       if (!response.ok) {
         await this.handleError(response, agentName, requestId);
@@ -322,14 +323,13 @@ export class HttpClient {
 
       return response.body;
     } catch (error) {
-      clearTimeout(timeoutId);
-
       if (error instanceof AISdkError) {
         throw error;
       }
 
       if (error instanceof Error) {
         if (error.name === 'AbortError') {
+          // Caller-initiated abort (no internal deadline is applied here).
           throw new TimeoutError(this.timeout);
         }
         throw new NetworkError(`Network error: ${error.message}`, error);

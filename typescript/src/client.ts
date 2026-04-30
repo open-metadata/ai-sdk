@@ -14,8 +14,8 @@ import { PersonasApi } from './api/personas.js';
 import { HttpClient } from './http.js';
 import type { AISdkOptions } from './models.js';
 
-/** Default timeout in milliseconds (2 minutes) */
-const DEFAULT_TIMEOUT = 120000;
+/** Default timeout in milliseconds (15 minutes) for non-streaming requests */
+const DEFAULT_TIMEOUT = 900000;
 
 /** Default number of retry attempts */
 const DEFAULT_MAX_RETRIES = 3;

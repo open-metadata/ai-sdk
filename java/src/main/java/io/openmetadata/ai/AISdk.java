@@ -35,7 +35,11 @@ import io.openmetadata.ai.internal.AISdkHttpClient;
  */
 public class AISdk implements AutoCloseable {
 
-  private static final Duration DEFAULT_TIMEOUT = Duration.ofSeconds(120);
+  // Generous default — agent runs can take many minutes. Note this maps to
+  // HttpClient.Builder.connectTimeout(...) only (TCP connect), so SSE bodies
+  // are never bounded by it. Per-request HttpRequest.timeout(...) is
+  // intentionally NOT set on streaming requests; see AISdkHttpClient.
+  private static final Duration DEFAULT_TIMEOUT = Duration.ofSeconds(900);
   private static final int DEFAULT_MAX_RETRIES = 3;
   private static final Duration DEFAULT_RETRY_DELAY = Duration.ofSeconds(1);
   private static final String MEMORIES_BASE_PATH = "/api/v1/contextCenter/memories";
@@ -172,7 +176,13 @@ public class AISdk implements AutoCloseable {
     /**
      * Sets the request timeout.
      *
-     * <p>Default: 120 seconds
+     * <p>This value is applied as the {@link
+     * java.net.http.HttpClient.Builder#connectTimeout(Duration) TCP connect timeout} on the
+     * underlying {@link java.net.http.HttpClient}. It does NOT bound the time spent reading a
+     * response body: SSE streams from long-running agent runs may continue for many minutes, and
+     * the stream's own events (thinking/message/tool) signal liveness.
+     *
+     * <p>Default: 900 seconds
      *
      * @param timeout the timeout duration
      * @return this builder

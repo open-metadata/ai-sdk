@@ -50,7 +50,7 @@ class AISdk:
         self,
         host: str,
         token: str,
-        timeout: float = 120.0,
+        timeout: float = 900.0,
         verify_ssl: bool = True,
         enable_async: bool = False,
         max_retries: int = 3,

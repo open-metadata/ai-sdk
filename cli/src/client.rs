@@ -621,9 +621,15 @@ impl MemorySearchResults {
 }
 
 /// AI SDK API client.
+///
+/// Uses two underlying reqwest clients:
+/// - `client`: standard HTTP requests, bounded by `config.timeout`.
+/// - `streaming_client`: SSE endpoints, with no request timeout — agent runs
+///   can take many minutes and the stream itself indicates progress.
 #[derive(Clone)]
 pub struct AISdkClient {
     client: Client,
+    streaming_client: Client,
     base_url: String,
     token: String,
 }
@@ -636,11 +642,18 @@ impl AISdkClient {
             .build()
             .map_err(CliError::from_reqwest)?;
 
+        // No `.timeout(...)` → reqwest waits indefinitely for the response
+        // body, which is what we want for SSE: the server may take minutes
+        // to finish a multi-step agent run, and the stream itself signals
+        // liveness via thinking/message events.
+        let streaming_client = Client::builder().build().map_err(CliError::from_reqwest)?;
+
         // Normalize base URL (remove trailing slash)
         let base_url = config.host.trim_end_matches('/').to_string();
 
         Ok(Self {
             client,
+            streaming_client,
             base_url,
             token: config.token.clone(),
         })
@@ -861,7 +874,7 @@ impl AISdkClient {
         });
 
         let response = self
-            .client
+            .streaming_client
             .post(&url)
             .header("Authorization", self.auth_header())
             .header("Content-Type", "application/json")
@@ -896,7 +909,7 @@ impl AISdkClient {
         };
 
         let response = self
-            .client
+            .streaming_client
             .post(self.agents_url(&format!("/name/{encoded_name}/stream")))
             .header("Authorization", self.auth_header())
             .header("Content-Type", "application/json")

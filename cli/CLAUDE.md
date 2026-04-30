@@ -63,7 +63,15 @@ The `chat` command launches an interactive terminal interface:
 ai-sdk chat              # Opens agent selector
 ai-sdk chat AgentName    # Opens chat with specific agent
 ai-sdk chat AgentName -c <conv-id>  # Resume conversation
+ai-sdk chat --debug                  # Log SSE events to ~/.ai-sdk/chat-debug.log
+ai-sdk chat --debug /tmp/sse.log     # Log SSE events to a custom path
 ```
+
+The `--debug` flag truncates the log on session start and appends events from
+every stream within the session — useful for diagnosing issues like
+`Network error: error decoding response body` mid-stream. The log captures
+each SSE event, message-level details, and the underlying error and unparsed
+buffer when the stream is cut short.
 
 ### TUI Features
 

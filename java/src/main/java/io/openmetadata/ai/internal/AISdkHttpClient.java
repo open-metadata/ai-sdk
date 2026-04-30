@@ -62,6 +62,13 @@ public class AISdkHttpClient implements AutoCloseable {
     this.host = normalizeHost(host);
     this.baseUrl = this.host + basePath;
     this.token = token;
+    // Only set connectTimeout (TCP connect). We deliberately do NOT call
+    // HttpRequest.Builder.timeout(...) on individual requests, because the
+    // per-request timeout bounds the entire response — including the body
+    // read — and that would cut long-running agent SSE streams mid-flight.
+    // SSE streams can run for many minutes; the stream's own events signal
+    // liveness. The same HttpClient is therefore safe to share across
+    // streaming and non-streaming calls.
     this.httpClient = HttpClient.newBuilder().connectTimeout(timeout).build();
     this.objectMapper = new ObjectMapper();
     this.sseParser = new SseParser(objectMapper);
@@ -231,7 +238,12 @@ public class AISdkHttpClient implements AutoCloseable {
     }
   }
 
-  /** Invokes an agent with streaming, calling the consumer for each event. */
+  /**
+   * Invokes an agent with streaming, calling the consumer for each event.
+   *
+   * <p>Note: the {@link HttpRequest} below intentionally does NOT call {@code .timeout(...)} — SSE
+   * streams from agent runs can take many minutes, and the stream's own events signal liveness.
+   */
   public void stream(
       String agentName, InvokeRequest invokeRequest, Consumer<StreamEvent> eventConsumer) {
     String encodedName = URLEncoder.encode(agentName, StandardCharsets.UTF_8);
@@ -272,6 +284,9 @@ public class AISdkHttpClient implements AutoCloseable {
   /**
    * Invokes an agent with streaming, returning a Stream of events. The caller must close the
    * returned Stream when done.
+   *
+   * <p>Note: the {@link HttpRequest} below intentionally does NOT call {@code .timeout(...)} — SSE
+   * streams from agent runs can take many minutes, and the stream's own events signal liveness.
    */
   public Stream<StreamEvent> streamIterator(String agentName, InvokeRequest invokeRequest) {
     String encodedName = URLEncoder.encode(agentName, StandardCharsets.UTF_8);
@@ -435,6 +450,7 @@ public class AISdkHttpClient implements AutoCloseable {
       throw new AISdkException("Failed to serialize default agent run request", e);
     }
 
+    // Intentionally no .timeout(...) — see streamIterator() Javadoc.
     return HttpRequest.newBuilder()
         .uri(URI.create(host + DEFAULT_AGENT_RUN_PATH))
         .header("Authorization", "Bearer " + token)

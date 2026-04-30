@@ -127,7 +127,7 @@ class HTTPClient:
         self,
         base_url: str,
         auth: TokenAuth,
-        timeout: float = 120.0,
+        timeout: float = 900.0,
         verify_ssl: bool = True,
         max_retries: int = 3,
         retry_delay: float = 1.0,
@@ -140,7 +140,7 @@ class HTTPClient:
         Args:
             base_url: Base URL for API requests
             auth: Authentication handler
-            timeout: Request timeout in seconds
+            timeout: Request timeout in seconds (applied to non-streaming calls)
             verify_ssl: Whether to verify SSL certificates
             max_retries: Maximum number of retry attempts
             retry_delay: Base delay between retries (exponential backoff)
@@ -159,6 +159,14 @@ class HTTPClient:
         self._client = httpx.Client(
             base_url=self._base_url,
             timeout=timeout,
+            verify=verify_ssl,
+        )
+        # SSE streams can run for many minutes; the stream's own events signal
+        # liveness, so we disable the read timeout (but keep modest connect /
+        # write / pool bounds) only for streaming calls.
+        self._stream_client = httpx.Client(
+            base_url=self._base_url,
+            timeout=httpx.Timeout(connect=10.0, read=None, write=10.0, pool=10.0),
             verify=verify_ssl,
         )
 
@@ -383,7 +391,9 @@ class HTTPClient:
         headers = self._headers(request_id)
         headers["Accept"] = "text/event-stream"
 
-        with self._client.stream(
+        # Use the no-read-timeout client: an SSE response can stay open well
+        # past the configured `timeout`, and its own events signal liveness.
+        with self._stream_client.stream(
             "POST",
             path,
             headers=headers,
@@ -400,6 +410,7 @@ class HTTPClient:
         """Close the HTTP client."""
         logger.debug("Closing HTTPClient")
         self._client.close()
+        self._stream_client.close()
 
     def __enter__(self) -> HTTPClient:
         return self
@@ -423,7 +434,7 @@ class AsyncHTTPClient:
         self,
         base_url: str,
         auth: TokenAuth,
-        timeout: float = 120.0,
+        timeout: float = 900.0,
         verify_ssl: bool = True,
         max_retries: int = 3,
         retry_delay: float = 1.0,
@@ -435,7 +446,7 @@ class AsyncHTTPClient:
         Args:
             base_url: Base URL for API requests
             auth: Authentication handler
-            timeout: Request timeout in seconds
+            timeout: Request timeout in seconds (applied to non-streaming calls)
             verify_ssl: Whether to verify SSL certificates
             max_retries: Maximum number of retry attempts
             retry_delay: Base delay between retries
@@ -449,6 +460,7 @@ class AsyncHTTPClient:
         self._retry_delay = retry_delay
         self._user_agent = user_agent or "ai-sdk-python/0.0.2"
         self._client: httpx.AsyncClient | None = None
+        self._stream_client: httpx.AsyncClient | None = None
 
         logger.debug("AsyncHTTPClient initialized for %s", self._base_url)
 
@@ -461,6 +473,21 @@ class AsyncHTTPClient:
                 verify=self._verify_ssl,
             )
         return self._client
+
+    def _get_stream_client(self) -> httpx.AsyncClient:
+        """Get or create the async client used for SSE streaming.
+
+        SSE streams can run for many minutes; the stream's own events signal
+        liveness, so we disable the read timeout (but keep modest connect /
+        write / pool bounds) only for streaming calls.
+        """
+        if self._stream_client is None:
+            self._stream_client = httpx.AsyncClient(
+                base_url=self._base_url,
+                timeout=httpx.Timeout(connect=10.0, read=None, write=10.0, pool=10.0),
+                verify=self._verify_ssl,
+            )
+        return self._stream_client
 
     def _headers(self, request_id: str | None = None) -> dict[str, str]:
         """Get request headers."""
@@ -647,7 +674,9 @@ class AsyncHTTPClient:
         headers = self._headers(request_id)
         headers["Accept"] = "text/event-stream"
 
-        client = self._get_client()
+        # Use the no-read-timeout client: an SSE response can stay open well
+        # past the configured `timeout`, and its own events signal liveness.
+        client = self._get_stream_client()
         async with client.stream(
             "POST",
             path,
@@ -668,6 +697,9 @@ class AsyncHTTPClient:
         if self._client is not None:
             await self._client.aclose()
             self._client = None
+        if self._stream_client is not None:
+            await self._stream_client.aclose()
+            self._stream_client = None
 
     async def __aenter__(self) -> AsyncHTTPClient:
         return self
