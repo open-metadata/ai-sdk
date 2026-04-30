@@ -10,7 +10,9 @@ import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
@@ -46,14 +48,30 @@ public class AISdkHttpClient implements AutoCloseable {
 
   public AISdkHttpClient(
       String host, String token, Duration timeout, int maxRetries, Duration retryDelay) {
+    this(host, token, timeout, maxRetries, retryDelay, API_BASE_PATH);
+  }
+
+  /** Variant that lets callers pin this client to a specific base path. */
+  public AISdkHttpClient(
+      String host,
+      String token,
+      Duration timeout,
+      int maxRetries,
+      Duration retryDelay,
+      String basePath) {
     this.host = normalizeHost(host);
-    this.baseUrl = this.host + API_BASE_PATH;
+    this.baseUrl = this.host + basePath;
     this.token = token;
     this.httpClient = HttpClient.newBuilder().connectTimeout(timeout).build();
     this.objectMapper = new ObjectMapper();
     this.sseParser = new SseParser(objectMapper);
     this.maxRetries = maxRetries;
     this.retryDelay = retryDelay;
+  }
+
+  /** Returns this client's resolved base URL (host + basePath). */
+  public String getBaseUrl() {
+    return baseUrl;
   }
 
   private String normalizeHost(String host) {
@@ -801,6 +819,91 @@ public class AISdkHttpClient implements AutoCloseable {
       Thread.sleep(duration.toMillis());
     } catch (InterruptedException e) {
       Thread.currentThread().interrupt();
+    }
+  }
+
+  // ==================== Generic Helpers (used by API namespaces) ====================
+
+  /** GETs a path relative to baseUrl, returning the parsed JSON body as a map. */
+  public Map<String, Object> getMap(String path, Map<String, Object> params) {
+    String url = buildUrl(path, params);
+    HttpRequest request =
+        HttpRequest.newBuilder()
+            .uri(URI.create(url))
+            .header("Authorization", "Bearer " + token)
+            .header("Accept", CONTENT_TYPE_JSON)
+            .GET()
+            .build();
+    HttpResponse<String> response = executeWithRetry(request);
+    return parseMap(response.body());
+  }
+
+  /** POSTs a JSON body to a path relative to baseUrl, returning the response as a map. */
+  public Map<String, Object> postMap(String path, Object body) {
+    String requestBody;
+    try {
+      requestBody = objectMapper.writeValueAsString(body);
+    } catch (JsonProcessingException e) {
+      throw new AISdkException("Failed to serialize request body", e);
+    }
+    String url = buildUrl(path, null);
+    HttpRequest request =
+        HttpRequest.newBuilder()
+            .uri(URI.create(url))
+            .header("Authorization", "Bearer " + token)
+            .header("Content-Type", CONTENT_TYPE_JSON)
+            .header("Accept", CONTENT_TYPE_JSON)
+            .POST(HttpRequest.BodyPublishers.ofString(requestBody))
+            .build();
+    HttpResponse<String> response = executeWithRetry(request);
+    return parseMap(response.body());
+  }
+
+  /** DELETEs a path relative to baseUrl with optional query parameters. */
+  public void delete(String path, Map<String, Object> params) {
+    String url = buildUrl(path, params);
+    HttpRequest request =
+        HttpRequest.newBuilder()
+            .uri(URI.create(url))
+            .header("Authorization", "Bearer " + token)
+            .header("Accept", CONTENT_TYPE_JSON)
+            .DELETE()
+            .build();
+    executeWithRetry(request);
+  }
+
+  private String buildUrl(String path, Map<String, Object> params) {
+    StringBuilder sb = new StringBuilder(baseUrl);
+    if (path != null && !path.isEmpty() && !path.equals("/")) {
+      if (!path.startsWith("/")) {
+        sb.append("/");
+      }
+      sb.append(path);
+    }
+    if (params != null && !params.isEmpty()) {
+      char sep = sb.indexOf("?") >= 0 ? '&' : '?';
+      for (Map.Entry<String, Object> entry : params.entrySet()) {
+        if (entry.getValue() == null) {
+          continue;
+        }
+        sb.append(sep);
+        sb.append(URLEncoder.encode(entry.getKey(), StandardCharsets.UTF_8));
+        sb.append('=');
+        sb.append(URLEncoder.encode(String.valueOf(entry.getValue()), StandardCharsets.UTF_8));
+        sep = '&';
+      }
+    }
+    return sb.toString();
+  }
+
+  private Map<String, Object> parseMap(String body) {
+    if (body == null || body.isEmpty()) {
+      return new LinkedHashMap<>();
+    }
+    try {
+      return objectMapper.readValue(body, new TypeReference<Map<String, Object>>() {});
+    } catch (JsonProcessingException e) {
+      throw new AISdkException("Failed to parse response body", e);
     }
   }
 
