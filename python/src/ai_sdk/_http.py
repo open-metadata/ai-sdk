@@ -317,6 +317,47 @@ class HTTPClient:
         _handle_error(last_response, agent_name=agent_name, request_id=request_id)
         return {}  # Never reached
 
+    def delete(
+        self,
+        path: str,
+        params: dict[str, Any] | None = None,
+    ) -> dict[str, Any]:
+        """Make a DELETE request with retry support.
+
+        Args:
+            path: Request path
+            params: Query parameters
+
+        Returns:
+            Response JSON data, or empty dict on 204 No Content
+        """
+        request_id = _generate_request_id()
+        logger.debug("[req:%s] DELETE %s%s", request_id, self._base_url, path)
+
+        last_response = None
+        for attempt in range(self._max_retries + 1):
+            response = self._client.delete(
+                path,
+                headers=self._headers(request_id),
+                params=params,
+            )
+            last_response = response
+
+            if response.status_code < 400:
+                if response.status_code == 204 or not response.content:
+                    return {}
+                return response.json()
+
+            if self._should_retry(response, attempt):
+                self._wait_for_retry(attempt, response)
+                continue
+
+            break
+
+        assert last_response is not None
+        _handle_error(last_response, request_id=request_id)
+        return {}
+
     def post_stream(
         self,
         path: str,
@@ -545,6 +586,41 @@ class AsyncHTTPClient:
         assert last_response is not None  # Loop always runs at least once
         _handle_error(last_response, agent_name=agent_name, request_id=request_id)
         return {}  # Never reached
+
+    async def delete(
+        self,
+        path: str,
+        params: dict[str, Any] | None = None,
+    ) -> dict[str, Any]:
+        """Make an async DELETE request with retry support."""
+        request_id = _generate_request_id()
+        logger.debug("[req:%s] async DELETE %s%s", request_id, self._base_url, path)
+
+        client = self._get_client()
+        last_response = None
+
+        for attempt in range(self._max_retries + 1):
+            response = await client.delete(
+                path,
+                headers=self._headers(request_id),
+                params=params,
+            )
+            last_response = response
+
+            if response.status_code < 400:
+                if response.status_code == 204 or not response.content:
+                    return {}
+                return response.json()
+
+            if self._should_retry(response, attempt):
+                await self._wait_for_retry(attempt, response)
+                continue
+
+            break
+
+        assert last_response is not None
+        _handle_error(last_response, request_id=request_id)
+        return {}
 
     async def post_stream(
         self,
