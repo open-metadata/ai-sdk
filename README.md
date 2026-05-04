@@ -158,6 +158,9 @@ curl -sSL https://raw.githubusercontent.com/open-metadata/ai-sdk/main/cli/instal
 # Configure
 ai-sdk configure
 
+# Use the TUI to chat
+ai-sdk chat --profile local
+
 # default AskCollate agent
 ai-sdk invoke --default "Analyze the customers table"
 
