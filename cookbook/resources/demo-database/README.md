@@ -241,6 +241,53 @@ After ingestion, you should see:
 | Lineage Analysis | Trace lineage from `raw_stripe.payments` to `fct_monthly_revenue` |
 | MCP Integration | Query metadata via Claude/LLM for impact analysis |
 
+## Running against Starburst (Iceberg)
+
+The same dbt project can target a remote Starburst instance with an Iceberg catalog.
+The raw Jaffle Shop data ships as dbt seeds (CSVs in `dbt/seeds/`) and is loaded
+on demand.
+
+### Prerequisites
+
+- A reachable Starburst cluster
+- An Iceberg catalog configured on that cluster (default expected name: `iceberg`)
+- LDAP or JWT credentials for that cluster
+- `pip install 'dbt-trino>=1.7,<2.0'`
+
+### Required environment variables
+
+```bash
+export STARBURST_HOST=cluster.example.starburst.io
+export STARBURST_PORT=443                # default 443
+export STARBURST_USER=your.user@org
+export STARBURST_PASSWORD=...            # for ldap method
+export STARBURST_CATALOG=iceberg         # default 'iceberg'
+export STARBURST_SCHEMA=jaffle_shop      # default 'jaffle_shop' (top-level marts schema)
+export STARBURST_METHOD=ldap             # default 'ldap'; use 'jwt' or 'none' as needed
+export STARBURST_HTTP_SCHEME=https       # default 'https'
+```
+
+### Generating the seed CSVs (one-time per data version)
+
+The CSVs are generated from the local PostgreSQL demo (so the same row data
+loaded by `init.sql` is what lands in Starburst):
+
+```bash
+make demo-database          # start PG
+make demo-export-seeds      # PG raw_* tables -> dbt/seeds/raw_*/*.csv
+git add cookbook/resources/demo-database/dbt/seeds && git commit
+```
+
+CSVs are versioned in git — re-running `demo-export-seeds` is only needed when
+`init.sql` changes.
+
+### Loading and running
+
+```bash
+make demo-dbt-starburst-seed   # load CSVs into iceberg.raw_* schemas
+make demo-dbt-starburst        # build staging -> intermediate -> marts
+```
+
 ## Cleanup
 
 ```bash
