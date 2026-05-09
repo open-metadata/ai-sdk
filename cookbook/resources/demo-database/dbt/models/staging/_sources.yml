@@ -2,7 +2,7 @@ version: 2
 
 sources:
   - name: jaffle_shop
-    database: jaffle_shop
+    database: "{{ 'jaffle_shop' if target.type == 'postgres' else target.database }}"
     schema: raw_jaffle_shop
     description: Core transactional data from the Jaffle Shop application
     tables:
@@ -31,7 +31,7 @@ sources:
         description: Line items for each order
 
   - name: stripe
-    database: jaffle_shop
+    database: "{{ 'jaffle_shop' if target.type == 'postgres' else target.database }}"
     schema: raw_stripe
     description: Payment data from Stripe
     tables:
@@ -47,7 +47,7 @@ sources:
         description: Refund transactions
 
   - name: inventory
-    database: jaffle_shop
+    database: "{{ 'jaffle_shop' if target.type == 'postgres' else target.database }}"
     schema: raw_inventory
     description: Product and inventory management data
     tables:
@@ -59,7 +59,7 @@ sources:
         description: Current inventory levels
 
   - name: marketing
-    database: jaffle_shop
+    database: "{{ 'jaffle_shop' if target.type == 'postgres' else target.database }}"
     schema: raw_marketing
     description: Marketing and campaign data
     tables:
@@ -73,7 +73,7 @@ sources:
         description: User event tracking
 
   - name: support
-    database: jaffle_shop
+    database: "{{ 'jaffle_shop' if target.type == 'postgres' else target.database }}"
     schema: raw_support
     description: Customer support data
     tables:
