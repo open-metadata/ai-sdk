@@ -6,12 +6,20 @@
 #
 # Output: cookbook/resources/demo-database/dbt/seeds/<schema>/<table>.csv
 #
-# Requires: psql client (brew install libpq && brew link --force libpq, or psql via pg client install)
+# Requires: docker, with the `jaffle_postgres` container running
+#           (started by `make demo-database`).
 set -euo pipefail
 
-PG_CONN="host=localhost port=5433 user=jaffle_user dbname=jaffle_shop"
+CONTAINER="jaffle_postgres"
+PG_USER="jaffle_user"
+PG_DB="jaffle_shop"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 SEEDS_DIR="${SCRIPT_DIR}/../dbt/seeds"
+
+if ! docker ps --format '{{.Names}}' | grep -q "^${CONTAINER}$"; then
+  echo "ERROR: container '${CONTAINER}' is not running. Start it with: make demo-database" >&2
+  exit 1
+fi
 
 # Schema -> tables mapping. Keep in sync with dbt/models/staging/_sources.yml.
 declare -a EXPORTS=(
@@ -38,7 +46,9 @@ for entry in "${EXPORTS[@]}"; do
   out_file="${out_dir}/${table}.csv"
   mkdir -p "${out_dir}"
   echo "Exporting ${schema}.${table} -> ${out_file}"
-  psql "${PG_CONN}" -c "\copy (SELECT * FROM ${schema}.${table}) TO '${out_file}' WITH CSV HEADER"
+  docker exec -i "${CONTAINER}" psql -U "${PG_USER}" -d "${PG_DB}" \
+    -c "COPY (SELECT * FROM ${schema}.${table}) TO STDOUT WITH CSV HEADER" \
+    > "${out_file}"
 done
 
 echo ""
