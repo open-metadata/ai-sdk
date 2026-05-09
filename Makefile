@@ -178,7 +178,7 @@ release:  ## Create a GitHub Release (usage: make release [B=branch])
 .PHONY: build-all test-all test-integration install-cli \
         lint lint-python lint-rust lint-typescript lint-java lint-n8n \
         format format-python format-rust format-typescript format-java format-n8n \
-        install-hooks install-local install-dbt demo-database demo-database-stop demo-dbt \
+        install-hooks install-local install-dbt install-dbt-starburst demo-database demo-database-stop demo-dbt \
         demo-export-seeds demo-dbt-starburst-seed demo-dbt-starburst demo-gdpr demo-n8n
 
 install-local:  ## Install Python SDK locally in editable mode (for development)
@@ -190,6 +190,11 @@ install-dbt:  ## Install dbt-postgres for the demo database
 	@echo "Installing dbt-postgres..."
 	pip install dbt-postgres
 	@echo "dbt-postgres installed"
+
+install-dbt-starburst:  ## Install dbt-trino for the Starburst target
+	@echo "Installing dbt-trino..."
+	pip install 'dbt-trino>=1.7,<2.0'
+	@echo "dbt-trino installed"
 
 demo-database:  ## Start the demo Jaffle Shop database (PostgreSQL + Metabase)
 	@echo "Starting demo database..."

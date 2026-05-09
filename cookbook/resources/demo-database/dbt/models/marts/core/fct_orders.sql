@@ -37,7 +37,7 @@ select
     CAST(date_trunc('week', order_date) AS date) as order_week,
     CAST(date_trunc('month', order_date) AS date) as order_month,
     CAST(date_trunc('quarter', order_date) AS date) as order_quarter,
-    extract(dow from order_date) as day_of_week,
+    {{ day_of_week_iso('order_date') }} as day_of_week,
     extract(hour from created_at) as order_hour
 
 from {{ ref('int_orders__enriched') }}

@@ -19,7 +19,7 @@ cleaned as (
         -- Calculated fields
         case
             when resolved_at is not null
-            then extract(epoch from (resolved_at - created_at)) / 3600
+            then {{ hours_between('created_at', 'resolved_at') }}
             else null
         end as resolution_hours
     from source
