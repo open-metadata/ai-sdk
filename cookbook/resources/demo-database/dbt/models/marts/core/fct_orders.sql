@@ -34,9 +34,9 @@ select
     last_payment_at,
 
     -- Date dimensions for easy filtering
-    date_trunc('week', order_date)::date as order_week,
-    date_trunc('month', order_date)::date as order_month,
-    date_trunc('quarter', order_date)::date as order_quarter,
+    CAST(date_trunc('week', order_date) AS date) as order_week,
+    CAST(date_trunc('month', order_date) AS date) as order_month,
+    CAST(date_trunc('quarter', order_date) AS date) as order_quarter,
     extract(dow from order_date) as day_of_week,
     extract(hour from created_at) as order_hour
 

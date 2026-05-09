@@ -52,7 +52,7 @@ select
     case
         when lag(total_orders) over (order by order_month) > 0
         then round(
-            (total_orders - lag(total_orders) over (order by order_month))::decimal
+            CAST(total_orders - lag(total_orders) over (order by order_month) AS decimal)
             / lag(total_orders) over (order by order_month) * 100,
             2
         )
