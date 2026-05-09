@@ -1,0 +1,196 @@
+version: 2
+
+seeds:
+  - name: customers
+    config:
+      column_types:
+        id: integer
+        first_name: varchar
+        last_name: varchar
+        email: varchar
+        phone_number: varchar
+        date_of_birth: date
+        ssn_last_four: varchar
+        address_line_1: varchar
+        city: varchar
+        state: varchar
+        postal_code: varchar
+        country: varchar
+        created_at: timestamp
+        updated_at: timestamp
+
+  - name: orders
+    config:
+      column_types:
+        id: integer
+        customer_id: integer
+        order_date: date
+        status: varchar
+        order_total: decimal(10,2)
+        shipping_cost: decimal(10,2)
+        discount_amount: decimal(10,2)
+        coupon_code: varchar
+        shipping_address_id: integer
+        created_at: timestamp
+        updated_at: timestamp
+
+  - name: order_items
+    config:
+      column_types:
+        id: integer
+        order_id: integer
+        product_id: integer
+        quantity: integer
+        unit_price: decimal(10,2)
+        created_at: timestamp
+
+  - name: payments
+    config:
+      column_types:
+        id: integer
+        order_id: integer
+        payment_method: varchar
+        amount: decimal(10,2)
+        status: varchar
+        created_at: timestamp
+        card_last_four: varchar
+        card_brand: varchar
+        billing_email: varchar
+        ip_address: varchar
+        risk_score: integer
+
+  - name: refunds
+    config:
+      column_types:
+        id: integer
+        payment_id: integer
+        amount: decimal(10,2)
+        reason: varchar
+        status: varchar
+        created_at: timestamp
+
+  - name: products
+    config:
+      column_types:
+        id: integer
+        sku: varchar
+        name: varchar
+        description: varchar
+        category: varchar
+        subcategory: varchar
+        unit_cost: decimal(10,2)
+        unit_price: decimal(10,2)
+        weight_kg: decimal(8,3)
+        is_active: boolean
+        created_at: timestamp
+        updated_at: timestamp
+
+  - name: suppliers
+    config:
+      column_types:
+        id: integer
+        name: varchar
+        contact_name: varchar
+        contact_email: varchar
+        phone: varchar
+        address: varchar
+        country: varchar
+        lead_time_days: integer
+        rating: decimal(3,2)
+        is_active: boolean
+
+  - name: stock_levels
+    config:
+      column_types:
+        id: integer
+        product_id: integer
+        warehouse_location: varchar
+        quantity_on_hand: integer
+        quantity_reserved: integer
+        reorder_point: integer
+        last_restocked_at: timestamp
+        updated_at: timestamp
+
+  - name: campaigns
+    config:
+      column_types:
+        id: integer
+        name: varchar
+        channel: varchar
+        start_date: date
+        end_date: date
+        budget: decimal(10,2)
+        target_audience: varchar
+        status: varchar
+        created_by: varchar
+
+  - name: ad_spend
+    config:
+      column_types:
+        id: integer
+        campaign_id: integer
+        spend_date: date
+        impressions: integer
+        clicks: integer
+        conversions: integer
+        spend_amount: decimal(10,2)
+        platform: varchar
+
+  - name: user_sessions
+    config:
+      column_types:
+        id: integer
+        session_id: varchar
+        customer_id: integer
+        started_at: timestamp
+        ended_at: timestamp
+        page_views: integer
+        utm_source: varchar
+        utm_medium: varchar
+        utm_campaign: varchar
+        device_type: varchar
+        browser: varchar
+        ip_address: varchar
+        country: varchar
+        region: varchar
+
+  - name: events
+    config:
+      column_types:
+        id: integer
+        session_id: varchar
+        event_type: varchar
+        event_timestamp: timestamp
+        page_url: varchar
+        product_id: integer
+        event_properties: varchar
+
+  - name: tickets
+    config:
+      column_types:
+        id: integer
+        customer_id: integer
+        order_id: integer
+        subject: varchar
+        description: varchar
+        priority: varchar
+        status: varchar
+        category: varchar
+        assigned_to: varchar
+        created_at: timestamp
+        resolved_at: timestamp
+        satisfaction_score: integer
+
+  - name: reviews
+    config:
+      column_types:
+        id: integer
+        product_id: integer
+        customer_id: integer
+        order_id: integer
+        rating: integer
+        title: varchar
+        review_text: varchar
+        is_verified_purchase: boolean
+        helpful_votes: integer
+        created_at: timestamp
