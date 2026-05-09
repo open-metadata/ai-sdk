@@ -8,7 +8,7 @@ cleaned as (
         nullif(trim(first_name), '') as first_name,
         nullif(trim(last_name), '') as last_name,
         case
-            when email ~* '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$'
+            when {{ valid_email('email') }}
             then lower(email)
             else null
         end as email,
