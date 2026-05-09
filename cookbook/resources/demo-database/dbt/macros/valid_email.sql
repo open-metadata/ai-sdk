@@ -8,5 +8,5 @@
 {% endmacro %}
 
 {% macro trino__valid_email(col) %}
-  regexp_like({{ col }}, '^[A-Za-z0-9._%+\-]+@[A-Za-z0-9.\-]+\.[A-Za-z]{2,}$')
+  regexp_like({{ col }}, '(?i)^[A-Za-z0-9._%+\-]+@[A-Za-z0-9.\-]+\.[A-Za-z]{2,}$')
 {% endmacro %}
