@@ -15,12 +15,12 @@ cleaned as (
         -- Calculated metrics
         case
             when coalesce(impressions, 0) > 0
-            then round(clicks::decimal / impressions * 100, 4)
+            then round(CAST(clicks AS decimal) / impressions * 100, 4)
             else 0
         end as click_through_rate,
         case
             when coalesce(clicks, 0) > 0
-            then round(conversions::decimal / clicks * 100, 4)
+            then round(CAST(conversions AS decimal) / clicks * 100, 4)
             else 0
         end as conversion_rate,
         case
