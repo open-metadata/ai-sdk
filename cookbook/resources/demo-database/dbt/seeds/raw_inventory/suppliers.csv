@@ -1,0 +1,7 @@
+id,name,contact_name,contact_email,phone,address,country,lead_time_days,rating,is_active
+1,Fresh Farms Co,Bob Farmer,bob@freshfarms.com,555-1001,"100 Farm Road, Sacramento, CA",USA,3,4.5,t
+2,Bakery Wholesale,Alice Baker,alice@bakerywholesale.com,555-1002,"200 Bread St, San Francisco, CA",USA,2,4.8,t
+3,Beverage Distributors Inc,Charlie Drinks,charlie@bevdist.com,555-1003,"300 Bottle Ave, Oakland, CA",USA,5,4.2,t
+4,Quality Meats LLC,Diana Butcher,diana@qualitymeats.com,555-1004,"400 Meat Market, Fresno, CA",USA,2,4.7,t
+5,Pacific Coffee Roasters,Edward Roast,edward@pacificcoffee.com,555-1005,"500 Bean Blvd, Portland, OR",USA,7,4.9,t
+6,Merchandise Plus,Fiona Merch,fiona@merchplus.com,555-1006,"600 Print St, Los Angeles, CA",USA,14,4.0,t
