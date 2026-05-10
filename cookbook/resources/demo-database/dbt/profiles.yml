@@ -21,6 +21,7 @@ jaffle_shop:
       port: "{{ env_var('STARBURST_PORT', '443') | int }}"
       user: "{{ env_var('STARBURST_USER') }}"
       password: "{{ env_var('STARBURST_PASSWORD', '') }}"
+      jwt_token: "{{ env_var('STARBURST_JWT_TOKEN', '') }}"
       http_scheme: "{{ env_var('STARBURST_HTTP_SCHEME', 'https') }}"
       database: "{{ env_var('STARBURST_CATALOG', 'iceberg') }}"
       schema: "{{ env_var('STARBURST_SCHEMA', 'jaffle_shop') }}"

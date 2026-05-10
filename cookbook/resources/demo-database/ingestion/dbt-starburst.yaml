@@ -1,0 +1,27 @@
+source:
+  type: dbt
+  serviceName: ${STARBURST_OM_SERVICE_NAME}  # the Starburst service name as registered in your OM/Collate instance
+  sourceConfig:
+    config:
+      type: DBT
+      dbtConfigSource:
+        dbtConfigType: local
+        dbtManifestFilePath: ${DBT_TARGET_DIR}/manifest.json
+        dbtCatalogFilePath: ${DBT_TARGET_DIR}/catalog.json
+        dbtRunResultsFilePath: ${DBT_TARGET_DIR}/run_results.json
+      dbtUpdateDescriptions: true
+      dbtUpdateOwners: true
+      includeTags: true
+
+sink:
+  type: metadata-rest
+  config: {}
+
+workflowConfig:
+  loggerLevel: INFO
+  openMetadataServerConfig:
+    enableVersionValidation: false
+    hostPort: ${AI_SDK_HOST}/api
+    authProvider: openmetadata
+    securityConfig:
+      jwtToken: ${AI_SDK_TOKEN}
