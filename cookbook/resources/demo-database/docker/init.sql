@@ -704,6 +704,59 @@ LEFT JOIN raw_marketing.ad_spend a ON c.id = a.campaign_id
 GROUP BY c.id, c.name, c.channel, c.budget;
 
 -- =============================================================================
+-- HIGH-VALUE CUSTOMER AUGMENTATION
+-- =============================================================================
+-- Pushes 5 existing customers above the $200 LTV threshold so they appear in
+-- the "High Value" segment (marts_core.dim_customers.value_segment). This is
+-- what makes the AskCollate marketing-efficiency demo land — without it the
+-- demo can only talk about Low/Medium customers.
+--
+-- Affected customer_ids: 1, 7, 13, 3, 17 (the top-LTV existing customers).
+-- Adds 10 completed orders + matching order_items + successful payments
+-- spread across Feb 2024 and March 2024.
+
+CREATE TEMP TABLE _new_high_value_orders AS
+WITH inserted AS (
+    INSERT INTO raw_jaffle_shop.orders
+        (customer_id, order_date, status, order_total, shipping_cost, discount_amount, coupon_code, created_at)
+    VALUES
+        ( 1, '2024-02-15', 'completed', 67.95, 5.99,  0.00, NULL,        '2024-02-15 10:00:00'),
+        ( 1, '2024-03-08', 'completed', 49.97, 0.00,  5.00, 'LOYALTY10', '2024-03-08 14:00:00'),
+        ( 1, '2024-03-25', 'completed', 75.93, 5.99,  0.00, NULL,        '2024-03-25 11:30:00'),
+        ( 7, '2024-02-20', 'completed', 89.94, 5.99,  8.99, 'SAVE10',    '2024-02-20 11:30:00'),
+        ( 7, '2024-03-12', 'completed', 54.96, 0.00,  0.00, NULL,        '2024-03-12 09:15:00'),
+        (13, '2024-02-22', 'completed',119.92, 5.99,  0.00, NULL,        '2024-02-22 16:00:00'),
+        (13, '2024-03-15', 'completed', 89.95, 0.00,  0.00, NULL,        '2024-03-15 13:30:00'),
+        ( 3, '2024-02-25', 'completed', 99.95, 0.00,  9.99, 'SAVE10',    '2024-02-25 15:00:00'),
+        ( 3, '2024-03-18', 'completed', 74.96, 0.00,  0.00, NULL,        '2024-03-18 10:45:00'),
+        (17, '2024-02-28', 'completed',119.94, 5.99,  0.00, NULL,        '2024-02-28 12:00:00')
+    RETURNING id, customer_id, order_total, discount_amount, shipping_cost, created_at
+)
+SELECT * FROM inserted;
+
+INSERT INTO raw_jaffle_shop.order_items (order_id, product_id, quantity, unit_price)
+SELECT id, ((id % 10) + 1), 2, ROUND(order_total / 2, 2)
+FROM _new_high_value_orders;
+
+INSERT INTO raw_stripe.payments
+    (order_id, payment_method, amount, status, created_at, card_last_four, card_brand, billing_email, ip_address, risk_score)
+SELECT
+    o.id,
+    'credit_card',
+    o.order_total - COALESCE(o.discount_amount, 0) + COALESCE(o.shipping_cost, 0),
+    'success',
+    o.created_at + interval '5 minutes',
+    '4242',
+    'visa',
+    c.email,
+    '192.168.1.100',
+    10
+FROM _new_high_value_orders o
+JOIN raw_jaffle_shop.customers c ON o.customer_id = c.id;
+
+DROP TABLE _new_high_value_orders;
+
+-- =============================================================================
 -- PERMISSIONS & EXTENSIONS FOR OPENMETADATA
 -- =============================================================================
 

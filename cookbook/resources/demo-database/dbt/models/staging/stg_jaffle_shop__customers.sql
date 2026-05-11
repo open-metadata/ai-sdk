@@ -14,7 +14,7 @@ cleaned as (
         end as email,
         phone_number,
         case
-            when date_of_birth > current_date or date_of_birth < '1900-01-01'
+            when date_of_birth > current_date or date_of_birth < DATE '1900-01-01'
             then null
             else date_of_birth
         end as date_of_birth,
