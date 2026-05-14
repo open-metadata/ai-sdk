@@ -39,3 +39,18 @@ models:
         +schema: marts_finance
       marketing:
         +schema: marts_marketing
+
+seeds:
+  jaffle_shop:
+    +enabled: "{{ target.type == 'trino' }}"
+    +quote_columns: false
+    raw_jaffle_shop:
+      +schema: raw_jaffle_shop
+    raw_stripe:
+      +schema: raw_stripe
+    raw_inventory:
+      +schema: raw_inventory
+    raw_marketing:
+      +schema: raw_marketing
+    raw_support:
+      +schema: raw_support

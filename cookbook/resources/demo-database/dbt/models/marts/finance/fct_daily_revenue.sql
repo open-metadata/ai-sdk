@@ -29,7 +29,7 @@ select
     -- Coupon usage
     sum(case when used_coupon then 1 else 0 end) as orders_with_coupon,
     round(
-        sum(case when used_coupon then 1 else 0 end)::decimal / count(*) * 100,
+        CAST(sum(case when used_coupon then 1 else 0 end) AS decimal) / count(*) * 100,
         2
     ) as coupon_usage_rate,
 

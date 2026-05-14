@@ -24,13 +24,13 @@ select
     -- Calculated metrics
     case
         when sum(total_impressions) > 0
-        then round(sum(total_clicks)::decimal / sum(total_impressions) * 100, 2)
+        then round(CAST(sum(total_clicks) AS decimal) / sum(total_impressions) * 100, 2)
         else 0
     end as overall_ctr,
 
     case
         when sum(total_clicks) > 0
-        then round(sum(total_conversions)::decimal / sum(total_clicks) * 100, 2)
+        then round(CAST(sum(total_conversions) AS decimal) / sum(total_clicks) * 100, 2)
         else 0
     end as overall_conversion_rate,
 

@@ -35,12 +35,12 @@ select
     c.budget - coalesce(a.total_spend, 0) as remaining_budget,
     case
         when coalesce(a.total_impressions, 0) > 0
-        then round(a.total_clicks::decimal / a.total_impressions * 100, 2)
+        then round(CAST(a.total_clicks AS decimal) / a.total_impressions * 100, 2)
         else 0
     end as overall_ctr,
     case
         when coalesce(a.total_clicks, 0) > 0
-        then round(a.total_conversions::decimal / a.total_clicks * 100, 2)
+        then round(CAST(a.total_conversions AS decimal) / a.total_clicks * 100, 2)
         else 0
     end as overall_conversion_rate,
     case

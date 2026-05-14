@@ -1,0 +1,13 @@
+id,customer_id,order_id,subject,description,priority,status,category,assigned_to,created_at,resolved_at,satisfaction_score
+1,1,1,Order arrived cold,My jaffle was cold when it arrived,medium,resolved,delivery,support@jaffle.shop,2024-01-03 14:00:00,2024-01-03 16:30:00,4
+2,3,3,Missing item,One drink was missing from my order,high,resolved,order_issue,support@jaffle.shop,2024-01-06 10:00:00,2024-01-06 11:00:00,5
+3,5,6,Billing question,Why was I charged twice?,high,resolved,billing,billing@jaffle.shop,2024-01-13 09:00:00,2024-01-13 10:30:00,5
+4,7,8,T-shirt size exchange,Need to exchange for larger size,low,resolved,returns,support@jaffle.shop,2024-01-20 11:00:00,2024-01-25 14:00:00,4
+5,8,10,Late delivery,Order took over an hour,medium,resolved,delivery,support@jaffle.shop,2024-01-22 13:00:00,2024-01-22 15:00:00,3
+6,10,12,Refund request,Food quality not as expected,high,resolved,refund,support@jaffle.shop,2024-01-27 16:00:00,2024-01-28 10:00:00,4
+7,12,19,Coupon not applied,My SAVE10 code didnt work,medium,resolved,billing,billing@jaffle.shop,2024-02-07 09:30:00,2024-02-07 10:00:00,5
+8,14,24,Allergy concern,Does the veggie jaffle contain nuts?,high,resolved,product_info,support@jaffle.shop,2024-02-15 08:00:00,2024-02-15 08:30:00,5
+9,16,30,Wrong order,Received someone elses order,high,resolved,order_issue,support@jaffle.shop,2024-03-02 12:00:00,2024-03-02 13:30:00,4
+10,18,34,Delivery address change,Need to update delivery address,medium,open,delivery,,2024-03-08 10:00:00,,
+11,20,38,Payment declined,Card keeps getting declined,high,open,billing,billing@jaffle.shop,2024-03-16 14:00:00,,
+12,1,46,Feedback,The new spicy jaffle is amazing!,low,resolved,feedback,support@jaffle.shop,2024-03-28 11:00:00,2024-03-28 11:30:00,5

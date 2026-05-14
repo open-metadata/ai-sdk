@@ -178,7 +178,8 @@ release:  ## Create a GitHub Release (usage: make release [B=branch])
 .PHONY: build-all test-all test-integration install-cli \
         lint lint-python lint-rust lint-typescript lint-java lint-n8n \
         format format-python format-rust format-typescript format-java format-n8n \
-        install-hooks install-local install-dbt demo-database demo-database-stop demo-dbt demo-gdpr demo-n8n
+        install-hooks install-local install-dbt install-dbt-starburst demo-database demo-database-stop demo-dbt \
+        demo-export-seeds demo-dbt-starburst-seed demo-dbt-starburst demo-gdpr demo-n8n
 
 install-local:  ## Install Python SDK locally in editable mode (for development)
 	@echo "Installing Python SDK (editable, all extras)..."
@@ -189,6 +190,11 @@ install-dbt:  ## Install dbt-postgres for the demo database
 	@echo "Installing dbt-postgres..."
 	pip install dbt-postgres
 	@echo "dbt-postgres installed"
+
+install-dbt-starburst:  ## Install dbt-trino for the Starburst target
+	@echo "Installing dbt-trino..."
+	pip install 'dbt-trino>=1.7,<2.0'
+	@echo "dbt-trino installed"
 
 demo-database:  ## Start the demo Jaffle Shop database (PostgreSQL + Metabase)
 	@echo "Starting demo database..."
@@ -211,6 +217,22 @@ demo-dbt:  ## Run dbt models against the demo database
 	cd cookbook/resources/demo-database/dbt && DBT_PROFILES_DIR=$$(pwd) dbt test
 	@echo ""
 	@echo "dbt models and tests completed"
+
+demo-export-seeds:  ## Export PG raw_* tables to dbt seed CSVs (one-time setup for Starburst)
+	@echo "Exporting raw tables from PG to dbt seeds..."
+	bash cookbook/resources/demo-database/scripts/export-raw-to-seeds.sh
+
+demo-dbt-starburst-seed:  ## Load seed CSVs into the Starburst Iceberg catalog
+	@echo "Seeding Iceberg with raw Jaffle Shop data..."
+	@echo "Required env: STARBURST_HOST, STARBURST_USER, STARBURST_PASSWORD"
+	cd cookbook/resources/demo-database/dbt && DBT_PROFILES_DIR=$$(pwd) dbt seed --target starburst
+
+demo-dbt-starburst:  ## Run + test dbt models against Starburst
+	@echo "Running dbt against Starburst..."
+	@echo "Required env: STARBURST_HOST, STARBURST_USER, STARBURST_PASSWORD"
+	cd cookbook/resources/demo-database/dbt && DBT_PROFILES_DIR=$$(pwd) dbt run --target starburst
+	@echo ""
+	cd cookbook/resources/demo-database/dbt && DBT_PROFILES_DIR=$$(pwd) dbt test --target starburst
 
 demo-gdpr:  ## Start the GDPR DSAR compliance demo
 	@echo "Installing dependencies..."

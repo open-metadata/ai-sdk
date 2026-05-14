@@ -1,0 +1,1274 @@
+id,session_id,customer_id,started_at,ended_at,page_views,utm_source,utm_medium,utm_campaign,device_type,browser,ip_address,country,region
+1,sess_793208446ef842b94bfd58af61ab9235,,2024-01-01 00:00:00,2024-01-01 00:23:00,12,direct,cpc,,desktop,Firefox,192.168.245.194,USA,Florida
+2,sess_c58a8bfb27959302179424d2b41d7bbd,18,2024-01-01 02:00:00,2024-01-01 02:26:00,14,direct,email,loyalty,mobile,Firefox,192.168.138.252,USA,Washington
+3,sess_10d0f35d974fa85d647ad0767a852638,18,2024-01-01 04:00:00,2024-01-01 04:33:00,8,email,organic,,mobile,Chrome,192.168.46.231,USA,Florida
+4,sess_0e75396e8f5222b06310581bebc4a575,20,2024-01-01 06:00:00,2024-01-01 06:32:00,7,referral,cpc,,desktop,Chrome,192.168.193.194,USA,Washington
+5,sess_31b7f2a222aa2b16f44c41ce57ff5247,,2024-01-01 08:00:00,2024-01-01 08:26:00,9,google,social,loyalty,tablet,Firefox,192.168.45.114,USA,Washington
+6,sess_6f9b10a0ecdbfcc4ae8652fbb81dc52c,9,2024-01-01 10:00:00,2024-01-01 10:19:00,5,direct,cpc,,desktop,Safari,192.168.136.52,USA,Florida
+7,sess_8321fc7274e97bae5639725bc36d0342,,2024-01-01 12:00:00,2024-01-01 12:29:00,6,direct,email,,tablet,Edge,192.168.218.197,USA,New York
+8,sess_fafeaa1622b9e10ad8a3be24ed20c9f7,18,2024-01-01 14:00:00,2024-01-01 14:35:00,9,referral,social,spring_sale,tablet,Safari,192.168.32.80,USA,Washington
+9,sess_9ff6c607648fb4fa66662abcefe068b2,,2024-01-01 16:00:00,2024-01-01 16:26:00,11,direct,social,spring_sale,desktop,Chrome,192.168.122.214,USA,New York
+10,sess_bdb7e5e1e3b31cd95fbba68229dcc8af,7,2024-01-01 18:00:00,2024-01-01 18:18:00,8,email,email,spring_sale,desktop,Safari,192.168.1.118,USA,Florida
+11,sess_083310dbdd0f55bdbabfa674c03f870f,1,2024-01-01 20:00:00,2024-01-01 20:17:00,3,direct,social,loyalty,tablet,Firefox,192.168.123.201,USA,New York
+12,sess_b418dcc48769440edd22825180adc61b,12,2024-01-01 22:00:00,2024-01-01 22:32:00,6,referral,organic,loyalty,desktop,Edge,192.168.56.144,USA,Florida
+13,sess_f18628a53b0fbcb2a379b7ca1b03f067,15,2024-01-02 00:00:00,2024-01-02 00:09:00,13,referral,organic,,tablet,Chrome,192.168.230.237,USA,Florida
+14,sess_8356c241f9b2964d9a8bdbc1fabddab5,,2024-01-02 02:00:00,2024-01-02 02:21:00,12,direct,organic,,desktop,Edge,192.168.30.143,USA,Washington
+15,sess_27b96224a60f85f3d10e297ce514721d,1,2024-01-02 04:00:00,2024-01-02 04:14:00,14,referral,cpc,,tablet,Firefox,192.168.164.125,USA,California
+16,sess_de400ad2c6ac7f0f359c6e4ed0c84aca,14,2024-01-02 06:00:00,2024-01-02 06:32:00,12,referral,social,,desktop,Chrome,192.168.47.180,USA,Florida
+17,sess_2bc03146284a7d940f07e3b9c4fa2b4b,5,2024-01-02 08:00:00,2024-01-02 08:33:00,5,email,social,loyalty,desktop,Chrome,192.168.73.209,USA,Florida
+18,sess_373396be3b84e29b44482825dad76e65,19,2024-01-02 10:00:00,2024-01-02 10:20:00,13,referral,organic,,mobile,Safari,192.168.86.141,USA,Florida
+19,sess_35bf7b3352649a4566f5bdd32c772dad,18,2024-01-02 12:00:00,2024-01-02 12:32:00,9,facebook,organic,,desktop,Edge,192.168.153.72,USA,Washington
+20,sess_6cbdf21321c839b15a82a6633be55850,15,2024-01-02 14:00:00,2024-01-02 14:21:00,3,email,organic,,mobile,Firefox,192.168.177.71,USA,Washington
+21,sess_20621bf1e1206158823ced3302e9793d,14,2024-01-02 16:00:00,2024-01-02 16:18:00,6,direct,email,loyalty,desktop,Firefox,192.168.31.241,USA,Washington
+22,sess_15693d00cefa2c9def15b44adbfa30c0,3,2024-01-02 18:00:00,2024-01-02 18:31:00,10,direct,email,,mobile,Chrome,192.168.29.215,USA,California
+23,sess_fd8eb928746a28e653b5b6f1c0b586ed,10,2024-01-02 20:00:00,2024-01-02 20:09:00,12,email,social,loyalty,tablet,Safari,192.168.130.60,USA,Texas
+24,sess_5aca19d1d579c8ee298a6ec54aefe5e8,,2024-01-02 22:00:00,2024-01-02 22:05:00,7,referral,social,,desktop,Safari,192.168.189.96,USA,Texas
+25,sess_1d6ce91420d766061517aec1ef444c71,,2024-01-03 00:00:00,2024-01-03 00:08:00,2,email,cpc,loyalty,desktop,Firefox,192.168.100.40,USA,New York
+26,sess_1720d90f70847336914653f73c332938,9,2024-01-03 02:00:00,2024-01-03 02:23:00,5,email,organic,loyalty,desktop,Firefox,192.168.141.103,USA,Florida
+27,sess_47b0ce06981584ee67d60cf8e3ab2a26,,2024-01-03 04:00:00,2024-01-03 04:26:00,15,google,organic,,desktop,Edge,192.168.20.223,USA,Washington
+28,sess_39ceb058698142f6c65e153ab970532a,,2024-01-03 06:00:00,2024-01-03 06:13:00,6,facebook,social,,mobile,Chrome,192.168.165.131,USA,Washington
+29,sess_8494ddaddf88608d060f7aa7d53945bf,18,2024-01-03 08:00:00,2024-01-03 08:30:00,12,direct,social,loyalty,mobile,Chrome,192.168.34.134,USA,California
+30,sess_5c61e90452ec5da79c63cc207cf00ec4,,2024-01-03 10:00:00,2024-01-03 10:05:00,16,facebook,social,,desktop,Edge,192.168.208.23,USA,Florida
+31,sess_b4d720edefb54785bb5bb22e609b2efe,,2024-01-03 12:00:00,2024-01-03 12:08:00,4,google,email,,desktop,Firefox,192.168.145.215,USA,Washington
+32,sess_21d01b789c55152f101ecb726ebf29f4,23,2024-01-03 14:00:00,2024-01-03 14:29:00,14,facebook,organic,loyalty,desktop,Chrome,192.168.242.153,USA,California
+33,sess_d66400141b2fd229a6fd9df1971bf0e7,11,2024-01-03 16:00:00,2024-01-03 16:34:00,6,facebook,social,loyalty,tablet,Chrome,192.168.134.245,USA,California
+34,sess_dd59fb7d354c44dc7f811e52c6bdb1be,11,2024-01-03 18:00:00,2024-01-03 18:31:00,12,email,social,,desktop,Firefox,192.168.142.241,USA,Washington
+35,sess_2d094723b5db0d0acf1e2a71e95f9980,,2024-01-03 20:00:00,2024-01-03 20:23:00,15,referral,cpc,,tablet,Firefox,192.168.205.199,USA,New York
+36,sess_9195c83802c3682d6c198ecdfc479cea,6,2024-01-03 22:00:00,2024-01-03 22:12:00,6,referral,social,,tablet,Safari,192.168.62.4,USA,Washington
+37,sess_35d31392bc258e8a29327e1cece6c457,12,2024-01-04 00:00:00,2024-01-04 00:09:00,10,google,social,,desktop,Chrome,192.168.122.28,USA,Texas
+38,sess_472e0be4c7c974b6919e48527b9096f8,,2024-01-04 02:00:00,2024-01-04 02:31:00,16,email,social,loyalty,desktop,Safari,192.168.33.242,USA,Florida
+39,sess_14ebce0ce0347ef75635caf10f93c5fc,13,2024-01-04 04:00:00,2024-01-04 04:09:00,7,facebook,social,,tablet,Chrome,192.168.250.242,USA,California
+40,sess_d4b2422b20c798e8929c60744add5f02,3,2024-01-04 06:00:00,2024-01-04 06:17:00,11,email,cpc,,tablet,Firefox,192.168.71.156,USA,Florida
+41,sess_b957b43c5a17ec6adc50e41f8960bff8,8,2024-01-04 08:00:00,2024-01-04 08:05:00,5,email,social,,tablet,Safari,192.168.247.79,USA,Washington
+42,sess_33ed82f175f9056aab0d026be71475ee,18,2024-01-04 10:00:00,2024-01-04 10:33:00,4,referral,social,,mobile,Chrome,192.168.80.76,USA,Washington
+43,sess_2df2108205e4b2e4174bfd38d664001a,16,2024-01-04 12:00:00,2024-01-04 12:33:00,2,email,organic,spring_sale,tablet,Safari,192.168.116.236,USA,Washington
+44,sess_73b0b0c0a11b661db03a649b354fc4a1,6,2024-01-04 14:00:00,2024-01-04 14:17:00,13,referral,organic,,tablet,Firefox,192.168.204.71,USA,Florida
+45,sess_ace093dad397dcb759100f284b723e73,24,2024-01-04 16:00:00,2024-01-04 16:15:00,13,google,email,,desktop,Safari,192.168.1.146,USA,New York
+46,sess_1879865388ebbfbc12739f2316737f72,12,2024-01-04 18:00:00,2024-01-04 18:34:00,14,referral,email,,mobile,Firefox,192.168.80.135,USA,Washington
+47,sess_6820b2f52327f78b8261b6a328eca5b3,,2024-01-04 20:00:00,2024-01-04 20:34:00,12,facebook,organic,,desktop,Safari,192.168.244.3,USA,Florida
+48,sess_20ad6f04d32e164c8014400856d94827,8,2024-01-04 22:00:00,2024-01-04 22:29:00,16,referral,email,spring_sale,desktop,Chrome,192.168.78.199,USA,New York
+49,sess_740676b8d2b508ac46065f7fb1dd4ce3,7,2024-01-05 00:00:00,2024-01-05 00:07:00,2,referral,organic,loyalty,mobile,Firefox,192.168.245.169,USA,Washington
+50,sess_22d4d83c0d1f1c973a4a90b7af6acef7,,2024-01-05 02:00:00,2024-01-05 02:15:00,6,facebook,social,,tablet,Safari,192.168.237.98,USA,New York
+51,sess_720a8f9e3c97e6481949df83651090cf,12,2024-01-05 04:00:00,2024-01-05 04:20:00,13,google,social,,tablet,Safari,192.168.59.250,USA,Washington
+52,sess_ccc7ef8f72d37cf615951366477156b7,,2024-01-05 06:00:00,2024-01-05 06:20:00,9,facebook,organic,,desktop,Safari,192.168.187.147,USA,California
+53,sess_049e426d1921c0b5645478786c5ec0c9,8,2024-01-05 08:00:00,2024-01-05 08:30:00,13,referral,organic,,desktop,Firefox,192.168.145.154,USA,California
+54,sess_04e48b53d61e21d849d56642ba8da897,,2024-01-05 10:00:00,2024-01-05 10:19:00,8,direct,social,,desktop,Safari,192.168.89.249,USA,New York
+55,sess_499a6e686c1f45775869e8689a0a90fb,21,2024-01-05 12:00:00,2024-01-05 12:07:00,15,email,email,,mobile,Chrome,192.168.149.44,USA,New York
+56,sess_c927dd096b15b4b8df42ec71cdff5c3e,,2024-01-05 14:00:00,2024-01-05 14:25:00,12,facebook,social,loyalty,desktop,Firefox,192.168.175.103,USA,Washington
+57,sess_5bf085ecf17ed49efb7db716b7331378,,2024-01-05 16:00:00,2024-01-05 16:14:00,8,facebook,social,spring_sale,tablet,Safari,192.168.204.65,USA,Texas
+58,sess_6705b753d50de8549d5141a88374096d,21,2024-01-05 18:00:00,2024-01-05 18:34:00,6,google,social,spring_sale,mobile,Edge,192.168.188.134,USA,Florida
+59,sess_0dfe92a8d8cd026c2bf1dc52aba2c26a,13,2024-01-05 20:00:00,2024-01-05 20:19:00,2,referral,email,loyalty,mobile,Edge,192.168.207.17,USA,Washington
+60,sess_3ca10e42094338044fa3da0264cc7099,,2024-01-05 22:00:00,2024-01-05 22:32:00,3,direct,social,,desktop,Chrome,192.168.133.74,USA,Washington
+61,sess_c99f7cc739f949e5474fd68a5912f5ef,,2024-01-06 00:00:00,2024-01-06 00:12:00,12,direct,social,,desktop,Firefox,192.168.155.112,USA,Texas
+62,sess_bceb3e66761cb27b068387a63a8c06f3,,2024-01-06 02:00:00,2024-01-06 02:21:00,10,direct,cpc,,tablet,Safari,192.168.175.177,USA,New York
+63,sess_361c5f925fb5082101c3a1b9591ade61,,2024-01-06 04:00:00,2024-01-06 04:27:00,12,facebook,organic,spring_sale,mobile,Safari,192.168.95.232,USA,Florida
+64,sess_27ff334bbc4abb206a3cf566178c765e,2,2024-01-06 06:00:00,2024-01-06 06:16:00,12,facebook,email,,mobile,Safari,192.168.88.193,USA,New York
+65,sess_de28fdceb228aea156fdffe0c7f12f5a,20,2024-01-06 08:00:00,2024-01-06 08:31:00,5,referral,social,spring_sale,tablet,Safari,192.168.90.188,USA,Texas
+66,sess_26bc57741bdf836563913aa152907661,,2024-01-06 10:00:00,2024-01-06 10:05:00,5,direct,social,,mobile,Chrome,192.168.82.195,USA,Florida
+67,sess_14527a9da786e54bc8907cb75662f9b2,23,2024-01-06 12:00:00,2024-01-06 12:09:00,3,google,cpc,loyalty,mobile,Safari,192.168.110.115,USA,New York
+68,sess_d0b17d4b64bc7013f1ab9a62ce37e63f,25,2024-01-06 14:00:00,2024-01-06 14:22:00,16,direct,social,spring_sale,tablet,Firefox,192.168.106.176,USA,Washington
+69,sess_fb3a13a6f4981dfa97538c222f8eee2f,25,2024-01-06 16:00:00,2024-01-06 16:11:00,7,referral,cpc,spring_sale,mobile,Safari,192.168.168.127,USA,New York
+70,sess_fe5f08fe262b5e1caf0b02f53acfb6f8,,2024-01-06 18:00:00,2024-01-06 18:31:00,10,facebook,organic,loyalty,desktop,Safari,192.168.81.178,USA,Washington
+71,sess_7fcf699cfb6e298455a90520e4054548,12,2024-01-06 20:00:00,2024-01-06 20:17:00,4,referral,cpc,,desktop,Edge,192.168.20.41,USA,New York
+72,sess_947601bf59570355ea6cf302e6d927ee,,2024-01-06 22:00:00,2024-01-06 22:15:00,17,google,email,,mobile,Chrome,192.168.43.225,USA,Washington
+73,sess_068b6140f8cadf3c61ca8788109cbb92,25,2024-01-07 00:00:00,2024-01-07 00:31:00,5,direct,cpc,loyalty,tablet,Chrome,192.168.151.243,USA,Washington
+74,sess_0e8153135b2f53276c8a941fbc412528,10,2024-01-07 02:00:00,2024-01-07 02:27:00,4,referral,organic,,desktop,Safari,192.168.133.242,USA,Florida
+75,sess_2e1b8a092e4e0b27138937bdce311891,,2024-01-07 04:00:00,2024-01-07 04:15:00,8,facebook,organic,loyalty,tablet,Edge,192.168.155.36,USA,Texas
+76,sess_b493c32533b0e438688f4a4edf13313d,22,2024-01-07 06:00:00,2024-01-07 06:21:00,5,email,email,loyalty,tablet,Firefox,192.168.76.104,USA,Washington
+77,sess_bc8a125ac3abc8bf57e4555b4097c4d4,2,2024-01-07 08:00:00,2024-01-07 08:08:00,10,referral,social,loyalty,desktop,Firefox,192.168.236.36,USA,Florida
+78,sess_d7620d9fce2e4bdf0600e3cfd430001e,8,2024-01-07 10:00:00,2024-01-07 10:31:00,12,referral,social,spring_sale,tablet,Chrome,192.168.117.161,USA,Texas
+79,sess_804a354e6248294a6ca838a1039ae824,,2024-01-07 12:00:00,2024-01-07 12:14:00,6,email,cpc,,desktop,Firefox,192.168.11.235,USA,Washington
+80,sess_4a619d3a24f8596b75c40322940a41cd,22,2024-01-07 14:00:00,2024-01-07 14:21:00,11,direct,social,loyalty,desktop,Safari,192.168.77.186,USA,Washington
+81,sess_8d4d2ed9f4f7a248c423ecbb29f07ad9,14,2024-01-07 16:00:00,2024-01-07 16:08:00,7,referral,social,,desktop,Firefox,192.168.110.130,USA,Washington
+82,sess_bf83c3382fc181110dd27055c3a4e888,15,2024-01-07 18:00:00,2024-01-07 18:13:00,16,referral,email,loyalty,mobile,Edge,192.168.60.19,USA,Texas
+83,sess_f7bd70d361bc293fb1bf6b00e20d5a5e,,2024-01-07 20:00:00,2024-01-07 20:25:00,13,facebook,organic,,mobile,Safari,192.168.98.91,USA,Washington
+84,sess_b4551c3f38e5d0b93a296a5c598eb6b2,20,2024-01-07 22:00:00,2024-01-07 22:33:00,7,google,social,loyalty,mobile,Chrome,192.168.139.72,USA,New York
+85,sess_ae7622a937401ea12f47c14272f63570,,2024-01-08 00:00:00,2024-01-08 00:14:00,9,email,social,loyalty,desktop,Chrome,192.168.68.199,USA,Florida
+86,sess_586674a511d1c8ec3b1fb2f1b2243437,1,2024-01-08 02:00:00,2024-01-08 02:27:00,8,google,social,loyalty,desktop,Edge,192.168.38.181,USA,New York
+87,sess_a92364740fbb5d3b6bc9d2cb822cb621,15,2024-01-08 04:00:00,2024-01-08 04:29:00,15,referral,organic,,mobile,Chrome,192.168.239.145,USA,Texas
+88,sess_fe8765c32d6accaed7de606a28a6e83d,7,2024-01-08 06:00:00,2024-01-08 06:17:00,15,direct,social,loyalty,tablet,Safari,192.168.167.199,USA,New York
+89,sess_191685dc3e79b9143bf9cb4e31768941,,2024-01-08 08:00:00,2024-01-08 08:21:00,7,facebook,cpc,loyalty,tablet,Edge,192.168.146.183,USA,Washington
+90,sess_560dfffe69fa03040208f2169a5ab522,23,2024-01-08 10:00:00,2024-01-08 10:28:00,14,facebook,social,,desktop,Safari,192.168.218.250,USA,Texas
+91,sess_5b7286d0e68918aa245fce365ce1d7a5,22,2024-01-08 12:00:00,2024-01-08 12:08:00,4,direct,social,loyalty,mobile,Edge,192.168.135.228,USA,California
+92,sess_003244f20c203adaed390cc397a846bb,23,2024-01-08 14:00:00,2024-01-08 14:23:00,4,direct,organic,spring_sale,desktop,Firefox,192.168.172.23,USA,Texas
+93,sess_945f72ffaa34ed1b7660c789cf73abfe,,2024-01-08 16:00:00,2024-01-08 16:07:00,16,email,social,loyalty,desktop,Firefox,192.168.18.76,USA,California
+94,sess_aa4b6827344f0399cc519480c20cefa7,6,2024-01-08 18:00:00,2024-01-08 18:25:00,13,google,social,loyalty,desktop,Safari,192.168.200.31,USA,Washington
+95,sess_d278c897faccf6d2864784cd3c8b174b,,2024-01-08 20:00:00,2024-01-08 20:25:00,8,direct,cpc,loyalty,desktop,Safari,192.168.230.153,USA,Washington
+96,sess_d2d7a2c1bb85da314b3c08d397182b1f,13,2024-01-08 22:00:00,2024-01-08 22:34:00,10,direct,organic,,desktop,Firefox,192.168.156.227,USA,Texas
+97,sess_bf26b57acaeee16934aa25ead68968c1,6,2024-01-09 00:00:00,2024-01-09 00:31:00,13,direct,cpc,loyalty,tablet,Firefox,192.168.246.245,USA,New York
+98,sess_3f86edfa863b2e1e9e72a2bda36f2168,10,2024-01-09 02:00:00,2024-01-09 02:33:00,6,direct,organic,,desktop,Firefox,192.168.148.214,USA,Florida
+99,sess_dc016eac4e8103fd69ccc121a3918a94,2,2024-01-09 04:00:00,2024-01-09 04:24:00,15,facebook,social,spring_sale,desktop,Chrome,192.168.17.216,USA,New York
+100,sess_f3e6aa1e2b8a6f3242ca8abd758474d3,19,2024-01-09 06:00:00,2024-01-09 06:20:00,13,facebook,social,,desktop,Firefox,192.168.138.90,USA,Washington
+101,sess_113b662911ce213cf4785bf3a36aa3e6,10,2024-01-09 08:00:00,2024-01-09 08:31:00,16,referral,organic,spring_sale,tablet,Chrome,192.168.254.48,USA,Florida
+102,sess_60a192297d7bef23c826fd7a1ee75997,,2024-01-09 10:00:00,2024-01-09 10:35:00,7,facebook,organic,spring_sale,desktop,Firefox,192.168.254.13,USA,Washington
+103,sess_8ff24938be083539b80757ec6c263b7d,,2024-01-09 12:00:00,2024-01-09 12:25:00,14,referral,email,spring_sale,desktop,Safari,192.168.72.157,USA,California
+104,sess_bee17ebb74c22809b4202db1ef00dfa8,13,2024-01-09 14:00:00,2024-01-09 14:11:00,4,referral,email,,mobile,Safari,192.168.76.228,USA,New York
+105,sess_ddd77049faafae1d206dba98fdcef320,9,2024-01-09 16:00:00,2024-01-09 16:14:00,5,direct,social,loyalty,tablet,Safari,192.168.138.176,USA,Washington
+106,sess_5a54e11799c7d93d301b983534bd62f4,,2024-01-09 18:00:00,2024-01-09 18:30:00,10,referral,organic,,desktop,Safari,192.168.199.247,USA,Texas
+107,sess_9ce638b85a4969099ffe3e25654c4cfd,,2024-01-09 20:00:00,2024-01-09 20:33:00,14,google,social,,tablet,Safari,192.168.183.139,USA,New York
+108,sess_9ed480ed9467ddc9ae8a4c3d9508ad56,21,2024-01-09 22:00:00,2024-01-09 22:31:00,13,referral,social,,tablet,Firefox,192.168.232.141,USA,Texas
+109,sess_ba00ec20f56b751d6dd2a93cb3bd27b3,,2024-01-10 00:00:00,2024-01-10 00:17:00,13,email,social,loyalty,desktop,Edge,192.168.76.252,USA,Washington
+110,sess_2e22a092f602757bf947de1688855bc9,17,2024-01-10 02:00:00,2024-01-10 02:10:00,15,direct,social,loyalty,tablet,Safari,192.168.29.239,USA,Washington
+111,sess_7a2c70220a08b1cb3b05f821c817776f,20,2024-01-10 04:00:00,2024-01-10 04:34:00,6,direct,social,loyalty,mobile,Safari,192.168.178.102,USA,California
+112,sess_d3c6755bf327dddf71aad101f3c101d1,13,2024-01-10 06:00:00,2024-01-10 06:11:00,16,referral,social,,mobile,Firefox,192.168.242.7,USA,Florida
+113,sess_21ee4fd5491a6a9cf2cc851ba2980c98,5,2024-01-10 08:00:00,2024-01-10 08:07:00,6,referral,email,loyalty,desktop,Firefox,192.168.14.232,USA,Washington
+114,sess_afdc98ee3eca959e0dc738aa17963b38,17,2024-01-10 10:00:00,2024-01-10 10:06:00,14,referral,social,spring_sale,desktop,Firefox,192.168.116.138,USA,Washington
+115,sess_991f5e4ff902862934c2a968fa63a4f4,,2024-01-10 12:00:00,2024-01-10 12:08:00,4,google,email,spring_sale,mobile,Firefox,192.168.180.91,USA,Washington
+116,sess_d3dccf558a8732e3c2f82876c873a169,5,2024-01-10 14:00:00,2024-01-10 14:15:00,10,referral,email,loyalty,tablet,Safari,192.168.45.130,USA,Washington
+117,sess_7f7c366af610854bab6f857d9efd725a,15,2024-01-10 16:00:00,2024-01-10 16:29:00,9,facebook,organic,,desktop,Edge,192.168.1.19,USA,New York
+118,sess_224f0a9354c9a5c2ff49b23321734ef8,11,2024-01-10 18:00:00,2024-01-10 18:18:00,8,referral,email,,desktop,Safari,192.168.211.165,USA,Washington
+119,sess_95f922398c6ad6d63f2d34cbd3ba480c,,2024-01-10 20:00:00,2024-01-10 20:28:00,14,referral,social,,desktop,Edge,192.168.3.81,USA,Washington
+120,sess_f4223a142b86f98210b7172a9b28f930,17,2024-01-10 22:00:00,2024-01-10 22:15:00,6,direct,email,,desktop,Safari,192.168.179.31,USA,California
+121,sess_2147c9c6e57cdcbbf012f24b1d686e17,24,2024-01-11 00:00:00,2024-01-11 00:23:00,17,email,organic,,tablet,Chrome,192.168.1.84,USA,Washington
+122,sess_3a6d00bb0053439eeaa59373db195d19,11,2024-01-11 02:00:00,2024-01-11 02:30:00,12,referral,social,spring_sale,tablet,Safari,192.168.204.104,USA,New York
+123,sess_dadff078ffc1db2d9d4a0bf7b4a2dbfb,9,2024-01-11 04:00:00,2024-01-11 04:31:00,8,email,email,,desktop,Firefox,192.168.83.113,USA,Washington
+124,sess_a4928b7cab08deab0aa199ea63ec9650,,2024-01-11 06:00:00,2024-01-11 06:16:00,5,email,cpc,loyalty,desktop,Safari,192.168.172.131,USA,Texas
+125,sess_7ce4ca8d54f95e7abdfa7b08712128ec,,2024-01-11 08:00:00,2024-01-11 08:22:00,3,direct,email,loyalty,desktop,Firefox,192.168.230.68,USA,New York
+126,sess_e1ad9a48afcdccbe763f573e99b9a61b,,2024-01-11 10:00:00,2024-01-11 10:15:00,5,direct,organic,loyalty,mobile,Firefox,192.168.10.55,USA,Texas
+127,sess_3c21a2b9460a64ff097a511f44ff87f7,20,2024-01-11 12:00:00,2024-01-11 12:06:00,13,facebook,cpc,loyalty,mobile,Safari,192.168.92.175,USA,New York
+128,sess_8942924f6dd054691b6364c11ada2f94,,2024-01-11 14:00:00,2024-01-11 14:15:00,13,referral,social,,desktop,Firefox,192.168.147.185,USA,Washington
+129,sess_50357c52973d24ca61b9a61578cfd571,14,2024-01-11 16:00:00,2024-01-11 16:08:00,3,email,organic,loyalty,desktop,Edge,192.168.133.246,USA,Florida
+130,sess_35092b286caa7f392c0c5d3dbc6d1bad,1,2024-01-11 18:00:00,2024-01-11 18:28:00,4,email,organic,spring_sale,desktop,Chrome,192.168.36.123,USA,New York
+131,sess_980405bc90f54ec5dcd1d0178158a221,12,2024-01-11 20:00:00,2024-01-11 20:25:00,2,referral,email,,desktop,Firefox,192.168.137.44,USA,Texas
+132,sess_122e66d57f6b176eb23809031cf3a1fd,12,2024-01-11 22:00:00,2024-01-11 22:33:00,4,email,social,loyalty,desktop,Edge,192.168.195.224,USA,New York
+133,sess_65215dbba587c55891195616b7f00e8a,,2024-01-12 00:00:00,2024-01-12 00:15:00,3,facebook,organic,loyalty,tablet,Firefox,192.168.250.27,USA,Washington
+134,sess_0444d79e02baa59f8cb7950d63ee7ec3,,2024-01-12 02:00:00,2024-01-12 02:24:00,11,direct,social,,mobile,Firefox,192.168.208.112,USA,Washington
+135,sess_3d0903397799c4f436557d8c2a06749f,4,2024-01-12 04:00:00,2024-01-12 04:10:00,16,referral,social,,desktop,Firefox,192.168.9.36,USA,Texas
+136,sess_3e256b61161a7f429c0525c9debc29cf,,2024-01-12 06:00:00,2024-01-12 06:06:00,12,referral,cpc,loyalty,tablet,Safari,192.168.148.62,USA,California
+137,sess_cd8b350ad0b11a9fb130bff5824b3e06,12,2024-01-12 08:00:00,2024-01-12 08:16:00,3,referral,email,,desktop,Safari,192.168.182.220,USA,Florida
+138,sess_57188542d643f6b4b0bd87c97488679d,4,2024-01-12 10:00:00,2024-01-12 10:24:00,3,referral,social,,tablet,Firefox,192.168.177.107,USA,Texas
+139,sess_c4ea974ee21381ab0580a262a1302197,4,2024-01-12 12:00:00,2024-01-12 12:24:00,9,facebook,email,loyalty,desktop,Safari,192.168.96.32,USA,Washington
+140,sess_b31c0a93362bb6314560a99575b28ea6,,2024-01-12 14:00:00,2024-01-12 14:27:00,5,facebook,cpc,,desktop,Safari,192.168.253.226,USA,New York
+141,sess_1b79f754da5fb0188398d649afa2dd2a,24,2024-01-12 16:00:00,2024-01-12 16:12:00,15,direct,email,,mobile,Firefox,192.168.130.38,USA,California
+142,sess_6bc8cd77234e3df3bb1cfeec7ea75384,,2024-01-12 18:00:00,2024-01-12 18:14:00,8,facebook,organic,,mobile,Chrome,192.168.142.40,USA,Washington
+143,sess_89dd2cd46546a1a578fa0b719ef29aa4,,2024-01-12 20:00:00,2024-01-12 20:13:00,16,referral,organic,spring_sale,tablet,Chrome,192.168.147.40,USA,Washington
+144,sess_3b42f9a2217327cc0324ab74c60eff11,7,2024-01-12 22:00:00,2024-01-12 22:27:00,7,facebook,email,,mobile,Edge,192.168.247.199,USA,California
+145,sess_e71d04ccfdd6130d65c87aececdb63df,10,2024-01-13 00:00:00,2024-01-13 00:16:00,17,direct,organic,spring_sale,mobile,Firefox,192.168.199.208,USA,Texas
+146,sess_0db0a24c5177e4e3efbda97072ad833a,,2024-01-13 02:00:00,2024-01-13 02:14:00,13,referral,email,,tablet,Firefox,192.168.161.57,USA,New York
+147,sess_0da277cffe348d5d90bf222775cbc53a,21,2024-01-13 04:00:00,2024-01-13 04:29:00,10,facebook,email,loyalty,desktop,Chrome,192.168.134.124,USA,Florida
+148,sess_65f9a7c433f06402e818f9dbb0433cfe,21,2024-01-13 06:00:00,2024-01-13 06:23:00,11,facebook,email,spring_sale,tablet,Firefox,192.168.38.168,USA,New York
+149,sess_3e78091663ede32a0f6424bac0a573e8,,2024-01-13 08:00:00,2024-01-13 08:22:00,8,referral,email,spring_sale,tablet,Safari,192.168.239.144,USA,Texas
+150,sess_506c3bafe15cff115c2259ea17d61ab1,16,2024-01-13 10:00:00,2024-01-13 10:06:00,17,facebook,cpc,spring_sale,mobile,Firefox,192.168.43.158,USA,Florida
+151,sess_dd1f86e51f4f9b54a4574c5f71b0c471,21,2024-01-13 12:00:00,2024-01-13 12:21:00,17,direct,email,spring_sale,desktop,Safari,192.168.178.241,USA,Washington
+152,sess_fb425e277b6ca32a6f54e291705df046,,2024-01-13 14:00:00,2024-01-13 14:21:00,14,referral,email,spring_sale,desktop,Chrome,192.168.252.238,USA,New York
+153,sess_89e81010468a2fafa4d852be25569d1e,,2024-01-13 16:00:00,2024-01-13 16:13:00,8,direct,cpc,,mobile,Safari,192.168.45.130,USA,Washington
+154,sess_935966464e1fabe93b35f39abb64e65b,20,2024-01-13 18:00:00,2024-01-13 18:24:00,12,facebook,cpc,,mobile,Edge,192.168.99.175,USA,Florida
+155,sess_84b8fa9e3f09a72cf08775606bf8397c,,2024-01-13 20:00:00,2024-01-13 20:09:00,15,referral,social,,desktop,Firefox,192.168.16.43,USA,Washington
+156,sess_bcd0cab034fc958dd1900a33c9d86afb,,2024-01-13 22:00:00,2024-01-13 22:21:00,2,facebook,social,loyalty,desktop,Firefox,192.168.252.153,USA,Texas
+157,sess_9f4ecebc8c26bf9d175cf0d88b6b0a9d,5,2024-01-14 00:00:00,2024-01-14 00:09:00,13,email,email,loyalty,mobile,Edge,192.168.42.37,USA,Washington
+158,sess_010e9695eabcc4b615df291690a03937,17,2024-01-14 02:00:00,2024-01-14 02:16:00,6,direct,social,,desktop,Safari,192.168.87.45,USA,Florida
+159,sess_556439097a8e0671fbd3874740152ef9,,2024-01-14 04:00:00,2024-01-14 04:11:00,9,facebook,email,loyalty,tablet,Firefox,192.168.224.216,USA,Texas
+160,sess_40dfa6bf20ec74b16c884979edd0b58c,,2024-01-14 06:00:00,2024-01-14 06:29:00,6,facebook,cpc,,desktop,Firefox,192.168.232.208,USA,New York
+161,sess_f57753e5ba293b79028a799e0d111d76,17,2024-01-14 08:00:00,2024-01-14 08:08:00,13,google,email,spring_sale,desktop,Chrome,192.168.143.184,USA,Florida
+162,sess_ee3da0665f6460f06e80db07e1be1b0b,25,2024-01-14 10:00:00,2024-01-14 10:33:00,14,referral,email,loyalty,desktop,Chrome,192.168.80.204,USA,New York
+163,sess_91c64ea5eefec732c1d2b988f37f69dc,,2024-01-14 12:00:00,2024-01-14 12:06:00,10,google,organic,loyalty,mobile,Firefox,192.168.15.188,USA,Florida
+164,sess_2a1f34949f81d4a9e6d30caa1a2ae330,9,2024-01-14 14:00:00,2024-01-14 14:25:00,15,direct,social,spring_sale,desktop,Firefox,192.168.12.107,USA,Texas
+165,sess_4b7a0fdf1bb805caa4fccc10909184c2,9,2024-01-14 16:00:00,2024-01-14 16:08:00,9,direct,organic,,desktop,Safari,192.168.197.167,USA,Washington
+166,sess_36e6f6bf060bc316604622f444084ba0,4,2024-01-14 18:00:00,2024-01-14 18:10:00,13,email,cpc,spring_sale,mobile,Safari,192.168.4.50,USA,Florida
+167,sess_1a5c9c6eba16193f8d380d1af7174482,13,2024-01-14 20:00:00,2024-01-14 20:06:00,4,facebook,cpc,,desktop,Firefox,192.168.164.93,USA,California
+168,sess_b0379b94e13b986315b2e6f76269ed54,13,2024-01-14 22:00:00,2024-01-14 22:27:00,3,facebook,social,loyalty,desktop,Firefox,192.168.57.37,USA,Washington
+169,sess_02554414bc3474ebd0ef336f71acaf51,,2024-01-15 00:00:00,2024-01-15 00:06:00,5,facebook,organic,spring_sale,mobile,Safari,192.168.40.126,USA,New York
+170,sess_c97488e70aefa0ac9f7cdcda4935dbc2,12,2024-01-15 02:00:00,2024-01-15 02:26:00,10,email,email,,desktop,Edge,192.168.20.245,USA,Texas
+171,sess_c1daaceddf9d8e34f411c5007e664112,,2024-01-15 04:00:00,2024-01-15 04:33:00,4,direct,email,spring_sale,desktop,Chrome,192.168.252.237,USA,Washington
+172,sess_6a53ef4f888c656d79277caef4fceb4f,,2024-01-15 06:00:00,2024-01-15 06:23:00,13,referral,organic,loyalty,mobile,Chrome,192.168.188.171,USA,Texas
+173,sess_fc9ee769b429bbf630a78fe70cdd2f02,15,2024-01-15 08:00:00,2024-01-15 08:16:00,15,referral,social,loyalty,desktop,Safari,192.168.149.19,USA,New York
+174,sess_79e68e356fa603acb53565c8bdba3eb5,4,2024-01-15 10:00:00,2024-01-15 10:27:00,13,email,organic,,mobile,Edge,192.168.12.192,USA,California
+175,sess_286c70520bdaecec4e812fa07ae0405f,22,2024-01-15 12:00:00,2024-01-15 12:23:00,13,referral,cpc,,desktop,Firefox,192.168.134.156,USA,Texas
+176,sess_7111d08f4ce0bee968ba10001e5adb51,,2024-01-15 14:00:00,2024-01-15 14:35:00,13,direct,organic,loyalty,mobile,Firefox,192.168.171.72,USA,Florida
+177,sess_0fb64fd65f9979106a52048cef08b081,,2024-01-15 16:00:00,2024-01-15 16:26:00,8,email,social,loyalty,tablet,Edge,192.168.8.71,USA,Florida
+178,sess_66a02184417ac0c66a95b32073a8c3b0,,2024-01-15 18:00:00,2024-01-15 18:34:00,12,direct,social,,desktop,Safari,192.168.120.157,USA,Texas
+179,sess_ebd5976d583264fcaca3a381fd725431,20,2024-01-15 20:00:00,2024-01-15 20:30:00,8,referral,organic,loyalty,desktop,Firefox,192.168.146.18,USA,Washington
+180,sess_b3082c1982e2bb3b9f396b1847f27093,,2024-01-15 22:00:00,2024-01-15 22:12:00,7,facebook,organic,,desktop,Chrome,192.168.103.106,USA,Florida
+181,sess_9876cca0a0ddfe57596697bf3aad7179,8,2024-01-16 00:00:00,2024-01-16 00:29:00,9,referral,social,loyalty,mobile,Chrome,192.168.80.168,USA,Texas
+182,sess_340fb9d4d3545b0d84585a91b5f8b545,8,2024-01-16 02:00:00,2024-01-16 02:25:00,13,email,organic,,desktop,Safari,192.168.243.119,USA,Florida
+183,sess_8505a830c845bd9a6a175d7020cb933f,,2024-01-16 04:00:00,2024-01-16 04:13:00,16,direct,cpc,,desktop,Safari,192.168.230.25,USA,Florida
+184,sess_2cd95775ce1f1d3e4b67e5149a2535f3,,2024-01-16 06:00:00,2024-01-16 06:24:00,10,referral,email,,mobile,Edge,192.168.146.91,USA,Texas
+185,sess_1cafd90cb1dba019c22118f1aa81f407,21,2024-01-16 08:00:00,2024-01-16 08:05:00,14,facebook,organic,loyalty,desktop,Firefox,192.168.247.165,USA,Washington
+186,sess_dfd6d57625f025f2cb573237142ddce7,18,2024-01-16 10:00:00,2024-01-16 10:27:00,15,referral,organic,,desktop,Safari,192.168.90.182,USA,New York
+187,sess_74f304f014ccfe09261d91620c0035aa,11,2024-01-16 12:00:00,2024-01-16 12:17:00,9,direct,social,spring_sale,tablet,Safari,192.168.27.32,USA,Texas
+188,sess_8ed38ea8bceb405fd5a84d95534353fe,,2024-01-16 14:00:00,2024-01-16 14:08:00,10,direct,organic,,desktop,Firefox,192.168.8.164,USA,Texas
+189,sess_69ef55efb19f755606faab5b2b3eb706,21,2024-01-16 16:00:00,2024-01-16 16:13:00,14,direct,social,loyalty,desktop,Edge,192.168.88.208,USA,Texas
+190,sess_76ab0134ee5820903eb9ac86384fbdc1,22,2024-01-16 18:00:00,2024-01-16 18:12:00,8,google,social,loyalty,desktop,Safari,192.168.180.12,USA,California
+191,sess_9a46e8a774dc00faea9645ab7b957889,7,2024-01-16 20:00:00,2024-01-16 20:27:00,7,referral,social,,tablet,Safari,192.168.209.149,USA,Texas
+192,sess_f9a43b64ca01f7d4ddf21f67aa0ac932,22,2024-01-16 22:00:00,2024-01-16 22:18:00,16,email,organic,,desktop,Firefox,192.168.155.88,USA,Washington
+193,sess_2ade062b24c0e0b8d4fddf4b3afa6480,,2024-01-17 00:00:00,2024-01-17 00:24:00,9,email,social,loyalty,desktop,Firefox,192.168.83.52,USA,California
+194,sess_8922c444655b6b1f7f660c218576f66b,,2024-01-17 02:00:00,2024-01-17 02:08:00,17,google,email,,desktop,Safari,192.168.188.18,USA,Washington
+195,sess_5229c3018a24513a4fbac9c6bc1d55cd,2,2024-01-17 04:00:00,2024-01-17 04:28:00,4,email,social,loyalty,tablet,Edge,192.168.91.46,USA,Washington
+196,sess_758324cf285a59b819806774607b5869,,2024-01-17 06:00:00,2024-01-17 06:20:00,12,direct,social,spring_sale,desktop,Firefox,192.168.45.101,USA,Texas
+197,sess_af48e4de04b41bde0cb3dd05f34795d1,6,2024-01-17 08:00:00,2024-01-17 08:16:00,15,referral,email,,mobile,Safari,192.168.151.57,USA,Washington
+198,sess_2fb906f18e2d2965732b5627a3a6e158,10,2024-01-17 10:00:00,2024-01-17 10:09:00,12,referral,email,,tablet,Firefox,192.168.76.54,USA,Washington
+199,sess_4e1d5c1d99c0e36a744741040459ee4e,,2024-01-17 12:00:00,2024-01-17 12:34:00,17,referral,social,,desktop,Firefox,192.168.184.184,USA,New York
+200,sess_3af8c960ecef17b4342c077a11cdf909,7,2024-01-17 14:00:00,2024-01-17 14:06:00,6,google,social,spring_sale,desktop,Edge,192.168.244.104,USA,Washington
+201,sess_a9d4dbc3afa95d8d14ca862dcc07bf58,3,2024-01-17 16:00:00,2024-01-17 16:32:00,11,referral,email,,desktop,Safari,192.168.66.77,USA,Washington
+202,sess_e1780ca0bc098acb2ad29ec8039043cf,3,2024-01-17 18:00:00,2024-01-17 18:14:00,12,direct,email,loyalty,desktop,Edge,192.168.153.189,USA,New York
+203,sess_8567a83d3f18e105de712b404e05df48,25,2024-01-17 20:00:00,2024-01-17 20:12:00,5,referral,email,,desktop,Firefox,192.168.248.166,USA,Texas
+204,sess_fcc6d1fe63fd4b0f7f4eed96f0d74457,,2024-01-17 22:00:00,2024-01-17 22:19:00,3,referral,organic,loyalty,desktop,Chrome,192.168.43.128,USA,Texas
+205,sess_bc6ce9228e5fda1e1a256a58535fc41e,21,2024-01-18 00:00:00,2024-01-18 00:19:00,10,google,social,loyalty,desktop,Chrome,192.168.120.150,USA,Florida
+206,sess_5357d2a6ab98b5635cda95bc5c540a40,23,2024-01-18 02:00:00,2024-01-18 02:09:00,8,referral,social,,desktop,Firefox,192.168.50.159,USA,Texas
+207,sess_f591cae4eeb7a409b2f2bfae52c2ce36,10,2024-01-18 04:00:00,2024-01-18 04:32:00,5,email,organic,,tablet,Firefox,192.168.170.179,USA,Texas
+208,sess_835659d537ecb3b88c94d16ce8e62ba0,8,2024-01-18 06:00:00,2024-01-18 06:05:00,8,referral,social,spring_sale,desktop,Safari,192.168.115.82,USA,Washington
+209,sess_00e97bec41f724a639b9ebc1dae9da21,15,2024-01-18 08:00:00,2024-01-18 08:32:00,17,email,email,,desktop,Edge,192.168.24.140,USA,Florida
+210,sess_fad81b8cb8c818026a4cd74f8e12fd4a,22,2024-01-18 10:00:00,2024-01-18 10:11:00,6,referral,email,loyalty,mobile,Safari,192.168.239.140,USA,California
+211,sess_c1cdd188a011023189d399d96c52cbeb,,2024-01-18 12:00:00,2024-01-18 12:10:00,6,email,organic,,desktop,Safari,192.168.232.39,USA,Washington
+212,sess_07ffccab2145e7336e5642ecfd013931,23,2024-01-18 14:00:00,2024-01-18 14:31:00,11,referral,social,,tablet,Firefox,192.168.79.34,USA,Florida
+213,sess_976362d53d67971d2d6d6f874067c906,1,2024-01-18 16:00:00,2024-01-18 16:35:00,15,direct,social,loyalty,desktop,Chrome,192.168.35.122,USA,Washington
+214,sess_acb7068f18dcbcccadb5ec8b817c0ef9,22,2024-01-18 18:00:00,2024-01-18 18:34:00,7,referral,cpc,,tablet,Edge,192.168.34.2,USA,Texas
+215,sess_f9d185c3ce644562daae1ec297cd2097,4,2024-01-18 20:00:00,2024-01-18 20:32:00,15,facebook,social,,mobile,Safari,192.168.245.19,USA,New York
+216,sess_f155304bbbfffe14f3105c3cb35e24b5,,2024-01-18 22:00:00,2024-01-18 22:27:00,4,email,social,,desktop,Firefox,192.168.135.134,USA,Texas
+217,sess_c0cab7bdcf2753f27b5cbfc636af8db1,5,2024-01-19 00:00:00,2024-01-19 00:14:00,8,facebook,organic,spring_sale,mobile,Chrome,192.168.219.37,USA,Texas
+218,sess_ef8a799476abf0fa3430a86c305b53c3,7,2024-01-19 02:00:00,2024-01-19 02:32:00,7,facebook,organic,,mobile,Firefox,192.168.206.41,USA,Washington
+219,sess_3374b6b7f91960a6fbb77ddbd869b6fc,,2024-01-19 04:00:00,2024-01-19 04:29:00,12,facebook,organic,loyalty,desktop,Edge,192.168.35.181,USA,Florida
+220,sess_5ef694ddcff06e799532c2e7046687b2,5,2024-01-19 06:00:00,2024-01-19 06:12:00,13,referral,email,loyalty,mobile,Firefox,192.168.144.247,USA,Washington
+221,sess_75b05484c03339b514e24e08acc34c22,18,2024-01-19 08:00:00,2024-01-19 08:11:00,16,email,organic,,tablet,Safari,192.168.125.147,USA,Florida
+222,sess_7eb5db9b97bfbcd2da0145c9fee67363,12,2024-01-19 10:00:00,2024-01-19 10:11:00,7,google,cpc,loyalty,mobile,Safari,192.168.217.188,USA,California
+223,sess_db4706607a82edc9000bca15739bc25f,,2024-01-19 12:00:00,2024-01-19 12:13:00,5,email,cpc,spring_sale,desktop,Safari,192.168.224.139,USA,Washington
+224,sess_aa5d60a523d85b0456bcbbe9e8ebd159,9,2024-01-19 14:00:00,2024-01-19 14:23:00,7,google,organic,loyalty,tablet,Edge,192.168.158.86,USA,Florida
+225,sess_d63cfbc0cfee8747db44cbe6db348a2d,,2024-01-19 16:00:00,2024-01-19 16:14:00,3,facebook,organic,spring_sale,desktop,Safari,192.168.195.163,USA,Florida
+226,sess_6875c8cf791793e0d2576e662a8ef0bb,,2024-01-19 18:00:00,2024-01-19 18:05:00,17,referral,organic,loyalty,desktop,Chrome,192.168.188.228,USA,Washington
+227,sess_d07caee787a4067032f048e6e40eca70,3,2024-01-19 20:00:00,2024-01-19 20:13:00,13,direct,organic,,desktop,Safari,192.168.234.9,USA,Texas
+228,sess_8c9cb0121f759aa7e128d48129107ba6,7,2024-01-19 22:00:00,2024-01-19 22:26:00,11,referral,cpc,,desktop,Safari,192.168.7.9,USA,New York
+229,sess_ce938ed27e5db5a0bf978c13d91594e3,,2024-01-20 00:00:00,2024-01-20 00:10:00,13,direct,organic,spring_sale,tablet,Safari,192.168.208.45,USA,New York
+230,sess_c32a12286dafb8ee723567ab3fe2d832,7,2024-01-20 02:00:00,2024-01-20 02:25:00,16,referral,organic,,desktop,Safari,192.168.140.236,USA,Florida
+231,sess_d1036272b626173fa89d3112511b2f7c,20,2024-01-20 04:00:00,2024-01-20 04:19:00,7,email,social,loyalty,desktop,Safari,192.168.105.221,USA,Texas
+232,sess_f9ea268f57345ee47ff46415323092c1,,2024-01-20 06:00:00,2024-01-20 06:11:00,16,direct,email,loyalty,mobile,Edge,192.168.207.86,USA,Texas
+233,sess_547545ee152465e6f336015b86a8a561,,2024-01-20 08:00:00,2024-01-20 08:25:00,11,referral,social,,desktop,Edge,192.168.122.228,USA,New York
+234,sess_d6d09759a6ca20d757a23b0d5e5b7076,,2024-01-20 10:00:00,2024-01-20 10:23:00,15,facebook,organic,,mobile,Edge,192.168.211.179,USA,Florida
+235,sess_6fdc9c268090fafd8af5025d6b565110,,2024-01-20 12:00:00,2024-01-20 12:25:00,13,referral,organic,,mobile,Firefox,192.168.85.192,USA,Florida
+236,sess_113b42fff2452698650daefff35b4227,12,2024-01-20 14:00:00,2024-01-20 14:10:00,17,referral,email,,tablet,Safari,192.168.64.73,USA,Florida
+237,sess_57e09a1d640b2bfa2ef3582702cb0fd5,,2024-01-20 16:00:00,2024-01-20 16:11:00,17,referral,email,,tablet,Chrome,192.168.30.249,USA,Washington
+238,sess_2e3f7c9c91544dda1adfa7ecab2d5681,20,2024-01-20 18:00:00,2024-01-20 18:14:00,10,google,email,,tablet,Edge,192.168.48.108,USA,New York
+239,sess_1b0fc58550102e44c4b555ebc0454151,,2024-01-20 20:00:00,2024-01-20 20:20:00,8,google,email,spring_sale,mobile,Safari,192.168.219.96,USA,New York
+240,sess_8779340961d6257da09ca5b4a7a9b5ea,4,2024-01-20 22:00:00,2024-01-20 22:32:00,4,google,email,loyalty,tablet,Safari,192.168.120.179,USA,Florida
+241,sess_3ec9e13833030f51d047afb3133dc027,10,2024-01-21 00:00:00,2024-01-21 00:06:00,5,google,email,spring_sale,desktop,Chrome,192.168.218.148,USA,Washington
+242,sess_34405f70828254aa4165a5ede7cebbf7,22,2024-01-21 02:00:00,2024-01-21 02:33:00,13,facebook,email,spring_sale,mobile,Safari,192.168.60.68,USA,Texas
+243,sess_486939dcab782aa40dfd2fb873c96ec3,11,2024-01-21 04:00:00,2024-01-21 04:11:00,10,referral,social,loyalty,mobile,Firefox,192.168.2.226,USA,Washington
+244,sess_894f4c2554a438d70ec73b192a9abd02,,2024-01-21 06:00:00,2024-01-21 06:33:00,7,referral,organic,loyalty,desktop,Firefox,192.168.238.118,USA,Florida
+245,sess_45ecb2430e2628182668b9a6bc1d85ca,9,2024-01-21 08:00:00,2024-01-21 08:09:00,2,facebook,social,spring_sale,mobile,Firefox,192.168.135.69,USA,Texas
+246,sess_017f0b11e278052b7c4a0b66c4c74d35,13,2024-01-21 10:00:00,2024-01-21 10:34:00,14,facebook,social,spring_sale,desktop,Firefox,192.168.7.73,USA,California
+247,sess_70ca20489b0687cba5c04c5f7e9ddf30,,2024-01-21 12:00:00,2024-01-21 12:20:00,14,referral,email,,desktop,Edge,192.168.182.168,USA,New York
+248,sess_98e9baf2708cec13079d033829d93803,3,2024-01-21 14:00:00,2024-01-21 14:32:00,12,google,cpc,loyalty,mobile,Safari,192.168.183.35,USA,Florida
+249,sess_48652ebaca38314172ac5b09e5321440,,2024-01-21 16:00:00,2024-01-21 16:07:00,17,email,cpc,,desktop,Firefox,192.168.73.189,USA,Florida
+250,sess_a7c300428d3cb19cd29deeeea802962f,,2024-01-21 18:00:00,2024-01-21 18:22:00,12,referral,email,,desktop,Firefox,192.168.97.46,USA,Washington
+251,sess_ffb848c9ad56b6ce3ebb0a66edb7bd61,,2024-01-21 20:00:00,2024-01-21 20:08:00,4,referral,social,,desktop,Firefox,192.168.71.143,USA,Washington
+252,sess_22b237d4d8f9b62aa7660e5d1c01412b,,2024-01-21 22:00:00,2024-01-21 22:23:00,14,google,social,loyalty,mobile,Firefox,192.168.238.154,USA,New York
+253,sess_67b78ed246fa3d62cb8b87253330143e,,2024-01-22 00:00:00,2024-01-22 00:27:00,12,facebook,social,,desktop,Chrome,192.168.135.188,USA,California
+254,sess_23303bbcf66d490fccc4468165dc07b3,,2024-01-22 02:00:00,2024-01-22 02:13:00,7,referral,cpc,spring_sale,desktop,Edge,192.168.45.192,USA,New York
+255,sess_f7259453c46bf4c0dccda804807bd1bc,,2024-01-22 04:00:00,2024-01-22 04:08:00,10,direct,cpc,,tablet,Edge,192.168.27.107,USA,Washington
+256,sess_433c54e982ae7c6c97518fa6f684fe7f,8,2024-01-22 06:00:00,2024-01-22 06:16:00,14,referral,social,,desktop,Firefox,192.168.34.74,USA,California
+257,sess_751d448faf61bc52fec44ecced5a9195,7,2024-01-22 08:00:00,2024-01-22 08:16:00,11,google,social,spring_sale,desktop,Firefox,192.168.233.146,USA,Texas
+258,sess_830f9ccb94bfac2a78831c3ae51f2cf2,,2024-01-22 10:00:00,2024-01-22 10:27:00,14,email,email,,desktop,Firefox,192.168.238.67,USA,Texas
+259,sess_96187911e216871a5bc570b231bacc1b,5,2024-01-22 12:00:00,2024-01-22 12:06:00,8,google,email,spring_sale,desktop,Safari,192.168.184.76,USA,California
+260,sess_cc14c2273a9a30494669944c44fcfb2f,7,2024-01-22 14:00:00,2024-01-22 14:21:00,10,referral,social,,mobile,Firefox,192.168.252.157,USA,California
+261,sess_a1df4de3d69c2a64a8c7bd6edcd8ccef,3,2024-01-22 16:00:00,2024-01-22 16:15:00,9,google,cpc,loyalty,mobile,Firefox,192.168.211.78,USA,Florida
+262,sess_d92b45adf0ea975f932c7ff8f0e700e3,25,2024-01-22 18:00:00,2024-01-22 18:32:00,6,direct,email,loyalty,desktop,Chrome,192.168.102.49,USA,Washington
+263,sess_fd9a68d74cf3543a04ffa80ce4dd218b,,2024-01-22 20:00:00,2024-01-22 20:23:00,8,facebook,social,,tablet,Firefox,192.168.237.48,USA,Washington
+264,sess_f3298ef9dd5bcb2d7a5efe356ea3f4ce,23,2024-01-22 22:00:00,2024-01-22 22:30:00,6,referral,social,,mobile,Safari,192.168.212.235,USA,Washington
+265,sess_c22d9d199f65dd74394d4f2424e739e9,23,2024-01-23 00:00:00,2024-01-23 00:12:00,9,referral,cpc,spring_sale,desktop,Safari,192.168.60.25,USA,Texas
+266,sess_ba1f5e1f511349454a325cc109fae023,6,2024-01-23 02:00:00,2024-01-23 02:15:00,11,direct,social,loyalty,desktop,Firefox,192.168.12.2,USA,Washington
+267,sess_65142951ee57031311c89f0c8273ef87,,2024-01-23 04:00:00,2024-01-23 04:18:00,4,email,email,loyalty,mobile,Safari,192.168.232.173,USA,Florida
+268,sess_63f409ad3ca6ba03a04727db1e2dbc65,,2024-01-23 06:00:00,2024-01-23 06:17:00,16,referral,email,,desktop,Firefox,192.168.211.49,USA,Texas
+269,sess_7df730c29cc3a712fc603166cc27b7e6,,2024-01-23 08:00:00,2024-01-23 08:18:00,16,email,social,loyalty,desktop,Edge,192.168.88.92,USA,Washington
+270,sess_f7da9f5b96e22b01db151938785c9951,,2024-01-23 10:00:00,2024-01-23 10:10:00,5,google,social,,tablet,Safari,192.168.164.54,USA,Washington
+271,sess_a43a9c8d4e9b6c574fc33cc0d5e4f53c,2,2024-01-23 12:00:00,2024-01-23 12:32:00,11,facebook,social,spring_sale,tablet,Safari,192.168.235.70,USA,California
+272,sess_dcbd6dcb66650de1889eb6bfb910c39b,10,2024-01-23 14:00:00,2024-01-23 14:17:00,10,direct,organic,,tablet,Edge,192.168.12.220,USA,California
+273,sess_81db435c6e94c8ea8a1370d3785572af,13,2024-01-23 16:00:00,2024-01-23 16:15:00,16,email,email,,tablet,Safari,192.168.168.39,USA,New York
+274,sess_3664b6bab56c2a59124c2f8aaf7b7a68,5,2024-01-23 18:00:00,2024-01-23 18:13:00,13,email,social,loyalty,mobile,Safari,192.168.159.7,USA,Washington
+275,sess_e1fc8919bd76c0fcf93b46c6ea850068,,2024-01-23 20:00:00,2024-01-23 20:23:00,4,referral,cpc,loyalty,desktop,Safari,192.168.98.63,USA,Texas
+276,sess_82f62d5b7d74838f826f57d36211b58b,22,2024-01-23 22:00:00,2024-01-23 22:34:00,10,referral,organic,loyalty,desktop,Safari,192.168.92.126,USA,Texas
+277,sess_ba36c2df436c5a8bc37ec03c4357cd19,12,2024-01-24 00:00:00,2024-01-24 00:17:00,3,referral,cpc,,desktop,Firefox,192.168.62.162,USA,Texas
+278,sess_182b9acda4393eac05dad581382ad770,21,2024-01-24 02:00:00,2024-01-24 02:14:00,11,google,social,loyalty,tablet,Safari,192.168.148.167,USA,New York
+279,sess_93e10a1fc40de09af703922ec1cfe3ec,8,2024-01-24 04:00:00,2024-01-24 04:13:00,3,facebook,email,spring_sale,tablet,Firefox,192.168.210.166,USA,Washington
+280,sess_7a8d50c70084f0939a7b5d59b6914b4f,,2024-01-24 06:00:00,2024-01-24 06:31:00,12,referral,organic,,desktop,Edge,192.168.17.105,USA,Florida
+281,sess_074495d72453d22331a0f38d5a4b09c0,,2024-01-24 08:00:00,2024-01-24 08:24:00,9,referral,organic,,desktop,Firefox,192.168.83.29,USA,Washington
+282,sess_836aad7399421dbb015dc8d955d4133d,14,2024-01-24 10:00:00,2024-01-24 10:33:00,5,referral,email,,desktop,Firefox,192.168.253.59,USA,Washington
+283,sess_4e252813c06114d5975fbf3b55a1d908,10,2024-01-24 12:00:00,2024-01-24 12:27:00,15,direct,organic,,tablet,Firefox,192.168.112.161,USA,Texas
+284,sess_dcc393eb8488dcf8a43f622f3e63c858,,2024-01-24 14:00:00,2024-01-24 14:10:00,5,facebook,organic,,tablet,Firefox,192.168.6.109,USA,Washington
+285,sess_525ee89421fa18ce4c24be1271cd5f05,18,2024-01-24 16:00:00,2024-01-24 16:05:00,7,email,social,loyalty,tablet,Firefox,192.168.178.59,USA,California
+286,sess_fd8e585b15d54833b4c17418e699bc63,23,2024-01-24 18:00:00,2024-01-24 18:19:00,16,google,email,loyalty,tablet,Edge,192.168.83.250,USA,Florida
+287,sess_000d8a2016405d95c618830df7aebd5a,10,2024-01-24 20:00:00,2024-01-24 20:16:00,8,referral,social,spring_sale,desktop,Firefox,192.168.17.22,USA,Florida
+288,sess_1c66f53d095cd553ffdd59d9e15ec9dc,13,2024-01-24 22:00:00,2024-01-24 22:22:00,5,referral,organic,,desktop,Safari,192.168.232.214,USA,Texas
+289,sess_509bdfefb7061a0d8c3fc1c10f14041b,21,2024-01-25 00:00:00,2024-01-25 00:25:00,12,referral,cpc,loyalty,desktop,Chrome,192.168.97.193,USA,Washington
+290,sess_edf1b708b6ed8560810ae2993a5a9459,4,2024-01-25 02:00:00,2024-01-25 02:26:00,15,referral,cpc,,tablet,Firefox,192.168.192.243,USA,New York
+291,sess_f251e8f4fec0c2c9fb14acbf666e911f,18,2024-01-25 04:00:00,2024-01-25 04:34:00,11,email,organic,loyalty,desktop,Firefox,192.168.139.123,USA,New York
+292,sess_92443de89a61fb3ffd72083732ea8f02,8,2024-01-25 06:00:00,2024-01-25 06:20:00,16,facebook,email,spring_sale,desktop,Edge,192.168.164.48,USA,Washington
+293,sess_419bffbfb449125af00c6d3292c4ce8d,,2024-01-25 08:00:00,2024-01-25 08:27:00,5,referral,organic,,tablet,Edge,192.168.171.120,USA,Washington
+294,sess_667340227e24b69e567a09e06720f86c,,2024-01-25 10:00:00,2024-01-25 10:11:00,9,referral,cpc,,desktop,Firefox,192.168.32.82,USA,Texas
+295,sess_33005342602f48e38a88e7bf7c759bab,,2024-01-25 12:00:00,2024-01-25 12:32:00,6,referral,social,loyalty,tablet,Safari,192.168.141.36,USA,Texas
+296,sess_c3131c05629f963f58a51db6da78693b,4,2024-01-25 14:00:00,2024-01-25 14:30:00,8,referral,cpc,loyalty,tablet,Chrome,192.168.24.231,USA,Florida
+297,sess_8a1f584486ff675a45a27f627e8c88ef,19,2024-01-25 16:00:00,2024-01-25 16:17:00,15,referral,organic,,desktop,Firefox,192.168.43.211,USA,Washington
+298,sess_0438d6b9c92c731fbfebb5a6ae7fbbd1,12,2024-01-25 18:00:00,2024-01-25 18:10:00,5,direct,organic,,desktop,Chrome,192.168.10.104,USA,Washington
+299,sess_7f5e5bf1c4cbe4c1824dc74eaebeb6c0,16,2024-01-25 20:00:00,2024-01-25 20:24:00,13,email,social,spring_sale,mobile,Chrome,192.168.45.94,USA,Washington
+300,sess_4f1abfdbe5bbcc77b09ea318c2d5fef3,,2024-01-25 22:00:00,2024-01-25 22:33:00,8,google,social,,desktop,Safari,192.168.81.65,USA,Washington
+301,sess_391bf58208496d6ef882fdb5d2408be4,13,2024-01-26 00:00:00,2024-01-26 00:13:00,10,referral,social,loyalty,desktop,Firefox,192.168.93.184,USA,Florida
+302,sess_b012d66899b463caa020e2ff6d742792,,2024-01-26 02:00:00,2024-01-26 02:22:00,12,facebook,social,loyalty,mobile,Firefox,192.168.42.80,USA,Washington
+303,sess_e88167a0de10640418937a34355d6c88,24,2024-01-26 04:00:00,2024-01-26 04:07:00,2,direct,social,loyalty,desktop,Safari,192.168.49.151,USA,Texas
+304,sess_76e57db45fac4759a5137b58237cb038,24,2024-01-26 06:00:00,2024-01-26 06:18:00,14,referral,email,,mobile,Firefox,192.168.177.246,USA,Florida
+305,sess_45b896b364019406c0bafad2f7338023,,2024-01-26 08:00:00,2024-01-26 08:10:00,11,facebook,email,,desktop,Edge,192.168.73.73,USA,Florida
+306,sess_1fca0e45fb8453b474fea8ba4e72c9e0,18,2024-01-26 10:00:00,2024-01-26 10:25:00,3,referral,social,loyalty,tablet,Firefox,192.168.221.75,USA,Florida
+307,sess_49fe74a482d6a78ff12a54f444e7365f,13,2024-01-26 12:00:00,2024-01-26 12:26:00,6,email,social,,desktop,Safari,192.168.187.160,USA,Texas
+308,sess_56d4d68d0864ccae3e4de0d5364c7680,13,2024-01-26 14:00:00,2024-01-26 14:18:00,12,referral,organic,,desktop,Firefox,192.168.48.77,USA,California
+309,sess_2ccd60c7459897f17e40547a49217dcf,3,2024-01-26 16:00:00,2024-01-26 16:13:00,14,facebook,organic,loyalty,tablet,Edge,192.168.76.196,USA,California
+310,sess_6b799bbd949fb6e370986b7f0eee28d0,12,2024-01-26 18:00:00,2024-01-26 18:28:00,15,google,social,,tablet,Edge,192.168.213.174,USA,Florida
+311,sess_67076a142cc4bcfac63c9d25c8e11a2d,13,2024-01-26 20:00:00,2024-01-26 20:32:00,11,facebook,social,,tablet,Firefox,192.168.36.210,USA,New York
+312,sess_2d73ad59411bb276decca88dcc87e7aa,8,2024-01-26 22:00:00,2024-01-26 22:07:00,12,referral,social,loyalty,tablet,Firefox,192.168.5.204,USA,Texas
+313,sess_4b5849ffc404539602c431d1657dc23f,9,2024-01-27 00:00:00,2024-01-27 00:18:00,13,facebook,email,,desktop,Firefox,192.168.79.147,USA,Texas
+314,sess_f790c04e32282666e0795da393c97959,,2024-01-27 02:00:00,2024-01-27 02:18:00,3,google,organic,,desktop,Firefox,192.168.8.243,USA,New York
+315,sess_703803446ea9957de88a19466abf8777,2,2024-01-27 04:00:00,2024-01-27 04:29:00,7,referral,cpc,loyalty,mobile,Edge,192.168.50.75,USA,New York
+316,sess_cd941d05cd269d471dab03c808f8d858,,2024-01-27 06:00:00,2024-01-27 06:12:00,10,email,organic,loyalty,desktop,Chrome,192.168.34.222,USA,Texas
+317,sess_86f8004288786627c993c9e102526b05,6,2024-01-27 08:00:00,2024-01-27 08:18:00,13,referral,social,spring_sale,tablet,Firefox,192.168.140.173,USA,Florida
+318,sess_d16b2cd8ab7faf4ccbac83d5c742752f,,2024-01-27 10:00:00,2024-01-27 10:23:00,6,facebook,organic,loyalty,desktop,Chrome,192.168.251.110,USA,Washington
+319,sess_326e87ca850ff33fbfae9da2a47dc7ab,23,2024-01-27 12:00:00,2024-01-27 12:30:00,14,referral,cpc,spring_sale,desktop,Firefox,192.168.74.33,USA,Florida
+320,sess_8b8fd34b72f58e9ab6a59fb6a88d9ac2,,2024-01-27 14:00:00,2024-01-27 14:29:00,12,email,organic,spring_sale,mobile,Safari,192.168.26.119,USA,Florida
+321,sess_d07bc169b089853b8d8772cb2fad192b,7,2024-01-27 16:00:00,2024-01-27 16:11:00,10,referral,email,spring_sale,tablet,Firefox,192.168.85.69,USA,New York
+322,sess_368b5e269e8b8641a0c52918b5842800,12,2024-01-27 18:00:00,2024-01-27 18:07:00,15,referral,social,,desktop,Firefox,192.168.238.224,USA,California
+323,sess_5e8e7554bc5ffa85257969d9027916e0,14,2024-01-27 20:00:00,2024-01-27 20:35:00,17,google,social,,tablet,Chrome,192.168.185.232,USA,New York
+324,sess_d7bd58412466a8d6deb4daaab96d7438,,2024-01-27 22:00:00,2024-01-27 22:30:00,10,email,email,,desktop,Firefox,192.168.126.231,USA,New York
+325,sess_87c4ee49a880e7fdbc1579076df35f6a,1,2024-01-28 00:00:00,2024-01-28 00:13:00,11,email,organic,loyalty,desktop,Safari,192.168.0.1,USA,California
+326,sess_7677af8b63f89717d79bd081962e3faa,2,2024-01-28 02:00:00,2024-01-28 02:29:00,5,email,social,loyalty,desktop,Firefox,192.168.134.111,USA,Washington
+327,sess_7965ff9172469edccaacd5f9bd27c7eb,,2024-01-28 04:00:00,2024-01-28 04:15:00,6,referral,cpc,,tablet,Firefox,192.168.9.178,USA,New York
+328,sess_6658e34403105da83287cd391bb9b65e,,2024-01-28 06:00:00,2024-01-28 06:21:00,10,direct,email,loyalty,desktop,Edge,192.168.151.7,USA,Florida
+329,sess_8e6c7fa4fce7a560e2a47084635c5f4a,16,2024-01-28 08:00:00,2024-01-28 08:35:00,8,direct,social,spring_sale,mobile,Safari,192.168.169.126,USA,California
+330,sess_7bb5c8f10dcef364a831fb6f064f9d1a,,2024-01-28 10:00:00,2024-01-28 10:20:00,6,direct,email,loyalty,tablet,Safari,192.168.157.23,USA,New York
+331,sess_a94eeac2efda1e325a8901ee5528f3f3,,2024-01-28 12:00:00,2024-01-28 12:09:00,15,referral,organic,,desktop,Edge,192.168.175.187,USA,Washington
+332,sess_1e051c02ebb279805625ca3f8339cc3c,10,2024-01-28 14:00:00,2024-01-28 14:06:00,11,referral,email,loyalty,tablet,Edge,192.168.5.6,USA,Washington
+333,sess_59961351a22d9b58f9a5f5e87e47441e,,2024-01-28 16:00:00,2024-01-28 16:27:00,4,facebook,social,,desktop,Firefox,192.168.14.85,USA,Washington
+334,sess_6ce61d1b6eedde0aa18177ecc0f9a43f,9,2024-01-28 18:00:00,2024-01-28 18:29:00,13,google,social,spring_sale,desktop,Firefox,192.168.100.156,USA,Texas
+335,sess_61af2d470a8f7a4ebc9f81cca1b3d5ee,,2024-01-28 20:00:00,2024-01-28 20:18:00,10,referral,cpc,,tablet,Chrome,192.168.111.143,USA,Washington
+336,sess_b727b1c1c6de57e78ce7677f04665fe6,,2024-01-28 22:00:00,2024-01-28 22:30:00,5,facebook,social,loyalty,desktop,Chrome,192.168.87.140,USA,Washington
+337,sess_15c2799db8da922e73be4c59f341b512,21,2024-01-29 00:00:00,2024-01-29 00:29:00,4,direct,organic,,desktop,Edge,192.168.48.184,USA,Texas
+338,sess_a09f12b664b48f472ae87edd96b1c076,,2024-01-29 02:00:00,2024-01-29 02:08:00,6,email,social,,desktop,Firefox,192.168.218.120,USA,New York
+339,sess_eefd01f74a62aa053d1a6afa7405881a,8,2024-01-29 04:00:00,2024-01-29 04:13:00,15,facebook,social,spring_sale,desktop,Chrome,192.168.58.153,USA,California
+340,sess_c46c2cc9474dff33c5ea6bcbb1c14257,19,2024-01-29 06:00:00,2024-01-29 06:33:00,6,google,organic,,desktop,Chrome,192.168.62.171,USA,Washington
+341,sess_6a08c0c4e057ad0f904b499697752c20,19,2024-01-29 08:00:00,2024-01-29 08:25:00,4,direct,organic,,mobile,Firefox,192.168.25.132,USA,California
+342,sess_e5c4d4f91ff213437ed8720d17f8a586,3,2024-01-29 10:00:00,2024-01-29 10:20:00,14,direct,social,spring_sale,desktop,Edge,192.168.138.162,USA,Florida
+343,sess_944a9066de8b84a072287d6c8cbca439,23,2024-01-29 12:00:00,2024-01-29 12:25:00,11,referral,organic,loyalty,desktop,Safari,192.168.16.11,USA,Texas
+344,sess_3f061707fbf888424cc0a22e4f7f53ff,,2024-01-29 14:00:00,2024-01-29 14:06:00,10,facebook,email,loyalty,tablet,Safari,192.168.102.139,USA,Washington
+345,sess_57f747a0efb3a976757fb54f777b6f6f,,2024-01-29 16:00:00,2024-01-29 16:28:00,7,direct,organic,spring_sale,mobile,Safari,192.168.85.91,USA,Washington
+346,sess_fb6cbf04d890823c0e259c3076754f9a,21,2024-01-29 18:00:00,2024-01-29 18:30:00,7,referral,cpc,,tablet,Chrome,192.168.251.253,USA,New York
+347,sess_d019834e751de0553e4832188a918703,12,2024-01-29 20:00:00,2024-01-29 20:23:00,4,referral,social,,mobile,Safari,192.168.205.67,USA,California
+348,sess_13cca44b855790c5abdac5d8be665014,22,2024-01-29 22:00:00,2024-01-29 22:16:00,10,email,organic,spring_sale,desktop,Firefox,192.168.3.212,USA,New York
+349,sess_baf88c6b9ed8e0af6eeeb9bb8829cd94,,2024-01-30 00:00:00,2024-01-30 00:33:00,15,facebook,social,spring_sale,mobile,Safari,192.168.216.102,USA,Texas
+350,sess_75ccdc2cd054abfe070ed7c36949ec27,18,2024-01-30 02:00:00,2024-01-30 02:32:00,15,direct,email,spring_sale,desktop,Safari,192.168.165.61,USA,Florida
+351,sess_d7e7c7f27251393ef2ae626283e192ae,2,2024-01-30 04:00:00,2024-01-30 04:17:00,14,referral,email,loyalty,mobile,Safari,192.168.66.49,USA,California
+352,sess_03b28a4569ef7f8c2489fe674467b487,17,2024-01-30 06:00:00,2024-01-30 06:21:00,6,direct,email,spring_sale,tablet,Safari,192.168.231.83,USA,Washington
+353,sess_b5efc91e5d020533c0a9d1d45c5df990,2,2024-01-30 08:00:00,2024-01-30 08:08:00,15,facebook,social,,mobile,Safari,192.168.171.212,USA,Washington
+354,sess_4c826e8ba30f30d81876354cd5729a91,,2024-01-30 10:00:00,2024-01-30 10:22:00,7,facebook,cpc,,tablet,Safari,192.168.75.191,USA,Texas
+355,sess_1b595fea32b50326e6c3e8bd900e9161,,2024-01-30 12:00:00,2024-01-30 12:25:00,3,referral,cpc,,tablet,Safari,192.168.171.195,USA,Texas
+356,sess_07e09d6bbd8c747aff383a024356d6c2,14,2024-01-30 14:00:00,2024-01-30 14:14:00,8,referral,cpc,,desktop,Chrome,192.168.144.52,USA,Washington
+357,sess_5ff9f52749ea2ea54cee58d66cae1c08,7,2024-01-30 16:00:00,2024-01-30 16:26:00,5,referral,social,,desktop,Chrome,192.168.118.108,USA,Washington
+358,sess_58d897f4f7902d25d40fe10aba8810d8,22,2024-01-30 18:00:00,2024-01-30 18:30:00,9,email,social,,tablet,Edge,192.168.84.141,USA,Washington
+359,sess_e4621a748d5af2cb1159110a75fff56b,11,2024-01-30 20:00:00,2024-01-30 20:32:00,9,referral,cpc,spring_sale,mobile,Safari,192.168.99.26,USA,New York
+360,sess_e7018edfb59d57fe1abfa8cad44dd21e,13,2024-01-30 22:00:00,2024-01-30 22:35:00,16,facebook,social,,desktop,Safari,192.168.176.66,USA,Florida
+361,sess_88f430567d6bb5aa06b5ecbd23895e15,2,2024-01-31 00:00:00,2024-01-31 00:07:00,10,referral,email,spring_sale,desktop,Firefox,192.168.253.209,USA,Florida
+362,sess_5aa843ce20c5be9b38d2f4e6378f89c8,11,2024-01-31 02:00:00,2024-01-31 02:15:00,9,referral,social,loyalty,tablet,Chrome,192.168.221.41,USA,Florida
+363,sess_ffa143366dd78ed79aaa0f786bb7fd40,6,2024-01-31 04:00:00,2024-01-31 04:15:00,7,referral,social,spring_sale,desktop,Safari,192.168.220.8,USA,Washington
+364,sess_9eb6777343c328f4078380535e552241,6,2024-01-31 06:00:00,2024-01-31 06:34:00,12,facebook,email,,tablet,Firefox,192.168.216.191,USA,Washington
+365,sess_3aa43fefc36deb27be10e4cb8e858961,,2024-01-31 08:00:00,2024-01-31 08:17:00,5,email,organic,,desktop,Firefox,192.168.213.85,USA,New York
+366,sess_256e4b588efd05bd3409f243f99fa24c,11,2024-01-31 10:00:00,2024-01-31 10:27:00,10,referral,organic,loyalty,tablet,Safari,192.168.35.136,USA,Florida
+367,sess_0858c115627518f97179714f2e0889a0,16,2024-01-31 12:00:00,2024-01-31 12:34:00,9,referral,email,loyalty,mobile,Chrome,192.168.28.141,USA,Florida
+368,sess_d0abe73e3344feee69a2efcb82530968,12,2024-01-31 14:00:00,2024-01-31 14:32:00,13,email,cpc,,tablet,Firefox,192.168.251.207,USA,New York
+369,sess_5e835ee65975569930d7d97b7abb22c7,23,2024-01-31 16:00:00,2024-01-31 16:10:00,7,direct,email,,tablet,Safari,192.168.245.6,USA,New York
+370,sess_260a250a7fb931f475aaa4b96b7dbf37,,2024-01-31 18:00:00,2024-01-31 18:07:00,8,email,social,,desktop,Safari,192.168.4.250,USA,Florida
+371,sess_543400cc415fdec8e7b6393aea1ce080,12,2024-01-31 20:00:00,2024-01-31 20:08:00,6,direct,organic,loyalty,mobile,Edge,192.168.30.103,USA,New York
+372,sess_5b20c14eaa84cfa3f626e05f3518bb1d,7,2024-01-31 22:00:00,2024-01-31 22:16:00,14,email,organic,loyalty,desktop,Firefox,192.168.92.78,USA,Florida
+373,sess_93c12e54ca0155dc9a59403c2ea47013,,2024-02-01 00:00:00,2024-02-01 00:30:00,8,direct,social,,desktop,Safari,192.168.216.179,USA,Washington
+374,sess_9749c42e78315fd19db29722aa34c028,7,2024-02-01 02:00:00,2024-02-01 02:09:00,15,referral,organic,loyalty,desktop,Chrome,192.168.202.33,USA,New York
+375,sess_83aeb079c2a6d8d24c9afc6459a76877,,2024-02-01 04:00:00,2024-02-01 04:13:00,10,direct,email,loyalty,tablet,Firefox,192.168.77.102,USA,Texas
+376,sess_c1a0c6a7be79eb1ba72ae1b2b959f493,3,2024-02-01 06:00:00,2024-02-01 06:26:00,15,referral,email,loyalty,desktop,Chrome,192.168.162.170,USA,Washington
+377,sess_55c22c047ec0d25bd2cf97a5711f0f97,23,2024-02-01 08:00:00,2024-02-01 08:14:00,3,email,cpc,spring_sale,mobile,Firefox,192.168.55.201,USA,New York
+378,sess_d365f36238edd54062c2d03e9c78fac9,8,2024-02-01 10:00:00,2024-02-01 10:16:00,12,direct,organic,,mobile,Safari,192.168.158.210,USA,New York
+379,sess_8a9638e14b6d2bf65d31be5e99ce9c5f,11,2024-02-01 12:00:00,2024-02-01 12:32:00,8,direct,organic,,mobile,Edge,192.168.191.130,USA,Texas
+380,sess_b605ab3a102b99b587c9a57f7f766c77,,2024-02-01 14:00:00,2024-02-01 14:10:00,4,email,email,,desktop,Firefox,192.168.48.199,USA,California
+381,sess_b02afca5525f1de4d4110e854b7aefce,,2024-02-01 16:00:00,2024-02-01 16:33:00,11,referral,email,spring_sale,desktop,Firefox,192.168.226.68,USA,Florida
+382,sess_f22a193345109a5555d5378c00ac4bc6,20,2024-02-01 18:00:00,2024-02-01 18:12:00,13,direct,cpc,spring_sale,tablet,Safari,192.168.237.46,USA,California
+383,sess_b19338fe1411e26d418965043e282bd7,21,2024-02-01 20:00:00,2024-02-01 20:07:00,5,direct,cpc,spring_sale,tablet,Chrome,192.168.23.128,USA,Texas
+384,sess_2740d92d148152e3756564c42f16eb39,22,2024-02-01 22:00:00,2024-02-01 22:22:00,13,referral,social,,desktop,Firefox,192.168.65.121,USA,California
+385,sess_76914fb038d912fb26bed152a8f05783,24,2024-02-02 00:00:00,2024-02-02 00:15:00,8,direct,social,spring_sale,tablet,Firefox,192.168.92.21,USA,Washington
+386,sess_a1661b570a2c464921f36883f6e917f3,14,2024-02-02 02:00:00,2024-02-02 02:09:00,6,google,social,,desktop,Edge,192.168.18.218,USA,Washington
+387,sess_c22838cd8e5291f0dd744abd99963bef,18,2024-02-02 04:00:00,2024-02-02 04:20:00,15,facebook,organic,loyalty,desktop,Chrome,192.168.170.231,USA,Washington
+388,sess_b8e4a16e3b3caaae76a03a41510cf74b,9,2024-02-02 06:00:00,2024-02-02 06:09:00,15,email,cpc,,tablet,Chrome,192.168.79.34,USA,Florida
+389,sess_2943ce2b791fc1a1d10116a271d54936,5,2024-02-02 08:00:00,2024-02-02 08:35:00,15,email,email,loyalty,tablet,Chrome,192.168.187.252,USA,Florida
+390,sess_9bd4c303b88f4eb77f6ee746e9251f0a,17,2024-02-02 10:00:00,2024-02-02 10:30:00,7,google,organic,loyalty,mobile,Safari,192.168.148.250,USA,Washington
+391,sess_1944dcd6ce0f8e8f7f292c239690521b,8,2024-02-02 12:00:00,2024-02-02 12:19:00,9,direct,social,spring_sale,mobile,Chrome,192.168.163.142,USA,New York
+392,sess_55f2c83c5f1866a0c28bb416312663c2,7,2024-02-02 14:00:00,2024-02-02 14:07:00,7,direct,social,,mobile,Firefox,192.168.92.126,USA,Florida
+393,sess_71d0ac5b771bbf5fa94eaefd89d34af4,22,2024-02-02 16:00:00,2024-02-02 16:32:00,9,facebook,email,loyalty,tablet,Safari,192.168.157.72,USA,New York
+394,sess_47625ff61f75086a1d2f7ad79aa1e53e,,2024-02-02 18:00:00,2024-02-02 18:25:00,6,referral,cpc,,mobile,Chrome,192.168.214.180,USA,Washington
+395,sess_ef8ef854b34f3e0d9effba3e7c40eff3,,2024-02-02 20:00:00,2024-02-02 20:14:00,3,email,social,loyalty,tablet,Edge,192.168.132.25,USA,California
+396,sess_ea1abe0a2284f0981d69e68e22733bd4,,2024-02-02 22:00:00,2024-02-02 22:17:00,4,referral,social,,mobile,Chrome,192.168.243.26,USA,California
+397,sess_b8ab68d6004f244f199226b564e80d15,2,2024-02-03 00:00:00,2024-02-03 00:07:00,13,referral,email,spring_sale,tablet,Edge,192.168.68.1,USA,Washington
+398,sess_c596e2f443431dceb4a2ef3765db01d6,5,2024-02-03 02:00:00,2024-02-03 02:31:00,3,email,email,,desktop,Firefox,192.168.165.119,USA,Florida
+399,sess_befaef14a4d6cdfe3838755ca94a26ad,4,2024-02-03 04:00:00,2024-02-03 04:32:00,5,direct,email,loyalty,tablet,Chrome,192.168.6.42,USA,New York
+400,sess_39c187027bc01fc95462f526582f11f2,18,2024-02-03 06:00:00,2024-02-03 06:21:00,10,facebook,organic,,desktop,Safari,192.168.248.238,USA,Washington
+401,sess_46c8931a1828f26af06d01bf6e53386e,15,2024-02-03 08:00:00,2024-02-03 08:17:00,2,referral,email,spring_sale,mobile,Firefox,192.168.130.42,USA,Washington
+402,sess_41846827a42dee8fb1af543c1280ca2e,2,2024-02-03 10:00:00,2024-02-03 10:16:00,7,direct,email,,mobile,Firefox,192.168.239.113,USA,California
+403,sess_725b99dd1b099028c0398d80a9b3900a,23,2024-02-03 12:00:00,2024-02-03 12:07:00,3,referral,email,,desktop,Safari,192.168.169.123,USA,New York
+404,sess_478b828c10c4195e9b595e825a12a836,14,2024-02-03 14:00:00,2024-02-03 14:08:00,12,direct,email,loyalty,mobile,Firefox,192.168.15.188,USA,Washington
+405,sess_57e8a69fb15d73dd16effbce58d49689,5,2024-02-03 16:00:00,2024-02-03 16:21:00,12,direct,social,,tablet,Chrome,192.168.70.124,USA,California
+406,sess_e0cf738de01754b3e5d61a12f9198058,,2024-02-03 18:00:00,2024-02-03 18:35:00,16,referral,email,spring_sale,desktop,Edge,192.168.49.37,USA,Washington
+407,sess_78ce168e1f1984e428bf67bc874b6532,,2024-02-03 20:00:00,2024-02-03 20:31:00,6,facebook,organic,,tablet,Edge,192.168.175.225,USA,New York
+408,sess_0e390591f8f49334c032b9ac6f1b8c15,13,2024-02-03 22:00:00,2024-02-03 22:35:00,14,email,organic,,desktop,Firefox,192.168.102.112,USA,Texas
+409,sess_887fa9a0a5077086c3ab36a024ea9019,,2024-02-04 00:00:00,2024-02-04 00:17:00,8,facebook,social,,tablet,Safari,192.168.65.133,USA,California
+410,sess_ab259581bb1564031233863a8fecd2be,15,2024-02-04 02:00:00,2024-02-04 02:11:00,10,referral,organic,,desktop,Edge,192.168.100.171,USA,Washington
+411,sess_c9356b4b2311c943c59608b2a7e25cb8,12,2024-02-04 04:00:00,2024-02-04 04:26:00,8,referral,email,,tablet,Safari,192.168.111.178,USA,Washington
+412,sess_f739d81c6a9786a2be05ee0b241d4cbd,21,2024-02-04 06:00:00,2024-02-04 06:13:00,8,email,social,spring_sale,desktop,Firefox,192.168.245.186,USA,Florida
+413,sess_e5f8590e61b3dab3c62a4a755ab0e57d,13,2024-02-04 08:00:00,2024-02-04 08:09:00,11,facebook,social,,tablet,Safari,192.168.216.94,USA,Texas
+414,sess_5d50f8d1a4b2d8f77e6cdf7d1fd10bc1,12,2024-02-04 10:00:00,2024-02-04 10:18:00,4,referral,social,spring_sale,desktop,Chrome,192.168.239.166,USA,Washington
+415,sess_9742ffdf337071d20580ef63864d745e,11,2024-02-04 12:00:00,2024-02-04 12:11:00,11,facebook,cpc,spring_sale,desktop,Chrome,192.168.40.248,USA,California
+416,sess_0ff215cd149aba0754615da2e7f135fc,3,2024-02-04 14:00:00,2024-02-04 14:12:00,5,email,social,loyalty,desktop,Firefox,192.168.137.37,USA,New York
+417,sess_d4aa9b8754f73eaaeadd218f5d346223,24,2024-02-04 16:00:00,2024-02-04 16:15:00,5,referral,social,loyalty,mobile,Safari,192.168.137.175,USA,Washington
+418,sess_9a27561d0f772baf3814983241d54619,17,2024-02-04 18:00:00,2024-02-04 18:12:00,12,email,social,loyalty,tablet,Firefox,192.168.221.136,USA,New York
+419,sess_f3a94ca5abfcec943d61bfd7f3269fe7,23,2024-02-04 20:00:00,2024-02-04 20:12:00,14,email,social,,desktop,Safari,192.168.53.189,USA,Washington
+420,sess_39c1876006ee85e16713fbdc1d004c89,,2024-02-04 22:00:00,2024-02-04 22:13:00,8,email,organic,spring_sale,mobile,Safari,192.168.173.203,USA,Florida
+421,sess_6f2abe6982e3fb45d4c585d4a1b06a27,20,2024-02-05 00:00:00,2024-02-05 00:12:00,5,direct,social,,tablet,Firefox,192.168.152.239,USA,Washington
+422,sess_a397dd432698032c8bb8bf559c5815e8,22,2024-02-05 02:00:00,2024-02-05 02:30:00,15,email,organic,,mobile,Chrome,192.168.141.177,USA,Washington
+423,sess_7d9537eeea8b700f2a67fb66ddee3ebc,,2024-02-05 04:00:00,2024-02-05 04:20:00,3,direct,email,,desktop,Edge,192.168.187.191,USA,Texas
+424,sess_e6e9e34070bdaa808800294704dc8fef,,2024-02-05 06:00:00,2024-02-05 06:07:00,12,referral,cpc,,desktop,Firefox,192.168.25.107,USA,California
+425,sess_0ee24af7e90c505adb678db15ddeddda,3,2024-02-05 08:00:00,2024-02-05 08:20:00,7,facebook,cpc,loyalty,mobile,Firefox,192.168.40.52,USA,Washington
+426,sess_2d3101b8a84391c598d6d4f93ad4f03f,18,2024-02-05 10:00:00,2024-02-05 10:13:00,14,direct,social,,mobile,Chrome,192.168.5.70,USA,California
+427,sess_445651149237129c6595101aae8a12f4,10,2024-02-05 12:00:00,2024-02-05 12:33:00,15,email,social,,mobile,Chrome,192.168.18.96,USA,Texas
+428,sess_15eb9b9db48a993c65d7f1d4057e8c87,10,2024-02-05 14:00:00,2024-02-05 14:27:00,7,referral,email,loyalty,desktop,Safari,192.168.80.196,USA,Florida
+429,sess_dfa106e6b33732a9fe57d5bd845f4965,,2024-02-05 16:00:00,2024-02-05 16:29:00,12,facebook,social,loyalty,tablet,Chrome,192.168.196.170,USA,California
+430,sess_75c5b6efe7f6aabd6943f1946feba8fa,13,2024-02-05 18:00:00,2024-02-05 18:26:00,11,email,organic,,desktop,Safari,192.168.38.43,USA,New York
+431,sess_155e707ac7f841538ad44374d4006d55,8,2024-02-05 20:00:00,2024-02-05 20:28:00,16,email,organic,loyalty,tablet,Edge,192.168.160.192,USA,Washington
+432,sess_a87d52b976996d7e4896eeb97bdbdfc9,,2024-02-05 22:00:00,2024-02-05 22:21:00,6,facebook,organic,,tablet,Safari,192.168.237.215,USA,California
+433,sess_800feaa3dcd7e8766f924bd3413d8032,20,2024-02-06 00:00:00,2024-02-06 00:32:00,13,email,cpc,loyalty,mobile,Chrome,192.168.199.48,USA,Florida
+434,sess_626fba27d394d2bba460adbc0e2446ca,23,2024-02-06 02:00:00,2024-02-06 02:24:00,12,email,social,,desktop,Edge,192.168.2.107,USA,Florida
+435,sess_ca23d852ca72bb4ca2e448602d5354da,21,2024-02-06 04:00:00,2024-02-06 04:17:00,6,direct,organic,,desktop,Firefox,192.168.97.187,USA,California
+436,sess_fdcbf15bda16025f8a2c11e6b116e1df,20,2024-02-06 06:00:00,2024-02-06 06:16:00,12,referral,social,,tablet,Edge,192.168.217.197,USA,New York
+437,sess_1f12fbc00300641b18352cd8da5210b9,11,2024-02-06 08:00:00,2024-02-06 08:12:00,13,google,social,,desktop,Edge,192.168.253.249,USA,Florida
+438,sess_4ff3f938e2de6647affe02ffd818f339,,2024-02-06 10:00:00,2024-02-06 10:29:00,5,facebook,social,,desktop,Firefox,192.168.73.115,USA,New York
+439,sess_42cbcaeae7543f4b39b545cebedc1578,,2024-02-06 12:00:00,2024-02-06 12:26:00,15,direct,social,,tablet,Chrome,192.168.148.255,USA,Texas
+440,sess_71b9adb60073ba651ce6d9b9f7a18bdd,15,2024-02-06 14:00:00,2024-02-06 14:21:00,7,email,organic,spring_sale,desktop,Chrome,192.168.79.62,USA,New York
+441,sess_0a8060ddbe2fa0f68e4400a257962891,16,2024-02-06 16:00:00,2024-02-06 16:05:00,15,referral,social,,desktop,Edge,192.168.3.129,USA,Washington
+442,sess_416c7fc6800858ef158d7ebfcfc6f8d8,,2024-02-06 18:00:00,2024-02-06 18:05:00,6,email,social,spring_sale,mobile,Chrome,192.168.86.120,USA,Washington
+443,sess_fa0ca93d679f1e8a12cbbd95d3a0dea1,,2024-02-06 20:00:00,2024-02-06 20:19:00,14,facebook,organic,,tablet,Firefox,192.168.220.213,USA,Florida
+444,sess_8404a2b853e7c8fdb63c95a98eff46fa,,2024-02-06 22:00:00,2024-02-06 22:24:00,2,direct,social,loyalty,desktop,Safari,192.168.159.4,USA,Florida
+445,sess_e04605440097c009754c8e2c29b3ff8b,,2024-02-07 00:00:00,2024-02-07 00:23:00,14,direct,organic,,tablet,Firefox,192.168.233.231,USA,New York
+446,sess_25fc2ae99a84050ec2dd8d6008a4c440,,2024-02-07 02:00:00,2024-02-07 02:27:00,9,email,email,,desktop,Firefox,192.168.238.186,USA,Texas
+447,sess_9820e6a5efc0ee58589097de748d65e1,17,2024-02-07 04:00:00,2024-02-07 04:35:00,4,referral,social,loyalty,desktop,Safari,192.168.34.251,USA,Florida
+448,sess_8661a06416af9038253ea2fda4f64f1e,20,2024-02-07 06:00:00,2024-02-07 06:27:00,6,google,email,loyalty,tablet,Firefox,192.168.170.0,USA,Washington
+449,sess_0055286e8541383df9220699120d1a3b,2,2024-02-07 08:00:00,2024-02-07 08:23:00,12,direct,organic,,mobile,Chrome,192.168.96.85,USA,Texas
+450,sess_66216ceb9553f2d5fa2d72c31ed69113,,2024-02-07 10:00:00,2024-02-07 10:28:00,3,facebook,social,spring_sale,desktop,Safari,192.168.193.102,USA,Washington
+451,sess_c3a8e3f99f8a6094f42c5caa7bfb869a,,2024-02-07 12:00:00,2024-02-07 12:28:00,7,email,organic,,desktop,Chrome,192.168.78.209,USA,New York
+452,sess_aaaafa419a7f751b2e55ab01989fc539,,2024-02-07 14:00:00,2024-02-07 14:16:00,10,email,email,loyalty,tablet,Safari,192.168.24.59,USA,Florida
+453,sess_6664e0dc69abc185b49435fe17eaf1b9,,2024-02-07 16:00:00,2024-02-07 16:15:00,7,direct,cpc,loyalty,desktop,Firefox,192.168.182.105,USA,Texas
+454,sess_3595194440d1f4946c0eb1c9b5ab9fcd,,2024-02-07 18:00:00,2024-02-07 18:19:00,3,email,social,loyalty,tablet,Firefox,192.168.227.151,USA,Washington
+455,sess_aee408a4c3523437e0ff422fdea6ccd5,5,2024-02-07 20:00:00,2024-02-07 20:32:00,3,referral,social,,desktop,Edge,192.168.32.144,USA,Florida
+456,sess_21699cd31922306c4f53ff2d8f5c8911,,2024-02-07 22:00:00,2024-02-07 22:09:00,2,google,email,loyalty,desktop,Firefox,192.168.40.137,USA,New York
+457,sess_a9784f78479741fe88433e733a03d756,10,2024-02-08 00:00:00,2024-02-08 00:05:00,4,direct,social,,mobile,Safari,192.168.227.97,USA,Texas
+458,sess_0191d455c98906d09d838ec99f630db3,8,2024-02-08 02:00:00,2024-02-08 02:28:00,15,google,organic,,desktop,Chrome,192.168.81.169,USA,Texas
+459,sess_e0b75fe54ce47d3e5df8228547248e4b,,2024-02-08 04:00:00,2024-02-08 04:17:00,8,facebook,social,loyalty,desktop,Edge,192.168.216.164,USA,Texas
+460,sess_3ea3cb1384fe9739eab6e8d1f0bb3ce8,7,2024-02-08 06:00:00,2024-02-08 06:08:00,11,facebook,organic,,mobile,Firefox,192.168.107.202,USA,Florida
+461,sess_89e049ad2df17007fc9cc7c74e1133fd,,2024-02-08 08:00:00,2024-02-08 08:27:00,9,direct,organic,loyalty,mobile,Safari,192.168.220.204,USA,California
+462,sess_9828b23a62bc2cfeae5ebf7b92299a81,7,2024-02-08 10:00:00,2024-02-08 10:19:00,10,referral,social,,mobile,Firefox,192.168.145.220,USA,Washington
+463,sess_900fe0c92581c12adb2f03ac9afbbf97,14,2024-02-08 12:00:00,2024-02-08 12:20:00,10,google,organic,loyalty,mobile,Edge,192.168.57.212,USA,Washington
+464,sess_602587b8ea530f6ca46ff28a409f62f7,,2024-02-08 14:00:00,2024-02-08 14:24:00,9,direct,email,,mobile,Safari,192.168.107.44,USA,New York
+465,sess_0a2ab7650996b7569722b2a4db48331c,5,2024-02-08 16:00:00,2024-02-08 16:28:00,14,facebook,cpc,,desktop,Safari,192.168.139.216,USA,Washington
+466,sess_241838daecb92e8cdcc04feded48bb76,25,2024-02-08 18:00:00,2024-02-08 18:28:00,8,facebook,organic,loyalty,desktop,Chrome,192.168.174.194,USA,Florida
+467,sess_d6d4ea3459f2269dfb32df61efac0d68,7,2024-02-08 20:00:00,2024-02-08 20:14:00,7,referral,email,,tablet,Safari,192.168.100.77,USA,Florida
+468,sess_9285cebb3148b01be63706b3f36d2325,,2024-02-08 22:00:00,2024-02-08 22:31:00,15,referral,email,loyalty,tablet,Firefox,192.168.48.204,USA,New York
+469,sess_75df42571c3a4bb07244fc795dbaa2b1,5,2024-02-09 00:00:00,2024-02-09 00:32:00,2,referral,email,,desktop,Edge,192.168.145.147,USA,Washington
+470,sess_5873d1c8713826c5c8cf4c7d20c37fdf,19,2024-02-09 02:00:00,2024-02-09 02:09:00,8,facebook,organic,loyalty,desktop,Safari,192.168.3.177,USA,Washington
+471,sess_cee6f74c07e903b20e17ada61c19fef5,23,2024-02-09 04:00:00,2024-02-09 04:16:00,10,referral,social,,mobile,Chrome,192.168.18.178,USA,Washington
+472,sess_ec9095db1c7f991389e5c97052657c4f,24,2024-02-09 06:00:00,2024-02-09 06:24:00,9,email,social,,desktop,Safari,192.168.31.247,USA,Florida
+473,sess_5d47fe77d83fc8ef91490c79cc4b33c0,7,2024-02-09 08:00:00,2024-02-09 08:20:00,4,email,social,spring_sale,desktop,Firefox,192.168.29.126,USA,Florida
+474,sess_f83a3ea2bd905e9e29536743b95a2793,22,2024-02-09 10:00:00,2024-02-09 10:27:00,9,email,social,loyalty,desktop,Safari,192.168.74.200,USA,New York
+475,sess_1fb4a9ad100cced4ab3520ba7af8710a,,2024-02-09 12:00:00,2024-02-09 12:15:00,14,direct,social,,desktop,Edge,192.168.3.238,USA,Texas
+476,sess_1f371a6f32911685e2a329db2e1b8d62,22,2024-02-09 14:00:00,2024-02-09 14:21:00,14,referral,email,,desktop,Firefox,192.168.180.144,USA,Washington
+477,sess_6151ee1686ab8b3f9f750cc1cbdeda03,15,2024-02-09 16:00:00,2024-02-09 16:20:00,12,facebook,email,loyalty,tablet,Safari,192.168.240.204,USA,Texas
+478,sess_cf9ed6a8bf17118e6d723dc980f25698,,2024-02-09 18:00:00,2024-02-09 18:14:00,6,facebook,cpc,loyalty,desktop,Firefox,192.168.240.150,USA,Texas
+479,sess_570ce9b759392db6a98bd004c8af1c9e,20,2024-02-09 20:00:00,2024-02-09 20:12:00,12,email,organic,,tablet,Safari,192.168.77.98,USA,New York
+480,sess_95683434c49eb3d6709d8f92ce6ba02a,14,2024-02-09 22:00:00,2024-02-09 22:17:00,14,facebook,organic,,desktop,Firefox,192.168.100.146,USA,New York
+481,sess_732915544648c7585e725f46d019d573,,2024-02-10 00:00:00,2024-02-10 00:33:00,3,google,email,,desktop,Chrome,192.168.211.35,USA,New York
+482,sess_8189bdb24596ddeb9a5ccd787ff9824c,,2024-02-10 02:00:00,2024-02-10 02:10:00,12,email,email,,desktop,Firefox,192.168.243.183,USA,New York
+483,sess_c621ddf82a12ae0c617ba5bd237dd3d1,17,2024-02-10 04:00:00,2024-02-10 04:20:00,16,google,social,,mobile,Safari,192.168.73.124,USA,Florida
+484,sess_c57ee85107e6d32157cd9d84f47d1723,5,2024-02-10 06:00:00,2024-02-10 06:18:00,14,facebook,cpc,,mobile,Edge,192.168.149.57,USA,Washington
+485,sess_140e3f7d68249f8e0dc462e72d8122af,,2024-02-10 08:00:00,2024-02-10 08:07:00,8,email,email,,tablet,Safari,192.168.57.151,USA,Florida
+486,sess_05189352338c79955ad3111d192adbab,17,2024-02-10 10:00:00,2024-02-10 10:13:00,10,facebook,cpc,spring_sale,mobile,Chrome,192.168.25.158,USA,Texas
+487,sess_dd1c7792e670cfdcf30c865e9f72a692,,2024-02-10 12:00:00,2024-02-10 12:13:00,13,facebook,social,,desktop,Safari,192.168.134.231,USA,California
+488,sess_d034c59f5b85e6ee2da7d134a995fbb5,,2024-02-10 14:00:00,2024-02-10 14:34:00,13,google,social,,tablet,Safari,192.168.153.135,USA,New York
+489,sess_188d3b676dd89d957745f4b6c6f35872,,2024-02-10 16:00:00,2024-02-10 16:31:00,2,facebook,email,,mobile,Firefox,192.168.4.200,USA,Washington
+490,sess_b5768b84d216e69b1af9f8b6b1f84fce,12,2024-02-10 18:00:00,2024-02-10 18:31:00,10,direct,social,,tablet,Firefox,192.168.234.77,USA,Texas
+491,sess_376e28dbe56f72200bafc03ef31876dc,15,2024-02-10 20:00:00,2024-02-10 20:13:00,6,facebook,email,loyalty,tablet,Safari,192.168.128.207,USA,California
+492,sess_695c7e7c3a7e2f452e803e42f17ad504,6,2024-02-10 22:00:00,2024-02-10 22:26:00,15,direct,social,,mobile,Edge,192.168.78.123,USA,Washington
+493,sess_7edde51a9784ec40e8fdf28e6a033808,,2024-02-11 00:00:00,2024-02-11 00:14:00,11,facebook,social,spring_sale,desktop,Firefox,192.168.240.24,USA,Texas
+494,sess_67d4681709b23ff7edebf3f0e91794b6,5,2024-02-11 02:00:00,2024-02-11 02:33:00,6,referral,organic,,mobile,Firefox,192.168.31.191,USA,California
+495,sess_515a6c4b7d238102530df30ca7f33347,11,2024-02-11 04:00:00,2024-02-11 04:35:00,9,referral,organic,,tablet,Edge,192.168.96.65,USA,Florida
+496,sess_cb24805dd4f55f02d0426b529b835c10,19,2024-02-11 06:00:00,2024-02-11 06:25:00,12,referral,social,spring_sale,mobile,Firefox,192.168.106.138,USA,Washington
+497,sess_07f55d8e3b7dcba5a20cb2fe4be71281,3,2024-02-11 08:00:00,2024-02-11 08:16:00,10,referral,email,,desktop,Firefox,192.168.80.96,USA,Washington
+498,sess_0580c2d22ed6a32e5c2cbf9d7494ef7c,19,2024-02-11 10:00:00,2024-02-11 10:33:00,14,facebook,social,spring_sale,desktop,Safari,192.168.208.241,USA,Florida
+499,sess_d4076c4cd89c860fc331437abe0547bd,,2024-02-11 12:00:00,2024-02-11 12:34:00,10,facebook,cpc,,desktop,Chrome,192.168.223.33,USA,Texas
+500,sess_90bde93af819501ae686e540178d35e1,2,2024-02-11 14:00:00,2024-02-11 14:19:00,6,direct,social,,desktop,Edge,192.168.36.51,USA,Florida
+501,sess_5837e19d38dade7b316eef35b75e57ac,,2024-02-11 16:00:00,2024-02-11 16:12:00,7,email,email,loyalty,desktop,Safari,192.168.11.84,USA,New York
+502,sess_865336d3bf9cb96b75df4279cb942447,,2024-02-11 18:00:00,2024-02-11 18:33:00,14,direct,cpc,loyalty,desktop,Firefox,192.168.165.254,USA,New York
+503,sess_1967c0e4c7a5e878b66490d8adc87996,10,2024-02-11 20:00:00,2024-02-11 20:32:00,14,referral,email,loyalty,tablet,Edge,192.168.158.210,USA,California
+504,sess_32374181b54f52608d1e1095b85a9c7d,16,2024-02-11 22:00:00,2024-02-11 22:34:00,11,direct,organic,spring_sale,tablet,Firefox,192.168.107.175,USA,California
+505,sess_81b8d8b34fef3b81d0651f0538bf534a,4,2024-02-12 00:00:00,2024-02-12 00:16:00,15,referral,email,,tablet,Chrome,192.168.222.129,USA,Washington
+506,sess_ff799466778567d97b83caa3598db41a,12,2024-02-12 02:00:00,2024-02-12 02:11:00,3,direct,organic,,tablet,Edge,192.168.73.189,USA,New York
+507,sess_dfdd04349f6d6a160db495fcbf92cbb3,,2024-02-12 04:00:00,2024-02-12 04:10:00,5,google,social,,tablet,Firefox,192.168.167.159,USA,California
+508,sess_d78374c9f363b5ed09fb115271a36a92,,2024-02-12 06:00:00,2024-02-12 06:06:00,8,referral,organic,,mobile,Safari,192.168.154.203,USA,Texas
+509,sess_08ea023277ad758cf9c3c9a544a27a43,,2024-02-12 08:00:00,2024-02-12 08:32:00,8,facebook,social,spring_sale,tablet,Firefox,192.168.105.157,USA,Texas
+510,sess_273881de06758f6f616d62a3cc7d88e0,15,2024-02-12 10:00:00,2024-02-12 10:23:00,7,google,cpc,spring_sale,desktop,Chrome,192.168.201.254,USA,Florida
+511,sess_b957c06551904977bd11322b16e7c5f9,6,2024-02-12 12:00:00,2024-02-12 12:19:00,3,referral,social,spring_sale,mobile,Chrome,192.168.177.21,USA,Washington
+512,sess_f1ed3d3a58d97507ba95bbef1c4d6f69,,2024-02-12 14:00:00,2024-02-12 14:10:00,5,email,organic,spring_sale,desktop,Edge,192.168.247.64,USA,Washington
+513,sess_47ac805f9e4d455682f156eaeb0483df,4,2024-02-12 16:00:00,2024-02-12 16:31:00,11,referral,email,,mobile,Edge,192.168.176.152,USA,Washington
+514,sess_65ef8ee56a8b71d8dda99ddb0bf8f770,20,2024-02-12 18:00:00,2024-02-12 18:05:00,14,direct,email,loyalty,desktop,Safari,192.168.5.46,USA,Florida
+515,sess_61834273ecd07e718dd36514abc4c753,15,2024-02-12 20:00:00,2024-02-12 20:27:00,6,email,social,,mobile,Firefox,192.168.77.73,USA,New York
+516,sess_b6feff8db69a4dceb453616aa317bcd4,19,2024-02-12 22:00:00,2024-02-12 22:07:00,17,referral,organic,,mobile,Safari,192.168.145.255,USA,Texas
+517,sess_452e12c82800d5a826c9c9b21a6905f0,15,2024-02-13 00:00:00,2024-02-13 00:30:00,8,email,email,,mobile,Edge,192.168.238.10,USA,New York
+518,sess_872d4e7acce56361f417ef6d6f5d436b,15,2024-02-13 02:00:00,2024-02-13 02:24:00,15,google,email,,mobile,Edge,192.168.41.22,USA,New York
+519,sess_f9097cf7e496ed318fba8cfde430a420,16,2024-02-13 04:00:00,2024-02-13 04:13:00,2,referral,social,,desktop,Safari,192.168.83.134,USA,Texas
+520,sess_b9bb4a01357cc0e789ed96102c166961,14,2024-02-13 06:00:00,2024-02-13 06:30:00,16,email,social,loyalty,desktop,Firefox,192.168.50.28,USA,California
+521,sess_fa63c52fc618a758ebe260644464eb1f,,2024-02-13 08:00:00,2024-02-13 08:12:00,16,referral,cpc,loyalty,mobile,Firefox,192.168.147.66,USA,Florida
+522,sess_94d969b0ea5ba5121fcb577fef6da886,7,2024-02-13 10:00:00,2024-02-13 10:11:00,16,referral,email,,desktop,Firefox,192.168.208.236,USA,California
+523,sess_021dc529b177abeb17aa51599360561f,9,2024-02-13 12:00:00,2024-02-13 12:28:00,15,referral,organic,,tablet,Safari,192.168.61.214,USA,New York
+524,sess_af1b6f5cc26ad2e41c7afbaac6a1313e,,2024-02-13 14:00:00,2024-02-13 14:20:00,11,facebook,social,,mobile,Safari,192.168.50.113,USA,New York
+525,sess_d019cd6beb95cc29321cd44291b35746,,2024-02-13 16:00:00,2024-02-13 16:30:00,4,google,organic,spring_sale,tablet,Chrome,192.168.116.59,USA,Washington
+526,sess_447e36f8b8d31643d06b58a8aa4b9517,9,2024-02-13 18:00:00,2024-02-13 18:10:00,7,referral,social,loyalty,tablet,Chrome,192.168.196.16,USA,Washington
+527,sess_e4fb4a1830a85b4c9d723d3b4c0c842a,8,2024-02-13 20:00:00,2024-02-13 20:18:00,14,direct,email,,desktop,Chrome,192.168.68.5,USA,Washington
+528,sess_b8fb6482bcd070e23ff1a138261c3b17,24,2024-02-13 22:00:00,2024-02-13 22:17:00,15,referral,social,loyalty,desktop,Safari,192.168.142.142,USA,Florida
+529,sess_a0e8a21ae8b52414044581f942c7b3a5,3,2024-02-14 00:00:00,2024-02-14 00:27:00,14,email,email,,mobile,Chrome,192.168.238.115,USA,Washington
+530,sess_2b92c97e476e9fca4b6792cb53cc9fd9,,2024-02-14 02:00:00,2024-02-14 02:19:00,10,referral,organic,,desktop,Firefox,192.168.85.149,USA,Washington
+531,sess_5ec86208ff40bb8f9783e84f7e1445d3,23,2024-02-14 04:00:00,2024-02-14 04:11:00,14,referral,cpc,spring_sale,mobile,Safari,192.168.11.141,USA,New York
+532,sess_856c427c1dc1377c130fc2e408fefda1,9,2024-02-14 06:00:00,2024-02-14 06:11:00,3,email,organic,spring_sale,tablet,Safari,192.168.233.57,USA,Washington
+533,sess_02554c0d99ca8e9780bf25ba19cc88a9,,2024-02-14 08:00:00,2024-02-14 08:21:00,8,facebook,organic,loyalty,desktop,Chrome,192.168.14.238,USA,Washington
+534,sess_77dc34676ce9c8467c2bf300673b69a4,9,2024-02-14 10:00:00,2024-02-14 10:21:00,12,referral,email,loyalty,desktop,Chrome,192.168.0.138,USA,Washington
+535,sess_42b3181b31ab40511ffab5ba3d76b880,24,2024-02-14 12:00:00,2024-02-14 12:20:00,5,email,social,,mobile,Safari,192.168.167.59,USA,Florida
+536,sess_bd15dec13d782447f07f65dfea508329,20,2024-02-14 14:00:00,2024-02-14 14:35:00,3,facebook,social,loyalty,desktop,Safari,192.168.129.62,USA,New York
+537,sess_a46ca82d0355cfd86ceacf5e3265ef43,,2024-02-14 16:00:00,2024-02-14 16:20:00,15,facebook,social,,desktop,Edge,192.168.224.112,USA,Florida
+538,sess_20ebcc5f0cc2121390b41a72e2fe4e09,,2024-02-14 18:00:00,2024-02-14 18:17:00,12,referral,organic,spring_sale,desktop,Chrome,192.168.245.167,USA,Texas
+539,sess_ac21092a81f4394825303137c39277cf,12,2024-02-14 20:00:00,2024-02-14 20:09:00,10,email,email,,tablet,Safari,192.168.252.43,USA,California
+540,sess_4a2a0027bda86bfba93f4cb770df5de9,10,2024-02-14 22:00:00,2024-02-14 22:18:00,17,email,organic,,mobile,Firefox,192.168.8.237,USA,California
+541,sess_6282470e6cff76cf0b0b2f824f7ca3ea,4,2024-02-15 00:00:00,2024-02-15 00:34:00,15,referral,email,,desktop,Chrome,192.168.247.151,USA,Texas
+542,sess_1b716d8a1eb4d282a2ff0e434794a2c9,1,2024-02-15 02:00:00,2024-02-15 02:19:00,6,referral,cpc,,tablet,Firefox,192.168.109.217,USA,New York
+543,sess_e1246a8860088c23bf9d6689ddc13eb3,15,2024-02-15 04:00:00,2024-02-15 04:11:00,14,facebook,cpc,,desktop,Safari,192.168.178.99,USA,New York
+544,sess_1dd7a02cd9c87364a7dc177b5e5ce143,19,2024-02-15 06:00:00,2024-02-15 06:32:00,14,direct,email,spring_sale,desktop,Safari,192.168.143.253,USA,New York
+545,sess_276950d278f603fd76873a3d3ea46a01,24,2024-02-15 08:00:00,2024-02-15 08:31:00,10,facebook,social,,desktop,Safari,192.168.80.210,USA,California
+546,sess_1d35f23852e877680b2ed5c509402f70,22,2024-02-15 10:00:00,2024-02-15 10:15:00,7,facebook,organic,,desktop,Edge,192.168.187.248,USA,California
+547,sess_1f8e5285720cc5f35c2992a176868b56,,2024-02-15 12:00:00,2024-02-15 12:30:00,3,referral,email,,desktop,Chrome,192.168.253.71,USA,Washington
+548,sess_10b4b0b1f2bf6c17182a7175ee1cefcc,1,2024-02-15 14:00:00,2024-02-15 14:34:00,11,email,organic,loyalty,tablet,Firefox,192.168.239.102,USA,Washington
+549,sess_b0df3e1e789fcfb83328c37a91445342,10,2024-02-15 16:00:00,2024-02-15 16:22:00,12,direct,organic,loyalty,desktop,Chrome,192.168.89.241,USA,Florida
+550,sess_fd70bc8898066d55d5741783056582bf,6,2024-02-15 18:00:00,2024-02-15 18:11:00,9,referral,cpc,spring_sale,desktop,Edge,192.168.102.29,USA,New York
+551,sess_348d7c01e6c527e5fe12d2cc675a3e8a,,2024-02-15 20:00:00,2024-02-15 20:28:00,14,facebook,social,loyalty,desktop,Edge,192.168.67.82,USA,California
+552,sess_f5e305d34875ba28e810acc139f8a38f,,2024-02-15 22:00:00,2024-02-15 22:16:00,6,google,social,,desktop,Safari,192.168.93.67,USA,New York
+553,sess_88fe8ee47ece90f3cfad8f0bc2da7df2,16,2024-02-16 00:00:00,2024-02-16 00:16:00,13,facebook,organic,spring_sale,desktop,Safari,192.168.167.86,USA,Texas
+554,sess_9c7efeabacbe0244477e777014b7e865,19,2024-02-16 02:00:00,2024-02-16 02:22:00,10,direct,email,,desktop,Edge,192.168.109.110,USA,New York
+555,sess_5c13d51f5b495d175f3856ee21d3e96c,19,2024-02-16 04:00:00,2024-02-16 04:12:00,9,direct,social,loyalty,desktop,Safari,192.168.52.124,USA,New York
+556,sess_cfdfbe4e007d4e704e38e21246447885,,2024-02-16 06:00:00,2024-02-16 06:22:00,6,facebook,organic,,tablet,Safari,192.168.189.212,USA,Washington
+557,sess_7eb34e4f1285bc41fdbb6639e98254fb,23,2024-02-16 08:00:00,2024-02-16 08:26:00,4,email,organic,,tablet,Safari,192.168.49.94,USA,Florida
+558,sess_0fc15f22c4e6a76bbfa430b5cee817cb,8,2024-02-16 10:00:00,2024-02-16 10:26:00,9,email,email,,desktop,Firefox,192.168.174.81,USA,New York
+559,sess_89fa4082e9a0f8bc375a0a3a9a5f27fe,,2024-02-16 12:00:00,2024-02-16 12:10:00,2,referral,email,,desktop,Chrome,192.168.82.229,USA,New York
+560,sess_04f1fe993b97c3fed5d491c7676f9ffa,12,2024-02-16 14:00:00,2024-02-16 14:20:00,15,direct,email,spring_sale,desktop,Firefox,192.168.107.53,USA,California
+561,sess_08be3cede394f6d0d55d4ca4a85a475b,11,2024-02-16 16:00:00,2024-02-16 16:28:00,10,email,cpc,loyalty,desktop,Firefox,192.168.199.99,USA,California
+562,sess_6ca2d115fb6fc4be76dc963d2f49f1d1,15,2024-02-16 18:00:00,2024-02-16 18:33:00,16,referral,email,,tablet,Firefox,192.168.182.19,USA,Florida
+563,sess_8ce52d7cceeddce32e2c5de575bc7693,22,2024-02-16 20:00:00,2024-02-16 20:32:00,11,email,social,spring_sale,tablet,Safari,192.168.148.210,USA,Florida
+564,sess_3b91c69cdb6cc5f54faa61f1f4449cd1,24,2024-02-16 22:00:00,2024-02-16 22:28:00,4,direct,email,spring_sale,tablet,Firefox,192.168.136.30,USA,Florida
+565,sess_9ac946b95abc2fb7d4b81a0b2055825e,,2024-02-17 00:00:00,2024-02-17 00:14:00,17,email,social,spring_sale,mobile,Edge,192.168.196.28,USA,Washington
+566,sess_e4244a01b376377d493a5235894f2b03,23,2024-02-17 02:00:00,2024-02-17 02:27:00,12,direct,organic,loyalty,tablet,Firefox,192.168.147.192,USA,Washington
+567,sess_8a28a9d52251f785ef48949b87d7186b,21,2024-02-17 04:00:00,2024-02-17 04:22:00,9,facebook,social,,desktop,Safari,192.168.247.143,USA,Florida
+568,sess_39b5130bcfa982eed237ce3f0317fce1,4,2024-02-17 06:00:00,2024-02-17 06:17:00,9,facebook,cpc,,desktop,Firefox,192.168.196.189,USA,Washington
+569,sess_8e378974c11edcf1b742ff7ef8b03533,13,2024-02-17 08:00:00,2024-02-17 08:06:00,3,direct,social,,mobile,Firefox,192.168.8.220,USA,Texas
+570,sess_3aa072076e89d3cfebca7356c4072b32,4,2024-02-17 10:00:00,2024-02-17 10:21:00,2,referral,organic,,tablet,Edge,192.168.89.99,USA,Florida
+571,sess_ca17450d13ab0f262159107410a4c1bc,,2024-02-17 12:00:00,2024-02-17 12:23:00,11,direct,organic,,tablet,Firefox,192.168.150.105,USA,Florida
+572,sess_8e6df8da4d1f6482a516a68bbf4581f0,2,2024-02-17 14:00:00,2024-02-17 14:18:00,15,facebook,organic,loyalty,tablet,Edge,192.168.7.239,USA,New York
+573,sess_2af728133b8ee21f0fcd05b9c8bc1878,,2024-02-17 16:00:00,2024-02-17 16:18:00,16,direct,email,spring_sale,desktop,Chrome,192.168.168.148,USA,Florida
+574,sess_3bce82cbcc38a8103575d1c2b6f94f5d,6,2024-02-17 18:00:00,2024-02-17 18:10:00,11,email,social,,desktop,Safari,192.168.50.249,USA,Florida
+575,sess_36d0cdc862869ac6eaa83de27b5f5cf5,13,2024-02-17 20:00:00,2024-02-17 20:19:00,3,email,social,loyalty,desktop,Firefox,192.168.149.143,USA,Washington
+576,sess_d162a5a49d5d30944bb8a5d9c169af42,23,2024-02-17 22:00:00,2024-02-17 22:14:00,11,email,email,loyalty,desktop,Safari,192.168.153.40,USA,New York
+577,sess_2eb7e215536cb5d25dde5ee1362e1cad,22,2024-02-18 00:00:00,2024-02-18 00:15:00,11,email,organic,loyalty,desktop,Edge,192.168.28.183,USA,Washington
+578,sess_62c097330b9e430a071540681b3502c6,,2024-02-18 02:00:00,2024-02-18 02:10:00,14,direct,social,loyalty,tablet,Safari,192.168.141.37,USA,Texas
+579,sess_5a87eabd899f5ab127879033829f8571,15,2024-02-18 04:00:00,2024-02-18 04:05:00,11,email,organic,,mobile,Firefox,192.168.69.197,USA,Texas
+580,sess_d469a5d5fecf68874a83b4e2c49cf755,8,2024-02-18 06:00:00,2024-02-18 06:17:00,6,google,social,loyalty,desktop,Firefox,192.168.39.194,USA,Florida
+581,sess_38d3a379f2adcd029908585badd4d2e8,,2024-02-18 08:00:00,2024-02-18 08:32:00,16,direct,organic,,desktop,Safari,192.168.155.132,USA,Washington
+582,sess_d71ec1121adb5e1b4238ec596fae7e68,4,2024-02-18 10:00:00,2024-02-18 10:22:00,4,google,social,loyalty,desktop,Safari,192.168.236.200,USA,Florida
+583,sess_62c750f24cb0b3a115a136c9e9944d1d,,2024-02-18 12:00:00,2024-02-18 12:19:00,16,facebook,organic,,desktop,Firefox,192.168.200.195,USA,Florida
+584,sess_548db3dc2aa516ce3c5c0f7734b5f4ea,24,2024-02-18 14:00:00,2024-02-18 14:30:00,11,facebook,organic,loyalty,mobile,Safari,192.168.63.115,USA,Florida
+585,sess_014031c54049e100ea8692058a592599,3,2024-02-18 16:00:00,2024-02-18 16:26:00,4,google,email,,tablet,Safari,192.168.96.94,USA,Texas
+586,sess_faac1a877d28d7757384c028dca378f6,5,2024-02-18 18:00:00,2024-02-18 18:20:00,6,referral,organic,,mobile,Edge,192.168.111.75,USA,Florida
+587,sess_64e36ea7c70375d229092dafb415e126,7,2024-02-18 20:00:00,2024-02-18 20:16:00,5,referral,social,loyalty,desktop,Edge,192.168.128.56,USA,California
+588,sess_04d07cf71f905b2eef06848ecb9b80e7,13,2024-02-18 22:00:00,2024-02-18 22:25:00,10,direct,email,loyalty,desktop,Edge,192.168.243.55,USA,Texas
+589,sess_239f015b5c8b07d8171460a9e793b8a7,,2024-02-19 00:00:00,2024-02-19 00:20:00,17,referral,organic,,desktop,Edge,192.168.70.212,USA,New York
+590,sess_c796c448fb1bec9ab08fcfb881e215e7,2,2024-02-19 02:00:00,2024-02-19 02:06:00,11,facebook,email,,mobile,Firefox,192.168.203.14,USA,Florida
+591,sess_929557211cd785f8ec6f7bc078c29d6e,14,2024-02-19 04:00:00,2024-02-19 04:17:00,15,facebook,social,loyalty,desktop,Chrome,192.168.60.14,USA,Texas
+592,sess_09578538a4b5af9e8722184c61e6d0b0,8,2024-02-19 06:00:00,2024-02-19 06:06:00,9,google,social,spring_sale,desktop,Firefox,192.168.154.239,USA,Texas
+593,sess_57a61b8da7b73c6383aa5db0c4153b6b,17,2024-02-19 08:00:00,2024-02-19 08:17:00,14,email,cpc,spring_sale,desktop,Safari,192.168.3.86,USA,Florida
+594,sess_cc7d65f542e51d67dd27364a0ef702bc,5,2024-02-19 10:00:00,2024-02-19 10:31:00,16,email,email,,mobile,Edge,192.168.90.203,USA,Florida
+595,sess_7c837f99675019c8ed15eb0849161b60,22,2024-02-19 12:00:00,2024-02-19 12:32:00,4,google,organic,,tablet,Firefox,192.168.239.183,USA,Florida
+596,sess_d26379333e71431ecca496e5221a18da,6,2024-02-19 14:00:00,2024-02-19 14:25:00,10,referral,organic,spring_sale,mobile,Edge,192.168.16.62,USA,Washington
+597,sess_2a6c9f68cbc6604748156d85bb726ef9,,2024-02-19 16:00:00,2024-02-19 16:29:00,9,referral,organic,,mobile,Safari,192.168.18.124,USA,Texas
+598,sess_1d66ed98f4640c59521a0ed0e2c567c8,,2024-02-19 18:00:00,2024-02-19 18:34:00,4,facebook,cpc,loyalty,desktop,Safari,192.168.198.134,USA,Florida
+599,sess_85c27125bf00ca6befaa82746b130504,,2024-02-19 20:00:00,2024-02-19 20:20:00,15,email,social,loyalty,desktop,Chrome,192.168.125.132,USA,Washington
+600,sess_22190a12dcbd44e6833d062cca977a74,2,2024-02-19 22:00:00,2024-02-19 22:19:00,7,facebook,social,loyalty,desktop,Firefox,192.168.223.129,USA,New York
+601,sess_21886415255230d5b54c79e1b6075e99,13,2024-02-20 00:00:00,2024-02-20 00:34:00,3,direct,email,,tablet,Safari,192.168.237.142,USA,Texas
+602,sess_a83395dc7f8120c3b40e3034482f4b7e,19,2024-02-20 02:00:00,2024-02-20 02:24:00,6,referral,cpc,,desktop,Safari,192.168.179.48,USA,Florida
+603,sess_b66c3779dcceda24d4ac3cbb51f32475,20,2024-02-20 04:00:00,2024-02-20 04:26:00,9,email,email,spring_sale,desktop,Safari,192.168.72.31,USA,Florida
+604,sess_b64aa16d8b22662500210d5888ff0cc1,18,2024-02-20 06:00:00,2024-02-20 06:14:00,12,google,cpc,,desktop,Edge,192.168.19.28,USA,Florida
+605,sess_4383555fd2fd797f702eab4f2590c553,11,2024-02-20 08:00:00,2024-02-20 08:15:00,11,direct,social,,desktop,Firefox,192.168.1.54,USA,Florida
+606,sess_28c2851056cb6a288b5c53b097ef6b58,8,2024-02-20 10:00:00,2024-02-20 10:33:00,3,direct,social,loyalty,tablet,Chrome,192.168.176.226,USA,Washington
+607,sess_2ec6903dc30782761364a61f4c4abb3f,,2024-02-20 12:00:00,2024-02-20 12:17:00,9,google,social,spring_sale,mobile,Safari,192.168.228.26,USA,New York
+608,sess_1eb90253196a0ba80a9742e5a9cfc199,6,2024-02-20 14:00:00,2024-02-20 14:29:00,7,referral,email,,desktop,Chrome,192.168.16.191,USA,Washington
+609,sess_c002be9341d5b583cfd4791de40681e1,5,2024-02-20 16:00:00,2024-02-20 16:10:00,3,google,email,,desktop,Safari,192.168.206.68,USA,Texas
+610,sess_7a9bd2139c45ff293afbfd8f149714ed,,2024-02-20 18:00:00,2024-02-20 18:19:00,4,email,social,spring_sale,desktop,Chrome,192.168.43.56,USA,Washington
+611,sess_859d568d4a323a4eed1c2aaff644601f,4,2024-02-20 20:00:00,2024-02-20 20:15:00,11,direct,organic,spring_sale,desktop,Firefox,192.168.94.204,USA,Florida
+612,sess_8d65b57c67d361c9fffd579d6974e737,,2024-02-20 22:00:00,2024-02-20 22:18:00,16,referral,cpc,,desktop,Firefox,192.168.92.15,USA,Texas
+613,sess_074f9271eb203f6687486253804efe96,,2024-02-21 00:00:00,2024-02-21 00:28:00,6,referral,email,,tablet,Edge,192.168.198.89,USA,New York
+614,sess_e754ce4ca451943be4adf09eb608f69e,23,2024-02-21 02:00:00,2024-02-21 02:32:00,13,email,cpc,loyalty,desktop,Chrome,192.168.199.155,USA,Texas
+615,sess_f52031530ce9900fe0cb3a65ea06fc8e,6,2024-02-21 04:00:00,2024-02-21 04:16:00,2,facebook,social,loyalty,mobile,Firefox,192.168.227.193,USA,Washington
+616,sess_7a720145f6e4f2998385f1aa80334e70,5,2024-02-21 06:00:00,2024-02-21 06:34:00,8,email,email,spring_sale,desktop,Safari,192.168.76.114,USA,California
+617,sess_081be85cd1c2089105377d43ef3e146c,,2024-02-21 08:00:00,2024-02-21 08:19:00,13,email,organic,,mobile,Firefox,192.168.124.97,USA,Florida
+618,sess_5f6eb8e8f4e0d6b3f352843a8d53da2f,24,2024-02-21 10:00:00,2024-02-21 10:22:00,5,referral,organic,loyalty,desktop,Edge,192.168.162.76,USA,New York
+619,sess_dea57617c39baf62dfdef8b4486e677f,19,2024-02-21 12:00:00,2024-02-21 12:08:00,12,facebook,cpc,,mobile,Edge,192.168.202.45,USA,New York
+620,sess_9955b02269f15584b84233f18f110b5e,,2024-02-21 14:00:00,2024-02-21 14:30:00,14,referral,social,,desktop,Firefox,192.168.154.244,USA,Texas
+621,sess_36312771f923b7bf1eb2154783d06eb4,9,2024-02-21 16:00:00,2024-02-21 16:17:00,4,email,social,,desktop,Chrome,192.168.133.208,USA,Florida
+622,sess_86c0db444990d873e6b7d5ee86ac0ac8,9,2024-02-21 18:00:00,2024-02-21 18:25:00,12,direct,organic,loyalty,desktop,Safari,192.168.162.58,USA,Texas
+623,sess_aba09a00b55fabab3e3118e06ef3f974,7,2024-02-21 20:00:00,2024-02-21 20:11:00,11,direct,email,,desktop,Safari,192.168.193.242,USA,Washington
+624,sess_71ee33bcf56bf852aafa1b96276a66df,14,2024-02-21 22:00:00,2024-02-21 22:32:00,11,email,social,loyalty,desktop,Firefox,192.168.112.26,USA,Washington
+625,sess_de89a195ef00782dae0f1cea2975a47e,,2024-02-22 00:00:00,2024-02-22 00:22:00,5,email,social,,mobile,Edge,192.168.119.172,USA,Florida
+626,sess_2504e888cc5ad2a9f943ff565ec7e9d0,19,2024-02-22 02:00:00,2024-02-22 02:30:00,8,referral,email,loyalty,tablet,Safari,192.168.160.223,USA,Texas
+627,sess_2883ed93a81bd423b57d140a0bfcd2cb,6,2024-02-22 04:00:00,2024-02-22 04:09:00,6,facebook,social,,mobile,Edge,192.168.203.230,USA,Washington
+628,sess_6d6aa4e9a7123a6ceabd5e575c33f356,18,2024-02-22 06:00:00,2024-02-22 06:05:00,10,email,email,,mobile,Safari,192.168.229.129,USA,New York
+629,sess_5bbe942a9f180c79cae2fce9bccdfaae,,2024-02-22 08:00:00,2024-02-22 08:27:00,7,referral,cpc,,tablet,Edge,192.168.214.91,USA,Texas
+630,sess_8283cbdcaae12e4dc5bd4203cdd59db7,,2024-02-22 10:00:00,2024-02-22 10:12:00,8,google,cpc,loyalty,mobile,Chrome,192.168.60.67,USA,Washington
+631,sess_6feebca04d2760e261ff8642611921dc,,2024-02-22 12:00:00,2024-02-22 12:23:00,10,direct,organic,,desktop,Firefox,192.168.30.82,USA,Washington
+632,sess_b04f37b2d19f0235d0e2b0e65fe92a39,,2024-02-22 14:00:00,2024-02-22 14:28:00,4,direct,social,loyalty,tablet,Chrome,192.168.103.51,USA,Texas
+633,sess_7477cc36bd5f71c446cacdf8b106ecd0,4,2024-02-22 16:00:00,2024-02-22 16:30:00,4,referral,social,spring_sale,desktop,Safari,192.168.135.85,USA,Washington
+634,sess_5797d6ad9194ebb34a68a943f33684ba,19,2024-02-22 18:00:00,2024-02-22 18:22:00,2,facebook,organic,,desktop,Edge,192.168.180.132,USA,New York
+635,sess_f84d50de86182eae6b69ac12db77b77f,11,2024-02-22 20:00:00,2024-02-22 20:06:00,9,email,social,,tablet,Firefox,192.168.139.160,USA,California
+636,sess_11811c00f2d9ad699420f679e33d3d6a,1,2024-02-22 22:00:00,2024-02-22 22:10:00,16,google,social,,desktop,Edge,192.168.68.53,USA,Florida
+637,sess_ceeb3681e4f78beebca69d70864357b4,5,2024-02-23 00:00:00,2024-02-23 00:13:00,16,referral,organic,loyalty,desktop,Safari,192.168.74.181,USA,California
+638,sess_33a6356bb481687b27f2e0186353b1f1,,2024-02-23 02:00:00,2024-02-23 02:31:00,5,facebook,email,loyalty,mobile,Firefox,192.168.137.123,USA,Texas
+639,sess_28168a090e53dddadb0391cfaa48a546,3,2024-02-23 04:00:00,2024-02-23 04:06:00,13,direct,organic,,tablet,Safari,192.168.237.171,USA,Washington
+640,sess_1489ef87af5e818d4035949608bd7882,,2024-02-23 06:00:00,2024-02-23 06:12:00,7,referral,organic,,desktop,Firefox,192.168.243.14,USA,Texas
+641,sess_354076c9ad6d639d164bbb40b8764629,22,2024-02-23 08:00:00,2024-02-23 08:30:00,5,email,cpc,,tablet,Safari,192.168.152.49,USA,Florida
+642,sess_b61ae6296d54fc7d2d90592e07bfe9f4,20,2024-02-23 10:00:00,2024-02-23 10:25:00,2,direct,social,loyalty,desktop,Firefox,192.168.236.128,USA,California
+643,sess_f63013b03860930617a836fc123ca759,14,2024-02-23 12:00:00,2024-02-23 12:13:00,15,email,organic,,desktop,Edge,192.168.52.56,USA,California
+644,sess_0e1f7c14275807bb5f70405f31ac91ed,15,2024-02-23 14:00:00,2024-02-23 14:05:00,11,direct,social,loyalty,desktop,Safari,192.168.77.147,USA,Texas
+645,sess_f0b7e9518a533669f3ff4c8d8b7d1aa3,24,2024-02-23 16:00:00,2024-02-23 16:05:00,15,facebook,email,loyalty,tablet,Safari,192.168.152.49,USA,Washington
+646,sess_f994274edaa3a36930bf079b08f6ba9f,9,2024-02-23 18:00:00,2024-02-23 18:24:00,17,direct,email,,desktop,Firefox,192.168.226.32,USA,Washington
+647,sess_9b3745b6510e9f7284c67116586d04d2,8,2024-02-23 20:00:00,2024-02-23 20:32:00,12,facebook,organic,,tablet,Firefox,192.168.8.205,USA,Florida
+648,sess_c90f33ba1967f89a9c134652c4085e12,,2024-02-23 22:00:00,2024-02-23 22:22:00,15,referral,email,,mobile,Firefox,192.168.244.136,USA,New York
+649,sess_9bdb3a8956fb10a5834a6ece6c0f4d4a,,2024-02-24 00:00:00,2024-02-24 00:14:00,12,direct,cpc,,mobile,Safari,192.168.2.249,USA,Texas
+650,sess_3886466aba44f177f338d591f81e342c,16,2024-02-24 02:00:00,2024-02-24 02:15:00,5,facebook,social,,tablet,Firefox,192.168.77.140,USA,Florida
+651,sess_d2f705992295bb49e9190b85eb3cac3f,,2024-02-24 04:00:00,2024-02-24 04:18:00,11,direct,social,,mobile,Safari,192.168.145.157,USA,Washington
+652,sess_dd47746c3fbc5bb70e6139449d362f7c,6,2024-02-24 06:00:00,2024-02-24 06:25:00,7,facebook,social,loyalty,desktop,Firefox,192.168.246.98,USA,New York
+653,sess_075225be56469f7680558a5e9a18a929,18,2024-02-24 08:00:00,2024-02-24 08:18:00,3,direct,organic,spring_sale,mobile,Edge,192.168.80.253,USA,Florida
+654,sess_97548fea3e2fad3c6dd03a87d050a8b0,23,2024-02-24 10:00:00,2024-02-24 10:13:00,7,referral,cpc,,desktop,Edge,192.168.43.3,USA,California
+655,sess_51ec509a7fb48a6d02c1b75fb9f4a466,5,2024-02-24 12:00:00,2024-02-24 12:08:00,8,direct,social,,tablet,Firefox,192.168.134.190,USA,California
+656,sess_66d8e20bb6a04221901b78861e6faf63,11,2024-02-24 14:00:00,2024-02-24 14:31:00,11,referral,social,,desktop,Edge,192.168.114.228,USA,Washington
+657,sess_09566731d90099ceb4396b4566b816d0,1,2024-02-24 16:00:00,2024-02-24 16:27:00,3,direct,organic,spring_sale,desktop,Edge,192.168.8.42,USA,Florida
+658,sess_fd37276f6f931b19c6fe59dced4fbc43,20,2024-02-24 18:00:00,2024-02-24 18:08:00,3,referral,organic,,tablet,Edge,192.168.42.49,USA,New York
+659,sess_8b8161328836c0c3faeed94e3cba1c75,,2024-02-24 20:00:00,2024-02-24 20:35:00,10,referral,email,loyalty,desktop,Safari,192.168.113.177,USA,Texas
+660,sess_fd58e5ad5d5bd76305263db0d53fe760,17,2024-02-24 22:00:00,2024-02-24 22:05:00,13,google,email,,desktop,Firefox,192.168.134.49,USA,New York
+661,sess_4c522d80e8c89df327e3fea140edc0a2,,2024-02-25 00:00:00,2024-02-25 00:24:00,15,email,social,,mobile,Firefox,192.168.169.222,USA,Washington
+662,sess_cf26d55f1159d1f59005791b2af8a3f0,12,2024-02-25 02:00:00,2024-02-25 02:19:00,7,referral,organic,loyalty,desktop,Chrome,192.168.101.169,USA,California
+663,sess_62c340a8abd2a7dd38bcee7ed2fe935c,,2024-02-25 04:00:00,2024-02-25 04:23:00,11,direct,cpc,loyalty,desktop,Safari,192.168.70.199,USA,Texas
+664,sess_ff818c678eb57cd9470828e7ef711f24,,2024-02-25 06:00:00,2024-02-25 06:08:00,9,referral,cpc,loyalty,desktop,Firefox,192.168.2.199,USA,Washington
+665,sess_b8b9dfa34283fbbc32075d1a453cbfc8,17,2024-02-25 08:00:00,2024-02-25 08:27:00,7,direct,social,,mobile,Firefox,192.168.5.210,USA,Washington
+666,sess_e270373851670717987672974f7133af,3,2024-02-25 10:00:00,2024-02-25 10:15:00,3,email,organic,,mobile,Edge,192.168.7.140,USA,Washington
+667,sess_fc6c8d9e30baa6cb0e390bd98c1bfda4,17,2024-02-25 12:00:00,2024-02-25 12:24:00,15,facebook,organic,,mobile,Safari,192.168.14.110,USA,Florida
+668,sess_d7ab1ddd2c4f005105d35a0b30c404fe,2,2024-02-25 14:00:00,2024-02-25 14:08:00,16,referral,email,,desktop,Chrome,192.168.22.203,USA,New York
+669,sess_9c2994802ec051d2ce0da8311e57bf25,19,2024-02-25 16:00:00,2024-02-25 16:34:00,8,direct,organic,,desktop,Firefox,192.168.237.116,USA,Florida
+670,sess_8bea8878f26d6011230a18c535546de4,23,2024-02-25 18:00:00,2024-02-25 18:07:00,14,facebook,organic,,mobile,Safari,192.168.32.25,USA,Texas
+671,sess_9b1e3b1e7d6683404a9894efb6888f7f,11,2024-02-25 20:00:00,2024-02-25 20:32:00,8,referral,social,,tablet,Safari,192.168.224.45,USA,New York
+672,sess_c69ec24652c82c8eb460b98e1501ac4c,2,2024-02-25 22:00:00,2024-02-25 22:08:00,9,referral,email,loyalty,desktop,Edge,192.168.101.212,USA,Florida
+673,sess_2ee3729b9da4d5e8152bfc2d79dbc018,2,2024-02-26 00:00:00,2024-02-26 00:22:00,9,referral,cpc,,tablet,Firefox,192.168.152.188,USA,Washington
+674,sess_b1bc956ea69af5fa5ad5a6144fd96913,4,2024-02-26 02:00:00,2024-02-26 02:30:00,14,referral,email,,tablet,Firefox,192.168.48.231,USA,Florida
+675,sess_c1796c00b001beb06b594f7f8ead23e1,,2024-02-26 04:00:00,2024-02-26 04:25:00,10,referral,organic,,desktop,Chrome,192.168.109.14,USA,Texas
+676,sess_c95a23b63ffd6ed3c071ace90ae9a392,2,2024-02-26 06:00:00,2024-02-26 06:11:00,9,google,organic,,desktop,Safari,192.168.70.83,USA,Washington
+677,sess_15ee7f24bf2bb34ebe1dc4b23c45c21d,,2024-02-26 08:00:00,2024-02-26 08:16:00,17,google,organic,,tablet,Safari,192.168.196.69,USA,Washington
+678,sess_2112ab9f57062a41205ff806639804e8,15,2024-02-26 10:00:00,2024-02-26 10:31:00,12,referral,cpc,loyalty,desktop,Chrome,192.168.96.40,USA,Florida
+679,sess_65247407bd0a4b7a13f7d0aaee732daf,,2024-02-26 12:00:00,2024-02-26 12:10:00,4,google,social,loyalty,mobile,Firefox,192.168.43.52,USA,Florida
+680,sess_01a6281ee2eb12277615fb0ef5decb5b,22,2024-02-26 14:00:00,2024-02-26 14:23:00,17,direct,social,,tablet,Edge,192.168.244.86,USA,Florida
+681,sess_ac88fd67594c095483f99e0dcfe3da38,14,2024-02-26 16:00:00,2024-02-26 16:19:00,11,direct,organic,loyalty,desktop,Edge,192.168.168.79,USA,Washington
+682,sess_5d5cbb302ee45d876d8b61bb7e89828d,,2024-02-26 18:00:00,2024-02-26 18:22:00,9,referral,social,,desktop,Safari,192.168.171.7,USA,Washington
+683,sess_b1761ba1a2ae93e4644317e2836d970e,,2024-02-26 20:00:00,2024-02-26 20:06:00,10,email,social,,desktop,Safari,192.168.31.229,USA,Texas
+684,sess_b760b9e15ef41c235f53218f9964c366,,2024-02-26 22:00:00,2024-02-26 22:15:00,17,facebook,organic,,tablet,Edge,192.168.116.50,USA,Washington
+685,sess_8838c3ee0b1576d1ec474b403fa22e8f,14,2024-02-27 00:00:00,2024-02-27 00:08:00,7,referral,cpc,,desktop,Edge,192.168.35.152,USA,California
+686,sess_356dd5dd903d737c070e2f3594d34e53,12,2024-02-27 02:00:00,2024-02-27 02:10:00,3,referral,email,,mobile,Safari,192.168.56.166,USA,Texas
+687,sess_9f7ecf1031a23ee0721d510472d0d456,18,2024-02-27 04:00:00,2024-02-27 04:21:00,17,email,social,loyalty,mobile,Edge,192.168.129.252,USA,Florida
+688,sess_bc1b1f906c3768557efe974e70e17015,,2024-02-27 06:00:00,2024-02-27 06:31:00,6,facebook,organic,loyalty,desktop,Chrome,192.168.93.94,USA,Washington
+689,sess_25ab754bef89b5fbf9ec62b355dd02ac,17,2024-02-27 08:00:00,2024-02-27 08:28:00,8,referral,organic,,desktop,Chrome,192.168.122.212,USA,Texas
+690,sess_e01b3441375684d61f63c660429aed53,13,2024-02-27 10:00:00,2024-02-27 10:35:00,2,email,social,loyalty,mobile,Firefox,192.168.3.126,USA,Washington
+691,sess_bcdca26ff9dee5173ecabb3039e1129e,16,2024-02-27 12:00:00,2024-02-27 12:21:00,8,referral,social,,desktop,Safari,192.168.178.55,USA,Washington
+692,sess_2c2c166856104823b42d2d07b2d6f205,25,2024-02-27 14:00:00,2024-02-27 14:28:00,3,facebook,social,loyalty,desktop,Firefox,192.168.244.19,USA,Florida
+693,sess_85b192486cae72a89c61b078f44da607,12,2024-02-27 16:00:00,2024-02-27 16:17:00,3,google,email,,desktop,Safari,192.168.28.121,USA,California
+694,sess_163e76a18c6f8f3c5425822352b685f9,17,2024-02-27 18:00:00,2024-02-27 18:17:00,16,email,social,,mobile,Edge,192.168.190.206,USA,Washington
+695,sess_b9cfc5aba8edc280075634bf81fce8b3,16,2024-02-27 20:00:00,2024-02-27 20:34:00,12,referral,social,,tablet,Firefox,192.168.82.226,USA,California
+696,sess_75dee879e50fa659b70768c679bef24c,25,2024-02-27 22:00:00,2024-02-27 22:19:00,2,facebook,email,loyalty,desktop,Safari,192.168.190.174,USA,Texas
+697,sess_92ab21c49b1fbc2c942b638bdf4c7721,19,2024-02-28 00:00:00,2024-02-28 00:24:00,6,referral,social,loyalty,desktop,Chrome,192.168.126.43,USA,California
+698,sess_6841998d433a1b9db6b6380e7053d070,8,2024-02-28 02:00:00,2024-02-28 02:29:00,7,referral,social,,desktop,Edge,192.168.33.101,USA,Florida
+699,sess_f29451161fd527609911ecbfa8df1bcd,22,2024-02-28 04:00:00,2024-02-28 04:15:00,6,direct,organic,spring_sale,mobile,Firefox,192.168.11.187,USA,Florida
+700,sess_3c3760febe176f4f024d4844b029a487,24,2024-02-28 06:00:00,2024-02-28 06:20:00,3,google,cpc,spring_sale,tablet,Safari,192.168.25.1,USA,California
+701,sess_aefe16f3fdd848caa091f6f09094a7c7,,2024-02-28 08:00:00,2024-02-28 08:19:00,4,facebook,social,loyalty,desktop,Safari,192.168.252.142,USA,Washington
+702,sess_efbe6e0006084ff303b2c3509d566bc0,,2024-02-28 10:00:00,2024-02-28 10:14:00,10,facebook,social,,desktop,Safari,192.168.66.107,USA,Florida
+703,sess_16bfc4e5d405d784e0e0abc893642174,,2024-02-28 12:00:00,2024-02-28 12:08:00,14,facebook,organic,spring_sale,desktop,Safari,192.168.250.242,USA,New York
+704,sess_1d86ace288802fb1ce485ac1fc5c8d5b,8,2024-02-28 14:00:00,2024-02-28 14:22:00,9,facebook,organic,spring_sale,desktop,Chrome,192.168.252.194,USA,Florida
+705,sess_75a72861445afabe1d11519ca6750fea,5,2024-02-28 16:00:00,2024-02-28 16:07:00,12,referral,organic,spring_sale,mobile,Safari,192.168.53.51,USA,New York
+706,sess_e0f9964484ed14b16fcb61b64c74f933,4,2024-02-28 18:00:00,2024-02-28 18:06:00,14,referral,social,,mobile,Safari,192.168.173.30,USA,Texas
+707,sess_8635ecc04a48121768030be09fe04e02,21,2024-02-28 20:00:00,2024-02-28 20:31:00,9,facebook,social,spring_sale,desktop,Firefox,192.168.112.250,USA,Texas
+708,sess_81bfd8dc118ec2d8130c59f011b1e246,17,2024-02-28 22:00:00,2024-02-28 22:19:00,12,facebook,email,spring_sale,desktop,Firefox,192.168.71.82,USA,New York
+709,sess_31307547e7dad9a938812d7dcff28b6a,,2024-02-29 00:00:00,2024-02-29 00:27:00,11,facebook,organic,,tablet,Firefox,192.168.18.214,USA,Texas
+710,sess_ddedb0cb8a227af904ad6fec376cf6de,20,2024-02-29 02:00:00,2024-02-29 02:21:00,10,facebook,social,loyalty,tablet,Edge,192.168.182.254,USA,New York
+711,sess_2204dfcca0ce7b85f93f56e6d1eaeb62,,2024-02-29 04:00:00,2024-02-29 04:15:00,11,facebook,social,spring_sale,tablet,Safari,192.168.123.11,USA,California
+712,sess_d540dfc983392f993946af45fa71e87c,16,2024-02-29 06:00:00,2024-02-29 06:34:00,8,google,social,,desktop,Edge,192.168.176.89,USA,California
+713,sess_516229658d2919ac74283190bcd339a7,24,2024-02-29 08:00:00,2024-02-29 08:28:00,10,google,organic,spring_sale,tablet,Edge,192.168.26.209,USA,California
+714,sess_d4ba7c6bb3065d793e19641fd9dd06af,,2024-02-29 10:00:00,2024-02-29 10:10:00,13,email,organic,,desktop,Safari,192.168.99.238,USA,Florida
+715,sess_5bb0352144205cb75baadd7fcf934445,,2024-02-29 12:00:00,2024-02-29 12:24:00,5,email,social,,mobile,Safari,192.168.170.37,USA,New York
+716,sess_b58f718111ea2bfb0feea09c7453bfb7,8,2024-02-29 14:00:00,2024-02-29 14:28:00,15,email,cpc,,tablet,Firefox,192.168.249.181,USA,California
+717,sess_8e4b5877ff44d05492cc7c9ba0f271c2,19,2024-02-29 16:00:00,2024-02-29 16:18:00,17,referral,email,,tablet,Edge,192.168.212.22,USA,Florida
+718,sess_a22c8a59aa82010fa80136c682aae60b,24,2024-02-29 18:00:00,2024-02-29 18:08:00,5,email,social,,desktop,Edge,192.168.220.177,USA,Texas
+719,sess_f5ea0e4b7fbdc58194b0995f0727c37f,,2024-02-29 20:00:00,2024-02-29 20:25:00,12,email,cpc,,tablet,Safari,192.168.237.181,USA,Texas
+720,sess_9d9375a90d4a94ef521b0b76c3374705,19,2024-02-29 22:00:00,2024-02-29 22:29:00,6,referral,social,loyalty,mobile,Firefox,192.168.232.253,USA,New York
+721,sess_19526d680f947442c49551c8c2034837,13,2024-03-01 00:00:00,2024-03-01 00:15:00,11,facebook,social,,desktop,Edge,192.168.220.53,USA,Florida
+722,sess_fdcce4fa772bab7bc89c9825487eb71c,15,2024-03-01 02:00:00,2024-03-01 02:35:00,13,referral,email,spring_sale,mobile,Safari,192.168.127.123,USA,Florida
+723,sess_fcc2d19ca1b4fd51abf7dca5aa140c2b,,2024-03-01 04:00:00,2024-03-01 04:23:00,8,google,cpc,,desktop,Firefox,192.168.126.158,USA,Washington
+724,sess_5bc2fe6aa12e2d069f991cac10b755ce,6,2024-03-01 06:00:00,2024-03-01 06:23:00,6,referral,cpc,,mobile,Safari,192.168.38.87,USA,Florida
+725,sess_07e293cdf6b4bc24753b81479f6c3d1b,14,2024-03-01 08:00:00,2024-03-01 08:26:00,17,referral,email,,mobile,Firefox,192.168.161.47,USA,Washington
+726,sess_ac9f437adf06e7a979f1fdbfab5995b1,20,2024-03-01 10:00:00,2024-03-01 10:10:00,14,email,organic,,desktop,Firefox,192.168.85.65,USA,Texas
+727,sess_43f23584fe0528cac96e7ff0771ff230,,2024-03-01 12:00:00,2024-03-01 12:16:00,16,google,organic,spring_sale,desktop,Firefox,192.168.220.207,USA,Texas
+728,sess_6713be1a4b3c8beb90692a93a452d3fc,22,2024-03-01 14:00:00,2024-03-01 14:18:00,10,facebook,social,,mobile,Chrome,192.168.33.101,USA,Florida
+729,sess_b9f466b09a1209aef2834cc72048f677,14,2024-03-01 16:00:00,2024-03-01 16:16:00,8,facebook,cpc,loyalty,desktop,Safari,192.168.44.18,USA,Florida
+730,sess_e41bb443cec7ee5dd872908d91ba06f1,,2024-03-01 18:00:00,2024-03-01 18:19:00,4,referral,email,,mobile,Chrome,192.168.73.195,USA,Washington
+731,sess_b58b1fc379debb06f22ec21a58b2dc21,12,2024-03-01 20:00:00,2024-03-01 20:30:00,7,direct,social,,desktop,Edge,192.168.105.135,USA,California
+732,sess_1bb463a8988354f8e4fbd5d3ebf99bc7,22,2024-03-01 22:00:00,2024-03-01 22:28:00,11,google,organic,,tablet,Chrome,192.168.109.181,USA,Texas
+733,sess_13225cfcb83ec00ef8dd9f11d314177b,21,2024-03-02 00:00:00,2024-03-02 00:06:00,3,referral,organic,,desktop,Firefox,192.168.22.253,USA,New York
+734,sess_bf77fc1b4352ae5f2d4f61af3ef47358,,2024-03-02 02:00:00,2024-03-02 02:29:00,9,referral,organic,loyalty,mobile,Chrome,192.168.198.199,USA,Texas
+735,sess_d3dfdbb06824c1704f6daee2927c8d4b,,2024-03-02 04:00:00,2024-03-02 04:26:00,9,email,organic,loyalty,desktop,Chrome,192.168.166.60,USA,California
+736,sess_a7a45e13e397fa08f10165a5437e683b,,2024-03-02 06:00:00,2024-03-02 06:14:00,4,direct,social,,tablet,Safari,192.168.234.230,USA,New York
+737,sess_590da7bb97eb695d9942a47d000127b8,22,2024-03-02 08:00:00,2024-03-02 08:24:00,3,google,organic,loyalty,tablet,Safari,192.168.213.147,USA,California
+738,sess_ab025d9ee7941f8cde95f9d9c2ef7947,7,2024-03-02 10:00:00,2024-03-02 10:21:00,7,facebook,organic,spring_sale,desktop,Safari,192.168.253.245,USA,Washington
+739,sess_f474c93bbbe4ea3986ff02fe4dda6ebb,24,2024-03-02 12:00:00,2024-03-02 12:21:00,16,email,email,loyalty,tablet,Chrome,192.168.92.202,USA,Washington
+740,sess_c11d3cb72891fd916dd4d674c66ab754,16,2024-03-02 14:00:00,2024-03-02 14:26:00,9,email,social,,mobile,Safari,192.168.227.45,USA,Florida
+741,sess_45eddc0d1c4a8debf2523c792fa00f20,,2024-03-02 16:00:00,2024-03-02 16:35:00,16,direct,social,,tablet,Firefox,192.168.189.65,USA,Washington
+742,sess_0ae35d920d3b62ba5df81c17ac85df42,24,2024-03-02 18:00:00,2024-03-02 18:11:00,15,email,social,,desktop,Safari,192.168.101.243,USA,New York
+743,sess_8cf90f18a08a4cb4b15e4ad96ccb3252,23,2024-03-02 20:00:00,2024-03-02 20:26:00,6,direct,social,,tablet,Firefox,192.168.204.180,USA,Washington
+744,sess_e03a125337b9d2789847bd2a6b1a3f07,,2024-03-02 22:00:00,2024-03-02 22:22:00,5,referral,social,loyalty,desktop,Chrome,192.168.100.245,USA,California
+745,sess_ed76c007d930746262bc01f2df50251c,14,2024-03-03 00:00:00,2024-03-03 00:09:00,2,referral,organic,loyalty,desktop,Firefox,192.168.122.219,USA,Florida
+746,sess_7aa8340c1fde96577edc05045c2b91eb,2,2024-03-03 02:00:00,2024-03-03 02:18:00,9,direct,social,loyalty,mobile,Edge,192.168.108.80,USA,Washington
+747,sess_a37d336744e62917200ea3cb4b2d0d3c,,2024-03-03 04:00:00,2024-03-03 04:13:00,13,referral,social,loyalty,mobile,Firefox,192.168.166.91,USA,Texas
+748,sess_3161e5d68621aec80a29dc0b21ac6c3e,23,2024-03-03 06:00:00,2024-03-03 06:15:00,15,facebook,social,,tablet,Firefox,192.168.26.24,USA,Texas
+749,sess_0083fd2cb929239520344f4dbd0a2360,4,2024-03-03 08:00:00,2024-03-03 08:34:00,5,facebook,cpc,,desktop,Chrome,192.168.46.205,USA,Florida
+750,sess_e505fbaae59b4a4b6920ca80d81f21f5,,2024-03-03 10:00:00,2024-03-03 10:08:00,16,referral,organic,,desktop,Firefox,192.168.226.14,USA,Florida
+751,sess_517f987a55a1941a43f90dc6c0e773b6,,2024-03-03 12:00:00,2024-03-03 12:33:00,13,referral,social,,mobile,Chrome,192.168.31.41,USA,California
+752,sess_edcb3cce93941b598d691235ae074a96,1,2024-03-03 14:00:00,2024-03-03 14:14:00,15,email,organic,,tablet,Safari,192.168.251.108,USA,New York
+753,sess_399ec1d6699947a9a6c2ace3d4c7eef4,,2024-03-03 16:00:00,2024-03-03 16:23:00,7,facebook,organic,loyalty,mobile,Chrome,192.168.151.218,USA,California
+754,sess_20ea38eb1ee5c86f5cf4a87294ae8e43,8,2024-03-03 18:00:00,2024-03-03 18:27:00,8,referral,email,loyalty,desktop,Firefox,192.168.218.109,USA,Washington
+755,sess_267812c54db03f08c9e9493d39d2c3cf,,2024-03-03 20:00:00,2024-03-03 20:13:00,16,email,organic,,desktop,Chrome,192.168.163.0,USA,Washington
+756,sess_320b6e794be4ff03d0491dada006c029,23,2024-03-03 22:00:00,2024-03-03 22:23:00,12,direct,organic,,desktop,Safari,192.168.138.209,USA,Washington
+757,sess_97c13c961556dd3cd492bb9fea3805c9,5,2024-03-04 00:00:00,2024-03-04 00:12:00,9,email,social,,tablet,Safari,192.168.196.148,USA,Washington
+758,sess_ec84cd4459fb3f49eddb695351526967,,2024-03-04 02:00:00,2024-03-04 02:10:00,6,email,social,,mobile,Firefox,192.168.116.153,USA,Washington
+759,sess_572a1d2858ad3f169f77fea97a9e6b4c,,2024-03-04 04:00:00,2024-03-04 04:06:00,5,referral,social,,desktop,Firefox,192.168.54.235,USA,Florida
+760,sess_087528aac903c4e16ed9671ae075710a,,2024-03-04 06:00:00,2024-03-04 06:32:00,4,facebook,organic,,desktop,Firefox,192.168.70.132,USA,California
+761,sess_d903e0d00b7e9579237bcd2d25fe169a,8,2024-03-04 08:00:00,2024-03-04 08:10:00,14,referral,email,loyalty,mobile,Firefox,192.168.253.158,USA,Florida
+762,sess_696f7b4b15abbdbae3108e3c3bac9f07,9,2024-03-04 10:00:00,2024-03-04 10:24:00,16,facebook,social,loyalty,mobile,Firefox,192.168.103.9,USA,Washington
+763,sess_29405b53b7146791d8d65d409c7d2f54,24,2024-03-04 12:00:00,2024-03-04 12:09:00,7,direct,organic,loyalty,mobile,Edge,192.168.94.194,USA,Texas
+764,sess_371c2a24cc23b55139938bd8419eb36a,17,2024-03-04 14:00:00,2024-03-04 14:16:00,6,referral,social,loyalty,mobile,Firefox,192.168.95.238,USA,Texas
+765,sess_a801889588040230b3ec434f8732b9e9,,2024-03-04 16:00:00,2024-03-04 16:32:00,14,facebook,email,,desktop,Firefox,192.168.48.55,USA,Washington
+766,sess_8777485c764fd0165a8927999e0b9ffd,21,2024-03-04 18:00:00,2024-03-04 18:25:00,4,email,organic,,tablet,Safari,192.168.75.147,USA,New York
+767,sess_f38b538a0942fb6c26f5852ade14c715,,2024-03-04 20:00:00,2024-03-04 20:17:00,7,facebook,social,loyalty,mobile,Edge,192.168.172.160,USA,Washington
+768,sess_1ff60e86006c48dffdb5a6e6254e19fc,3,2024-03-04 22:00:00,2024-03-04 22:22:00,10,direct,organic,,desktop,Safari,192.168.105.44,USA,Florida
+769,sess_b13351bd78f4f8fc2ad967a5ab0c51c8,10,2024-03-05 00:00:00,2024-03-05 00:10:00,6,direct,organic,loyalty,desktop,Safari,192.168.7.87,USA,Texas
+770,sess_b1680a47faba5158ce79f3baa56ca3a7,4,2024-03-05 02:00:00,2024-03-05 02:27:00,13,referral,cpc,spring_sale,tablet,Safari,192.168.87.54,USA,Washington
+771,sess_f1dba781707268ce6f138a846b18377e,24,2024-03-05 04:00:00,2024-03-05 04:18:00,14,google,email,,mobile,Safari,192.168.193.219,USA,New York
+772,sess_190adf8624c6c78e05f09eadad36cf0f,1,2024-03-05 06:00:00,2024-03-05 06:21:00,3,referral,social,loyalty,tablet,Chrome,192.168.53.90,USA,Texas
+773,sess_47efbf05da5dc312113c8d34e2f82410,,2024-03-05 08:00:00,2024-03-05 08:16:00,9,direct,cpc,loyalty,desktop,Edge,192.168.60.117,USA,Washington
+774,sess_293231c4b31c81d0daeaf79fb591ead7,2,2024-03-05 10:00:00,2024-03-05 10:32:00,9,direct,organic,,tablet,Edge,192.168.54.12,USA,California
+775,sess_541a7ed42fb46938971239f8883ec813,,2024-03-05 12:00:00,2024-03-05 12:27:00,14,facebook,organic,,mobile,Safari,192.168.79.193,USA,New York
+776,sess_1b593ab74268367c89a148595305e68d,13,2024-03-05 14:00:00,2024-03-05 14:21:00,11,facebook,cpc,,tablet,Chrome,192.168.35.197,USA,Florida
+777,sess_3bc8063e7f22f772d4219ba1377b2bcd,,2024-03-05 16:00:00,2024-03-05 16:24:00,16,facebook,email,,desktop,Edge,192.168.4.240,USA,New York
+778,sess_14e8460b280a28b7f62d6e6ec615f991,14,2024-03-05 18:00:00,2024-03-05 18:33:00,12,direct,social,,desktop,Chrome,192.168.93.77,USA,Florida
+779,sess_f9ed731b24b0cb0fc9a2a23420af739c,3,2024-03-05 20:00:00,2024-03-05 20:32:00,13,facebook,social,,tablet,Chrome,192.168.230.63,USA,New York
+780,sess_3e855f6561f744b320df48b9280d0606,22,2024-03-05 22:00:00,2024-03-05 22:13:00,5,facebook,social,,desktop,Firefox,192.168.90.82,USA,Texas
+781,sess_4e378ed9110f783b5ca8facd2bd2071a,,2024-03-06 00:00:00,2024-03-06 00:06:00,3,google,organic,loyalty,mobile,Safari,192.168.129.152,USA,Washington
+782,sess_944f317d19c571010b9c0faf92f5055f,4,2024-03-06 02:00:00,2024-03-06 02:23:00,8,email,organic,,desktop,Firefox,192.168.218.131,USA,Texas
+783,sess_9b0a250073e33f80f1cfee87e1db3d34,1,2024-03-06 04:00:00,2024-03-06 04:26:00,3,google,email,,tablet,Safari,192.168.248.123,USA,Florida
+784,sess_8d9031315f0073381dc327daa64eb644,,2024-03-06 06:00:00,2024-03-06 06:07:00,15,facebook,organic,loyalty,desktop,Firefox,192.168.152.185,USA,Texas
+785,sess_2ca4ea3d8de6591917c21c47622fe67e,23,2024-03-06 08:00:00,2024-03-06 08:17:00,16,email,email,,desktop,Safari,192.168.230.146,USA,New York
+786,sess_a328383011c100db27d614642e078110,8,2024-03-06 10:00:00,2024-03-06 10:21:00,8,referral,social,spring_sale,desktop,Firefox,192.168.106.160,USA,Florida
+787,sess_bcdf14df945ec9afd72ec3220873109b,24,2024-03-06 12:00:00,2024-03-06 12:16:00,4,direct,cpc,loyalty,desktop,Firefox,192.168.45.242,USA,Washington
+788,sess_bdf08dafebb701054c9ad05648d8da40,22,2024-03-06 14:00:00,2024-03-06 14:21:00,8,referral,email,loyalty,desktop,Safari,192.168.40.151,USA,Texas
+789,sess_56dff2ff60aaf3a99aebc0f683376754,22,2024-03-06 16:00:00,2024-03-06 16:16:00,4,referral,cpc,,desktop,Edge,192.168.51.165,USA,Texas
+790,sess_6398b1247bd3d2558e99739c90a22445,19,2024-03-06 18:00:00,2024-03-06 18:11:00,8,email,social,,desktop,Safari,192.168.170.239,USA,Florida
+791,sess_116639b51301f81d88066b292167d574,,2024-03-06 20:00:00,2024-03-06 20:32:00,15,facebook,email,loyalty,tablet,Edge,192.168.181.27,USA,Florida
+792,sess_83c56b69512ee69f5d500b360dda438b,16,2024-03-06 22:00:00,2024-03-06 22:09:00,3,facebook,social,spring_sale,desktop,Safari,192.168.99.62,USA,Texas
+793,sess_e414327da7ef67c72eed61315b7a5269,23,2024-03-07 00:00:00,2024-03-07 00:22:00,8,direct,social,loyalty,tablet,Chrome,192.168.246.238,USA,Washington
+794,sess_2b0d6927eb696f6058c7205b158ea44c,3,2024-03-07 02:00:00,2024-03-07 02:33:00,9,referral,organic,,mobile,Safari,192.168.119.200,USA,Florida
+795,sess_e724b6dd2ec8313f062289fbfc26cfcf,15,2024-03-07 04:00:00,2024-03-07 04:14:00,11,facebook,organic,loyalty,mobile,Safari,192.168.129.238,USA,Texas
+796,sess_a3f21bc8b93f6166c4024a82f44ced37,3,2024-03-07 06:00:00,2024-03-07 06:20:00,14,google,email,loyalty,desktop,Firefox,192.168.131.47,USA,New York
+797,sess_c7f1d3ba70f6f15519d045cb477fcbe4,21,2024-03-07 08:00:00,2024-03-07 08:31:00,16,facebook,cpc,spring_sale,desktop,Safari,192.168.211.80,USA,Texas
+798,sess_d50565d991de8e9aabb4c84ad63c8e55,14,2024-03-07 10:00:00,2024-03-07 10:22:00,11,facebook,cpc,,tablet,Chrome,192.168.217.42,USA,Washington
+799,sess_7fbef5ac3df43b93b385c6575fd1992b,14,2024-03-07 12:00:00,2024-03-07 12:26:00,6,referral,email,,tablet,Edge,192.168.95.55,USA,New York
+800,sess_30937a29c67448fe331c1c1b74086858,24,2024-03-07 14:00:00,2024-03-07 14:25:00,7,email,email,,mobile,Firefox,192.168.19.170,USA,Washington
+801,sess_f26c396dd9f6293255f9b502a8cec0c9,21,2024-03-07 16:00:00,2024-03-07 16:23:00,3,google,email,,tablet,Firefox,192.168.194.177,USA,Washington
+802,sess_2d5e3bf3f5bd537dfbbb14aaf83d5370,15,2024-03-07 18:00:00,2024-03-07 18:31:00,10,google,social,loyalty,desktop,Safari,192.168.30.253,USA,Washington
+803,sess_77e86b999a31767ed3db3528590b7e77,1,2024-03-07 20:00:00,2024-03-07 20:08:00,6,email,social,loyalty,mobile,Firefox,192.168.67.228,USA,Washington
+804,sess_c074cf5152cfffe63cbf76b0f2e50ed3,16,2024-03-07 22:00:00,2024-03-07 22:34:00,11,referral,email,loyalty,desktop,Firefox,192.168.90.43,USA,New York
+805,sess_e111b7fafe0b20db5b9e44da48b5135e,,2024-03-08 00:00:00,2024-03-08 00:05:00,9,facebook,social,loyalty,mobile,Edge,192.168.31.48,USA,New York
+806,sess_153a15a293bbd73eaee4759226d05985,,2024-03-08 02:00:00,2024-03-08 02:18:00,10,referral,email,spring_sale,mobile,Firefox,192.168.131.25,USA,Texas
+807,sess_a78922e03afaafc2febf1a09442f1db2,10,2024-03-08 04:00:00,2024-03-08 04:34:00,4,google,social,spring_sale,desktop,Safari,192.168.8.77,USA,New York
+808,sess_4d3fccdc9926033979130bc1a49b08f9,,2024-03-08 06:00:00,2024-03-08 06:30:00,16,email,cpc,,tablet,Safari,192.168.6.128,USA,California
+809,sess_055b6f291ce8ba98ed502f3feeccb836,8,2024-03-08 08:00:00,2024-03-08 08:07:00,13,referral,email,loyalty,mobile,Safari,192.168.179.128,USA,Washington
+810,sess_ea8b8c888d063d39eed41ebf73bd5c45,21,2024-03-08 10:00:00,2024-03-08 10:28:00,3,email,email,,desktop,Firefox,192.168.105.77,USA,Texas
+811,sess_127833ba2bd7dac0340bb051e690f577,,2024-03-08 12:00:00,2024-03-08 12:21:00,17,direct,social,,desktop,Safari,192.168.68.188,USA,Florida
+812,sess_5fd917730d95fb0604b182ade67c24c0,21,2024-03-08 14:00:00,2024-03-08 14:35:00,8,facebook,cpc,,tablet,Firefox,192.168.160.247,USA,New York
+813,sess_06869433afe2a22508408d059366cb5a,19,2024-03-08 16:00:00,2024-03-08 16:24:00,4,google,social,,tablet,Safari,192.168.219.138,USA,Washington
+814,sess_47868372227c7abcc8662d29a03eaff3,,2024-03-08 18:00:00,2024-03-08 18:12:00,10,facebook,social,loyalty,desktop,Firefox,192.168.2.49,USA,Florida
+815,sess_e466d7247bb13526a4f8eb8be5ba3486,,2024-03-08 20:00:00,2024-03-08 20:21:00,11,referral,email,loyalty,desktop,Chrome,192.168.174.170,USA,Washington
+816,sess_e79bb8be414364eeaff5cb0431f7eddf,22,2024-03-08 22:00:00,2024-03-08 22:15:00,15,email,social,spring_sale,tablet,Safari,192.168.55.192,USA,Washington
+817,sess_0c1b6b7d883258cf7a608472704bd03a,8,2024-03-09 00:00:00,2024-03-09 00:34:00,13,email,organic,,desktop,Edge,192.168.150.118,USA,California
+818,sess_11205b34f5e2d4747f55a23336dd8f71,15,2024-03-09 02:00:00,2024-03-09 02:06:00,5,facebook,cpc,loyalty,tablet,Chrome,192.168.32.207,USA,Texas
+819,sess_c6b286a1ebe5164d745e7b3beb650982,10,2024-03-09 04:00:00,2024-03-09 04:09:00,10,referral,email,loyalty,mobile,Firefox,192.168.20.229,USA,Washington
+820,sess_7b2b26e8a9a424ee9f1efaf4ec83a23d,5,2024-03-09 06:00:00,2024-03-09 06:31:00,10,direct,organic,loyalty,mobile,Safari,192.168.189.4,USA,Florida
+821,sess_a033243656318c426706b05d2585d91e,12,2024-03-09 08:00:00,2024-03-09 08:14:00,15,referral,email,,mobile,Edge,192.168.92.64,USA,Washington
+822,sess_d261cb04cb81ba01d2074bb366479391,4,2024-03-09 10:00:00,2024-03-09 10:33:00,10,facebook,social,loyalty,tablet,Edge,192.168.228.92,USA,Florida
+823,sess_0870f351131c16d3f66664b5da57aafd,7,2024-03-09 12:00:00,2024-03-09 12:15:00,6,referral,social,,tablet,Chrome,192.168.175.28,USA,Texas
+824,sess_64a54b8d8619ffd0cfb41aa3fb0eee33,12,2024-03-09 14:00:00,2024-03-09 14:29:00,12,referral,social,,desktop,Edge,192.168.134.108,USA,Washington
+825,sess_2728a5e91c8a8cd15d7cd7a9fc6c73d4,,2024-03-09 16:00:00,2024-03-09 16:07:00,12,email,email,spring_sale,tablet,Firefox,192.168.158.18,USA,New York
+826,sess_a1bd20196d6221d60e395a8379f6fcab,2,2024-03-09 18:00:00,2024-03-09 18:30:00,7,email,organic,,tablet,Chrome,192.168.72.183,USA,Texas
+827,sess_deb47c65c6c6f2547d6eb33aaa5a6bb7,16,2024-03-09 20:00:00,2024-03-09 20:10:00,8,referral,organic,,desktop,Chrome,192.168.196.59,USA,Texas
+828,sess_e3e9d96fb06a305b2e8920dbfc1f6295,,2024-03-09 22:00:00,2024-03-09 22:20:00,10,referral,email,loyalty,desktop,Safari,192.168.45.2,USA,Washington
+829,sess_86820d029fec1a3d981dd4ad8bfbce5b,,2024-03-10 00:00:00,2024-03-10 00:34:00,17,referral,organic,loyalty,desktop,Edge,192.168.134.168,USA,Washington
+830,sess_bd8ca912b8c460833143c1a5269c28aa,,2024-03-10 02:00:00,2024-03-10 02:21:00,15,direct,email,loyalty,desktop,Safari,192.168.173.227,USA,New York
+831,sess_c65691f818f0f105fae9dd6e7efa8a3f,7,2024-03-10 04:00:00,2024-03-10 04:11:00,6,direct,social,loyalty,mobile,Safari,192.168.149.69,USA,Washington
+832,sess_bc04af15aa1807619833ff13f3bdac17,9,2024-03-10 06:00:00,2024-03-10 06:18:00,13,direct,organic,loyalty,desktop,Safari,192.168.166.160,USA,New York
+833,sess_f53670346f3e3d4ee4b9e68acbe84492,,2024-03-10 08:00:00,2024-03-10 08:13:00,5,referral,social,loyalty,tablet,Edge,192.168.223.219,USA,Texas
+834,sess_02d4c1ecfab006ca16619df806b4f14a,6,2024-03-10 10:00:00,2024-03-10 10:15:00,16,google,social,spring_sale,mobile,Firefox,192.168.114.187,USA,Washington
+835,sess_b2ea377bf99778f881fbd68212b05739,,2024-03-10 12:00:00,2024-03-10 12:34:00,5,facebook,email,,desktop,Safari,192.168.161.171,USA,New York
+836,sess_b650a7f2ba749542ce237a18af270265,3,2024-03-10 14:00:00,2024-03-10 14:28:00,15,email,email,,desktop,Firefox,192.168.160.79,USA,Florida
+837,sess_4a39cd9c615393c9b4a8086b774016e9,,2024-03-10 16:00:00,2024-03-10 16:32:00,16,facebook,social,loyalty,tablet,Firefox,192.168.93.38,USA,New York
+838,sess_35ee2ded4d2d0e32e9b072485def019e,12,2024-03-10 18:00:00,2024-03-10 18:11:00,9,referral,social,,tablet,Safari,192.168.178.249,USA,Florida
+839,sess_ef4d2168f74f1cbe22e233a82e421f15,6,2024-03-10 20:00:00,2024-03-10 20:06:00,16,facebook,organic,,tablet,Firefox,192.168.129.57,USA,Florida
+840,sess_e14afcc1d7c5d778829a641d1606bd9d,25,2024-03-10 22:00:00,2024-03-10 22:12:00,10,referral,social,loyalty,desktop,Firefox,192.168.133.232,USA,Washington
+841,sess_7bf469c6101eb6a76e71c71cafb147dc,3,2024-03-11 00:00:00,2024-03-11 00:19:00,11,direct,email,spring_sale,desktop,Chrome,192.168.117.218,USA,New York
+842,sess_7160da16960a2d9a404dcc8fb146b35c,,2024-03-11 02:00:00,2024-03-11 02:32:00,12,google,social,,desktop,Firefox,192.168.101.224,USA,Texas
+843,sess_b81a5dc147f832c5fead5a911303fa82,8,2024-03-11 04:00:00,2024-03-11 04:26:00,12,referral,email,loyalty,mobile,Safari,192.168.130.15,USA,Texas
+844,sess_519ad364ce2a87717416ae9e0219d837,,2024-03-11 06:00:00,2024-03-11 06:24:00,7,email,email,loyalty,mobile,Chrome,192.168.44.91,USA,Texas
+845,sess_018ec8257dc2a12c8290f752b964f36d,,2024-03-11 08:00:00,2024-03-11 08:17:00,3,facebook,cpc,loyalty,tablet,Safari,192.168.35.81,USA,New York
+846,sess_d89c9b523e70f09eaef2dbd83718c17a,23,2024-03-11 10:00:00,2024-03-11 10:30:00,12,email,organic,loyalty,desktop,Firefox,192.168.197.52,USA,New York
+847,sess_72a5f517746ec620e15c3a6a6433cb39,14,2024-03-11 12:00:00,2024-03-11 12:09:00,8,referral,organic,loyalty,mobile,Chrome,192.168.250.217,USA,Texas
+848,sess_204b045a17f036a80961b5b1b42dc24c,12,2024-03-11 14:00:00,2024-03-11 14:30:00,10,google,organic,,desktop,Edge,192.168.107.142,USA,Florida
+849,sess_acff874581374fd13d4fb07a84329891,3,2024-03-11 16:00:00,2024-03-11 16:21:00,9,google,cpc,,mobile,Safari,192.168.194.40,USA,California
+850,sess_621ccb0f1bb17a774f4f2a05f9094e38,11,2024-03-11 18:00:00,2024-03-11 18:08:00,12,email,organic,,tablet,Firefox,192.168.86.220,USA,Florida
+851,sess_77f5d9ef91750eecc8a0251caeb68bed,15,2024-03-11 20:00:00,2024-03-11 20:10:00,6,facebook,organic,,tablet,Edge,192.168.3.70,USA,New York
+852,sess_04167cc9ea9a9a6a107bc4f42d7e4a07,4,2024-03-11 22:00:00,2024-03-11 22:30:00,8,referral,email,,desktop,Safari,192.168.176.255,USA,Washington
+853,sess_d47cd477518458ff94910df87eb35b4a,12,2024-03-12 00:00:00,2024-03-12 00:07:00,12,email,social,loyalty,mobile,Edge,192.168.211.243,USA,Florida
+854,sess_ec7ff3058366d42e4dcb6d12dfb7a7b2,5,2024-03-12 02:00:00,2024-03-12 02:20:00,16,facebook,social,loyalty,desktop,Firefox,192.168.166.66,USA,Washington
+855,sess_f05ec890d2ed47e15bfce06c22c5ba22,8,2024-03-12 04:00:00,2024-03-12 04:18:00,3,referral,social,loyalty,desktop,Safari,192.168.139.115,USA,Florida
+856,sess_eb91a4dedb65b76320bfa9de6ee010bf,7,2024-03-12 06:00:00,2024-03-12 06:17:00,11,referral,social,loyalty,mobile,Chrome,192.168.64.200,USA,Washington
+857,sess_e9cf14f26fdf202c63939d14426e5f23,,2024-03-12 08:00:00,2024-03-12 08:25:00,9,direct,social,spring_sale,desktop,Safari,192.168.152.21,USA,New York
+858,sess_c41404b9e37e41c65b8058b6b443ffc6,5,2024-03-12 10:00:00,2024-03-12 10:33:00,6,referral,email,spring_sale,mobile,Firefox,192.168.171.188,USA,New York
+859,sess_9c0e04f1ae892235e5b48d56abc42b06,,2024-03-12 12:00:00,2024-03-12 12:22:00,7,referral,cpc,,desktop,Edge,192.168.97.149,USA,Florida
+860,sess_7172a7dc3208e8ce296071b5d47e07fe,5,2024-03-12 14:00:00,2024-03-12 14:18:00,14,email,social,spring_sale,tablet,Chrome,192.168.176.54,USA,Washington
+861,sess_83541d135ebf997b1a476cd709a06f62,10,2024-03-12 16:00:00,2024-03-12 16:24:00,11,google,email,,desktop,Firefox,192.168.8.21,USA,Washington
+862,sess_f6b1d7dd415b69e77dbcf7552e99a2ab,16,2024-03-12 18:00:00,2024-03-12 18:15:00,8,referral,social,loyalty,mobile,Safari,192.168.217.30,USA,New York
+863,sess_76e35dfab2bb62b3f86e92fe4b4e7d29,20,2024-03-12 20:00:00,2024-03-12 20:07:00,15,referral,social,,desktop,Safari,192.168.44.222,USA,New York
+864,sess_91c8461010faf0982e1c3b7ac4126a22,,2024-03-12 22:00:00,2024-03-12 22:10:00,12,facebook,cpc,spring_sale,mobile,Edge,192.168.101.86,USA,California
+865,sess_172c8b19eebe6e726c2c51742a87783e,2,2024-03-13 00:00:00,2024-03-13 00:23:00,6,direct,organic,,desktop,Firefox,192.168.98.3,USA,New York
+866,sess_8892fda5a9f173af518eacdc66973740,19,2024-03-13 02:00:00,2024-03-13 02:16:00,5,facebook,social,loyalty,mobile,Firefox,192.168.215.175,USA,New York
+867,sess_4e4910cfcc11b0d4ef355ce44488999c,,2024-03-13 04:00:00,2024-03-13 04:21:00,13,google,cpc,spring_sale,desktop,Edge,192.168.79.46,USA,Florida
+868,sess_d83a64fac9cd35ec4a4482e2229bf542,2,2024-03-13 06:00:00,2024-03-13 06:16:00,10,google,email,loyalty,mobile,Edge,192.168.109.27,USA,New York
+869,sess_132f3562ea7505102d93eb05bc785dd1,,2024-03-13 08:00:00,2024-03-13 08:27:00,8,facebook,email,,desktop,Chrome,192.168.202.235,USA,Washington
+870,sess_94afcbf0f1c6370c91e3e0dbbd855ece,,2024-03-13 10:00:00,2024-03-13 10:26:00,3,referral,cpc,loyalty,desktop,Safari,192.168.235.36,USA,Texas
+871,sess_a3a1358c57ef061929062a93a8442949,,2024-03-13 12:00:00,2024-03-13 12:24:00,9,google,social,loyalty,tablet,Firefox,192.168.166.74,USA,Texas
+872,sess_3ff533850574e13b80e02a820f22cd78,,2024-03-13 14:00:00,2024-03-13 14:23:00,14,facebook,email,,mobile,Firefox,192.168.50.0,USA,Florida
+873,sess_680dd46656b410d5c05ea6d8f36f6b7a,7,2024-03-13 16:00:00,2024-03-13 16:12:00,14,facebook,email,,desktop,Edge,192.168.254.165,USA,Washington
+874,sess_4799acceef75b04d87e4595e5d66c97b,6,2024-03-13 18:00:00,2024-03-13 18:11:00,3,referral,social,loyalty,tablet,Safari,192.168.133.73,USA,Washington
+875,sess_d39ee25598c2ea19d505886cafcc63e3,23,2024-03-13 20:00:00,2024-03-13 20:35:00,11,direct,organic,loyalty,desktop,Firefox,192.168.143.110,USA,Washington
+876,sess_1bf53f9ae9320399946d9ac6378b1756,23,2024-03-13 22:00:00,2024-03-13 22:31:00,11,email,organic,spring_sale,desktop,Firefox,192.168.84.182,USA,Florida
+877,sess_528663ab46d575d03283765878634e17,8,2024-03-14 00:00:00,2024-03-14 00:07:00,9,referral,social,loyalty,tablet,Edge,192.168.54.80,USA,Texas
+878,sess_5d4d9b2fedadc353e5e5d9ebcd912056,18,2024-03-14 02:00:00,2024-03-14 02:17:00,13,google,cpc,,tablet,Firefox,192.168.253.129,USA,Washington
+879,sess_864c06e25b45a13bcabb78475269e9a2,,2024-03-14 04:00:00,2024-03-14 04:15:00,12,google,email,,mobile,Firefox,192.168.197.87,USA,Washington
+880,sess_96dbab0f30883ae38adf6c7a43ddb11a,,2024-03-14 06:00:00,2024-03-14 06:32:00,15,referral,cpc,loyalty,desktop,Safari,192.168.115.217,USA,New York
+881,sess_e8b94c3511012498830cacbb69f5826c,,2024-03-14 08:00:00,2024-03-14 08:22:00,15,referral,social,,tablet,Safari,192.168.85.164,USA,Washington
+882,sess_a1e0595d18fa749a7851d65faa37c3f4,,2024-03-14 10:00:00,2024-03-14 10:35:00,5,email,organic,,tablet,Firefox,192.168.226.231,USA,Florida
+883,sess_a47cce0dd440437cf012c10677c1e269,7,2024-03-14 12:00:00,2024-03-14 12:12:00,8,referral,cpc,,desktop,Safari,192.168.132.218,USA,Washington
+884,sess_e4ec2396e8b4029984485be4d99b9f2e,,2024-03-14 14:00:00,2024-03-14 14:23:00,8,referral,organic,,tablet,Safari,192.168.110.196,USA,Washington
+885,sess_8124871c5260da385904fe7c2af77110,1,2024-03-14 16:00:00,2024-03-14 16:19:00,11,direct,email,loyalty,mobile,Firefox,192.168.156.118,USA,New York
+886,sess_6b9ade15c4a606e6819ada77b9518706,3,2024-03-14 18:00:00,2024-03-14 18:33:00,4,direct,email,,desktop,Safari,192.168.11.226,USA,Texas
+887,sess_73880894166af18b6b9fd28d07121fb2,19,2024-03-14 20:00:00,2024-03-14 20:20:00,9,referral,organic,loyalty,mobile,Safari,192.168.33.26,USA,Florida
+888,sess_25834f5d25a9d80f408b455691ba4036,14,2024-03-14 22:00:00,2024-03-14 22:09:00,16,referral,email,,mobile,Chrome,192.168.200.96,USA,Washington
+889,sess_874b31f8957a9bc1b4892bdc29204bb7,18,2024-03-15 00:00:00,2024-03-15 00:30:00,6,referral,email,loyalty,tablet,Safari,192.168.199.219,USA,Washington
+890,sess_0667061d80d7df1eff705b7a2973dcd5,19,2024-03-15 02:00:00,2024-03-15 02:10:00,16,google,social,,mobile,Chrome,192.168.51.178,USA,New York
+891,sess_68659c0eaa452f18d1bc74c828704bcd,,2024-03-15 04:00:00,2024-03-15 04:12:00,12,email,social,loyalty,tablet,Firefox,192.168.241.174,USA,Florida
+892,sess_5cfd44183a8c3317e0bd462de73870ee,23,2024-03-15 06:00:00,2024-03-15 06:12:00,4,email,email,loyalty,tablet,Safari,192.168.50.71,USA,Texas
+893,sess_d3cde99c0c4b706e2b390f93ccf07727,17,2024-03-15 08:00:00,2024-03-15 08:13:00,7,referral,email,loyalty,tablet,Safari,192.168.5.123,USA,Texas
+894,sess_bffc195c13f01ba3449c19d23c297f0c,11,2024-03-15 10:00:00,2024-03-15 10:08:00,8,google,social,,desktop,Firefox,192.168.128.196,USA,Texas
+895,sess_16022c3d8aa48a17ce6ccb9e87baf33d,18,2024-03-15 12:00:00,2024-03-15 12:34:00,4,facebook,social,loyalty,desktop,Firefox,192.168.70.198,USA,Florida
+896,sess_28730c00083b564081a48438b72e348a,18,2024-03-15 14:00:00,2024-03-15 14:23:00,4,referral,email,,desktop,Firefox,192.168.99.252,USA,New York
+897,sess_82411fe0f2e69a74f4978c9f2d99df05,8,2024-03-15 16:00:00,2024-03-15 16:35:00,14,referral,organic,loyalty,mobile,Firefox,192.168.149.137,USA,New York
+898,sess_1240c5441e5d89f866f20c6cfc483e57,8,2024-03-15 18:00:00,2024-03-15 18:33:00,9,referral,social,loyalty,desktop,Safari,192.168.142.177,USA,Texas
+899,sess_3c0e9848e4267b97d61119e350be112c,4,2024-03-15 20:00:00,2024-03-15 20:10:00,13,google,cpc,,tablet,Chrome,192.168.147.197,USA,Florida
+900,sess_2b2155b9ecf6f464233b0acc2ff393e8,,2024-03-15 22:00:00,2024-03-15 22:19:00,8,referral,email,,mobile,Safari,192.168.150.40,USA,New York
+901,sess_7869f94e5522bb1ac94ab942cc6f7cb6,14,2024-03-16 00:00:00,2024-03-16 00:14:00,12,direct,social,loyalty,tablet,Safari,192.168.185.194,USA,Washington
+902,sess_9e703aa0a09ee792ac1e690057aae26e,6,2024-03-16 02:00:00,2024-03-16 02:06:00,16,email,cpc,spring_sale,mobile,Safari,192.168.205.33,USA,Texas
+903,sess_8388948cf982449b2868aa74155d6612,9,2024-03-16 04:00:00,2024-03-16 04:21:00,10,email,social,,desktop,Edge,192.168.59.123,USA,Florida
+904,sess_6cc23d8d7bbf09be807d7913387ca42c,14,2024-03-16 06:00:00,2024-03-16 06:29:00,17,email,social,loyalty,tablet,Edge,192.168.130.11,USA,California
+905,sess_3e8b1e639f13f6631e6b207cde80c649,8,2024-03-16 08:00:00,2024-03-16 08:22:00,8,email,email,,desktop,Safari,192.168.67.83,USA,Washington
+906,sess_87d89f1a02da49abfedd5d239dadee7c,14,2024-03-16 10:00:00,2024-03-16 10:13:00,4,email,cpc,loyalty,desktop,Safari,192.168.152.108,USA,Texas
+907,sess_e75e83e1550ce751429ecb2355705848,6,2024-03-16 12:00:00,2024-03-16 12:30:00,2,direct,social,,desktop,Safari,192.168.24.87,USA,Washington
+908,sess_4f40ab5f83188cca6efa84de33703e2e,,2024-03-16 14:00:00,2024-03-16 14:20:00,11,facebook,social,,mobile,Edge,192.168.244.131,USA,California
+909,sess_d944566918e5cd243cd261952347aac6,,2024-03-16 16:00:00,2024-03-16 16:23:00,3,email,email,,desktop,Chrome,192.168.150.246,USA,Washington
+910,sess_2351d193417d5ada7cbed78d36f584cb,6,2024-03-16 18:00:00,2024-03-16 18:23:00,15,facebook,social,loyalty,tablet,Safari,192.168.146.179,USA,Washington
+911,sess_b0fcb102033a46c2d4960257b365a2e2,,2024-03-16 20:00:00,2024-03-16 20:16:00,9,direct,social,,mobile,Chrome,192.168.104.242,USA,Florida
+912,sess_34f01728c802579f78a8a9a6f74287ad,16,2024-03-16 22:00:00,2024-03-16 22:24:00,15,facebook,social,,desktop,Safari,192.168.172.170,USA,New York
+913,sess_cbf7e6379b663259d879fa558e834d09,,2024-03-17 00:00:00,2024-03-17 00:31:00,7,direct,cpc,,tablet,Chrome,192.168.236.80,USA,California
+914,sess_9c870c744e6cb679297a9b68e5cb6217,1,2024-03-17 02:00:00,2024-03-17 02:25:00,4,direct,social,spring_sale,desktop,Chrome,192.168.118.72,USA,California
+915,sess_1d95e4ecf644c54705faaf21c5bd3e70,,2024-03-17 04:00:00,2024-03-17 04:08:00,13,referral,social,,mobile,Firefox,192.168.99.232,USA,Texas
+916,sess_74be2cd9d92da84da4fd4b4eb2b560ab,11,2024-03-17 06:00:00,2024-03-17 06:28:00,5,referral,social,,tablet,Safari,192.168.157.240,USA,New York
+917,sess_fb359e49f4847d317e3436d81f257ea8,,2024-03-17 08:00:00,2024-03-17 08:08:00,6,google,social,loyalty,mobile,Firefox,192.168.245.207,USA,Washington
+918,sess_cbebcba59956260e74a630fe14d4946b,,2024-03-17 10:00:00,2024-03-17 10:19:00,2,google,organic,spring_sale,mobile,Firefox,192.168.153.71,USA,Florida
+919,sess_2d25fdaf78d6f3787f67a1ba524f070a,3,2024-03-17 12:00:00,2024-03-17 12:34:00,7,email,organic,,mobile,Safari,192.168.49.134,USA,Florida
+920,sess_94f5386fc36f7b4a46788f01c50b547a,23,2024-03-17 14:00:00,2024-03-17 14:34:00,12,direct,social,,tablet,Safari,192.168.234.93,USA,Washington
+921,sess_cafb1ea759cfbd003230d247a830f963,24,2024-03-17 16:00:00,2024-03-17 16:20:00,13,direct,organic,loyalty,mobile,Firefox,192.168.184.239,USA,Florida
+922,sess_18c68f39fb80356ad5d96d1720836ed9,22,2024-03-17 18:00:00,2024-03-17 18:27:00,7,google,email,,mobile,Safari,192.168.192.212,USA,Washington
+923,sess_af394f44eb44c012455f7a6bbe63b2c5,,2024-03-17 20:00:00,2024-03-17 20:06:00,3,email,email,,desktop,Firefox,192.168.94.126,USA,New York
+924,sess_d10955018bbf8a0ed2b2b83976fc50e6,,2024-03-17 22:00:00,2024-03-17 22:29:00,4,email,social,spring_sale,desktop,Safari,192.168.232.86,USA,Florida
+925,sess_316f58c8eb057e80ab79d4837aa70b3b,,2024-03-18 00:00:00,2024-03-18 00:18:00,10,referral,cpc,loyalty,desktop,Safari,192.168.208.202,USA,Florida
+926,sess_d7f7815b5a25546fc9fc167e48ea692c,,2024-03-18 02:00:00,2024-03-18 02:31:00,3,direct,email,,mobile,Safari,192.168.21.158,USA,Texas
+927,sess_15c74bd17457439f8630accc9eac6d70,12,2024-03-18 04:00:00,2024-03-18 04:23:00,11,google,social,spring_sale,mobile,Edge,192.168.137.134,USA,New York
+928,sess_5eaeb1d1e4d43f82fe45aca81bd8fc8a,,2024-03-18 06:00:00,2024-03-18 06:13:00,10,referral,email,loyalty,mobile,Firefox,192.168.117.141,USA,New York
+929,sess_03a726a9cc6d9a87584271e5fe6f0e14,,2024-03-18 08:00:00,2024-03-18 08:12:00,10,referral,organic,loyalty,desktop,Chrome,192.168.247.151,USA,Florida
+930,sess_0b45ea123b86f1a7f0ede96da659123c,9,2024-03-18 10:00:00,2024-03-18 10:32:00,8,direct,social,loyalty,mobile,Chrome,192.168.84.170,USA,Texas
+931,sess_76f131f33cd40bed3d9940f59b4f4ac7,,2024-03-18 12:00:00,2024-03-18 12:09:00,16,facebook,organic,loyalty,tablet,Edge,192.168.244.253,USA,Texas
+932,sess_36f64fb703cd3e867338d90b8b5a1e68,6,2024-03-18 14:00:00,2024-03-18 14:18:00,13,email,organic,,desktop,Safari,192.168.227.61,USA,Texas
+933,sess_831ffc6b90e31493ad6edeb99fd71ca6,19,2024-03-18 16:00:00,2024-03-18 16:19:00,8,direct,social,,mobile,Chrome,192.168.81.126,USA,Washington
+934,sess_222c286af5bd8d268e00500813b9dbb3,24,2024-03-18 18:00:00,2024-03-18 18:23:00,3,referral,organic,loyalty,desktop,Firefox,192.168.91.53,USA,Florida
+935,sess_30d5ae1578cc5f2a8d68a0b8bf04a4c1,7,2024-03-18 20:00:00,2024-03-18 20:08:00,4,referral,organic,loyalty,desktop,Safari,192.168.117.211,USA,Washington
+936,sess_9f29fa0afc5bf4250521a649eefadc88,21,2024-03-18 22:00:00,2024-03-18 22:10:00,6,direct,cpc,,desktop,Edge,192.168.28.60,USA,Washington
+937,sess_f15fc86667140294bf7cd8683ec954fe,,2024-03-19 00:00:00,2024-03-19 00:10:00,13,referral,cpc,loyalty,desktop,Safari,192.168.158.55,USA,Washington
+938,sess_f45995f4bb92e14e2fec89876b795d3c,3,2024-03-19 02:00:00,2024-03-19 02:20:00,13,facebook,social,loyalty,tablet,Chrome,192.168.74.95,USA,Texas
+939,sess_84984b0b1bccf15e9e2c6c5e0617d7ce,9,2024-03-19 04:00:00,2024-03-19 04:30:00,14,referral,email,,desktop,Firefox,192.168.235.212,USA,New York
+940,sess_2e9eca6a9829dd7f114897c4514b0a34,17,2024-03-19 06:00:00,2024-03-19 06:22:00,13,referral,social,loyalty,tablet,Firefox,192.168.75.20,USA,Florida
+941,sess_c658f64472a88961e78a43526115809a,21,2024-03-19 08:00:00,2024-03-19 08:35:00,4,email,social,,mobile,Firefox,192.168.22.67,USA,Washington
+942,sess_6092c044235bf51c56ac6ee76e2394a5,,2024-03-19 10:00:00,2024-03-19 10:10:00,13,direct,email,,desktop,Safari,192.168.107.15,USA,Washington
+943,sess_8a0c4b30bac99de67093753d8cccc823,17,2024-03-19 12:00:00,2024-03-19 12:07:00,8,email,email,spring_sale,desktop,Safari,192.168.22.206,USA,New York
+944,sess_2b3db4feb48d11b171dd34562e38cfb7,13,2024-03-19 14:00:00,2024-03-19 14:15:00,3,direct,organic,,tablet,Edge,192.168.100.184,USA,New York
+945,sess_b7872634789260c766910ef228556caf,13,2024-03-19 16:00:00,2024-03-19 16:13:00,9,direct,social,,mobile,Chrome,192.168.27.15,USA,Texas
+946,sess_33d2b7751301a032599fd320226d3682,12,2024-03-19 18:00:00,2024-03-19 18:16:00,13,email,social,,desktop,Safari,192.168.11.143,USA,Texas
+947,sess_80b1738cbe7541d912757fb9f3478e7b,24,2024-03-19 20:00:00,2024-03-19 20:21:00,5,referral,cpc,,desktop,Chrome,192.168.14.154,USA,Texas
+948,sess_17626ef2f4912d66432219368b8e4699,22,2024-03-19 22:00:00,2024-03-19 22:34:00,9,facebook,social,,mobile,Safari,192.168.126.146,USA,New York
+949,sess_b6c0bd99483a9721c9b07596384289a8,,2024-03-20 00:00:00,2024-03-20 00:17:00,5,facebook,cpc,,tablet,Edge,192.168.111.132,USA,Washington
+950,sess_bd5e7a517193dc910a26e2f7482f798b,16,2024-03-20 02:00:00,2024-03-20 02:14:00,9,facebook,social,spring_sale,tablet,Edge,192.168.104.49,USA,Florida
+951,sess_4e993611ddba5b89babe1c492857abb5,22,2024-03-20 04:00:00,2024-03-20 04:05:00,9,facebook,social,,mobile,Chrome,192.168.219.88,USA,Florida
+952,sess_a61ecbd80de72a65ab5555931e34efc8,22,2024-03-20 06:00:00,2024-03-20 06:12:00,7,google,cpc,,desktop,Safari,192.168.189.129,USA,Washington
+953,sess_403987cb996ab628337c40cc13e92766,,2024-03-20 08:00:00,2024-03-20 08:14:00,16,facebook,social,,tablet,Firefox,192.168.163.110,USA,New York
+954,sess_8f1215dfc05f85716fc39247abef8a73,4,2024-03-20 10:00:00,2024-03-20 10:34:00,13,referral,email,loyalty,mobile,Firefox,192.168.31.23,USA,Texas
+955,sess_a7239e128e08b2053b975a5fd452aa77,,2024-03-20 12:00:00,2024-03-20 12:11:00,6,referral,organic,loyalty,desktop,Chrome,192.168.247.249,USA,New York
+956,sess_5d85c25ff5a587c2413e24fda49642be,,2024-03-20 14:00:00,2024-03-20 14:09:00,7,referral,social,loyalty,tablet,Firefox,192.168.0.101,USA,Washington
+957,sess_efc4283a3d23fb0aa1349c37fb805e4d,7,2024-03-20 16:00:00,2024-03-20 16:23:00,14,facebook,email,loyalty,desktop,Firefox,192.168.85.31,USA,Washington
+958,sess_4737d7fd5ac24ebb542378bd83c67dae,12,2024-03-20 18:00:00,2024-03-20 18:22:00,8,direct,cpc,,desktop,Safari,192.168.90.212,USA,Florida
+959,sess_3498f3697ecb4c7955c0de1261db5cf1,1,2024-03-20 20:00:00,2024-03-20 20:16:00,6,email,organic,loyalty,tablet,Edge,192.168.150.43,USA,New York
+960,sess_a3e5a63841033af35643c99797f58f0f,24,2024-03-20 22:00:00,2024-03-20 22:05:00,14,referral,email,,tablet,Edge,192.168.52.172,USA,Washington
+961,sess_b1174f47ea66eed756a13bcf7247b367,13,2024-03-21 00:00:00,2024-03-21 00:31:00,8,direct,social,,desktop,Firefox,192.168.28.36,USA,Washington
+962,sess_161d88fa0d132d9a7ae29deded758688,15,2024-03-21 02:00:00,2024-03-21 02:21:00,3,referral,organic,,desktop,Edge,192.168.53.215,USA,Florida
+963,sess_37f83e4b25219dc118fee86086385267,,2024-03-21 04:00:00,2024-03-21 04:33:00,11,google,organic,loyalty,desktop,Firefox,192.168.31.167,USA,New York
+964,sess_75253f69f06f27885bbff3feb4f7ca65,18,2024-03-21 06:00:00,2024-03-21 06:18:00,13,email,social,,tablet,Safari,192.168.143.240,USA,Washington
+965,sess_18dc3c8d0bf9f6febb89a5369356d9ef,19,2024-03-21 08:00:00,2024-03-21 08:34:00,14,referral,cpc,,desktop,Safari,192.168.141.94,USA,New York
+966,sess_ec5b8f07cf5d959d21e30de8eb8cdebc,19,2024-03-21 10:00:00,2024-03-21 10:12:00,12,referral,social,,desktop,Chrome,192.168.150.19,USA,California
+967,sess_e8eef8a4762b5a1930452ba92bb5f754,22,2024-03-21 12:00:00,2024-03-21 12:18:00,12,referral,organic,,desktop,Firefox,192.168.158.47,USA,Washington
+968,sess_0528ac178bb6828849bfc1926cc6342d,25,2024-03-21 14:00:00,2024-03-21 14:26:00,13,email,social,spring_sale,tablet,Safari,192.168.119.196,USA,New York
+969,sess_e415f1bdfed234d8661ee4c2d7c4ef84,14,2024-03-21 16:00:00,2024-03-21 16:19:00,6,email,social,,mobile,Safari,192.168.151.164,USA,Florida
+970,sess_c1eeea9ec49d7ca8909534e12b362565,,2024-03-21 18:00:00,2024-03-21 18:29:00,11,email,cpc,loyalty,tablet,Safari,192.168.15.139,USA,Washington
+971,sess_cea27e9b39e42d48d4bfe8d04d00c515,16,2024-03-21 20:00:00,2024-03-21 20:17:00,2,direct,organic,loyalty,desktop,Safari,192.168.84.117,USA,Texas
+972,sess_3930c596d30f1672b94bee191fa077e6,22,2024-03-21 22:00:00,2024-03-21 22:32:00,8,google,social,loyalty,tablet,Safari,192.168.137.241,USA,Florida
+973,sess_8dfe612c65f1ee5fb74127cfc4e1c8e9,14,2024-03-22 00:00:00,2024-03-22 00:17:00,15,google,organic,,desktop,Safari,192.168.133.243,USA,New York
+974,sess_abed4a9e8b75f80e43af13827d19140f,,2024-03-22 02:00:00,2024-03-22 02:33:00,10,direct,organic,loyalty,desktop,Safari,192.168.58.66,USA,Texas
+975,sess_c66b9320878883736e30d8cd84c56484,,2024-03-22 04:00:00,2024-03-22 04:10:00,14,facebook,organic,,desktop,Safari,192.168.219.203,USA,Texas
+976,sess_ffe0f1b01e00b0601ff38bcb2f178596,11,2024-03-22 06:00:00,2024-03-22 06:30:00,12,email,cpc,loyalty,desktop,Chrome,192.168.247.9,USA,Washington
+977,sess_f478b48616c1fe90524b7d83d6defeca,,2024-03-22 08:00:00,2024-03-22 08:26:00,12,direct,social,,tablet,Firefox,192.168.110.19,USA,New York
+978,sess_75dea03e227be701b13e2ae1e52f9cf0,2,2024-03-22 10:00:00,2024-03-22 10:12:00,7,referral,email,loyalty,tablet,Safari,192.168.64.75,USA,New York
+979,sess_17373a38357dc4011a02b05f153a5333,,2024-03-22 12:00:00,2024-03-22 12:14:00,8,referral,cpc,loyalty,desktop,Firefox,192.168.224.71,USA,Texas
+980,sess_6136f3d9a4b9b9fa42aa845489c3bd3b,,2024-03-22 14:00:00,2024-03-22 14:23:00,11,referral,social,loyalty,mobile,Edge,192.168.63.68,USA,California
+981,sess_eefeb39e0cf0716605fea8e3e917c796,14,2024-03-22 16:00:00,2024-03-22 16:11:00,5,referral,cpc,,mobile,Safari,192.168.30.98,USA,Washington
+982,sess_19f87c7de4329635aea468ff3394ed5c,7,2024-03-22 18:00:00,2024-03-22 18:05:00,8,google,social,,desktop,Safari,192.168.44.188,USA,Texas
+983,sess_cb737be00bdc146508e439ccaa465038,8,2024-03-22 20:00:00,2024-03-22 20:09:00,14,facebook,email,,tablet,Safari,192.168.24.44,USA,Texas
+984,sess_026c42cbf16114590ecd496f3af7348e,4,2024-03-22 22:00:00,2024-03-22 22:21:00,12,referral,organic,loyalty,tablet,Chrome,192.168.46.217,USA,California
+985,sess_1bde22722c43ec1405f213e3693451d4,21,2024-03-23 00:00:00,2024-03-23 00:31:00,2,direct,organic,spring_sale,mobile,Firefox,192.168.215.187,USA,New York
+986,sess_8c16baff4a3812dc28413bc7464117c2,25,2024-03-23 02:00:00,2024-03-23 02:35:00,6,referral,organic,spring_sale,desktop,Firefox,192.168.119.231,USA,California
+987,sess_c88aca69dd991d1f6555eab0693fcc9e,17,2024-03-23 04:00:00,2024-03-23 04:19:00,10,referral,social,loyalty,tablet,Safari,192.168.95.4,USA,Texas
+988,sess_c1a04c2d4e2c6d1886a3e72e74808c20,24,2024-03-23 06:00:00,2024-03-23 06:28:00,15,google,email,loyalty,tablet,Firefox,192.168.11.239,USA,California
+989,sess_d0ee5d7ffa53904f62893659867abf3b,18,2024-03-23 08:00:00,2024-03-23 08:20:00,7,referral,social,,tablet,Edge,192.168.42.114,USA,Washington
+990,sess_15b20acb06a2a5bdec46ff42bd189584,4,2024-03-23 10:00:00,2024-03-23 10:34:00,15,referral,social,loyalty,mobile,Firefox,192.168.109.66,USA,New York
+991,sess_1e4b722b31c3f03771b9be9271ffa807,1,2024-03-23 12:00:00,2024-03-23 12:11:00,6,google,social,,desktop,Chrome,192.168.124.23,USA,Texas
+992,sess_13fcc754934b4e0a7a17fe11fba31314,21,2024-03-23 14:00:00,2024-03-23 14:32:00,13,facebook,email,,tablet,Safari,192.168.121.76,USA,New York
+993,sess_6e6766b908cc1a43b2d45efca6322b97,5,2024-03-23 16:00:00,2024-03-23 16:11:00,10,direct,social,,desktop,Safari,192.168.157.148,USA,New York
+994,sess_31e8433eebb9d366999fae5eee40d3e2,3,2024-03-23 18:00:00,2024-03-23 18:10:00,16,referral,social,,mobile,Safari,192.168.122.147,USA,Texas
+995,sess_9bee3055147d3f67f7199ce80b98333f,11,2024-03-23 20:00:00,2024-03-23 20:16:00,3,facebook,organic,spring_sale,tablet,Edge,192.168.156.113,USA,Texas
+996,sess_83d6c206e657980a72273aa6a5531d4a,3,2024-03-23 22:00:00,2024-03-23 22:31:00,4,referral,social,,desktop,Edge,192.168.32.119,USA,New York
+997,sess_7476be55db45337c115a8fc74ed271b6,19,2024-03-24 00:00:00,2024-03-24 00:18:00,8,direct,organic,,desktop,Firefox,192.168.50.2,USA,Florida
+998,sess_bee9ca687a7458cae87dfe0e78b20558,24,2024-03-24 02:00:00,2024-03-24 02:13:00,15,email,email,,mobile,Edge,192.168.153.203,USA,Washington
+999,sess_da7c1ec21a9d9af524d7aadf1b2c769c,,2024-03-24 04:00:00,2024-03-24 04:17:00,14,referral,cpc,,desktop,Edge,192.168.144.171,USA,Texas
+1000,sess_e34df5a6f44252943cbddd5f8e27b3fa,,2024-03-24 06:00:00,2024-03-24 06:19:00,12,facebook,social,spring_sale,tablet,Safari,192.168.15.151,USA,Florida
+1001,sess_28a27940c546cb0fe5501b74b6e172ec,7,2024-03-24 08:00:00,2024-03-24 08:10:00,6,referral,email,,mobile,Safari,192.168.127.209,USA,Washington
+1002,sess_6d62de05912307cd96b7a490e5b61067,,2024-03-24 10:00:00,2024-03-24 10:16:00,16,direct,organic,,desktop,Edge,192.168.25.9,USA,California
+1003,sess_e9181d2e3e4b552bd6155aa3d7400548,,2024-03-24 12:00:00,2024-03-24 12:19:00,5,google,organic,,mobile,Edge,192.168.10.52,USA,Washington
+1004,sess_c473f97b86600489be1a53aff6fde5f9,11,2024-03-24 14:00:00,2024-03-24 14:09:00,6,google,organic,,desktop,Safari,192.168.70.67,USA,Washington
+1005,sess_8d9b1f455ed4f3c1604e19cdd555baa7,19,2024-03-24 16:00:00,2024-03-24 16:26:00,4,google,email,loyalty,desktop,Firefox,192.168.19.248,USA,California
+1006,sess_ba7c202eb2a4178872d0c88f1b20eb24,,2024-03-24 18:00:00,2024-03-24 18:19:00,11,email,organic,,desktop,Firefox,192.168.163.199,USA,Texas
+1007,sess_5c953c29e4cceb71d2bfd23c7af285c6,5,2024-03-24 20:00:00,2024-03-24 20:08:00,11,email,organic,,mobile,Safari,192.168.134.104,USA,Washington
+1008,sess_7de6806a52699adc9208eaee7669bfdd,,2024-03-24 22:00:00,2024-03-24 22:32:00,6,referral,organic,loyalty,desktop,Safari,192.168.108.3,USA,California
+1009,sess_6da5b04cff5be483cb3f2e6561eae0a7,,2024-03-25 00:00:00,2024-03-25 00:23:00,2,google,cpc,loyalty,desktop,Chrome,192.168.195.32,USA,Florida
+1010,sess_3a5ef46c9d7cb7d18f47cd377bf567c7,15,2024-03-25 02:00:00,2024-03-25 02:27:00,2,facebook,social,loyalty,desktop,Firefox,192.168.168.240,USA,Washington
+1011,sess_9feca8d75d417d67ccc4e45ce21edb13,10,2024-03-25 04:00:00,2024-03-25 04:18:00,5,referral,email,,mobile,Firefox,192.168.145.243,USA,New York
+1012,sess_966f3546f6e1a71b346659500f14c6cc,13,2024-03-25 06:00:00,2024-03-25 06:31:00,9,facebook,social,,mobile,Safari,192.168.222.181,USA,Texas
+1013,sess_4c54bcfcf14ee3aa75a9547e259408d2,9,2024-03-25 08:00:00,2024-03-25 08:28:00,9,direct,cpc,,mobile,Edge,192.168.28.191,USA,Texas
+1014,sess_1e3ec655c3876f83d3fc823a3a35cc14,24,2024-03-25 10:00:00,2024-03-25 10:07:00,17,facebook,email,,desktop,Safari,192.168.181.138,USA,Washington
+1015,sess_671df17d0304a94c11a3de6b650ecca7,8,2024-03-25 12:00:00,2024-03-25 12:10:00,10,google,social,loyalty,desktop,Chrome,192.168.203.224,USA,Florida
+1016,sess_f0df85fcba668447ba55319432741ddb,8,2024-03-25 14:00:00,2024-03-25 14:07:00,2,google,social,spring_sale,tablet,Safari,192.168.29.207,USA,Texas
+1017,sess_c9cde0702c32831e2c6862c423dcae6c,9,2024-03-25 16:00:00,2024-03-25 16:11:00,6,direct,cpc,,desktop,Edge,192.168.179.113,USA,Washington
+1018,sess_f92591da844282f51244820a9d1d6e82,,2024-03-25 18:00:00,2024-03-25 18:25:00,15,direct,organic,,desktop,Chrome,192.168.32.78,USA,Texas
+1019,sess_1ea88299b178174722109c3efc54b93e,,2024-03-25 20:00:00,2024-03-25 20:28:00,10,direct,organic,,desktop,Firefox,192.168.109.7,USA,Washington
+1020,sess_260bdef92b38be9f1031ed31cec0c2b4,14,2024-03-25 22:00:00,2024-03-25 22:34:00,16,email,social,,desktop,Safari,192.168.212.16,USA,Washington
+1021,sess_7b92771bab27d1080481f73877d3aadd,13,2024-03-26 00:00:00,2024-03-26 00:26:00,6,google,social,spring_sale,mobile,Safari,192.168.225.95,USA,Washington
+1022,sess_88a1a36e76a8c05f22cb608af6b7997b,24,2024-03-26 02:00:00,2024-03-26 02:21:00,6,referral,organic,loyalty,desktop,Edge,192.168.189.232,USA,New York
+1023,sess_a58df774976c707181597199a93060db,22,2024-03-26 04:00:00,2024-03-26 04:15:00,5,email,email,loyalty,desktop,Chrome,192.168.159.130,USA,New York
+1024,sess_12f112b1f9967a08ef33c3707eb6eb26,,2024-03-26 06:00:00,2024-03-26 06:10:00,13,referral,social,loyalty,desktop,Safari,192.168.115.240,USA,New York
+1025,sess_f7a4753566fe541392da520c28d853df,7,2024-03-26 08:00:00,2024-03-26 08:34:00,8,email,social,,desktop,Firefox,192.168.210.202,USA,Washington
+1026,sess_58ec9a7e99669e445996d9343b877702,22,2024-03-26 10:00:00,2024-03-26 10:14:00,12,referral,email,,desktop,Firefox,192.168.95.70,USA,Florida
+1027,sess_16030523ed6a27e394999e06bb4c1f7c,,2024-03-26 12:00:00,2024-03-26 12:34:00,13,referral,social,loyalty,desktop,Safari,192.168.15.35,USA,Washington
+1028,sess_c1264d6c06eb3e4be83f996ce26fefb5,,2024-03-26 14:00:00,2024-03-26 14:08:00,13,direct,email,loyalty,desktop,Firefox,192.168.19.159,USA,Texas
+1029,sess_b34b3455036e03841f467514e8dedbc9,6,2024-03-26 16:00:00,2024-03-26 16:23:00,3,google,email,loyalty,tablet,Edge,192.168.46.182,USA,Texas
+1030,sess_051b46a837b7d0c14bc18a773bc86c30,,2024-03-26 18:00:00,2024-03-26 18:15:00,11,referral,social,,mobile,Firefox,192.168.73.111,USA,California
+1031,sess_f1e098bebd08ec0cb317e45b4846c5e8,1,2024-03-26 20:00:00,2024-03-26 20:35:00,12,facebook,organic,spring_sale,tablet,Safari,192.168.62.231,USA,Washington
+1032,sess_c5efd7eca02f33ac6dd3d1b7c6b30071,22,2024-03-26 22:00:00,2024-03-26 22:19:00,6,google,cpc,spring_sale,tablet,Firefox,192.168.124.77,USA,Washington
+1033,sess_875a6ec5bd2c0ee75c912006d288651e,,2024-03-27 00:00:00,2024-03-27 00:19:00,3,referral,email,loyalty,desktop,Chrome,192.168.74.248,USA,New York
+1034,sess_f3a641580e5fa73114c553aa43bf4171,9,2024-03-27 02:00:00,2024-03-27 02:30:00,5,email,social,,desktop,Firefox,192.168.134.147,USA,Washington
+1035,sess_bcf089483d485124de4f732b26db88c4,15,2024-03-27 04:00:00,2024-03-27 04:32:00,4,referral,organic,loyalty,tablet,Firefox,192.168.237.24,USA,California
+1036,sess_7ab8f04cffade9fddfad39d899d88423,20,2024-03-27 06:00:00,2024-03-27 06:33:00,12,direct,organic,,desktop,Firefox,192.168.160.101,USA,New York
+1037,sess_3f308e458a544ba44b059290001386a0,20,2024-03-27 08:00:00,2024-03-27 08:34:00,7,referral,cpc,loyalty,desktop,Safari,192.168.3.11,USA,Florida
+1038,sess_5d5d397f77b6dee0957b9b26ad96f752,15,2024-03-27 10:00:00,2024-03-27 10:17:00,5,facebook,email,loyalty,desktop,Safari,192.168.220.189,USA,Texas
+1039,sess_cf397b74796bb686278ba17e5f0b0107,12,2024-03-27 12:00:00,2024-03-27 12:07:00,3,referral,cpc,spring_sale,tablet,Safari,192.168.82.31,USA,Florida
+1040,sess_44f6a6300124a5b1acee6e4cd6be17ce,22,2024-03-27 14:00:00,2024-03-27 14:08:00,6,referral,email,loyalty,desktop,Chrome,192.168.177.91,USA,New York
+1041,sess_09f626cee1e40517804586297d6812b6,,2024-03-27 16:00:00,2024-03-27 16:22:00,8,email,social,,mobile,Safari,192.168.127.146,USA,Texas
+1042,sess_53aedc92a836064069ecd07e674c279c,19,2024-03-27 18:00:00,2024-03-27 18:34:00,6,referral,social,,desktop,Firefox,192.168.232.109,USA,Florida
+1043,sess_9bd60d4294e08a813c421f5f994cdc73,16,2024-03-27 20:00:00,2024-03-27 20:27:00,2,email,social,loyalty,mobile,Safari,192.168.53.197,USA,Texas
+1044,sess_955fc4724fb078062d62d81cb39145d7,9,2024-03-27 22:00:00,2024-03-27 22:11:00,2,direct,organic,spring_sale,tablet,Safari,192.168.150.209,USA,Texas
+1045,sess_b859251f77b42996c4d8329869a8f0ec,,2024-03-28 00:00:00,2024-03-28 00:25:00,11,direct,social,loyalty,tablet,Chrome,192.168.101.218,USA,New York
+1046,sess_23db411f97c3ad99bad8451fa263b249,,2024-03-28 02:00:00,2024-03-28 02:14:00,8,direct,organic,,desktop,Firefox,192.168.238.1,USA,Washington
+1047,sess_e0ce4f64b6ba1000ef2eff6eac19809a,18,2024-03-28 04:00:00,2024-03-28 04:24:00,9,email,email,,desktop,Safari,192.168.46.141,USA,Texas
+1048,sess_69152e1228e5a85b6cd0ca57a3c8911b,,2024-03-28 06:00:00,2024-03-28 06:11:00,16,email,social,loyalty,tablet,Firefox,192.168.186.172,USA,Texas
+1049,sess_f49f5e202b1bb14b3c0b9e795dec2ff2,13,2024-03-28 08:00:00,2024-03-28 08:20:00,8,facebook,social,loyalty,desktop,Safari,192.168.175.34,USA,Florida
+1050,sess_4edf1dd22a7702c2f3004790e223ee65,17,2024-03-28 10:00:00,2024-03-28 10:23:00,7,email,cpc,spring_sale,desktop,Safari,192.168.51.187,USA,New York
+1051,sess_938fc1beb02d4863662aabb175e74dc1,,2024-03-28 12:00:00,2024-03-28 12:25:00,14,referral,email,loyalty,desktop,Firefox,192.168.193.137,USA,Washington
+1052,sess_685ebb439747bcebc7a32d98dc3618c0,23,2024-03-28 14:00:00,2024-03-28 14:32:00,17,direct,social,,desktop,Safari,192.168.112.56,USA,Florida
+1053,sess_ec92ce9627f7c4879b43bcce2e6e7812,,2024-03-28 16:00:00,2024-03-28 16:18:00,4,referral,social,,tablet,Safari,192.168.59.58,USA,New York
+1054,sess_d0a70d369ccd4d37d0e691a5a8793477,10,2024-03-28 18:00:00,2024-03-28 18:15:00,5,facebook,organic,spring_sale,tablet,Safari,192.168.77.237,USA,New York
+1055,sess_1acb099cfdd82ae0c7eb9c905c0a8f66,10,2024-03-28 20:00:00,2024-03-28 20:30:00,14,referral,email,,tablet,Safari,192.168.208.174,USA,Texas
+1056,sess_9c77c8e19800b9ede7a2b1ff36423e56,11,2024-03-28 22:00:00,2024-03-28 22:15:00,10,direct,email,,mobile,Edge,192.168.46.84,USA,Florida
+1057,sess_30cf3673c63ea586cba769aa7c730cee,25,2024-03-29 00:00:00,2024-03-29 00:11:00,16,email,email,spring_sale,desktop,Edge,192.168.19.58,USA,Washington
+1058,sess_1c7cef5a15aec24c309bd409a03b3316,,2024-03-29 02:00:00,2024-03-29 02:07:00,9,referral,email,spring_sale,tablet,Edge,192.168.15.64,USA,Florida
+1059,sess_9333c4a96b3a6406dfc1caab6708f985,15,2024-03-29 04:00:00,2024-03-29 04:14:00,4,email,email,,tablet,Edge,192.168.49.78,USA,New York
+1060,sess_9febc43bdc2111563d4b5d69840efbc6,11,2024-03-29 06:00:00,2024-03-29 06:14:00,17,facebook,organic,,tablet,Firefox,192.168.96.80,USA,New York
+1061,sess_e71a485ed3c94a89944d1f6e53e149c1,,2024-03-29 08:00:00,2024-03-29 08:35:00,9,email,social,loyalty,tablet,Firefox,192.168.200.162,USA,New York
+1062,sess_db0e3ab8ee773fedc71cc7e0bafd2e4a,5,2024-03-29 10:00:00,2024-03-29 10:19:00,12,email,social,,mobile,Edge,192.168.78.19,USA,Texas
+1063,sess_69d97b05c73f8508130cc05f16280330,,2024-03-29 12:00:00,2024-03-29 12:25:00,11,facebook,email,,desktop,Edge,192.168.122.59,USA,Texas
+1064,sess_d626fc6afd85d3d6a1080473e838e268,13,2024-03-29 14:00:00,2024-03-29 14:28:00,8,referral,social,spring_sale,desktop,Firefox,192.168.16.236,USA,Texas
+1065,sess_ac701085425612ca471b88fa50ecd429,,2024-03-29 16:00:00,2024-03-29 16:10:00,14,referral,organic,loyalty,desktop,Firefox,192.168.19.175,USA,Washington
+1066,sess_34f8d62c1fe23c5e35919fce59624b72,20,2024-03-29 18:00:00,2024-03-29 18:23:00,9,referral,organic,spring_sale,mobile,Safari,192.168.142.86,USA,New York
+1067,sess_220e19d7b7ecf5cef67213b5f8a02172,19,2024-03-29 20:00:00,2024-03-29 20:12:00,9,facebook,organic,,desktop,Chrome,192.168.242.202,USA,Texas
+1068,sess_52dc77730291d9e2fa4eacd9e905df36,12,2024-03-29 22:00:00,2024-03-29 22:27:00,16,direct,email,,mobile,Safari,192.168.183.65,USA,New York
+1069,sess_3a7b5f89ae5bdff993f34ec1becc62d6,2,2024-03-30 00:00:00,2024-03-30 00:31:00,11,email,organic,loyalty,tablet,Safari,192.168.141.105,USA,California
+1070,sess_e32b8b29a61feb81912d81e770a75d78,,2024-03-30 02:00:00,2024-03-30 02:16:00,13,facebook,email,spring_sale,mobile,Safari,192.168.97.203,USA,Washington
+1071,sess_8cd6853e9e45e88a46a1d6ed73ddcab1,,2024-03-30 04:00:00,2024-03-30 04:19:00,11,facebook,organic,,tablet,Edge,192.168.222.81,USA,California
+1072,sess_350105239e422cea05bbab535f789b2e,5,2024-03-30 06:00:00,2024-03-30 06:09:00,8,direct,email,spring_sale,tablet,Safari,192.168.73.51,USA,Florida
+1073,sess_c2a7a28e885ab04cc07d16a271e3f840,,2024-03-30 08:00:00,2024-03-30 08:07:00,8,email,email,loyalty,desktop,Firefox,192.168.84.32,USA,New York
+1074,sess_12b7bf3578cf91ed5b763ebaa5494fe6,18,2024-03-30 10:00:00,2024-03-30 10:33:00,15,direct,social,loyalty,desktop,Safari,192.168.245.54,USA,New York
+1075,sess_81d0d4970a9c771579aec9b58ce1d990,24,2024-03-30 12:00:00,2024-03-30 12:33:00,14,referral,email,loyalty,tablet,Edge,192.168.239.240,USA,Washington
+1076,sess_4dfaa084093145f89d2c7d0842ba736b,24,2024-03-30 14:00:00,2024-03-30 14:12:00,13,email,social,,mobile,Safari,192.168.111.119,USA,Texas
+1077,sess_75982eeacf64d55741d1752fef82ee40,10,2024-03-30 16:00:00,2024-03-30 16:30:00,10,google,organic,loyalty,tablet,Safari,192.168.135.82,USA,Florida
+1078,sess_c7fb8dd75c17b31f08ecd7487d164585,,2024-03-30 18:00:00,2024-03-30 18:33:00,17,referral,social,loyalty,mobile,Firefox,192.168.79.143,USA,Washington
+1079,sess_ba936da5976a60935b540dffe67bf4ce,23,2024-03-30 20:00:00,2024-03-30 20:34:00,13,google,organic,spring_sale,desktop,Firefox,192.168.86.128,USA,Florida
+1080,sess_44b65f33ba1ba49bc32d1ffd591ef0f5,16,2024-03-30 22:00:00,2024-03-30 22:25:00,8,referral,social,spring_sale,desktop,Chrome,192.168.124.125,USA,New York
+1081,sess_7362ecddbf47bae74587ad3f1cb30b78,14,2024-03-31 00:00:00,2024-03-31 00:12:00,17,facebook,social,,desktop,Edge,192.168.135.56,USA,Washington
+1082,sess_47d633cfb98f3392efad00159f2d6d38,13,2024-03-31 02:00:00,2024-03-31 02:33:00,13,referral,organic,loyalty,tablet,Safari,192.168.146.71,USA,Florida
+1083,sess_6752437569462a538ecf44d9335ef2dd,,2024-03-31 04:00:00,2024-03-31 04:30:00,16,facebook,organic,,tablet,Safari,192.168.190.132,USA,Washington
+1084,sess_9f281babae50b5532cbd1c98c004b3bd,,2024-03-31 06:00:00,2024-03-31 06:33:00,12,referral,email,,desktop,Firefox,192.168.75.240,USA,California
+1085,sess_6abd28eb719858ac12d91dd4a4416bbd,6,2024-03-31 08:00:00,2024-03-31 08:25:00,13,referral,organic,loyalty,desktop,Firefox,192.168.59.229,USA,California
+1086,sess_fafa3c41c1d381d38032bd4db5c1eed3,5,2024-03-31 10:00:00,2024-03-31 10:35:00,16,email,email,loyalty,mobile,Safari,192.168.76.55,USA,New York
+1087,sess_9325ba73805da8c6c1e6f6d7e2389fb6,22,2024-03-31 12:00:00,2024-03-31 12:35:00,14,email,email,,mobile,Chrome,192.168.186.101,USA,Florida
+1088,sess_a2c3331c8d83a495a0dfbffc746b86c9,17,2024-03-31 14:00:00,2024-03-31 14:23:00,17,referral,organic,loyalty,tablet,Firefox,192.168.39.11,USA,California
+1089,sess_410718afa514aad7770cf93833e9737b,16,2024-03-31 16:00:00,2024-03-31 16:33:00,3,facebook,organic,loyalty,tablet,Firefox,192.168.38.134,USA,Washington
+1090,sess_a3fda8fb29a5c564a6ba7f790e11257f,,2024-03-31 18:00:00,2024-03-31 18:27:00,13,direct,email,,tablet,Firefox,192.168.240.105,USA,Florida
+1091,sess_b4c67212309b208b95eac0f03b06eb93,7,2024-03-31 20:00:00,2024-03-31 20:33:00,9,referral,email,spring_sale,desktop,Edge,192.168.135.109,USA,Texas
+1092,sess_ad7a2b463dba04f4f36daec7b4481505,20,2024-03-31 22:00:00,2024-03-31 22:10:00,13,google,social,spring_sale,desktop,Edge,192.168.134.36,USA,Washington
+1093,sess_6a640b33bfdb2e6f10de94f235ebc957,16,2024-04-01 00:00:00,2024-04-01 00:35:00,13,facebook,social,,desktop,Safari,192.168.222.215,USA,Washington
+1094,sess_d90e53c8f48cd7b6547630f760395a0d,12,2024-04-01 02:00:00,2024-04-01 02:26:00,10,facebook,social,,desktop,Safari,192.168.87.68,USA,Florida
+1095,sess_13c1a0587c31793456dedaa34e85f495,,2024-04-01 04:00:00,2024-04-01 04:14:00,11,referral,social,loyalty,desktop,Firefox,192.168.195.60,USA,Washington
+1096,sess_cffcf90d5d0e3fb90d1bd5712c35de7b,24,2024-04-01 06:00:00,2024-04-01 06:30:00,4,referral,organic,loyalty,tablet,Firefox,192.168.200.100,USA,California
+1097,sess_40e8fbffcbfe706b6dc7f89a381e52c5,9,2024-04-01 08:00:00,2024-04-01 08:32:00,14,google,email,,tablet,Safari,192.168.23.189,USA,Texas
+1098,sess_4d3bc9970436d1ccf14435688c7ee9c9,22,2024-04-01 10:00:00,2024-04-01 10:10:00,10,email,organic,,desktop,Firefox,192.168.5.44,USA,Florida
+1099,sess_c8fc4d812dfc08b5169cb1091272f039,15,2024-04-01 12:00:00,2024-04-01 12:25:00,7,facebook,cpc,spring_sale,desktop,Firefox,192.168.62.104,USA,Washington
+1100,sess_65a778a4460b3952209caf62b5b97dea,,2024-04-01 14:00:00,2024-04-01 14:15:00,6,direct,social,spring_sale,mobile,Firefox,192.168.36.219,USA,Texas
+1101,sess_d6e3409c5831cdf736207e480779f7f7,16,2024-04-01 16:00:00,2024-04-01 16:31:00,9,google,email,,mobile,Edge,192.168.55.104,USA,Washington
+1102,sess_e11441ccf24fb9cc1dbb75fa7844f555,7,2024-04-01 18:00:00,2024-04-01 18:30:00,8,direct,email,loyalty,desktop,Edge,192.168.172.80,USA,Texas
+1103,sess_8259ad68de94ea78b1663b60fed46690,19,2024-04-01 20:00:00,2024-04-01 20:18:00,3,google,social,spring_sale,tablet,Safari,192.168.127.239,USA,Washington
+1104,sess_b927966a3a4c105fb4de252795403f16,24,2024-04-01 22:00:00,2024-04-01 22:19:00,13,direct,organic,spring_sale,tablet,Firefox,192.168.61.6,USA,New York
+1105,sess_c24da7f197790fa2d70cca8ad50eedb7,,2024-04-02 00:00:00,2024-04-02 00:13:00,10,google,cpc,,tablet,Safari,192.168.50.224,USA,Washington
+1106,sess_011f98d144d868d5a1cadecaabf3f85e,20,2024-04-02 02:00:00,2024-04-02 02:22:00,6,referral,email,,tablet,Firefox,192.168.98.204,USA,Florida
+1107,sess_32da18f50fb9f8dfb6a9fd47ce0d85ef,15,2024-04-02 04:00:00,2024-04-02 04:18:00,3,email,organic,,desktop,Edge,192.168.11.186,USA,California
+1108,sess_4c5bbcbcd2bf1141cb923c6d7aec5cb4,,2024-04-02 06:00:00,2024-04-02 06:24:00,2,direct,organic,loyalty,desktop,Firefox,192.168.209.110,USA,New York
+1109,sess_2d86d8227bb8eed02bb6796e8064b380,3,2024-04-02 08:00:00,2024-04-02 08:11:00,10,referral,social,loyalty,tablet,Firefox,192.168.13.63,USA,Washington
+1110,sess_768da259bdc0ad4640373a4dcb5ff046,8,2024-04-02 10:00:00,2024-04-02 10:34:00,10,referral,email,spring_sale,mobile,Firefox,192.168.126.133,USA,Washington
+1111,sess_f04ca1d2f93d9cb5b73539fe43f10b9e,17,2024-04-02 12:00:00,2024-04-02 12:23:00,12,facebook,cpc,,tablet,Safari,192.168.85.156,USA,New York
+1112,sess_1478545f170e64daa05aa67586466c7c,7,2024-04-02 14:00:00,2024-04-02 14:27:00,16,direct,organic,,desktop,Chrome,192.168.158.254,USA,Washington
+1113,sess_86a2e7bca5107b41e6e297f47d723250,,2024-04-02 16:00:00,2024-04-02 16:27:00,14,email,social,loyalty,desktop,Safari,192.168.8.190,USA,Washington
+1114,sess_a6b1a5e9cb0712736c27bed93fc1dcb2,18,2024-04-02 18:00:00,2024-04-02 18:07:00,14,referral,organic,loyalty,desktop,Firefox,192.168.28.247,USA,Florida
+1115,sess_1fe519af6e9c13b0ece2410fda1912e7,18,2024-04-02 20:00:00,2024-04-02 20:07:00,16,facebook,social,,desktop,Safari,192.168.4.223,USA,Washington
+1116,sess_69c4487921817c08f56076c6e08c026e,3,2024-04-02 22:00:00,2024-04-02 22:13:00,15,direct,social,loyalty,desktop,Chrome,192.168.33.255,USA,Washington
+1117,sess_81ce78bbeb54dd4a1a3a88f929aca9c6,,2024-04-03 00:00:00,2024-04-03 00:23:00,12,referral,email,,tablet,Firefox,192.168.47.73,USA,Texas
+1118,sess_2baf1604dd3f8a7ecba25e93d3d779c7,22,2024-04-03 02:00:00,2024-04-03 02:24:00,15,email,social,,mobile,Edge,192.168.119.122,USA,Florida
+1119,sess_604c5645effc9b78d96c5f8255579e98,,2024-04-03 04:00:00,2024-04-03 04:21:00,5,email,social,spring_sale,desktop,Firefox,192.168.65.74,USA,Washington
+1120,sess_b7a1c7585cbc23b32cedb3342c46c2cd,,2024-04-03 06:00:00,2024-04-03 06:25:00,12,referral,social,,desktop,Firefox,192.168.134.16,USA,New York
+1121,sess_a2761bcb5fafdd23ce2f2f1de2e23367,13,2024-04-03 08:00:00,2024-04-03 08:19:00,6,referral,social,,mobile,Firefox,192.168.76.25,USA,Washington
+1122,sess_458950924f10162c778bc72b29e357bc,,2024-04-03 10:00:00,2024-04-03 10:09:00,12,referral,social,loyalty,desktop,Safari,192.168.80.233,USA,Florida
+1123,sess_12a16f04764dc06c195e4eb70129ac90,14,2024-04-03 12:00:00,2024-04-03 12:10:00,8,google,social,,desktop,Safari,192.168.130.89,USA,California
+1124,sess_e806af4b3849cb159fcb1d784d09db6e,4,2024-04-03 14:00:00,2024-04-03 14:21:00,3,referral,email,loyalty,desktop,Edge,192.168.146.30,USA,Washington
+1125,sess_f8056c29c2467e7769d40aee6d75fb64,,2024-04-03 16:00:00,2024-04-03 16:11:00,2,direct,social,loyalty,mobile,Safari,192.168.82.190,USA,New York
+1126,sess_d22e36c2271e6161dc62376bf57a4318,,2024-04-03 18:00:00,2024-04-03 18:19:00,14,referral,organic,spring_sale,desktop,Safari,192.168.84.238,USA,Washington
+1127,sess_f76e65f0013bf0e7b123b1d6c97c5c95,13,2024-04-03 20:00:00,2024-04-03 20:24:00,3,referral,email,,tablet,Safari,192.168.66.23,USA,Texas
+1128,sess_8b6f51850b1289b1091f0329e0f43fef,,2024-04-03 22:00:00,2024-04-03 22:14:00,10,direct,email,,desktop,Safari,192.168.79.233,USA,Texas
+1129,sess_093964ea23507a385ccb1a01473ef1f2,13,2024-04-04 00:00:00,2024-04-04 00:21:00,13,facebook,social,,desktop,Firefox,192.168.171.117,USA,California
+1130,sess_176c719fceaaea45ccd30da2b45a07f7,17,2024-04-04 02:00:00,2024-04-04 02:29:00,2,email,cpc,,desktop,Firefox,192.168.161.163,USA,New York
+1131,sess_8b1aa46002502a9ee34ed4b530824330,19,2024-04-04 04:00:00,2024-04-04 04:08:00,15,referral,social,loyalty,desktop,Safari,192.168.140.31,USA,Texas
+1132,sess_56d8723ae077b428b96be24b81e50dbe,11,2024-04-04 06:00:00,2024-04-04 06:15:00,12,direct,organic,,tablet,Firefox,192.168.36.159,USA,New York
+1133,sess_0e74441d3843bbb50a9cc394cb681837,,2024-04-04 08:00:00,2024-04-04 08:11:00,15,facebook,cpc,,tablet,Firefox,192.168.149.201,USA,New York
+1134,sess_f7c1449bd5c9155f9144393aebd67c98,11,2024-04-04 10:00:00,2024-04-04 10:21:00,10,referral,organic,spring_sale,tablet,Safari,192.168.21.226,USA,Florida
+1135,sess_9cd0edccd0ea336e47f45aaaec453c5a,6,2024-04-04 12:00:00,2024-04-04 12:23:00,2,direct,email,spring_sale,mobile,Firefox,192.168.129.236,USA,Washington
+1136,sess_faf25e75b772446184d383f4417ab167,23,2024-04-04 14:00:00,2024-04-04 14:30:00,13,direct,organic,spring_sale,desktop,Firefox,192.168.123.213,USA,Texas
+1137,sess_eaf9223db9cddc396a4f5d0ab152ecb0,16,2024-04-04 16:00:00,2024-04-04 16:15:00,6,referral,social,loyalty,desktop,Firefox,192.168.116.49,USA,Washington
+1138,sess_1d90412d0c9f1782ad73e3d5139d83dc,6,2024-04-04 18:00:00,2024-04-04 18:35:00,6,email,organic,loyalty,tablet,Safari,192.168.222.204,USA,Texas
+1139,sess_8ae46645f5d6e42a82882589e9036967,20,2024-04-04 20:00:00,2024-04-04 20:25:00,13,direct,cpc,spring_sale,tablet,Firefox,192.168.234.207,USA,Washington
+1140,sess_2bc63397e4944dd1d8521ed5c3fc8917,,2024-04-04 22:00:00,2024-04-04 22:30:00,4,referral,social,,mobile,Firefox,192.168.59.253,USA,Washington
+1141,sess_a84c354a78dcd12e8bdc8a80951df7ca,11,2024-04-05 00:00:00,2024-04-05 00:24:00,10,referral,email,,desktop,Chrome,192.168.91.239,USA,Florida
+1142,sess_d45902071248f29f93f26f02ce85f37c,23,2024-04-05 02:00:00,2024-04-05 02:16:00,6,referral,organic,loyalty,tablet,Firefox,192.168.56.88,USA,Texas
+1143,sess_3c5a4b1908ddca24757363f046628ef9,16,2024-04-05 04:00:00,2024-04-05 04:25:00,4,direct,social,loyalty,desktop,Firefox,192.168.241.230,USA,California
+1144,sess_0564e2068a6f4a440000f76bc482dc6e,,2024-04-05 06:00:00,2024-04-05 06:30:00,13,direct,social,,desktop,Safari,192.168.125.78,USA,Washington
+1145,sess_6c9041f49fa6f6f0f1b5b7fe77d6f554,5,2024-04-05 08:00:00,2024-04-05 08:18:00,10,google,organic,,desktop,Safari,192.168.6.138,USA,Florida
+1146,sess_e807af450484c20aa87e3e59ac073c2a,24,2024-04-05 10:00:00,2024-04-05 10:06:00,11,facebook,social,,mobile,Firefox,192.168.65.232,USA,Texas
+1147,sess_2318b16c001f5fe5b48847dd025f5dc5,17,2024-04-05 12:00:00,2024-04-05 12:16:00,15,email,email,loyalty,desktop,Safari,192.168.105.132,USA,Florida
+1148,sess_0ef7b3419d2dc061f0177af32f267a12,16,2024-04-05 14:00:00,2024-04-05 14:30:00,10,referral,cpc,,desktop,Safari,192.168.48.231,USA,Washington
+1149,sess_e143c75bdea13cf7635627e5f525fd67,6,2024-04-05 16:00:00,2024-04-05 16:20:00,10,facebook,cpc,spring_sale,tablet,Edge,192.168.4.117,USA,Florida
+1150,sess_c65c46360e86892098d136a4948cce7a,,2024-04-05 18:00:00,2024-04-05 18:31:00,14,email,email,spring_sale,desktop,Safari,192.168.110.146,USA,New York
+1151,sess_ab32a169286d88309fe54977dec58b91,10,2024-04-05 20:00:00,2024-04-05 20:29:00,6,direct,email,,desktop,Safari,192.168.229.150,USA,Texas
+1152,sess_1e81840619c6970c227443426773818c,16,2024-04-05 22:00:00,2024-04-05 22:22:00,7,google,social,spring_sale,tablet,Safari,192.168.185.83,USA,Washington
+1153,sess_c55b41b928e20a44216167fe588a07b0,16,2024-04-06 00:00:00,2024-04-06 00:28:00,10,direct,social,,desktop,Safari,192.168.95.39,USA,Washington
+1154,sess_4221819073e4c6685efdc671fd2d6786,10,2024-04-06 02:00:00,2024-04-06 02:07:00,7,direct,social,,desktop,Firefox,192.168.226.88,USA,New York
+1155,sess_0f464a0999c7a1cb2b104cbf870ca817,8,2024-04-06 04:00:00,2024-04-06 04:25:00,10,facebook,cpc,loyalty,desktop,Firefox,192.168.214.52,USA,California
+1156,sess_809f0f05120767ccf917ebf3fc89d82e,,2024-04-06 06:00:00,2024-04-06 06:25:00,10,facebook,social,,desktop,Safari,192.168.30.73,USA,Texas
+1157,sess_a56ad4d2bcea8f2b885b0be535d3e907,10,2024-04-06 08:00:00,2024-04-06 08:16:00,13,google,social,spring_sale,desktop,Chrome,192.168.23.248,USA,Washington
+1158,sess_ea6db978adeb869609499eb71068152f,24,2024-04-06 10:00:00,2024-04-06 10:06:00,4,facebook,organic,,desktop,Safari,192.168.104.105,USA,Florida
+1159,sess_07b711e60d6367230d47fbd91bb14d15,15,2024-04-06 12:00:00,2024-04-06 12:25:00,11,direct,organic,,desktop,Safari,192.168.227.201,USA,Washington
+1160,sess_4e517529fb8e77c6528b2b830d1faf15,15,2024-04-06 14:00:00,2024-04-06 14:14:00,13,referral,social,loyalty,tablet,Firefox,192.168.106.94,USA,New York
+1161,sess_71c2c6c9a60231d81d0729db0c10d43f,,2024-04-06 16:00:00,2024-04-06 16:14:00,16,referral,social,loyalty,mobile,Firefox,192.168.50.64,USA,Washington
+1162,sess_d685c5e4b4db080627d80e5f44e71d72,,2024-04-06 18:00:00,2024-04-06 18:33:00,16,email,social,loyalty,mobile,Safari,192.168.99.61,USA,Washington
+1163,sess_4598a03178de171c81533d4abdbe0190,,2024-04-06 20:00:00,2024-04-06 20:33:00,12,facebook,social,,mobile,Safari,192.168.61.15,USA,California
+1164,sess_d68340bb87171ae1b548d8c4f73413ea,,2024-04-06 22:00:00,2024-04-06 22:14:00,16,referral,cpc,,mobile,Safari,192.168.198.180,USA,New York
+1165,sess_879743ef5844e23dc5c003dfd369d8dd,8,2024-04-07 00:00:00,2024-04-07 00:08:00,13,facebook,social,,mobile,Firefox,192.168.177.246,USA,Washington
+1166,sess_beb9f0a5a4bad37f0520f55dfee43a55,,2024-04-07 02:00:00,2024-04-07 02:09:00,6,email,cpc,loyalty,desktop,Safari,192.168.201.120,USA,Washington
+1167,sess_18cb0e38e2936c624981036d6294bf2f,25,2024-04-07 04:00:00,2024-04-07 04:21:00,5,referral,email,,mobile,Edge,192.168.242.232,USA,Texas
+1168,sess_12585a31a939a5ba263182a3facc2ce9,1,2024-04-07 06:00:00,2024-04-07 06:12:00,10,facebook,social,,desktop,Chrome,192.168.166.196,USA,Florida
+1169,sess_83b3cef4760f2609fb80d499d203767b,,2024-04-07 08:00:00,2024-04-07 08:14:00,12,email,cpc,,desktop,Firefox,192.168.92.238,USA,California
+1170,sess_3aac7c005a7ae43e9ea639be1d93e68a,,2024-04-07 10:00:00,2024-04-07 10:33:00,10,direct,email,,tablet,Edge,192.168.76.126,USA,Washington
+1171,sess_ad14017935b77192bd29b53ad67f12fe,,2024-04-07 12:00:00,2024-04-07 12:23:00,13,facebook,email,spring_sale,desktop,Edge,192.168.206.69,USA,Washington
+1172,sess_80b84388d21e1106b173ec9f5c7118d4,13,2024-04-07 14:00:00,2024-04-07 14:16:00,6,referral,social,,desktop,Edge,192.168.204.242,USA,Florida
+1173,sess_cc00e058964db05c2762b51d2675ba7a,,2024-04-07 16:00:00,2024-04-07 16:27:00,4,referral,cpc,spring_sale,tablet,Safari,192.168.53.194,USA,Washington
+1174,sess_3b0605032007ea81d201b8c2c88c58f7,8,2024-04-07 18:00:00,2024-04-07 18:18:00,15,referral,cpc,,desktop,Edge,192.168.65.225,USA,Florida
+1175,sess_c239ced84216598c6622bebb7c13be7f,4,2024-04-07 20:00:00,2024-04-07 20:22:00,3,referral,email,,desktop,Firefox,192.168.101.138,USA,Washington
+1176,sess_bfd4d5c895a6dd68a104dae1cd390953,9,2024-04-07 22:00:00,2024-04-07 22:35:00,7,referral,cpc,spring_sale,mobile,Firefox,192.168.212.59,USA,Florida
+1177,sess_24bd66b50a503ff1e618ae1e8c4f6417,17,2024-04-08 00:00:00,2024-04-08 00:09:00,3,facebook,organic,spring_sale,desktop,Edge,192.168.84.37,USA,New York
+1178,sess_d15c0755b1d6eff0aaa3c6c548aae195,,2024-04-08 02:00:00,2024-04-08 02:35:00,2,facebook,social,spring_sale,desktop,Chrome,192.168.118.231,USA,Florida
+1179,sess_2709872581f2f92cde43de0c80dcc05c,11,2024-04-08 04:00:00,2024-04-08 04:06:00,4,referral,email,,desktop,Firefox,192.168.82.76,USA,Texas
+1180,sess_c1c0d01d68a3c88bd0cfc6a9f5bbd45e,,2024-04-08 06:00:00,2024-04-08 06:25:00,16,email,organic,,mobile,Firefox,192.168.92.66,USA,Washington
+1181,sess_7d329ca19be5836b85713869f7379667,11,2024-04-08 08:00:00,2024-04-08 08:11:00,10,google,organic,loyalty,tablet,Safari,192.168.26.120,USA,California
+1182,sess_2d45a859be490fdc883dd8d2cc1836d6,6,2024-04-08 10:00:00,2024-04-08 10:15:00,8,email,email,,mobile,Chrome,192.168.182.189,USA,New York
+1183,sess_a6c468419c522ea0beaa98b15d7cd7a4,4,2024-04-08 12:00:00,2024-04-08 12:31:00,14,referral,email,,desktop,Chrome,192.168.129.180,USA,California
+1184,sess_054ee354cf1989c8e9cce14539f09450,12,2024-04-08 14:00:00,2024-04-08 14:09:00,15,direct,organic,,mobile,Firefox,192.168.152.102,USA,California
+1185,sess_400fe32ac6fbca67ade09c9a50e378f7,,2024-04-08 16:00:00,2024-04-08 16:24:00,7,email,social,loyalty,mobile,Chrome,192.168.65.106,USA,Florida
+1186,sess_b9cfb5a1da1ef16007107555061f1140,,2024-04-08 18:00:00,2024-04-08 18:08:00,14,facebook,organic,loyalty,desktop,Firefox,192.168.72.103,USA,Florida
+1187,sess_90d5f07090cfda001879bf9a852dbf2f,,2024-04-08 20:00:00,2024-04-08 20:21:00,12,referral,email,loyalty,mobile,Firefox,192.168.76.165,USA,New York
+1188,sess_661aa2776776dae2564369bb78227cbf,5,2024-04-08 22:00:00,2024-04-08 22:34:00,6,referral,organic,,tablet,Firefox,192.168.203.151,USA,Washington
+1189,sess_47606b2cc6ff6a81b103d3ca8d17af5c,22,2024-04-09 00:00:00,2024-04-09 00:18:00,15,facebook,email,,mobile,Safari,192.168.51.31,USA,Florida
+1190,sess_7a75347e8be5b780e1063cf908d0aa36,21,2024-04-09 02:00:00,2024-04-09 02:27:00,4,referral,social,,desktop,Chrome,192.168.168.66,USA,Washington
+1191,sess_0a17cf7f993847420f47faf75b3f2455,1,2024-04-09 04:00:00,2024-04-09 04:28:00,10,referral,email,loyalty,desktop,Firefox,192.168.99.97,USA,Washington
+1192,sess_9ecfd9fbcca791b365eaea32bf060d8c,3,2024-04-09 06:00:00,2024-04-09 06:22:00,17,direct,organic,,desktop,Firefox,192.168.97.189,USA,Florida
+1193,sess_6060f267fa55a7b1e7c11b35db565e62,14,2024-04-09 08:00:00,2024-04-09 08:32:00,14,facebook,social,,tablet,Edge,192.168.210.69,USA,New York
+1194,sess_ed8e23f785f5b6bbc7cdb87d861630fa,,2024-04-09 10:00:00,2024-04-09 10:31:00,8,email,social,spring_sale,desktop,Firefox,192.168.119.60,USA,New York
+1195,sess_ac684136b7241eca9c9a4f24b20b79fe,,2024-04-09 12:00:00,2024-04-09 12:19:00,6,referral,organic,,desktop,Chrome,192.168.3.46,USA,New York
+1196,sess_b6c133fb81f50c4d97a7720ec15a3787,20,2024-04-09 14:00:00,2024-04-09 14:29:00,12,referral,email,,desktop,Chrome,192.168.122.3,USA,Washington
+1197,sess_0fef625e0423c8e1ad73c73371decd4b,20,2024-04-09 16:00:00,2024-04-09 16:35:00,13,direct,social,loyalty,desktop,Edge,192.168.29.76,USA,Washington
+1198,sess_165801e97d6dedc663f049664e9a7833,,2024-04-09 18:00:00,2024-04-09 18:08:00,2,facebook,email,loyalty,desktop,Edge,192.168.150.63,USA,Washington
+1199,sess_2df8e1c0cafd994b4d5f941febe4dd27,20,2024-04-09 20:00:00,2024-04-09 20:06:00,8,facebook,email,,desktop,Edge,192.168.239.108,USA,Washington
+1200,sess_5b584a89177e3b218e8e03acd2485883,3,2024-04-09 22:00:00,2024-04-09 22:13:00,14,referral,social,loyalty,desktop,Safari,192.168.208.102,USA,Washington
+1201,sess_299b7f81dda4393dc9b8f927f692e493,,2024-04-10 00:00:00,2024-04-10 00:17:00,11,referral,cpc,,desktop,Firefox,192.168.185.102,USA,California
+1202,sess_3e94a7290a3a251c203419020f7392db,16,2024-04-10 02:00:00,2024-04-10 02:31:00,9,referral,email,,desktop,Firefox,192.168.144.19,USA,Florida
+1203,sess_838cd1afe7ec4c9470bcdc15e7180573,,2024-04-10 04:00:00,2024-04-10 04:21:00,13,google,organic,,mobile,Firefox,192.168.49.160,USA,California
+1204,sess_c4ca4716d77e4a440634064f55db6056,11,2024-04-10 06:00:00,2024-04-10 06:14:00,7,referral,social,loyalty,desktop,Chrome,192.168.248.3,USA,Washington
+1205,sess_0132f475dde49f44fd1f44834332483e,4,2024-04-10 08:00:00,2024-04-10 08:06:00,3,google,social,,tablet,Safari,192.168.167.189,USA,Washington
+1206,sess_65acb32eda940dfaabcd8ff49a5f112a,,2024-04-10 10:00:00,2024-04-10 10:14:00,11,google,social,loyalty,tablet,Edge,192.168.6.33,USA,Washington
+1207,sess_b9e26874cd85ec7f0980c663ba6902b3,,2024-04-10 12:00:00,2024-04-10 12:28:00,13,email,email,,tablet,Safari,192.168.24.212,USA,Texas
+1208,sess_755f4e4fd65606e1b818f8ce231474a4,,2024-04-10 14:00:00,2024-04-10 14:09:00,3,google,email,loyalty,desktop,Edge,192.168.72.231,USA,Washington
+1209,sess_1ea0c007439132d33b7e6989bb3b6477,12,2024-04-10 16:00:00,2024-04-10 16:20:00,13,direct,email,loyalty,mobile,Firefox,192.168.184.82,USA,Washington
+1210,sess_2b2d8c22011b347b86d0b8d211d38346,1,2024-04-10 18:00:00,2024-04-10 18:13:00,14,direct,social,loyalty,desktop,Edge,192.168.179.198,USA,Florida
+1211,sess_6953fef0f434bce58a0c806239cf5b38,8,2024-04-10 20:00:00,2024-04-10 20:12:00,13,direct,organic,,desktop,Safari,192.168.148.50,USA,Texas
+1212,sess_74bf4f5897c8e59fe23cfa12cfbc494e,16,2024-04-10 22:00:00,2024-04-10 22:31:00,4,facebook,cpc,,desktop,Firefox,192.168.122.221,USA,Texas
+1213,sess_66a6b51cf33103e281bf0d4cc160acff,,2024-04-11 00:00:00,2024-04-11 00:21:00,16,referral,social,,desktop,Chrome,192.168.168.169,USA,Florida
+1214,sess_bbec7af62925b3de4354382237f2bb5c,20,2024-04-11 02:00:00,2024-04-11 02:16:00,16,referral,organic,,desktop,Safari,192.168.164.73,USA,Washington
+1215,sess_fc6de928ae0ceea28f2578a46001d8bf,,2024-04-11 04:00:00,2024-04-11 04:34:00,10,email,cpc,,tablet,Safari,192.168.119.73,USA,Florida
+1216,sess_6f31e6c597af4b4e341730e995bc307a,,2024-04-11 06:00:00,2024-04-11 06:32:00,12,facebook,social,,tablet,Edge,192.168.146.182,USA,Washington
+1217,sess_ee95674046e4c4c1fb060bbeec9bbbff,22,2024-04-11 08:00:00,2024-04-11 08:10:00,6,email,email,,desktop,Edge,192.168.145.111,USA,New York
+1218,sess_a0350544836f2a3613e14acb58c324d8,16,2024-04-11 10:00:00,2024-04-11 10:05:00,8,email,social,loyalty,mobile,Safari,192.168.85.58,USA,Washington
+1219,sess_5fbf3841ac72e9225e5b5031edefc39d,21,2024-04-11 12:00:00,2024-04-11 12:20:00,9,referral,social,spring_sale,desktop,Edge,192.168.74.200,USA,California
+1220,sess_713f008c2fca7cced642a92f2ee415f4,1,2024-04-11 14:00:00,2024-04-11 14:21:00,5,direct,social,spring_sale,mobile,Firefox,192.168.91.33,USA,Florida
+1221,sess_fdde0696149ccf9d760df09fb23d905d,19,2024-04-11 16:00:00,2024-04-11 16:21:00,9,direct,email,loyalty,desktop,Safari,192.168.124.122,USA,Washington
+1222,sess_8215d8f63b19821c5acdb908fad30b1f,6,2024-04-11 18:00:00,2024-04-11 18:13:00,16,facebook,social,loyalty,desktop,Edge,192.168.56.99,USA,Washington
+1223,sess_5281c83983c1e11fa11e493188e8719e,24,2024-04-11 20:00:00,2024-04-11 20:31:00,4,referral,email,,desktop,Firefox,192.168.216.21,USA,Florida
+1224,sess_4a1d27fb594a1e0636f2235670c562ef,3,2024-04-11 22:00:00,2024-04-11 22:28:00,8,facebook,social,,desktop,Safari,192.168.85.243,USA,Washington
+1225,sess_a654a21f74bf0e670e05155697f996ea,7,2024-04-12 00:00:00,2024-04-12 00:16:00,3,referral,cpc,loyalty,mobile,Firefox,192.168.10.189,USA,Washington
+1226,sess_3c4315902b1df9c1685492d3a62224be,,2024-04-12 02:00:00,2024-04-12 02:17:00,5,referral,organic,spring_sale,tablet,Safari,192.168.0.32,USA,Washington
+1227,sess_8a203ba0fbc674a79b4c08c9be4aaf91,17,2024-04-12 04:00:00,2024-04-12 04:33:00,7,referral,cpc,,desktop,Safari,192.168.74.33,USA,Texas
+1228,sess_c4af0c616d62c308301e09a4a7e95f99,20,2024-04-12 06:00:00,2024-04-12 06:33:00,3,email,social,loyalty,desktop,Chrome,192.168.208.111,USA,Washington
+1229,sess_72987fd55f4841416c45e60b808eeb04,9,2024-04-12 08:00:00,2024-04-12 08:29:00,12,email,social,loyalty,mobile,Firefox,192.168.134.92,USA,Florida
+1230,sess_73cc52f100db014b8d6e14f13582aed4,14,2024-04-12 10:00:00,2024-04-12 10:21:00,8,email,organic,loyalty,mobile,Firefox,192.168.173.80,USA,Florida
+1231,sess_ea7e88517fffb43e3fb3ddde4435521e,,2024-04-12 12:00:00,2024-04-12 12:29:00,4,referral,email,loyalty,desktop,Safari,192.168.6.132,USA,Washington
+1232,sess_a36c0f5eda647516333a616851f0673f,,2024-04-12 14:00:00,2024-04-12 14:31:00,11,google,organic,loyalty,desktop,Firefox,192.168.27.56,USA,Washington
+1233,sess_bac320216bfba0fcdcb17d45f2609935,8,2024-04-12 16:00:00,2024-04-12 16:14:00,11,email,email,,desktop,Safari,192.168.216.224,USA,Washington
+1234,sess_f5f3c6c20231816abe9ed7339b7f57b4,,2024-04-12 18:00:00,2024-04-12 18:20:00,15,direct,email,,tablet,Firefox,192.168.236.16,USA,Texas
+1235,sess_68a09949c6633d6eec5304bed5815042,22,2024-04-12 20:00:00,2024-04-12 20:26:00,12,facebook,email,loyalty,desktop,Firefox,192.168.161.189,USA,California
+1236,sess_ae112ac95a8a6752719813a7c2f6cbce,12,2024-04-12 22:00:00,2024-04-12 22:13:00,9,direct,cpc,,mobile,Safari,192.168.248.178,USA,New York
+1237,sess_25bff84dc1627b9b81b3f8e05ed24cc6,,2024-04-13 00:00:00,2024-04-13 00:19:00,11,direct,email,,desktop,Firefox,192.168.229.178,USA,New York
+1238,sess_e798346fdcb71d6f4b9e063d8588b6d7,10,2024-04-13 02:00:00,2024-04-13 02:05:00,9,referral,cpc,loyalty,desktop,Safari,192.168.33.15,USA,New York
+1239,sess_7ee01918508a5606f0b15848cd376bb7,,2024-04-13 04:00:00,2024-04-13 04:25:00,5,google,social,spring_sale,desktop,Safari,192.168.52.184,USA,Florida
+1240,sess_8e36e4ee832152b4fe3c0d301eb1d7de,13,2024-04-13 06:00:00,2024-04-13 06:32:00,10,facebook,cpc,spring_sale,desktop,Edge,192.168.135.106,USA,Washington
+1241,sess_4684466761c4b5264c56479aed55ffc8,23,2024-04-13 08:00:00,2024-04-13 08:18:00,9,direct,email,loyalty,desktop,Safari,192.168.221.244,USA,California
+1242,sess_9510e1a8947dac4b0a83cbb3565ec9d8,7,2024-04-13 10:00:00,2024-04-13 10:23:00,11,referral,cpc,loyalty,tablet,Safari,192.168.121.233,USA,Washington
+1243,sess_3b2b3fab8e44d31d675ad1f98e9eca66,18,2024-04-13 12:00:00,2024-04-13 12:32:00,17,referral,social,loyalty,desktop,Safari,192.168.22.208,USA,Washington
+1244,sess_c934171177c86ddb900d564858a8c5ef,15,2024-04-13 14:00:00,2024-04-13 14:20:00,11,direct,organic,loyalty,tablet,Firefox,192.168.191.154,USA,Washington
+1245,sess_b34ab931f5c45cd79fb65ac1bcbc3f14,,2024-04-13 16:00:00,2024-04-13 16:13:00,16,direct,social,,tablet,Chrome,192.168.22.80,USA,Florida
+1246,sess_beb598ffe594adc2d050a2a7f4bcb7f9,15,2024-04-13 18:00:00,2024-04-13 18:09:00,12,google,social,loyalty,tablet,Firefox,192.168.17.218,USA,Texas
+1247,sess_f7a0d28d1b3d9fab6873daca43c8346f,5,2024-04-13 20:00:00,2024-04-13 20:26:00,8,referral,email,,desktop,Chrome,192.168.247.191,USA,New York
+1248,sess_d0067225a2fc316e36c2162bfa612b2d,3,2024-04-13 22:00:00,2024-04-13 22:20:00,15,direct,email,spring_sale,desktop,Safari,192.168.224.105,USA,Washington
+1249,sess_75a864a12ae55a2ef4dd8f173cde0509,4,2024-04-14 00:00:00,2024-04-14 00:21:00,10,email,organic,loyalty,desktop,Safari,192.168.7.238,USA,Washington
+1250,sess_94dcf8d365e9b7bb343fa532d07d36b5,22,2024-04-14 02:00:00,2024-04-14 02:20:00,5,facebook,organic,loyalty,desktop,Safari,192.168.16.168,USA,Florida
+1251,sess_1bd812de49da88cd401fee4217e7295a,,2024-04-14 04:00:00,2024-04-14 04:32:00,9,direct,email,,mobile,Safari,192.168.137.174,USA,New York
+1252,sess_bc10624b6d8aa6440f558e1428874858,14,2024-04-14 06:00:00,2024-04-14 06:06:00,12,facebook,social,loyalty,desktop,Chrome,192.168.65.253,USA,Washington
+1253,sess_a98a666baa2405140cf4573079d02df8,9,2024-04-14 08:00:00,2024-04-14 08:10:00,9,email,organic,spring_sale,desktop,Edge,192.168.3.21,USA,California
+1254,sess_dd04b5ba31d6f740475816905a34cb36,13,2024-04-14 10:00:00,2024-04-14 10:12:00,11,google,organic,loyalty,desktop,Safari,192.168.17.180,USA,New York
+1255,sess_0169843a4c4a0196b438806075157174,,2024-04-14 12:00:00,2024-04-14 12:33:00,11,direct,social,,desktop,Firefox,192.168.139.73,USA,Washington
+1256,sess_5e9b0944be149eefdb36ef69b3f6a528,14,2024-04-14 14:00:00,2024-04-14 14:11:00,15,facebook,social,,tablet,Firefox,192.168.141.121,USA,Texas
+1257,sess_51a304e786d9903ee51ed93fb5b3cdcb,8,2024-04-14 16:00:00,2024-04-14 16:16:00,6,google,cpc,,desktop,Safari,192.168.21.49,USA,Washington
+1258,sess_c517857cb3f77f8aae198ce2c83868a9,,2024-04-14 18:00:00,2024-04-14 18:07:00,7,direct,email,,desktop,Firefox,192.168.56.134,USA,New York
+1259,sess_70b39dbd1e39886164b280ef2ffd6fb8,,2024-04-14 20:00:00,2024-04-14 20:17:00,12,facebook,organic,loyalty,desktop,Chrome,192.168.173.85,USA,New York
+1260,sess_59a60e5aaca387cd4d582d281d129404,2,2024-04-14 22:00:00,2024-04-14 22:13:00,12,facebook,social,loyalty,mobile,Firefox,192.168.190.116,USA,Florida
+1261,sess_4a72c5f100a7b60d19ae24193e9acd0c,6,2024-04-15 00:00:00,2024-04-15 00:15:00,16,direct,cpc,,desktop,Chrome,192.168.197.80,USA,Florida
+1262,sess_2780d1e0ef7f2752b3d4d0f260f39d4e,20,2024-04-15 02:00:00,2024-04-15 02:11:00,4,facebook,email,,desktop,Firefox,192.168.28.74,USA,New York
+1263,sess_f886510eeea69f894be44f4e10a68821,5,2024-04-15 04:00:00,2024-04-15 04:29:00,12,email,cpc,loyalty,desktop,Firefox,192.168.39.255,USA,Washington
+1264,sess_938f76fddbcd4f618ab35d348fa46c2e,22,2024-04-15 06:00:00,2024-04-15 06:29:00,10,email,organic,loyalty,desktop,Firefox,192.168.199.61,USA,Florida
+1265,sess_d1d104d0bf255d2be257b912d7cbf34f,2,2024-04-15 08:00:00,2024-04-15 08:31:00,3,referral,social,loyalty,desktop,Safari,192.168.17.34,USA,New York
+1266,sess_4a4b2ea16bec063771418235920c827c,23,2024-04-15 10:00:00,2024-04-15 10:29:00,10,facebook,organic,,tablet,Edge,192.168.176.161,USA,California
+1267,sess_24699869bb3f39d7333f490bdb2f28c6,,2024-04-15 12:00:00,2024-04-15 12:14:00,16,facebook,organic,spring_sale,desktop,Safari,192.168.68.39,USA,California
+1268,sess_b3d07cc007d854ca2f47294b6fdadd6b,,2024-04-15 14:00:00,2024-04-15 14:06:00,11,facebook,social,,desktop,Edge,192.168.60.25,USA,Texas
+1269,sess_4b69fbb0a81d2fe1d5819f28350dc7d2,22,2024-04-15 16:00:00,2024-04-15 16:15:00,7,email,cpc,spring_sale,tablet,Firefox,192.168.19.90,USA,Florida
+1270,sess_987512fa07a29af9c490c9a35fe43981,20,2024-04-15 18:00:00,2024-04-15 18:12:00,7,email,organic,,mobile,Chrome,192.168.47.192,USA,Washington
+1271,sess_319ca114f904b7ec7df5755eb276f387,,2024-04-15 20:00:00,2024-04-15 20:20:00,5,email,organic,loyalty,desktop,Safari,192.168.163.126,USA,Washington
+1272,sess_9ea04c471cc702c9523b16df5fc77211,22,2024-04-15 22:00:00,2024-04-15 22:20:00,10,email,organic,,tablet,Firefox,192.168.200.113,USA,Texas
+1273,sess_ae964f5fda70891d506ee475c883bfec,1,2024-04-16 00:00:00,2024-04-16 00:29:00,6,referral,email,loyalty,desktop,Edge,192.168.182.59,USA,Washington

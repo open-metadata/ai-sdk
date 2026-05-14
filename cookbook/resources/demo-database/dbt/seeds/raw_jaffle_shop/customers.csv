@@ -1,0 +1,26 @@
+id,first_name,last_name,email,phone_number,date_of_birth,ssn_last_four,address_line_1,city,state,postal_code,country,created_at,updated_at
+1,Michael,Perez,mperez@example.com,555-0101,1985-03-15,1234,123 Main St,Austin,TX,78701,USA,2023-01-05 00:00:00,2026-05-11 05:54:07.449494
+2,Shawn,Myers,smyers@example.com,555-0102,1990-07-22,5678,456 Oak Ave,Seattle,WA,98101,USA,2023-01-12 00:00:00,2026-05-11 05:54:07.449494
+3,Kathleen,Johnson,kjohnson@example.com,555-0103,1988-11-30,9012,789 Pine Rd,Denver,CO,80201,USA,2023-02-01 00:00:00,2026-05-11 05:54:07.449494
+4,Jimmy,Ramirez,jramirez@example.com,555-0104,1992-05-18,3456,321 Elm St,Portland,OR,97201,USA,2023-02-15 00:00:00,2026-05-11 05:54:07.449494
+5,Sara,Chen,schen@example.com,555-0105,1987-09-08,7890,654 Maple Dr,San Francisco,CA,94102,USA,2023-03-01 00:00:00,2026-05-11 05:54:07.449494
+6,Diana,Williams,dwilliams@example.com,555-0106,1995-01-25,2345,987 Cedar Ln,Chicago,IL,60601,USA,2023-03-10 00:00:00,2026-05-11 05:54:07.449494
+7,Martin,Garcia,mgarcia@example.com,555-0107,1983-12-12,6789,147 Birch Blvd,Miami,FL,33101,USA,2023-03-22 00:00:00,2026-05-11 05:54:07.449494
+8,Jennifer,Davis,jdavis@example.com,555-0108,1991-06-05,0123,258 Willow Way,Boston,MA,02101,USA,2023-04-05 00:00:00,2026-05-11 05:54:07.449494
+9,Richard,Anderson,randerson@example.com,555-0109,1986-04-17,4567,369 Spruce St,Phoenix,AZ,85001,USA,2023-04-18 00:00:00,2026-05-11 05:54:07.449494
+10,Amanda,Taylor,ataylor@example.com,555-0110,1993-08-29,8901,741 Ash Ave,Dallas,TX,75201,USA,2023-05-01 00:00:00,2026-05-11 05:54:07.449494
+11,John,Smith,,,1980-01-01,,100 Test St,New York,NY,10001,USA,2023-05-15 00:00:00,2026-05-11 05:54:07.449494
+12,"",Unknown,unknown@test.com,555-0112,,,"","","","",USA,2023-05-20 00:00:00,2026-05-11 05:54:07.449494
+13,Test,User,invalid-email,555-0113,2050-01-01,0000,123 Future St,Nowhere,XX,00000,USA,2023-06-01 00:00:00,2026-05-11 05:54:07.449494
+14,Duplicate,Customer,duplicate@example.com,555-0114,1990-01-01,1111,111 Same St,Austin,TX,78701,USA,2023-06-10 00:00:00,2026-05-11 05:54:07.449494
+15,Duplicate,Customer,duplicate@example.com,555-0114,1990-01-01,1111,111 Same St,Austin,TX,78701,USA,2023-06-10 00:00:00,2026-05-11 05:54:07.449494
+16,Emily,Brown,ebrown@example.com,555-0115,1994-02-14,2222,222 Love Ln,Las Vegas,NV,89101,USA,2023-06-15 00:00:00,2026-05-11 05:54:07.449494
+17,David,Miller,dmiller@example.com,555-0116,1989-10-31,3333,333 Spooky Rd,Salem,MA,01970,USA,2023-07-01 00:00:00,2026-05-11 05:54:07.449494
+18,Jessica,Wilson,jwilson@example.com,555-0117,1996-07-04,4444,444 Freedom Ave,Philadelphia,PA,19101,USA,2023-07-15 00:00:00,2026-05-11 05:54:07.449494
+19,Christopher,Moore,cmoore@example.com,555-0118,1984-03-17,5555,555 Lucky St,Dublin,OH,43017,USA,2023-08-01 00:00:00,2026-05-11 05:54:07.449494
+20,Ashley,Thomas,athomas@example.com,555-0119,1997-12-25,6666,666 Holiday Ct,Santa Claus,IN,47579,USA,2023-08-15 00:00:00,2026-05-11 05:54:07.449494
+21,Matthew,Jackson,mjackson@example.com,555-0120,1982-09-15,7777,777 Music Row,Nashville,TN,37201,USA,2023-09-01 00:00:00,2026-05-11 05:54:07.449494
+22,Stephanie,White,swhite@example.com,555-0121,1998-04-22,8888,888 Clean St,Salt Lake City,UT,84101,USA,2023-09-15 00:00:00,2026-05-11 05:54:07.449494
+23,Andrew,Harris,aharris@example.com,555-0122,1981-11-11,9999,999 Veteran Way,Arlington,VA,22201,USA,2023-10-01 00:00:00,2026-05-11 05:54:07.449494
+24,Nicole,Martin,nmartin@example.com,555-0123,1999-06-21,1010,1010 Binary Blvd,San Jose,CA,95101,USA,2023-10-15 00:00:00,2026-05-11 05:54:07.449494
+25,Joshua,Thompson,jthompson@example.com,555-0124,1985-08-08,2020,2020 Vision Dr,Atlanta,GA,30301,USA,2023-11-01 00:00:00,2026-05-11 05:54:07.449494

@@ -13,3 +13,16 @@ jaffle_shop:
       dbname: jaffle_shop
       schema: public
       threads: 4
+
+    starburst:
+      type: trino
+      method: "{{ env_var('STARBURST_METHOD', 'ldap') }}"
+      host: "{{ env_var('STARBURST_HOST') }}"
+      port: "{{ env_var('STARBURST_PORT', '443') | int }}"
+      user: "{{ env_var('STARBURST_USER') }}"
+      password: "{{ env_var('STARBURST_PASSWORD', '') }}"
+      jwt_token: "{{ env_var('STARBURST_JWT_TOKEN', '') }}"
+      http_scheme: "{{ env_var('STARBURST_HTTP_SCHEME', 'https') }}"
+      database: "{{ env_var('STARBURST_CATALOG', 'iceberg') }}"
+      schema: "{{ env_var('STARBURST_SCHEMA', 'jaffle_shop') }}"
+      threads: 4

@@ -241,6 +241,138 @@ After ingestion, you should see:
 | Lineage Analysis | Trace lineage from `raw_stripe.payments` to `fct_monthly_revenue` |
 | MCP Integration | Query metadata via Claude/LLM for impact analysis |
 
+## Running against Starburst (Iceberg)
+
+The same dbt project can target a remote Starburst instance with an Iceberg catalog.
+The raw Jaffle Shop data ships as dbt seeds (CSVs in `dbt/seeds/`) and is loaded
+on demand.
+
+### Prerequisites
+
+- A Starburst Galaxy account (or self-hosted Starburst Enterprise) with an Iceberg catalog configured
+- An object-storage bucket for the Iceberg data (S3 / GCS / ADLS) — Galaxy is compute-only, you bring storage
+- `make install-dbt-starburst` (installs `dbt-trino>=1.7,<2.0`)
+
+### Galaxy quick start
+
+#### 1. Object storage (S3 example)
+
+Galaxy supports a fixed list of AWS regions — `eu-west-3` (Paris) is **not** one of them. Pick a Galaxy-supported region close to you (`eu-west-1` Ireland is closest to Paris):
+
+```bash
+BUCKET=<globally-unique-name>
+REGION=eu-west-1
+
+aws s3api create-bucket --bucket "$BUCKET" --region "$REGION" \
+  --create-bucket-configuration LocationConstraint="$REGION"
+```
+
+#### 2. IAM user with long-lived keys
+
+Galaxy needs **permanent access keys**, not STS assume-role / SSO credentials. Create a dedicated IAM user scoped to the bucket:
+
+```bash
+cat > /tmp/galaxy-policy.json <<EOF
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {"Effect": "Allow", "Action": ["s3:ListBucket","s3:GetBucketLocation"], "Resource": "arn:aws:s3:::${BUCKET}"},
+    {"Effect": "Allow", "Action": ["s3:GetObject","s3:PutObject","s3:DeleteObject"], "Resource": "arn:aws:s3:::${BUCKET}/*"}
+  ]
+}
+EOF
+
+aws iam create-user --user-name galaxy-${BUCKET}
+aws iam put-user-policy --user-name galaxy-${BUCKET} \
+  --policy-name ${BUCKET}-bucket --policy-document file:///tmp/galaxy-policy.json
+aws iam create-access-key --user-name galaxy-${BUCKET}
+# capture AccessKeyId + SecretAccessKey — the secret is shown only once
+```
+
+#### 3. Galaxy catalog + cluster
+
+In Galaxy UI:
+
+- **Catalogs → Create catalog → Amazon S3 / Iceberg.** Set the catalog name to `iceberg`, bucket to your bucket, region to your bucket's region, and paste the IAM access key/secret. Use the Galaxy-managed metastore (default).
+- **Clusters → Create cluster.** Pick the **Free** size, the same region as the bucket, auto-suspend at 1 minute, and attach the `iceberg` catalog.
+
+#### 4. Find the connection details
+
+In Galaxy → **Clusters → \<your-cluster\> → Connect with → Trino CLI**. Note two values exactly as shown:
+
+- **Host** — Galaxy's pattern is `<account>-<cluster>.trino.galaxy.starburst.io`. Example: `collatetest-free-cluster-ireland.trino.galaxy.starburst.io`. **Not** `<cluster>.<account>.galaxy.starburst.io`, and **not** the Galaxy console URL `<account>.galaxy.starburst.io` — that one returns HTTP 405 to Trino traffic.
+- **`--user` value** — Galaxy puts the role into the username, e.g. `pmbrull@getcollate.io/accountadmin`. Copy it verbatim.
+
+#### 5. Personal Access Token (the password)
+
+Galaxy's "API tokens" come in two flavors. They are **not JWTs** — they're opaque secrets used as the password over HTTP Basic auth (LDAP method in dbt-trino).
+
+- **Personal user PAT:** Galaxy → click your avatar → *Personal access tokens* → Create. Username will be `<email>/<role>`. This is the simplest path for development.
+- **Service-account token:** Galaxy → Admin → Service accounts → Create. Username will be the random ID Galaxy assigns, e.g. `i94xdO6k7bNPWloY`. Better for CI / production but the SA must be granted the role and cluster privileges separately.
+
+The username and password must belong to the **same identity**. A personal-user PAT will not authenticate as a service account, and vice versa — you'll see HTTP 401 (`access_denied`) or 404 (`User not found`).
+
+#### 6. Set env vars and run
+
+```bash
+export STARBURST_METHOD=ldap                                # default; explicit for clarity
+export STARBURST_HOST=collatetest-free-cluster-ireland.trino.galaxy.starburst.io
+export STARBURST_USER='pmbrull@getcollate.io/accountadmin' # quote because of the /
+export STARBURST_CATALOG=iceberg
+
+# Keep the PAT out of shell history:
+read -rs STARBURST_PASSWORD && export STARBURST_PASSWORD
+
+cd cookbook/resources/demo-database/dbt
+DBT_PROFILES_DIR=$(pwd) dbt debug --target starburst
+# expect: All checks passed!
+```
+
+Then load and build:
+
+```bash
+make demo-dbt-starburst-seed   # load CSVs into iceberg.raw_* schemas
+make demo-dbt-starburst        # build staging -> intermediate -> marts
+```
+
+### Generating the seed CSVs (one-time per data version)
+
+The CSVs are generated from the local PostgreSQL demo (so the same row data
+loaded by `init.sql` is what lands in Starburst):
+
+```bash
+make demo-database          # start PG
+make demo-export-seeds      # PG raw_* tables -> dbt/seeds/raw_*/*.csv
+git add cookbook/resources/demo-database/dbt/seeds && git commit
+```
+
+CSVs are versioned in git — re-running `demo-export-seeds` is only needed when
+`init.sql` changes.
+
+### Authenticating with a real JWT (alternative)
+
+If your Starburst is wired to an external IdP (Okta, Auth0, Azure AD) that issues real JWTs (token starts with `eyJ...` and has three dot-separated segments), use JWT auth instead:
+
+```bash
+export STARBURST_METHOD=jwt
+export STARBURST_USER=your.user@org           # cosmetic — identity comes from the token's `sub`
+export STARBURST_JWT_TOKEN=eyJhbGciOi...
+unset STARBURST_PASSWORD
+```
+
+Galaxy's built-in API tokens are **not** JWTs — don't use this path with them.
+
+### Troubleshooting
+
+| Symptom | Cause |
+|---|---|
+| `error 405` from `/v1/statement` | `STARBURST_HOST` points at the Galaxy console (`<account>.galaxy.starburst.io`) instead of the cluster (`<account>-<cluster>.trino.galaxy.starburst.io`). |
+| TLS `SSLV3_ALERT_HANDSHAKE_FAILURE` | Same — wrong host. The wildcard cert doesn't cover the made-up name. macOS LibreSSL can also produce this for unrelated reasons; if `dbt debug` succeeds, ignore curl-side failures. |
+| `error 401: access_denied` | Username and password belong to different identities (e.g., personal email + SA token), or the role lacks `Use cluster` / `Use catalog` privileges. |
+| `error 404: User not found` | Username format wrong. Copy the exact `--user` from Galaxy's *Connect with* tab. |
+| `Incorrect S3 access credentials` (Galaxy catalog wizard) | IAM keys with whitespace from the paste, region mismatch between the catalog form and the actual bucket location, or keys still propagating (~30–60s). |
+| `Unsupported aws regions: [eu-west-3]` | Galaxy doesn't run in that region. Recreate the bucket in a supported region (`eu-west-1` is the closest to Paris). |
+
 ## Cleanup
 
 ```bash

@@ -1,0 +1,21 @@
+id,sku,name,description,category,subcategory,unit_cost,unit_price,weight_kg,is_active,created_at,updated_at
+1,JFL-001,Classic Jaffle,Traditional toasted sandwich with cheese,Food,Jaffles,2.50,8.99,0.25,t,2026-05-11 05:54:07.453455,2026-05-11 05:54:07.453455
+2,JFL-002,Veggie Supreme Jaffle,Loaded with fresh vegetables and cheese,Food,Jaffles,3.00,10.99,0.30,t,2026-05-11 05:54:07.453455,2026-05-11 05:54:07.453455
+3,JFL-003,Meat Lovers Jaffle,"Ham, bacon, and cheese jaffle",Food,Jaffles,3.50,12.99,0.35,t,2026-05-11 05:54:07.453455,2026-05-11 05:54:07.453455
+4,JFL-004,Spicy Chicken Jaffle,Cajun chicken with pepper jack,Food,Jaffles,3.25,11.99,0.30,t,2026-05-11 05:54:07.453455,2026-05-11 05:54:07.453455
+5,JFL-005,Breakfast Jaffle,"Egg, bacon, and cheese morning treat",Food,Jaffles,3.00,10.99,0.28,t,2026-05-11 05:54:07.453455,2026-05-11 05:54:07.453455
+6,BEV-001,Fresh Lemonade,House-made lemonade,Beverage,Cold Drinks,0.75,3.99,0.40,t,2026-05-11 05:54:07.453455,2026-05-11 05:54:07.453455
+7,BEV-002,Iced Coffee,Cold brew coffee over ice,Beverage,Cold Drinks,1.00,4.99,0.45,t,2026-05-11 05:54:07.453455,2026-05-11 05:54:07.453455
+8,BEV-003,Hot Coffee,Premium roast coffee,Beverage,Hot Drinks,0.50,2.99,0.35,t,2026-05-11 05:54:07.453455,2026-05-11 05:54:07.453455
+9,BEV-004,Chai Latte,Spiced chai with steamed milk,Beverage,Hot Drinks,1.25,5.49,0.40,t,2026-05-11 05:54:07.453455,2026-05-11 05:54:07.453455
+10,BEV-005,Green Smoothie,"Spinach, banana, and apple",Beverage,Smoothies,2.00,6.99,0.50,t,2026-05-11 05:54:07.453455,2026-05-11 05:54:07.453455
+11,SDE-001,Sweet Potato Fries,Crispy seasoned sweet potato fries,Food,Sides,1.50,4.99,0.20,t,2026-05-11 05:54:07.453455,2026-05-11 05:54:07.453455
+12,SDE-002,Garden Salad,Mixed greens with house dressing,Food,Sides,1.25,5.99,0.25,t,2026-05-11 05:54:07.453455,2026-05-11 05:54:07.453455
+13,SDE-003,Soup of the Day,Chef's daily soup selection,Food,Sides,1.75,5.49,0.35,t,2026-05-11 05:54:07.453455,2026-05-11 05:54:07.453455
+14,DST-001,Chocolate Brownie,Rich fudge brownie,Food,Desserts,1.00,4.49,0.15,t,2026-05-11 05:54:07.453455,2026-05-11 05:54:07.453455
+15,DST-002,Apple Pie Jaffle,Sweet apple cinnamon dessert jaffle,Food,Desserts,2.00,7.99,0.25,t,2026-05-11 05:54:07.453455,2026-05-11 05:54:07.453455
+16,MRC-001,Jaffle Shop T-Shirt,Cotton branded t-shirt,Merchandise,Apparel,8.00,24.99,0.20,t,2026-05-11 05:54:07.453455,2026-05-11 05:54:07.453455
+17,MRC-002,Coffee Mug,Ceramic mug with logo,Merchandise,Accessories,4.00,14.99,0.35,t,2026-05-11 05:54:07.453455,2026-05-11 05:54:07.453455
+18,MRC-003,Tote Bag,Reusable canvas tote,Merchandise,Accessories,3.00,12.99,0.15,t,2026-05-11 05:54:07.453455,2026-05-11 05:54:07.453455
+19,JFL-OLD,Discontinued Jaffle,No longer available,Food,Jaffles,2.00,7.99,0.25,f,2026-05-11 05:54:07.453455,2026-05-11 05:54:07.453455
+20,BEV-OLD,Discontinued Drink,Removed from menu,Beverage,Cold Drinks,1.00,3.99,0.40,f,2026-05-11 05:54:07.453455,2026-05-11 05:54:07.453455

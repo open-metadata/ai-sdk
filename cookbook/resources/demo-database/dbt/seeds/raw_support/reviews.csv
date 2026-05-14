@@ -1,0 +1,17 @@
+id,product_id,customer_id,order_id,rating,title,review_text,is_verified_purchase,helpful_votes,created_at
+1,1,1,1,5,Perfect comfort food,The classic jaffle is exactly what I remember from childhood. Perfectly toasted!,t,12,2024-01-05 00:00:00
+2,2,3,3,4,Great veggie option,Love the variety of vegetables. Could use a bit more cheese though.,t,8,2024-01-08 00:00:00
+3,3,4,5,5,Meat lovers dream,So much meat! The perfect lunch after a workout.,t,15,2024-01-12 00:00:00
+4,1,2,2,4,Good but basic,Solid choice but nothing extraordinary. Good value for money.,t,5,2024-01-06 00:00:00
+5,4,7,8,5,Spice is right,Finally a place that knows how to do spicy food! Will order again.,t,20,2024-01-20 00:00:00
+6,5,8,10,4,Breakfast champion,Great way to start the day. Eggs could be a bit runnier.,t,7,2024-01-25 00:00:00
+7,6,5,6,5,Refreshing!,Best lemonade Ive had. Real lemons make all the difference.,t,18,2024-01-15 00:00:00
+8,8,9,11,3,Just okay coffee,Decent coffee but Ive had better. A bit weak for my taste.,t,4,2024-01-26 00:00:00
+9,16,7,8,5,Love the merch,Great quality t-shirt. Fits perfectly and the design is cool.,t,11,2024-01-22 00:00:00
+10,10,10,12,4,Healthy and tasty,Surprised how good this smoothie is. Very filling too.,t,9,2024-01-28 00:00:00
+11,14,6,7,5,Brownie perfection,"Rich, fudgy, and not too sweet. Pairs great with coffee.",t,14,2024-01-18 00:00:00
+12,15,14,24,5,Desert jaffle ftw,Didnt know I needed this in my life. Apple pie in jaffle form!,t,22,2024-02-16 00:00:00
+13,3,11,18,2,Disappointing,Too greasy and the bread was soggy. Expected better.,t,3,2024-02-08 00:00:00
+14,7,12,19,2,Burnt coffee,Coffee tasted burnt. Maybe a bad batch?,t,6,2024-02-09 00:00:00
+15,1,,,5,Amazing!,Best jaffles ever!,f,2,2024-02-20 00:00:00
+16,2,,,1,Terrible,Worst food I ever had,f,0,2024-02-25 00:00:00

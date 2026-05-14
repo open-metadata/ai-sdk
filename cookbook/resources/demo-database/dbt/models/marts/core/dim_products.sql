@@ -15,7 +15,7 @@ select
 
     -- Review metrics
     review_count,
-    round(avg_rating::decimal, 2) as avg_rating,
+    round(CAST(avg_rating AS decimal), 2) as avg_rating,
     positive_reviews,
     negative_reviews,
     total_helpful_votes,
@@ -29,7 +29,7 @@ select
     -- Derived metrics
     case
         when review_count > 0
-        then round(positive_reviews::decimal / review_count * 100, 2)
+        then round(CAST(positive_reviews AS decimal) / review_count * 100, 2)
         else null
     end as positive_review_pct,
 

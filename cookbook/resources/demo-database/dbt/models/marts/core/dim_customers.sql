@@ -62,10 +62,10 @@ select
     -- Derived metrics
     case
         when co.first_order_date is not null
-        then co.last_order_date - co.first_order_date
+        then {{ days_between('co.first_order_date', 'co.last_order_date') }}
         else null
     end as days_as_customer,
-    current_date - coalesce(co.last_order_date, c.created_at::date) as days_since_last_order,
+    {{ days_between("coalesce(co.last_order_date, CAST(c.created_at AS date))", "current_date") }} as days_since_last_order,
 
     -- Customer segments
     case

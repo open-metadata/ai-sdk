@@ -13,7 +13,7 @@ cleaned as (
         card_last_four,
         card_brand,
         billing_email,
-        ip_address::text as ip_address,
+        CAST(ip_address AS varchar) as ip_address,
         risk_score
     from source
     where id is not null

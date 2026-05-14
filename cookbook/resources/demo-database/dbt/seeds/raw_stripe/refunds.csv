@@ -1,0 +1,5 @@
+id,payment_id,amount,reason,status,created_at
+1,3,5.00,Item damaged,completed,2024-01-10 10:00:00
+2,8,12.99,Wrong item sent,completed,2024-01-25 14:30:00
+3,12,35.96,Customer cancelled,completed,2024-01-28 09:00:00
+4,15,8.99,Quality issue,pending,2024-02-05 11:00:00
