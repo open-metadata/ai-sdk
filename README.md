@@ -1,6 +1,6 @@
 # AI SDK
 
-Bring AI to your metadata. The OpenMetadata AI SDK gives you programmatic access to your data catalog through two complementary paths: **MCP tools** for building custom AI applications with any LLM, and **Dynamic Agents** for invoking ready-to-use AI assistants from [Collate's AI Studio](https://www.getcollate.io).
+Bring AI to your metadata. The OpenMetadata AI SDK gives you programmatic access OpenMetadata and Collate through two complementary paths: **MCP tools** for building custom AI applications with any LLM, and **Dynamic Agents** for invoking ready-to-use AI assistants from [Collate's AI Studio](https://www.getcollate.io).
 
 | SDK | Package | Install |
 |-----|---------|---------|
@@ -12,23 +12,23 @@ Bring AI to your metadata. The OpenMetadata AI SDK gives you programmatic access
 
 ## Why This SDK?
 
-### MCP Tools — Your catalog as an AI toolkit
+### MCP Tools — Your Data Management Platform as an AI toolkit
 
-OpenMetadata exposes an [MCP server](https://modelcontextprotocol.io/) at `/mcp` that turns your catalog into a set of tools any LLM can use. Unlike generic MCP connectors that only read raw database schemas, OpenMetadata's MCP tools give your AI access to the **full context** of your data platform:
+OpenMetadata exposes an [MCP server](https://modelcontextprotocol.io/) at `/mcp` that turns your data management platform into a set of tools any LLM can use. Unlike generic MCP connectors that only read raw database schemas, OpenMetadata's MCP tools give your AI access to the **full context** of your data platform:
 
-- **Semantic search** — Find assets by meaning, not just name. Search across tables, dashboards, pipelines, and more with catalog-aware ranking.
+- **Semantic search** — Find assets by meaning, not just name. Search across tables, dashboards, pipelines, and more with relevancy-aware ranking.
 - **Lineage traversal** — Trace upstream sources and downstream impact across your entire data estate. Understand how a schema change propagates before it breaks anything.
 - **Glossary & classification** — Read and write business definitions, tags, and PII classifications. Your AI doesn't just find data — it understands what it means.
-- **Catalog mutations** — Create glossary terms, update descriptions, add lineage edges, and patch entities. Go beyond read-only exploration to actually curate your catalog.
+- **Metadata mutations** — Create glossary terms, update descriptions, add lineage edges, and patch entities. Go beyond read-only exploration to actually curate your data.
 - **Framework adapters** — First-class integration with LangChain and OpenAI function calling. Convert MCP tools with a single method call, with built-in include/exclude filtering for safety control.
 
 ```python
-# Build a custom LangChain agent backed by your catalog
+# Build a custom LangChain agent backed by Collate
 from ai_sdk import AISdk, AISdkConfig
 
 client = AISdk.from_config(AISdkConfig.from_env())
 
-# Convert catalog tools to LangChain format — one line
+# Convert Collate tools to LangChain format — one line
 tools = client.mcp.as_langchain_tools()
 
 # Or call tools directly
@@ -37,7 +37,7 @@ result = client.mcp.call_tool("search_metadata", {"query": "customers"})
 
 ### Collate Agents — Pre-built AI assistants from AI Studio
 
-With [Collate](https://www.getcollate.io), you get access to **AI Studio** — a platform for creating and managing AI agents that are purpose-built for data teams. Each agent combines a persona, a set of abilities, and full catalog access into a ready-to-use assistant you can invoke from any SDK:
+With [Collate](https://www.getcollate.io), you get access to **AI Studio** — a platform for creating and managing AI agents that are purpose-built for data teams. Each agent combines a persona, a set of abilities, and full context and semantics access into a ready-to-use assistant you can invoke from any SDK:
 
 ```python
 from ai_sdk import AISdk
@@ -306,7 +306,7 @@ Real-world examples showing how teams use the AI SDK in production workflows.
 | [MCP Impact Analysis](cookbook/mcp-impact-analysis/) | AI-powered impact analysis for schema changes — run in CI to catch breaking changes before they ship | Python SDK, LangChain |
 | [DQ Failure Slack Notifications](cookbook/dq-failure-slack-notifications/) | Automatically analyze Data Quality failures and post root-cause summaries to Slack | n8n, Slack |
 | [dbt Model PR Review](cookbook/dbt-pr-review/) | GitHub Action that reviews dbt model changes for downstream impact and DQ risks on every PR | GitHub Actions, Python SDK |
-| [GDPR DSAR Compliance](cookbook/gdpr-dsar-compliance/) | Trace PII across your catalog to handle data deletion and access requests | TypeScript SDK, Browser |
+| [GDPR DSAR Compliance](cookbook/gdpr-dsar-compliance/) | Trace PII across your data to handle data deletion and access requests | TypeScript SDK, Browser |
 | [MCP Metadata Chatbot](cookbook/mcp-metadata-chatbot/) | Multi-agent chatbot with specialist agents for discovery, lineage, and curation | Python SDK, LangChain |
 
 Each entry includes a step-by-step tutorial, importable artifacts, and the agent configuration needed to get started.
