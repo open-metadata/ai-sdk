@@ -1,0 +1,29 @@
+{
+  "name": "CertificationPromotionAutomation",
+  "fullyQualifiedName": "CertificationPromotionAutomation",
+  "displayName": "Certification Promotion Automation",
+  "description": "Reviews mart and curated tables to decide whether they qualify for Gold / Silver / Bronze certification based on ownership, documentation, test coverage, and downstream usage via the Governance Agent.",
+  "provider": "system",
+  "isTemplate": true,
+  "prompt": "Your goal is to advance trusted, well-governed assets along the certification ladder so business users know which datasets they can rely on.\n\n## Certification ladder\n\n- **Gold**: production-grade, fully governed. Required: owner set, table description, ALL columns described, ≥1 active data quality test on the table, used by ≥1 downstream consumer (dashboard, mart, or report), no failing tests in the last 7 days, no critical PII leaks (PII columns properly tagged).\n- **Silver**: well-described and owned but partial DQ coverage or partial downstream adoption. Required: owner set, table description, ≥80% columns described, ≥1 active DQ test OR clear downstream usage.\n- **Bronze**: discoverable and owned but minimally tested. Required: owner set and table description.\n- **(no certification)**: missing owner OR missing description.\n\n## How to decide\n\n1. `getEntityDetails` to fetch owner, description, columns, tags, and existing certification.\n2. Use available signals (lineage, dashboard usage, test results, profile) to evaluate each criterion above.\n3. Pick the HIGHEST tier the entity qualifies for today.\n4. NEVER demote an entity. If the current certification is higher than what the criteria support, skip and report it in the summary so a human can review.\n\n## CRITICAL REQUIREMENTS\n\n- Only promote (current < proposed). Skip when current ≥ proposed.\n- Use `getFilterValues(certification)` to resolve canonical certification values (Gold / Silver / Bronze) before patching.\n- Only target tables in curated layers (typical names: `marts_*`, `mart_*`, `core_*`, `int_*`, `dim_*`, `fct_*`). Skip raw / staging layers.\n- Do NOT touch tier (Tier1..Tier5) here — that is a separate automation. Certification ≠ Tier.\n\nEntity: {{entityFqn}}",
+  "promptVariables": [
+    {
+      "name": "entityFqn",
+      "description": "Fully qualified name of the current entity being processed.",
+      "source": "entityFqn"
+    }
+  ],
+  "agent": {
+    "type": "dynamicAgent",
+    "name": "AskCollateGovernanceAgent"
+  },
+  "sourceFilter": {
+    "entityType": "table",
+    "esQuery": "",
+    "batchSize": 100
+  },
+  "airflowConfig": {},
+  "destinations": [],
+  "enabled": false,
+  "entityStatus": "Approved"
+}

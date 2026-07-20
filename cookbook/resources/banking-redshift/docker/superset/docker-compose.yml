@@ -1,0 +1,68 @@
+version: "3.9"
+
+# Local Superset stack for the banking-redshift cookbook demo.
+#
+# Two services:
+#   - superset-db: Postgres used by Superset for its own metadata
+#   - superset:   The Superset app, built from the local Dockerfile so we
+#                 can include the Redshift driver
+#
+# Superset connects to Amazon Redshift for the actual analytics data. The
+# Redshift connection is configured at runtime by `scripts/setup_superset.sh`.
+
+services:
+  superset-db:
+    image: postgres:15
+    container_name: banking_superset_db
+    environment:
+      POSTGRES_USER: superset
+      POSTGRES_PASSWORD: superset
+      POSTGRES_DB: superset
+    volumes:
+      - banking_superset_db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U superset -d superset"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - banking_superset_network
+
+  superset:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: banking_superset
+    environment:
+      SUPERSET_SECRET_KEY: ${SUPERSET_SECRET_KEY:-thisISaSECRET_1234567890_changeMe}
+      SUPERSET_ADMIN_EMAIL: ${SUPERSET_ADMIN_EMAIL:-admin@bank.demo}
+      SUPERSET_ADMIN_PASSWORD: ${SUPERSET_ADMIN_PASSWORD:-BankAdmin123!}
+      SUPERSET_METADATA_DB_URI: postgresql+psycopg2://superset:superset@superset-db:5432/superset
+    ports:
+      - "8088:8088"
+    depends_on:
+      superset-db:
+        condition: service_healthy
+    volumes:
+      - ./superset_config.py:/app/pythonpath/superset_config.py
+    command: >
+      bash -c "
+        superset db upgrade &&
+        (superset fab create-admin
+            --username admin
+            --firstname Bank
+            --lastname Admin
+            --email \"$${SUPERSET_ADMIN_EMAIL:-admin@bank.demo}\"
+            --password \"$${SUPERSET_ADMIN_PASSWORD:-BankAdmin123!}\" || true) &&
+        superset init &&
+        gunicorn --bind 0.0.0.0:8088 --workers 2 --timeout 120 'superset.app:create_app()'
+      "
+    networks:
+      - banking_superset_network
+
+volumes:
+  banking_superset_db_data:
+
+networks:
+  banking_superset_network:
+    driver: bridge

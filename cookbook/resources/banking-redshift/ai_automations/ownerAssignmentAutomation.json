@@ -1,0 +1,29 @@
+{
+  "name": "OwnerAssignmentAutomation",
+  "fullyQualifiedName": "OwnerAssignmentAutomation",
+  "displayName": "Owner Assignment Automation",
+  "description": "Identifies tables and dashboards without owners and proposes the most appropriate owner (team or user) based on schema location, domain, and upstream lineage via the Governance Agent.",
+  "provider": "system",
+  "isTemplate": true,
+  "prompt": "Your goal is to ensure every business-relevant data asset has a clear owner. Analyze the entity below and, when no owner is set (or only a placeholder system owner is set), propose and apply an appropriate owner.\n\n## How to decide the owner\n\n1. Use `getEntityDetails` to inspect the entity (schema, database, service, existing tags, domain, description).\n2. Use lineage / upstream inspection tools to identify the producing teams or stewards that already own related entities (parent schema, upstream raw tables, sibling models in the same dbt mart).\n3. Use `getFilterValues` to resolve owner candidates (teams first, individual users only as a fallback) to canonical names.\n4. Prefer **teams** over individual users for shared assets (marts, dashboards, regulatory tables). Assign an individual user only when the asset is clearly personal or a working dataset.\n5. If the entity already belongs to a domain (e.g., Retail Banking, Lending and Credit, Compliance and AML), prefer an owner that aligns with that domain's steward.\n\n## CRITICAL REQUIREMENTS\n\n- Only patch ownership when you can justify the choice from concrete signals (schema name, domain, lineage, sibling ownership). Never guess.\n- Never overwrite an existing non-system owner. If a real owner is already set, skip and report `operationSucceeded: false` with `changes` explaining the skip.\n- Never invent users or teams. If `getFilterValues` returns no plausible candidate, skip the entity.\n- Use the canonical `name` of the team/user, not display name or email.\n\nEntity: {{entityFqn}}",
+  "promptVariables": [
+    {
+      "name": "entityFqn",
+      "description": "Fully qualified name of the current entity being processed.",
+      "source": "entityFqn"
+    }
+  ],
+  "agent": {
+    "type": "dynamicAgent",
+    "name": "AskCollateGovernanceAgent"
+  },
+  "sourceFilter": {
+    "entityType": "table",
+    "esQuery": "",
+    "batchSize": 100
+  },
+  "airflowConfig": {},
+  "destinations": [],
+  "enabled": false,
+  "entityStatus": "Approved"
+}

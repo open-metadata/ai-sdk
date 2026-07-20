@@ -1,0 +1,393 @@
+version: 2
+
+models:
+  - name: int_customers__360
+    description: >
+      One row per customer enriched with primary mailing address, primary email and
+      mobile contacts, the latest KYC check and the most recent FICO score.
+    columns:
+      - name: customer_id
+        description: Stable globally-unique customer identifier — primary key.
+        data_tests:
+          - unique
+          - not_null
+      - name: first_name
+        description: Customer legal first name.
+      - name: last_name
+        description: Customer legal last name.
+      - name: email
+        description: Lowercased customer email. PII.
+      - name: phone
+        description: Customer phone number. PII.
+      - name: ssn
+        description: US Social Security Number in 'NNN-NN-NNNN' format. PII — restricted to retail customers.
+      - name: date_of_birth
+        description: Customer date of birth. PII.
+      - name: customer_segment
+        description: Marketing/risk segment code.
+      - name: customer_type
+        description: Customer type — retail, business, or private_banking.
+      - name: branch_id
+        description: Home branch of the customer.
+      - name: primary_employee_id
+        description: Personal banker assigned to the customer.
+      - name: kyc_status
+        description: KYC verification status carried from the customer record.
+      - name: risk_band
+        description: Bank-assigned risk band.
+      - name: created_at
+        description: Timestamp the customer record was created.
+      - name: updated_at
+        description: Timestamp the customer record was last updated.
+      - name: mailing_address_line_1
+        description: Primary mailing street address line. PII.
+      - name: mailing_address_line_2
+        description: Secondary mailing address line. PII.
+      - name: mailing_city
+        description: City from the customer's mailing address. PII.
+      - name: mailing_state
+        description: Mailing state / province code. PII.
+      - name: mailing_postal_code
+        description: Mailing ZIP / postal code. PII.
+      - name: mailing_country
+        description: Mailing country.
+      - name: primary_email
+        description: Primary verified email contact.
+      - name: primary_mobile
+        description: Primary verified mobile contact.
+      - name: last_kyc_date
+        description: Most recent KYC check date for the customer.
+      - name: last_kyc_status
+        description: Status of the most recent KYC check.
+      - name: current_fico_score
+        description: Most recent FICO bureau score value (300-850).
+      - name: current_fico_score_date
+        description: Date of the most recent FICO score pull.
+      - name: current_fico_bureau
+        description: Bureau that produced the most recent FICO score.
+
+  - name: int_accounts__enriched
+    description: >
+      Accounts joined with account_type reference data and account_holder aggregates
+      (holder count and comma-separated customer_ids).
+    columns:
+      - name: account_id
+        description: Unique account identifier — primary key.
+        data_tests:
+          - unique
+          - not_null
+      - name: customer_id
+        description: Primary holder customer_id (FK to customers).
+      - name: account_type
+        description: Lowercased account type code.
+      - name: account_type_name
+        description: Human-readable account type from the reference table.
+      - name: product_category
+        description: Product category bucket (deposit, credit, ...).
+      - name: product_code
+        description: Internal product code for the account.
+      - name: opened_date
+        description: Date the account was opened.
+      - name: closed_date
+        description: Date the account was closed (null when still active).
+      - name: status
+        description: Account lifecycle status (active, closed, dormant, frozen).
+      - name: balance
+        description: Current balance in account currency.
+      - name: currency
+        description: ISO 4217 currency code for the balance.
+      - name: branch_id
+        description: Branch the account is booked at.
+      - name: interest_rate
+        description: Stated interest rate (decimal).
+      - name: credit_limit
+        description: Credit limit (null for non-credit accounts), in USD.
+      - name: is_joint
+        description: True when the account is held jointly.
+      - name: created_at
+        description: Timestamp the account record was created.
+      - name: updated_at
+        description: Timestamp the account record was last updated.
+      - name: holder_count
+        description: Number of active holders on the account.
+      - name: customer_ids
+        description: Comma-separated list of holder customer_ids, ordered by holder_order.
+      - name: days_open
+        description: Days the account has been open (null for closed accounts).
+
+  - name: int_branches__performance
+    description: >
+      Branches with rollup metrics across accounts, deposits, customer loans and
+      active employees.
+    columns:
+      - name: branch_id
+        description: Unique branch identifier — primary key.
+        data_tests:
+          - unique
+          - not_null
+      - name: account_count
+        description: Number of accounts booked at the branch.
+      - name: total_deposits
+        description: Sum of positive balances across deposit-style accounts at the branch, in USD.
+      - name: total_loan_principal
+        description: Total principal originated for customers whose home branch is this branch, in USD.
+      - name: loan_count
+        description: Number of loans for customers at this branch.
+      - name: employee_count
+        description: Active employees assigned to the branch.
+
+  - name: int_employees__org
+    description: >
+      Employee hierarchy built with a recursive CTE. Each employee carries the chain
+      of managers ("CEO -> VP -> Director -> ...") and a numeric depth level.
+    columns:
+      - name: employee_id
+        description: Unique employee identifier — primary key.
+        data_tests:
+          - unique
+          - not_null
+      - name: manager_id
+        description: Direct manager's employee_id (null for top-level employees).
+      - name: level
+        description: Depth in the org tree; CEO/top-level employees are level 0.
+      - name: manager_chain_path
+        description: Arrow-separated chain of names from the top-level manager down.
+
+  - name: int_transactions__categorized
+    description: >
+      Transactions joined with the transaction_categories reference table and
+      (where applicable) the merchant directory. Merchant join is left because only
+      purchase transactions carry a merchant_id.
+    columns:
+      - name: transaction_id
+        description: Unique transaction identifier — primary key.
+        data_tests:
+          - unique
+          - not_null
+      - name: category_name
+        description: Human-readable category name.
+      - name: category_group
+        description: High-level category grouping (income, spend, transfer, ...).
+      - name: merchant_name
+        description: Merchant name (null when no merchant is associated).
+      - name: mcc_code
+        description: Merchant Category Code (null for non-card transactions).
+
+  - name: int_loans__delinquency
+    description: >
+      Loans enriched with the most recent posted payment date, days past due and a
+      derived delinquency bucket.
+    columns:
+      - name: loan_id
+        description: Unique loan identifier — primary key.
+        data_tests:
+          - unique
+          - not_null
+      - name: application_id
+        description: Origination application identifier (FK to loan_applications).
+      - name: customer_id
+        description: Borrower customer_id (FK to customers).
+      - name: product_code
+        description: Loan product code (e.g., MORTGAGE_30Y, AUTO_LOAN).
+      - name: principal
+        description: Original loan principal at origination, in USD.
+      - name: interest_rate
+        description: Stated interest rate (decimal — 0.045 = 4.5%).
+      - name: term_months
+        description: Loan term in months.
+      - name: origination_date
+        description: Date the loan was originated.
+      - name: maturity_date
+        description: Date the loan matures.
+      - name: first_payment_date
+        description: Date of the first scheduled payment.
+      - name: next_due_date
+        description: Next scheduled payment date (null when closed).
+      - name: status
+        description: Loan lifecycle status (current, delinquent, paid_off, charged_off).
+      - name: balance
+        description: Current outstanding principal balance, in USD.
+      - name: monthly_payment
+        description: Scheduled monthly payment amount, in USD.
+      - name: branch_id
+        description: Originating branch identifier.
+      - name: last_payment_date
+        description: Date of the most recent posted loan payment.
+      - name: days_past_due
+        description: >
+          Days past the next_due_date. 0 for current or paid-off loans, 999 for
+          charged-off loans.
+      - name: delinquency_bucket
+        description: One of current, dpd_1_29, dpd_30_59, dpd_60_89, dpd_90_plus, charge_off.
+      - name: balance_to_principal_ratio
+        description: balance / principal (uses safe_divide).
+
+  - name: int_loans__schedule
+    description: >
+      Illustrative amortization-style schedule per loan. One row per (loan,
+      month_offset) from origination_date through min(maturity_date, current_date).
+      Opening balance decays linearly; interest and principal portions are derived
+      from the fixed monthly_payment. This is a teaching aid, not a production
+      amortization.
+    columns:
+      - name: loan_id
+        description: Loan identifier (foreign key to int_loans__delinquency).
+        data_tests:
+          - not_null
+      - name: month_offset
+        description: Months since origination (0-based).
+      - name: schedule_date
+        description: Scheduled payment date for this row.
+      - name: opening_balance
+        description: Linearly-decaying opening balance for the period, in USD.
+      - name: interest_portion
+        description: Estimated interest portion of the payment, in USD.
+      - name: principal_portion
+        description: Estimated principal portion of the payment, in USD.
+
+  - name: int_aml__alert_context
+    description: >
+      AML alerts enriched with customer segment / risk_band, the related account's
+      type and status, and the flagged transaction's amount and posting time. Account
+      and transaction joins are left joins because some alerts intentionally reference
+      orphan or closed entities (a DQ scenario).
+    columns:
+      - name: alert_id
+        description: Unique AML alert identifier — primary key.
+        data_tests:
+          - unique
+          - not_null
+      - name: customer_id
+        description: Customer the alert was raised on (FK to customers).
+      - name: account_id
+        description: Related account identifier (may be null or reference closed accounts).
+      - name: transaction_id
+        description: Related transaction identifier (nullable).
+      - name: alert_type
+        description: Alert scenario type (lowercased).
+      - name: severity
+        description: Alert severity (low, medium, high, critical).
+      - name: status
+        description: Alert lifecycle status (new, triaging, escalated, closed_no_action, closed_sar_filed).
+      - name: alert_date
+        description: Date the alert was raised.
+      - name: triaged_date
+        description: Date the alert was triaged (null while not yet triaged).
+      - name: closed_date
+        description: Date the alert was closed (null while open).
+      - name: assigned_to_employee_id
+        description: Compliance analyst assigned to the alert.
+      - name: narrative
+        description: Free-text alert narrative.
+      - name: scenario_code
+        description: Internal scenario rule code (e.g., SCN-136).
+      - name: created_at
+        description: Record creation timestamp.
+      - name: customer_segment
+        description: Marketing/risk segment of the customer (joined from stg_core_banking__customers).
+      - name: risk_band
+        description: Customer risk band at alert time.
+      - name: account_type
+        description: Type of the associated account (may be null for orphan alerts).
+      - name: account_status
+        description: Status of the associated account (may be null for orphan alerts).
+      - name: flagged_amount
+        description: Transaction amount that triggered the alert, in USD.
+      - name: flagged_posted_at
+        description: Timestamp the flagged transaction was posted.
+
+  - name: int_kyc__customer_status
+    description: >
+      Per-customer KYC aggregates with a derived kyc_status bucket
+      (failed_open, expired, compliant, pending).
+    columns:
+      - name: customer_id
+        description: Unique customer identifier — primary key.
+        data_tests:
+          - unique
+          - not_null
+      - name: initial_kyc_date
+        description: Date of the customer's initial KYC verification.
+      - name: last_refresh_date
+        description: Most recent KYC refresh date.
+      - name: last_failed_date
+        description: Most recent date a KYC check failed for this customer.
+      - name: last_check_date
+        description: Most recent KYC check date of any type.
+      - name: last_check_status
+        description: Status of the most recent KYC check.
+      - name: kyc_status
+        description: >
+          Derived bucket: failed_open if last check failed; expired if older than 365
+          days; compliant if last check passed; otherwise pending.
+
+  - name: int_cards__activity
+    description: >
+      Per-card activity rollup combining authorization counts and dispute totals.
+    columns:
+      - name: card_id
+        description: Unique card identifier — primary key.
+        data_tests:
+          - unique
+          - not_null
+      - name: total_auths
+        description: Total number of authorizations for this card.
+      - name: approved_auths
+        description: Number of approved authorizations.
+      - name: declined_auths
+        description: Number of declined authorizations.
+      - name: last_used_at
+        description: Timestamp of the most recent authorization.
+      - name: dispute_count
+        description: Number of disputes filed against this card.
+      - name: chargeback_amount_total
+        description: Sum of chargeback amounts on disputes for this card, in USD.
+      - name: approval_rate
+        description: approved_auths / total_auths (uses safe_divide).
+
+  - name: int_digital__engagement
+    description: >
+      Per-customer digital engagement rollup across web sessions, mobile events
+      and login attempts.
+    columns:
+      - name: customer_id
+        description: Unique customer identifier — primary key.
+        data_tests:
+          - unique
+          - not_null
+      - name: web_session_count
+        description: Total web sessions in the period.
+      - name: mobile_event_count
+        description: Total mobile app events.
+      - name: last_mobile_event_at
+        description: Timestamp of the most recent mobile event.
+      - name: login_success_count
+        description: Successful login attempts.
+      - name: login_failure_count
+        description: Failed login attempts.
+      - name: last_login_at
+        description: Timestamp of the most recent login attempt.
+      - name: login_success_rate
+        description: Successful logins / total attempts (uses safe_divide).
+
+  - name: int_holdings__valued
+    description: >
+      Holdings priced at the current security price, with derived market_value and
+      unrealized_pnl. customer_id is brought in from investment_accounts so
+      downstream marts can group by customer.
+    columns:
+      - name: holding_id
+        description: Unique holding identifier — primary key.
+        data_tests:
+          - unique
+          - not_null
+      - name: customer_id
+        description: Customer who owns the position (via the investment account).
+      - name: ticker
+        description: Ticker symbol of the held security.
+      - name: market_value
+        description: quantity * current_price, in USD.
+      - name: unrealized_pnl
+        description: market_value - cost_basis, in USD.
+      - name: unrealized_return_pct
+        description: (market_value - cost_basis) / cost_basis (decimal; uses safe_divide).

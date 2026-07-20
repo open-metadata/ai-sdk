@@ -1,0 +1,436 @@
+version: 2
+
+models:
+  - name: dim_customers
+    description: >
+      Customer dimension enriched with rollups across deposits, loans and wealth
+      holdings, plus a derived value_segment used to drive downstream banking
+      and marketing analytics. Carries PII (SSN, DOB, email, phone, mailing
+      address) — restrict access per the bank's privacy policy.
+      Grain: one row per customer_id.
+    meta:
+      owner: alice.chen
+      domain: RetailBanking
+    columns:
+      - name: customer_id
+        description: Stable globally-unique customer identifier — primary key.
+        data_tests:
+          - unique
+          - not_null
+      - name: first_name
+        description: Customer legal first name.
+      - name: last_name
+        description: Customer legal last name.
+      - name: email
+        description: Lowercased customer email address. PII.
+        meta:
+          pii: true
+          pii_type: EmailAddress
+      - name: phone
+        description: Customer phone number. PII.
+        meta:
+          pii: true
+          pii_type: PhoneNumber
+      - name: ssn
+        description: US Social Security Number. PII — restricted to retail customers.
+        meta:
+          pii: true
+          pii_type: SSN
+      - name: date_of_birth
+        description: Customer date of birth. PII.
+        meta:
+          pii: true
+          pii_type: DOB
+      - name: customer_segment
+        description: Marketing/risk segment code.
+      - name: customer_type
+        description: Customer type — retail, business, or private_banking.
+      - name: branch_id
+        description: Home branch of the customer (FK to dim_branches).
+      - name: primary_employee_id
+        description: Personal banker assigned to the customer.
+      - name: kyc_status
+        description: Current KYC verification status.
+      - name: risk_band
+        description: Bank-assigned risk band.
+      - name: created_at
+        description: Timestamp the customer record was created.
+      - name: updated_at
+        description: Timestamp the customer record was last updated.
+      - name: mailing_address_line_1
+        description: Primary mailing street address line. PII.
+        meta:
+          pii: true
+          pii_type: PhysicalAddress
+      - name: mailing_address_line_2
+        description: Secondary mailing address line. PII.
+        meta:
+          pii: true
+          pii_type: PhysicalAddress
+      - name: mailing_city
+        description: Mailing city. PII.
+        meta:
+          pii: true
+          pii_type: PhysicalAddress
+      - name: mailing_state
+        description: Mailing state / province code. PII.
+        meta:
+          pii: true
+          pii_type: PhysicalAddress
+      - name: mailing_postal_code
+        description: Mailing ZIP / postal code. PII.
+        meta:
+          pii: true
+          pii_type: PhysicalAddress
+      - name: mailing_country
+        description: Mailing country.
+      - name: primary_email
+        description: Primary verified email contact (from customer_contacts). PII.
+        meta:
+          pii: true
+          pii_type: EmailAddress
+      - name: primary_mobile
+        description: Primary verified mobile contact (from customer_contacts). PII.
+        meta:
+          pii: true
+          pii_type: PhoneNumber
+      - name: last_kyc_date
+        description: Date of the customer's most recent KYC check.
+      - name: last_kyc_status
+        description: Status of the most recent KYC check.
+      - name: current_fico_score
+        description: Most recent FICO bureau score value (300-850).
+      - name: current_fico_score_date
+        description: Date of the most recent FICO score pull.
+      - name: current_fico_bureau
+        description: Bureau that produced the most recent FICO score.
+      - name: total_deposit_balance
+        description: >
+          Sum of positive balances across the customer's deposit-category
+          accounts (zero when the customer has no deposit accounts), in USD.
+      - name: account_count
+        description: Number of accounts the customer is the primary holder on.
+      - name: total_loan_balance
+        description: >
+          Sum of outstanding balances across active loans (excludes paid_off
+          and charged_off loans), in USD.
+      - name: loan_count
+        description: Number of active loans (excludes paid_off and charged_off).
+      - name: aum
+        description: >
+          Assets under management; sum of market_value across the customer's
+          wealth holdings (zero when the customer has no holdings), in USD.
+      - name: value_segment
+        description: >
+          Derived bucket used for segmentation:
+          private_banking (aum >= 250k),
+          high_value (deposits >= 50k),
+          mass_market (deposits >= 5k),
+          emerging (otherwise).
+        data_tests:
+          - accepted_values:
+              arguments:
+                values:
+                  - private_banking
+                  - high_value
+                  - mass_market
+                  - emerging
+
+  - name: dim_accounts
+    description: >
+      Account dimension. Wraps int_accounts__enriched and resolves the primary
+      customer's name. Grain: one row per account_id.
+    meta:
+      owner: alice.chen
+      domain: RetailBanking
+    columns:
+      - name: account_id
+        description: Unique account identifier — primary key.
+        data_tests:
+          - unique
+          - not_null
+      - name: primary_customer_id
+        description: Primary holder customer_id (FK to dim_customers).
+      - name: primary_customer_first_name
+        description: First name of the primary holder.
+      - name: primary_customer_last_name
+        description: Last name of the primary holder.
+      - name: account_type
+        description: Account type code (lowercased).
+      - name: account_type_name
+        description: Human-readable account type name (from reference data).
+      - name: product_category
+        description: Product category bucket (deposit, credit, ...).
+      - name: product_code
+        description: Internal product code for the account.
+      - name: opened_date
+        description: Date the account was opened.
+      - name: closed_date
+        description: Date the account was closed (null when active).
+      - name: status
+        description: Current lifecycle status (active, closed, dormant, frozen).
+      - name: balance
+        description: Current balance for the account, in account currency.
+      - name: currency
+        description: ISO 4217 currency code for the balance.
+      - name: branch_id
+        description: Branch the account is booked at (FK to dim_branches).
+      - name: interest_rate
+        description: Stated interest rate (decimal).
+      - name: credit_limit
+        description: Credit limit (null for non-credit accounts), in USD.
+      - name: is_joint
+        description: True when the account is held jointly with another customer.
+      - name: created_at
+        description: Timestamp the account record was created.
+      - name: updated_at
+        description: Timestamp the account record was last updated.
+      - name: holder_count
+        description: Number of active holders on the account.
+      - name: customer_ids
+        description: Comma-separated list of holder customer_ids, ordered by holder_order.
+      - name: days_open
+        description: Days the account has been open (null for closed accounts).
+
+  - name: dim_branches
+    description: >
+      Branch dimension. Wraps int_branches__performance and resolves the branch
+      manager's name (preferring manager_employee_id, falling back to an
+      employee with role='branch_manager' at the branch). Grain: one row per
+      branch_id.
+    meta:
+      owner: alice.chen
+      domain: RetailBanking
+    columns:
+      - name: branch_id
+        description: Unique branch identifier — primary key.
+        data_tests:
+          - unique
+          - not_null
+      - name: branch_name
+        description: Human-readable branch name.
+      - name: address_line_1
+        description: Branch street address.
+      - name: city
+        description: City the branch is located in.
+      - name: state
+        description: US state code for the branch.
+      - name: postal_code
+        description: Branch ZIP / postal code.
+      - name: country
+        description: Country of the branch.
+      - name: region
+        description: US region (Northeast, Southeast, Midwest, Southwest, West).
+      - name: phone
+        description: Branch contact phone number.
+      - name: manager_employee_id
+        description: Employee_id of the branch manager (FK to dim_employees).
+      - name: branch_manager_name
+        description: >
+          Resolved full name of the branch manager. Prefers the
+          manager_employee_id on the branch record, falling back to an employee
+          at the branch with role='branch_manager'.
+      - name: opened_date
+        description: Date the branch opened.
+      - name: closed_date
+        description: Date the branch closed (null when active).
+      - name: is_active
+        description: True when the branch is currently operating.
+      - name: account_count
+        description: Number of accounts booked at the branch.
+      - name: total_deposits
+        description: Sum of positive balances across deposit accounts at the branch, in USD.
+      - name: total_loan_principal
+        description: Sum of loan principal for customers at this branch, in USD.
+      - name: loan_count
+        description: Number of loans for customers at this branch.
+      - name: employee_count
+        description: Active employees assigned to the branch.
+
+  - name: dim_employees
+    description: >
+      Employee dimension. Wraps int_employees__org and adds branch_name and
+      manager_name (resolved via self-join on manager_id). Grain: one row per
+      employee_id.
+    meta:
+      owner: alice.chen
+      domain: RetailBanking
+    columns:
+      - name: employee_id
+        description: Unique employee identifier — primary key.
+        data_tests:
+          - unique
+          - not_null
+      - name: manager_id
+        description: Direct manager's employee_id (null for top-level employees).
+      - name: first_name
+        description: Employee first name.
+      - name: last_name
+        description: Employee last name.
+      - name: email
+        description: Employee corporate email.
+      - name: phone
+        description: Employee work phone number.
+      - name: hire_date
+        description: Date the employee was hired.
+      - name: termination_date
+        description: Date the employee was terminated (null for active employees).
+      - name: role
+        description: Employee job role (lowercased).
+      - name: branch_id
+        description: Branch the employee is assigned to (FK to dim_branches).
+      - name: branch_name
+        description: Branch name (joined from stg_core_banking__branches).
+      - name: salary_band
+        description: Internal salary band code (B1..B6).
+      - name: is_active
+        description: True when the employee is currently employed.
+      - name: level
+        description: Depth in the org tree; top-level employees are level 0.
+      - name: manager_chain_path
+        description: Arrow-separated chain of names from the top-level manager down.
+      - name: manager_name
+        description: Full name of the direct manager (null at the top of the tree).
+
+  - name: dim_cards
+    description: >
+      Card dimension. Wraps int_cards__activity and joins the cardholder's
+      first and last name. The card PAN is exposed only via card_number_masked
+      (masked upstream). Grain: one row per card_id.
+    meta:
+      owner: alice.chen
+      domain: RetailBanking
+    columns:
+      - name: card_id
+        description: Unique card identifier — primary key.
+        data_tests:
+          - unique
+          - not_null
+      - name: customer_id
+        description: Cardholder customer_id (FK to dim_customers).
+      - name: customer_first_name
+        description: Cardholder first name.
+      - name: customer_last_name
+        description: Cardholder last name.
+      - name: card_number_masked
+        description: PCI-masked card PAN (e.g. 483955XXXXXX9022). PII.
+        meta:
+          pii: true
+          pii_type: PaymentCardInfo
+      - name: product_code
+        description: Card product code (FK to card_products).
+      - name: issued_date
+        description: Date the card was issued.
+      - name: expires_date
+        description: Card expiration date.
+      - name: status
+        description: Card lifecycle status (active, blocked, expired, lost).
+      - name: credit_limit
+        description: Credit limit (null for debit cards), in USD.
+      - name: linked_account_id
+        description: Account the card draws on (FK to dim_accounts).
+      - name: total_auths
+        description: Total number of authorizations for this card.
+      - name: approved_auths
+        description: Number of approved authorizations.
+      - name: declined_auths
+        description: Number of declined authorizations.
+      - name: last_used_at
+        description: Timestamp of the most recent authorization.
+      - name: dispute_count
+        description: Number of disputes filed against this card.
+      - name: chargeback_amount_total
+        description: Sum of chargeback amounts on disputes for this card, in USD.
+      - name: approval_rate
+        description: approved_auths / total_auths (decimal — 0.95 = 95%; uses safe_divide).
+
+  - name: fct_transactions
+    description: >
+      Central transaction fact. One row per posted transaction with foreign
+      keys to dim_customers, dim_accounts and dim_branches and a DQ-oriented
+      is_orphan flag. Grain: one row per transaction_id.
+    meta:
+      owner: alice.chen
+      domain: RetailBanking
+    columns:
+      - name: transaction_id
+        description: Unique transaction identifier — primary key.
+        data_tests:
+          - unique
+          - not_null
+      - name: account_id
+        description: Account the transaction posted against (FK to dim_accounts; orphans intentional).
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('dim_accounts')
+                field: account_id
+              config:
+                severity: warn
+      - name: customer_id
+        description: >
+          Customer the transaction is attributed to, derived via the account's
+          primary customer. Null when the transaction's account cannot be
+          resolved (is_orphan = true).
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('dim_customers')
+                field: customer_id
+              config:
+                severity: warn
+      - name: branch_id
+        description: >
+          Branch the transaction is attributed to, derived via the account's
+          home branch. Null for orphan transactions.
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('dim_branches')
+                field: branch_id
+              config:
+                severity: warn
+      - name: posted_at
+        description: Timestamp the transaction was posted.
+      - name: posted_date
+        description: posted_at truncated to a date for day-grain reporting.
+      - name: amount
+        description: Signed transaction amount in the transaction currency.
+      - name: currency
+        description: ISO 4217 currency code for the transaction amount.
+      - name: transaction_type
+        description: Transaction type code (joins to transaction_categories upstream).
+      - name: merchant_id
+        description: Merchant identifier (null for non-purchase transactions).
+      - name: description
+        description: Free-text description / memo for the transaction.
+      - name: is_reversal
+        description: True when this row reverses a prior transaction.
+      - name: channel
+        description: Channel through which the transaction was initiated.
+      - name: running_balance
+        description: Running account balance after this transaction posted.
+      - name: created_at
+        description: Timestamp the transaction record was created.
+      - name: category_name
+        description: Human-readable category name (joined from reference data).
+      - name: category_group
+        description: High-level category grouping (income, spend, transfer, ...).
+      - name: sign_hint
+        description: Expected sign of the amount (-1, 0, or 1).
+      - name: merchant_name
+        description: Merchant name (null when no merchant is associated).
+      - name: mcc_code
+        description: Merchant Category Code (null for non-card transactions).
+      - name: mcc_description
+        description: Human-readable MCC description.
+      - name: merchant_city
+        description: Merchant city.
+      - name: merchant_state
+        description: Merchant state / region.
+      - name: merchant_country
+        description: Merchant country.
+      - name: is_orphan
+        description: >
+          True when the transaction's account_id does not resolve to a row in
+          int_accounts__enriched. Useful for surfacing data-quality issues.

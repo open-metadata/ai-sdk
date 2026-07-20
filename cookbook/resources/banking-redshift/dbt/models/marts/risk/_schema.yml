@@ -1,0 +1,173 @@
+version: 2
+
+models:
+  - name: fct_delinquency
+    description: >
+      Loan delinquency snapshot rolled up by (period_month, product_code,
+      delinquency_bucket). Built from int_loans__delinquency, which only carries
+      the current state of each loan, so all rows share period_month =
+      date_trunc('month', current_date). npl_ratio is the share of total
+      product-level balance sitting in dpd_90_plus or charge_off buckets.
+    meta:
+      owner: marcus.williams
+      domain: LendingCredit
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - period_month
+            - product_code
+            - delinquency_bucket
+    columns:
+      - name: period_month
+        description: First day of the snapshot month (current month).
+        data_tests:
+          - not_null
+      - name: product_code
+        description: Loan product code (e.g., MORTGAGE_30Y, AUTO_LOAN).
+        data_tests:
+          - not_null
+      - name: delinquency_bucket
+        description: Delinquency bucket the loan currently falls into.
+        data_tests:
+          - not_null
+          - accepted_values:
+              values:
+                - current
+                - dpd_1_29
+                - dpd_30_59
+                - dpd_60_89
+                - dpd_90_plus
+                - charge_off
+      - name: loan_count
+        description: Number of loans in the bucket.
+      - name: total_balance
+        description: Sum of outstanding balances in the bucket, in USD.
+      - name: npl_ratio
+        description: >
+          Non-performing balance ratio: for dpd_90_plus and charge_off buckets,
+          the share of the product's total balance. 0 for performing buckets.
+
+  - name: fct_loan_loss_provision
+    description: >
+      Expected Credit Loss (ECL) per loan computed as PD * LGD * EAD. PD comes
+      from FICO bands, LGD from product code, EAD from the current outstanding
+      balance.
+    meta:
+      owner: marcus.williams
+      domain: LendingCredit
+    columns:
+      - name: loan_id
+        description: Unique loan identifier — primary key.
+        data_tests:
+          - unique
+          - not_null
+      - name: customer_id
+        description: Borrowing customer identifier (FK to dim_customers).
+        data_tests:
+          - not_null
+      - name: product_code
+        description: Loan product code.
+      - name: balance
+        description: Outstanding loan balance, in USD.
+      - name: fico_score
+        description: Latest FICO score for the borrower (defaults to 650 when missing).
+      - name: pd_estimate
+        description: Probability of default, bucketed from FICO score (decimal in [0, 1]).
+        data_tests:
+          - dbt_utils.accepted_range:
+              min_value: 0
+              max_value: 1
+      - name: lgd_estimate
+        description: Loss given default, product-class specific (decimal in [0, 1]).
+      - name: ead
+        description: Exposure at default; equal to current balance, in USD.
+      - name: expected_credit_loss
+        description: PD * LGD * EAD, in USD.
+        data_tests:
+          - dbt_utils.expression_is_true:
+              expression: ">= 0"
+      - name: delinquency_bucket
+        description: Current delinquency bucket carried through from int_loans__delinquency.
+
+  - name: fct_aml_pipeline
+    description: >
+      Monthly AML alert funnel built from int_aml__alert_context. One row per
+      alert_date month with counts of alerts, triaged, escalated, closed-no-action
+      and SAR-filed outcomes, plus three derived conversion rates and a
+      comma-separated per-alert-type breakdown.
+    meta:
+      owner: david.kim
+      domain: ComplianceAML
+    columns:
+      - name: period_month
+        description: First day of the alert month (truncated alert_date).
+        data_tests:
+          - unique
+          - not_null
+      - name: alerts_count
+        description: Total alerts raised in the month.
+      - name: triaged_count
+        description: Alerts with a non-null triaged_date.
+      - name: escalated_count
+        description: Alerts with status = 'escalated'.
+      - name: closed_no_action_count
+        description: Alerts with status = 'closed_no_action'.
+      - name: sar_filed_count
+        description: Alerts with status = 'closed_sar_filed'.
+      - name: triage_rate
+        description: triaged_count / alerts_count (uses safe_divide).
+      - name: escalation_rate
+        description: escalated_count / triaged_count (uses safe_divide).
+      - name: sar_filing_rate
+        description: sar_filed_count / escalated_count (uses safe_divide).
+      - name: alert_type_breakdown
+        description: Comma-separated "alert_type:count" rollup for the month.
+
+  - name: dim_credit_risk
+    description: >
+      Per-customer credit risk dimension combining current FICO and VantageScore
+      with customer attributes. risk_band and pd_estimate are derived from the
+      latest FICO score (defaulting to 650 when missing).
+    meta:
+      owner: marcus.williams
+      domain: LendingCredit
+    columns:
+      - name: customer_id
+        description: Unique customer identifier — primary key.
+        data_tests:
+          - unique
+          - not_null
+      - name: customer_segment
+        description: Marketing/risk segment.
+      - name: customer_type
+        description: Customer type (retail, business, private_banking).
+      - name: branch_id
+        description: Home branch identifier.
+      - name: kyc_status
+        description: Latest KYC status from int_customers__360.
+      - name: customer_risk_band
+        description: Risk band carried from the core_banking customer record.
+      - name: fico_score
+        description: Most recent FICO score value (300-850).
+      - name: fico_score_date
+        description: Date of the most recent FICO score pull.
+      - name: fico_bureau
+        description: Bureau that produced the most recent FICO score.
+      - name: vantage_score
+        description: Most recent VantageScore value (300-850).
+      - name: vantage_score_date
+        description: Date of the most recent VantageScore pull.
+      - name: vantage_bureau
+        description: Bureau that produced the most recent VantageScore.
+      - name: risk_band
+        description: Derived risk band from FICO score (critical/high/medium/low).
+        data_tests:
+          - not_null
+          - accepted_values:
+              values: ['critical', 'high', 'medium', 'low']
+      - name: pd_estimate
+        description: Probability of default, derived from FICO score (decimal in [0, 1]).
+        data_tests:
+          - dbt_utils.accepted_range:
+              min_value: 0
+              max_value: 1

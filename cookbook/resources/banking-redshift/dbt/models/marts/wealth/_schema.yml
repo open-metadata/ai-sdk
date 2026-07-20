@@ -1,0 +1,104 @@
+version: 2
+
+models:
+  - name: fct_aum
+    description: >
+      Assets Under Management per customer per month. Holdings are a single
+      snapshot, so period_month is anchored to the current month for every row;
+      this keeps the grain time-series compatible for downstream dashboards.
+    meta:
+      owner: priya.patel
+      domain: WealthMgmt
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - customer_id
+            - period_month
+    columns:
+      - name: customer_id
+        description: Customer who owns the holdings rolled up into this AUM row.
+        data_tests:
+          - not_null
+      - name: period_month
+        description: Month bucket (date_trunc('month', current_date)) the AUM applies to.
+        data_tests:
+          - not_null
+      - name: aum
+        description: Total market value of the customer's holdings, in USD.
+        data_tests:
+          - dbt_utils.expression_is_true:
+              expression: ">= 0"
+      - name: aum_cost_basis
+        description: Sum of cost_basis across the customer's holdings, in USD.
+      - name: unrealized_pnl
+        description: Sum of unrealized P&L across the customer's holdings, in USD.
+      - name: holding_count
+        description: Distinct number of securities held by the customer.
+
+  - name: fct_trades
+    description: >
+      Trade activity rolled up per customer x asset_class x month. Trades are
+      joined to investment_accounts (for customer_id) and securities (for
+      asset_class).
+    meta:
+      owner: priya.patel
+      domain: WealthMgmt
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - customer_id
+            - asset_class
+            - period_month
+    columns:
+      - name: customer_id
+        description: Customer placing the trade (via the investment account).
+      - name: asset_class
+        description: Asset class of the traded security (equity, fixed_income, ...).
+      - name: period_month
+        description: Month bucket (date_trunc('month', trade_timestamp)).
+      - name: trade_count
+        description: Number of trades in the bucket.
+      - name: total_volume
+        description: Sum of (quantity * trade_price) for the bucket, in USD.
+      - name: total_commission
+        description: Sum of commissions paid in the bucket, in USD.
+      - name: buy_count
+        description: Number of buy-side trades.
+      - name: sell_count
+        description: Number of sell-side trades.
+      - name: net_quantity
+        description: Net quantity bought minus sold across the bucket.
+
+  - name: dim_holdings
+    description: >
+      Holdings dimension enriched with customer name + segment and portfolio
+      context (weight_in_portfolio_pct, is_top_5_holding).
+    meta:
+      owner: priya.patel
+      domain: WealthMgmt
+    columns:
+      - name: holding_id
+        description: Unique holding identifier — primary key.
+        data_tests:
+          - unique
+          - not_null
+      - name: customer_id
+        description: Customer who owns the position (via the investment account).
+      - name: first_name
+        description: Customer first name (from int_customers__360).
+      - name: last_name
+        description: Customer last name (from int_customers__360).
+      - name: customer_segment
+        description: Customer marketing/risk segment.
+      - name: ticker
+        description: Ticker symbol of the held security.
+      - name: asset_class
+        description: Asset class of the held security.
+      - name: sector
+        description: Sector classification of the held security.
+      - name: market_value
+        description: quantity * current_price, in USD.
+      - name: weight_in_portfolio_pct
+        description: market_value / total customer AUM (decimal — 0.10 = 10%; uses safe_divide).
+      - name: is_top_5_holding
+        description: True for the customer's five largest holdings by market_value.

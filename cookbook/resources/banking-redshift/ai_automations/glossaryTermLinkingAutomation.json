@@ -1,0 +1,29 @@
+{
+  "name": "GlossaryTermLinkingAutomation",
+  "fullyQualifiedName": "GlossaryTermLinkingAutomation",
+  "displayName": "Glossary Term Linking Automation",
+  "description": "Links tables and columns to the relevant business glossary terms (Banking, Risk, Wealth, Compliance, Data Privacy, etc.) so users can navigate from technical assets to canonical business definitions via the Governance Agent.",
+  "provider": "system",
+  "isTemplate": true,
+  "prompt": "Your goal is to connect every business-relevant table and column to the right glossary term so that the catalog tells a coherent business story and downstream users can self-serve definitions.\n\n## How to decide which term to link\n\n1. `getEntityDetails` to inspect the entity (name, schema, columns, existing tags, description, domain).\n2. `getFilterValues(glossaryTerm)` (or search) to discover candidate terms. Typical banking glossaries to expect: `Banking`, `RiskManagement`, `WealthMgmt`, `ComplianceAML`, `DataPrivacyPII`, `FinanceAccounting`.\n3. Link a term ONLY when there is a clear semantic match between the column/table and the term definition. Examples:\n    - column `pd_12m` → glossary term `RiskManagement.ProbabilityOfDefault`\n    - column `ecl_lifetime` → `RiskManagement.ExpectedCreditLoss`\n    - column `aum_usd` → `WealthMgmt.AssetsUnderManagement`\n    - column `sar_filed_at` → `ComplianceAML.SuspiciousActivityReport`\n    - table `dim_customer` → `Banking.Customer`\n4. For a single table, link multiple columns in ONE patch call (the Governance Agent supports batch-per-entity).\n\n## CRITICAL REQUIREMENTS\n\n- Never create a new glossary or glossary term. Only link to terms that already exist (confirm via `getFilterValues`).\n- Never overwrite existing term links. Add the new term alongside any current ones.\n- Skip columns where the match is weak or ambiguous. Precision over recall.\n- Use the term's canonical FQN (e.g., `RiskManagement.ProbabilityOfDefault`), not the display name.\n- If the entity has no business-relevant content (raw_*, audit logs, internal staging), skip it.\n\nEntity: {{entityFqn}}",
+  "promptVariables": [
+    {
+      "name": "entityFqn",
+      "description": "Fully qualified name of the current entity being processed.",
+      "source": "entityFqn"
+    }
+  ],
+  "agent": {
+    "type": "dynamicAgent",
+    "name": "AskCollateGovernanceAgent"
+  },
+  "sourceFilter": {
+    "entityType": "table",
+    "esQuery": "",
+    "batchSize": 100
+  },
+  "airflowConfig": {},
+  "destinations": [],
+  "enabled": false,
+  "entityStatus": "Approved"
+}

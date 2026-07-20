@@ -1,0 +1,645 @@
+version: 2
+
+models:
+  # ---------- raw_core_banking ----------
+  - name: stg_core_banking__customers
+    description: >
+      Cleaned customer master records with normalized casing on categorical fields.
+      Source of truth for customer identity, PII (SSN, tax_id, DOB), segment, KYC
+      status and risk band. Retail customers carry an SSN; business and
+      private_banking customers may use tax_id instead.
+    meta:
+      owner: alice.chen
+      domain: RetailBanking
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - first_name
+            - last_name
+            - date_of_birth
+          config:
+            where: "customer_type = 'retail'"
+    columns:
+      - name: customer_id
+        description: Stable globally-unique customer identifier — primary key.
+        data_tests:
+          - unique
+          - not_null
+      - name: first_name
+        description: Customer legal first name, trimmed of leading/trailing whitespace.
+      - name: last_name
+        description: Customer legal last name, trimmed of leading/trailing whitespace.
+      - name: email
+        description: Lowercased customer email address. PII — used for marketing and OTP.
+        meta:
+          pii: true
+          pii_type: EmailAddress
+      - name: phone
+        description: Customer phone number in E.164-style format. PII.
+        meta:
+          pii: true
+          pii_type: PhoneNumber
+      - name: ssn
+        description: US Social Security Number in 'NNN-NN-NNNN' format. PII — restricted to retail customers.
+        meta:
+          pii: true
+          pii_type: SSN
+        data_tests:
+          - not_null:
+              config:
+                where: "customer_type = 'retail'"
+      - name: tax_id
+        description: Tax identifier (EIN for business, ITIN for non-resident). PII — used when SSN is unavailable.
+        meta:
+          pii: true
+          pii_type: TaxId
+      - name: date_of_birth
+        description: Customer date of birth. PII — drives age-based controls and KYC.
+        meta:
+          pii: true
+          pii_type: DOB
+      - name: customer_segment
+        description: Marketing/risk segment code (uppercase token, FK to customer_segments).
+      - name: customer_type
+        description: High-level customer category.
+        data_tests:
+          - accepted_values:
+              values: ['retail', 'business', 'private_banking']
+      - name: branch_id
+        description: Home branch the customer is associated with (FK to branches).
+        data_tests:
+          - relationships:
+              to: ref('stg_core_banking__branches')
+              field: branch_id
+      - name: primary_employee_id
+        description: Personal banker assigned to the customer (FK to employees).
+      - name: kyc_status
+        description: Current KYC verification status (lowercased).
+        data_tests:
+          - not_null
+          - accepted_values:
+              values: ['passed', 'pending', 'failed', 'expired']
+      - name: risk_band
+        description: Bank-assigned risk band for the customer (lowercased).
+        data_tests:
+          - accepted_values:
+              values: ['low', 'medium', 'high', 'critical']
+      - name: created_at
+        description: Timestamp when the customer record was created in the source system.
+      - name: updated_at
+        description: Timestamp of the most recent update to the customer record.
+
+  - name: stg_core_banking__customer_addresses
+    description: >
+      Customer address history with primary-flag and effective-date windows.
+      Supports mailing, residential and work address types. PII — covered by
+      the bank's restricted-access policy.
+    meta:
+      owner: alice.chen
+      domain: RetailBanking
+    columns:
+      - name: address_id
+        description: Surrogate primary key for the address record.
+        data_tests:
+          - unique
+          - not_null
+      - name: customer_id
+        description: Customer this address belongs to (FK to customers).
+        data_tests:
+          - not_null
+          - relationships:
+              to: ref('stg_core_banking__customers')
+              field: customer_id
+      - name: address_type
+        description: Type of address (mailing, residential, work) — lowercased.
+        data_tests:
+          - accepted_values:
+              values: ['mailing', 'residential', 'work']
+      - name: address_line_1
+        description: Primary street address line. PII.
+        meta:
+          pii: true
+          pii_type: PhysicalAddress
+      - name: address_line_2
+        description: Secondary address line (apartment/suite). PII.
+        meta:
+          pii: true
+          pii_type: PhysicalAddress
+      - name: city
+        description: City name on the address. PII.
+        meta:
+          pii: true
+          pii_type: PhysicalAddress
+        data_tests:
+          - not_null
+      - name: state
+        description: US state or province code. PII.
+        meta:
+          pii: true
+          pii_type: PhysicalAddress
+      - name: postal_code
+        description: ZIP or postal code. PII.
+        meta:
+          pii: true
+          pii_type: PhysicalAddress
+      - name: country
+        description: ISO 3166 country name or code on the address.
+      - name: is_primary
+        description: Flag indicating the customer's primary address for this type.
+      - name: effective_from
+        description: Date the address became effective.
+      - name: effective_to
+        description: Date the address ceased to be effective (null when still current).
+
+  - name: stg_core_banking__customer_contacts
+    description: Customer contact channels (email, phone) with verification and opt-out flags.
+    meta:
+      owner: alice.chen
+      domain: RetailBanking
+    columns:
+      - name: contact_id
+        description: Surrogate primary key for the contact record.
+        data_tests:
+          - unique
+          - not_null
+      - name: customer_id
+        description: Customer this contact belongs to (FK to customers).
+        data_tests:
+          - not_null
+          - relationships:
+              to: ref('stg_core_banking__customers')
+              field: customer_id
+      - name: contact_type
+        description: Channel type for this contact (email, mobile_phone, home_phone).
+        data_tests:
+          - accepted_values:
+              values: ['email', 'mobile_phone', 'home_phone']
+      - name: contact_value
+        description: Value of the contact (email address or phone number). PII.
+      - name: is_primary
+        description: True when this is the customer's primary contact for the channel.
+      - name: is_verified
+        description: True when the contact has been verified (OTP or email link).
+      - name: opt_out
+        description: True when the customer has opted out of communications via this contact.
+      - name: added_at
+        description: Timestamp the contact was added to the customer record.
+
+  - name: stg_core_banking__branches
+    description: Bank branch master data.
+    meta:
+      owner: alice.chen
+      domain: RetailBanking
+    columns:
+      - name: branch_id
+        description: Surrogate primary key for the branch.
+        data_tests:
+          - unique
+          - not_null
+      - name: branch_name
+        description: Human-readable branch name, trimmed.
+      - name: address_line_1
+        description: Branch street address.
+      - name: city
+        description: City the branch is located in.
+      - name: state
+        description: US state code for the branch.
+      - name: postal_code
+        description: Branch ZIP / postal code.
+      - name: country
+        description: Country of the branch.
+      - name: region
+        description: US region the branch operates in.
+        data_tests:
+          - accepted_values:
+              values: ['Northeast', 'Southeast', 'Midwest', 'Southwest', 'West']
+      - name: phone
+        description: Branch contact phone number.
+      - name: manager_employee_id
+        description: Employee currently managing the branch (FK to employees).
+      - name: opened_date
+        description: Date the branch opened.
+      - name: closed_date
+        description: Date the branch was closed (null when still active).
+      - name: is_active
+        description: Whether the branch is currently operating.
+
+  - name: stg_core_banking__employees
+    description: Bank employee directory with role and branch assignment.
+    meta:
+      owner: alice.chen
+      domain: RetailBanking
+    columns:
+      - name: employee_id
+        description: Surrogate primary key for the employee.
+        data_tests:
+          - unique
+          - not_null
+      - name: first_name
+        description: Employee first name.
+      - name: last_name
+        description: Employee last name.
+      - name: email
+        description: Lowercased employee corporate email.
+      - name: phone
+        description: Employee work phone number.
+      - name: hire_date
+        description: Employee hire date.
+      - name: termination_date
+        description: Employee termination date (null for active employees).
+      - name: role
+        description: Job role for the employee (lowercased).
+        data_tests:
+          - accepted_values:
+              values:
+                - branch_manager
+                - teller
+                - personal_banker
+                - loan_officer
+                - credit_analyst
+                - wealth_advisor
+                - aml_investigator
+                - compliance_officer
+                - fraud_analyst
+                - data_engineer
+                - data_steward
+                - executive
+      - name: branch_id
+        description: Branch the employee is assigned to (FK to branches).
+        data_tests:
+          - relationships:
+              to: ref('stg_core_banking__branches')
+              field: branch_id
+      - name: manager_id
+        description: Manager employee_id this person reports to (FK to employees).
+      - name: salary_band
+        description: Internal salary band code (B1..B6).
+        data_tests:
+          - accepted_values:
+              values: ['B1', 'B2', 'B3', 'B4', 'B5', 'B6']
+      - name: is_active
+        description: True when the employee is currently employed.
+
+  - name: stg_core_banking__accounts
+    description: >
+      Customer deposit, savings, and credit accounts. Carries lifecycle status,
+      product code, balance and currency. Joint accounts are exposed via the
+      account_holders bridge.
+    meta:
+      owner: alice.chen
+      domain: RetailBanking
+    columns:
+      - name: account_id
+        description: Surrogate primary key for the account.
+        data_tests:
+          - unique
+          - not_null
+      - name: customer_id
+        description: Primary holder of the account (FK to customers).
+        data_tests:
+          - not_null
+          - relationships:
+              to: ref('stg_core_banking__customers')
+              field: customer_id
+      - name: account_type
+        description: Account type / product family (lowercased).
+        data_tests:
+          - not_null
+          - accepted_values:
+              values:
+                - checking
+                - savings
+                - cd
+                - mma
+                - business_checking
+                - mortgage
+                - heloc
+                - auto_loan
+      - name: product_code
+        description: Product code identifier; ties to the product catalog.
+      - name: opened_date
+        description: Date the account was opened.
+      - name: closed_date
+        description: Date the account was closed (null when still active).
+      - name: status
+        description: Current lifecycle status of the account (lowercased).
+        data_tests:
+          - not_null
+          - accepted_values:
+              values: ['active', 'closed', 'dormant', 'frozen']
+      - name: balance
+        description: Current account balance in account currency, signed (negative = overdraft / amount owed on credit).
+      - name: currency
+        description: ISO 4217 currency code for the account balance.
+        data_tests:
+          - not_null
+      - name: branch_id
+        description: Branch where the account was opened (FK to branches).
+        data_tests:
+          - relationships:
+              to: ref('stg_core_banking__branches')
+              field: branch_id
+      - name: interest_rate
+        description: Stated interest rate (decimal — 0.025 = 2.5%).
+      - name: credit_limit
+        description: Credit limit on credit-style accounts (null for deposit accounts).
+      - name: is_joint
+        description: True when the account is held jointly with another customer.
+      - name: created_at
+        description: Timestamp the account record was created.
+      - name: updated_at
+        description: Timestamp the account record was last updated.
+
+  - name: stg_core_banking__account_holders
+    description: Mapping of customers to accounts, supporting joint ownership.
+    meta:
+      owner: alice.chen
+      domain: RetailBanking
+    columns:
+      - name: holder_id
+        description: Surrogate primary key for the holder record.
+        data_tests:
+          - unique
+          - not_null
+      - name: account_id
+        description: Account being held (FK to accounts).
+        data_tests:
+          - not_null
+          - relationships:
+              to: ref('stg_core_banking__accounts')
+              field: account_id
+      - name: customer_id
+        description: Customer holding the account (FK to customers).
+        data_tests:
+          - not_null
+          - relationships:
+              to: ref('stg_core_banking__customers')
+              field: customer_id
+      - name: holder_order
+        description: Ordering of holders on the account (1 = primary holder).
+      - name: relationship
+        description: Holder relationship type (lowercased).
+        data_tests:
+          - accepted_values:
+              values: ['primary', 'joint']
+      - name: added_at
+        description: Timestamp the holder was added to the account.
+      - name: removed_at
+        description: Timestamp the holder was removed (null while still a holder).
+
+  - name: stg_core_banking__account_types
+    description: Reference table of account type codes and product categories.
+    meta:
+      owner: alice.chen
+      domain: RetailBanking
+    columns:
+      - name: account_type_code
+        description: Canonical account type code (lowercased) — primary key.
+        data_tests:
+          - unique
+          - not_null
+      - name: account_type_name
+        description: Human-readable account type name.
+      - name: product_category
+        description: High-level product family (deposit, credit, ...).
+        data_tests:
+          - accepted_values:
+              values: ['deposit', 'credit']
+
+  # ---------- raw_transactions ----------
+  - name: stg_transactions__transactions
+    description: >
+      Cleaned core ledger of all account postings. One row per transaction with
+      signed amount, type, channel, and optional merchant linkage. Currency is
+      always populated; orphan transactions deliberately reference an unknown
+      account_id (DQ scenario).
+    meta:
+      owner: alice.chen
+      domain: RetailBanking
+    columns:
+      - name: transaction_id
+        description: Surrogate primary key for the transaction.
+        data_tests:
+          - unique
+          - not_null
+      - name: account_id
+        description: Account the transaction posted to (FK to accounts).
+        data_tests:
+          - not_null
+          - relationships:
+              to: ref('stg_core_banking__accounts')
+              field: account_id
+      - name: posted_at
+        description: Timestamp the transaction was posted to the ledger.
+      - name: amount
+        description: Signed transaction amount in the transaction currency.
+      - name: currency
+        description: ISO 4217 currency code for the transaction amount.
+        data_tests:
+          - not_null
+      - name: transaction_type
+        description: Transaction type bucket (lowercased).
+        data_tests:
+          - not_null
+          - accepted_values:
+              values:
+                - deposit
+                - withdrawal
+                - transfer_in
+                - transfer_out
+                - purchase
+                - fee
+                - interest
+                - wire
+                - ach
+                - atm
+                - reversal
+                - adjustment
+      - name: merchant_id
+        description: Merchant identifier (null for non-purchase transactions).
+      - name: description
+        description: Free-text description / memo for the transaction.
+      - name: is_reversal
+        description: True when this row reverses a prior transaction.
+      - name: channel
+        description: Channel through which the transaction was initiated (lowercased).
+        data_tests:
+          - accepted_values:
+              values: ['ach', 'atm', 'branch', 'card', 'mobile', 'web', 'wire']
+      - name: running_balance
+        description: Running account balance after this transaction posted.
+      - name: created_at
+        description: Timestamp the transaction record was created.
+
+  - name: stg_transactions__transaction_categories
+    description: Reference table of transaction category codes.
+    meta:
+      owner: alice.chen
+      domain: RetailBanking
+    columns:
+      - name: category_code
+        description: Canonical category code (lowercased) — primary key.
+        data_tests:
+          - unique
+          - not_null
+      - name: category_name
+        description: Human-readable category name.
+      - name: category_group
+        description: Higher-level grouping for the category.
+        data_tests:
+          - accepted_values:
+              values: ['income', 'outflow', 'fee', 'adjustment']
+      - name: sign_hint
+        description: Expected sign of the amount (-1, 0, or 1).
+
+  - name: stg_transactions__atm_withdrawals
+    description: ATM withdrawal events with terminal location and fee.
+    meta:
+      owner: alice.chen
+      domain: RetailBanking
+    columns:
+      - name: atm_withdrawal_id
+        description: Surrogate primary key for the ATM withdrawal.
+        data_tests:
+          - unique
+          - not_null
+      - name: account_id
+        description: Account the withdrawal was made from (FK to accounts).
+        data_tests:
+          - not_null
+          - relationships:
+              to: ref('stg_core_banking__accounts')
+              field: account_id
+      - name: atm_terminal_id
+        description: ATM terminal identifier.
+      - name: atm_city
+        description: City the ATM terminal is located in.
+      - name: atm_state
+        description: State the ATM terminal is located in.
+      - name: amount
+        description: Withdrawal amount in account currency.
+      - name: fee_amount
+        description: ATM surcharge / network fee charged on the withdrawal.
+      - name: withdrawn_at
+        description: Timestamp the withdrawal was performed.
+      - name: is_foreign
+        description: True when the withdrawal occurred outside the cardholder's home country.
+      - name: network
+        description: ATM network (e.g., PLUS, NYCE, AllPoint).
+      - name: parent_transaction_id
+        description: Link to the parent posting in the core ledger.
+        data_tests:
+          - relationships:
+              to: ref('stg_transactions__transactions')
+              field: transaction_id
+
+  - name: stg_transactions__wire_transfers
+    description: Inbound and outbound wire transfers with SWIFT/IBAN metadata.
+    meta:
+      owner: alice.chen
+      domain: RetailBanking
+    columns:
+      - name: wire_id
+        description: Surrogate primary key for the wire transfer.
+        data_tests:
+          - unique
+          - not_null
+      - name: account_id
+        description: Account the wire was sent from or received into (FK to accounts).
+        data_tests:
+          - not_null
+          - relationships:
+              to: ref('stg_core_banking__accounts')
+              field: account_id
+      - name: direction
+        description: Direction of the wire (incoming/outgoing).
+        data_tests:
+          - not_null
+          - accepted_values:
+              values: ['incoming', 'outgoing']
+      - name: amount
+        description: Wire amount in the wire currency.
+      - name: currency
+        description: ISO 4217 currency code for the wire amount.
+      - name: from_iban
+        description: Originating IBAN. PII — financial identifier.
+        meta:
+          pii: true
+          pii_type: IBAN
+      - name: to_iban
+        description: Beneficiary IBAN. PII — financial identifier.
+        meta:
+          pii: true
+          pii_type: IBAN
+      - name: swift_code
+        description: SWIFT / BIC code of the counterparty bank.
+      - name: fee_amount
+        description: Wire fee charged.
+      - name: originator_name
+        description: Name of the wire originator.
+      - name: beneficiary_name
+        description: Name of the wire beneficiary.
+      - name: wire_purpose
+        description: Free-text wire purpose / memo.
+      - name: sent_at
+        description: Timestamp the wire was initiated.
+      - name: status
+        description: Wire transfer settlement status (lowercased).
+        data_tests:
+          - accepted_values:
+              values: ['completed', 'pending', 'failed', 'rejected']
+      - name: parent_transaction_id
+        description: Link to the parent posting in the core ledger.
+
+  - name: stg_transactions__ach_transfers
+    description: ACH credit and debit transfers with counterparty info.
+    meta:
+      owner: alice.chen
+      domain: RetailBanking
+    columns:
+      - name: ach_id
+        description: Surrogate primary key for the ACH transfer.
+        data_tests:
+          - unique
+          - not_null
+      - name: account_id
+        description: Account the ACH posted against (FK to accounts).
+        data_tests:
+          - not_null
+          - relationships:
+              to: ref('stg_core_banking__accounts')
+              field: account_id
+      - name: direction
+        description: ACH direction (credit/debit).
+        data_tests:
+          - not_null
+          - accepted_values:
+              values: ['credit', 'debit']
+      - name: amount
+        description: ACH amount in account currency.
+      - name: ach_type
+        description: ACH SEC product type (lowercased).
+        data_tests:
+          - accepted_values:
+              values: ['ppd', 'ccd', 'tel', 'web']
+      - name: counterparty_routing
+        description: Counterparty bank ABA routing number.
+      - name: counterparty_account_masked
+        description: Masked counterparty account number (last 4 digits).
+      - name: counterparty_name
+        description: Counterparty payor or payee name.
+      - name: settled_date
+        description: Date the ACH settled.
+      - name: originated_at
+        description: Timestamp the ACH was originated.
+      - name: status
+        description: ACH transfer settlement status (lowercased).
+        data_tests:
+          - accepted_values:
+              values: ['pending', 'settled', 'returned']
+      - name: sec_code
+        description: NACHA SEC code identifying the ACH product class.
+      - name: return_reason_code
+        description: NACHA return reason code (populated only on returned ACH entries).
+      - name: parent_transaction_id
+        description: Link to the parent posting in the core ledger.

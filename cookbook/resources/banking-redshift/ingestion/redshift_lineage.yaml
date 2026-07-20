@@ -1,0 +1,33 @@
+source:
+  type: redshift-lineage
+  serviceName: banking-redshift
+  serviceConnection:
+    config:
+      type: Redshift
+      hostPort: ${REDSHIFT_HOST}:${REDSHIFT_PORT}
+      username: ${REDSHIFT_USER}
+      authType:
+        password: ${REDSHIFT_PASSWORD}
+      database: ${REDSHIFT_DATABASE}
+  sourceConfig:
+    config:
+      type: DatabaseLineage
+      queryLogDuration: 7
+      resultLimit: 1000
+      processViewLineage: true
+
+sink:
+  type: metadata-rest
+  config: {}
+
+# IngestionPipeline registration: FQN leads with the service name; runId is a per-run UUID.
+ingestionPipelineFQN: banking-redshift.lineage
+pipelineRunId: 7143579b-8a06-43a8-99e1-6b577a8f6559
+
+workflowConfig:
+  loggerLevel: INFO
+  openMetadataServerConfig:
+    hostPort: "${AI_SDK_HOST}/api"
+    authProvider: openmetadata
+    securityConfig:
+      jwtToken: "${AI_SDK_TOKEN}"

@@ -1,0 +1,146 @@
+version: 2
+
+models:
+  - name: fct_daily_balances
+    description: >
+      Point-in-time daily balance fact, sampled at month-starts between
+      2025-05-22 and 2026-05-22. Balances are repeated from the current
+      account snapshot — this is illustrative for the CFO demo, not a real
+      historical snapshot.
+    meta:
+      owner: robert.garcia
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - account_id
+            - balance_date
+    columns:
+      - name: account_id
+        description: Account identifier (FK to dim_accounts).
+        data_tests:
+          - not_null
+      - name: balance_date
+        description: Date of the synthetic snapshot (month-start).
+        data_tests:
+          - not_null
+      - name: account_type
+        description: Lowercased account type code.
+      - name: account_type_name
+        description: Human-readable account type name.
+      - name: product_category
+        description: Product category (deposit, savings, checking, credit, ...).
+      - name: branch_id
+        description: Home branch of the account.
+      - name: currency
+        description: Account currency (ISO 4217).
+      - name: status
+        description: Account status at snapshot time.
+      - name: end_of_day_balance
+        description: Account balance carried forward to this balance_date, in account currency.
+
+  - name: fct_monthly_pnl
+    description: >
+      Monthly profit-and-loss roll-up combining loan interest income, fee
+      income, a synthesized cost-of-funds, and a flat overhead expense.
+    meta:
+      owner: robert.garcia
+    columns:
+      - name: period_month
+        description: Month bucket (date_trunc('month', ...)).
+        data_tests:
+          - unique
+          - not_null
+      - name: interest_income
+        description: Sum of interest_portion on posted loan payments in the month, in USD.
+      - name: fee_income
+        description: Sum of fee transactions in the month (sign-flipped to positive), in USD.
+      - name: interest_expense
+        description: Synthesized cost-of-funds — 0.1% of positive deposit balances, in USD.
+      - name: non_interest_expense
+        description: Flat $50,000 monthly overhead placeholder, in USD.
+      - name: net_income
+        description: interest_income + fee_income - interest_expense - non_interest_expense, in USD.
+
+  - name: fct_nim
+    description: >
+      Net Interest Margin per month. Uses an approximate earning-assets base
+      (current sum of deposit + loan balances) so the NIM is annualized via
+      ((interest_income - interest_expense) * 12) / avg_earning_assets.
+    meta:
+      owner: robert.garcia
+    columns:
+      - name: period_month
+        description: Month bucket.
+        data_tests:
+          - unique
+          - not_null
+      - name: interest_income
+        description: Sum of interest_portion on posted loan payments in the month, in USD.
+      - name: interest_expense
+        description: 0.1% of current positive deposit balances (proxy cost-of-funds), in USD.
+      - name: net_interest_income
+        description: interest_income - interest_expense, in USD.
+      - name: avg_earning_assets
+        description: Approximate earning assets (current deposit + loan balances), in USD.
+      - name: nim_pct
+        description: Annualized NIM (decimal) — uses safe_divide.
+
+  - name: fct_fee_revenue
+    description: >
+      Fee revenue by (period_month, fee_category). Unions ATM, wire and
+      account fee sources.
+    meta:
+      owner: robert.garcia
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - period_month
+            - fee_category
+    columns:
+      - name: period_month
+        description: Month bucket.
+        data_tests:
+          - not_null
+      - name: fee_category
+        description: One of 'ATM Fee', 'Wire Fee', 'Account Fee'.
+        data_tests:
+          - not_null
+          - accepted_values:
+              values: ['ATM Fee', 'Wire Fee', 'Account Fee']
+      - name: fee_transaction_count
+        description: Number of fee-bearing transactions in the bucket.
+      - name: fee_revenue
+        description: Sum of fee amounts in the bucket, in USD.
+
+  - name: fct_branch_performance
+    description: >
+      Monthly per-branch KPI fact combining account openings, loan
+      originations and transaction throughput.
+    meta:
+      owner: robert.garcia
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - branch_id
+            - period_month
+    columns:
+      - name: period_month
+        description: Month bucket.
+        data_tests:
+          - not_null
+      - name: branch_id
+        description: Branch identifier (FK to dim_branches).
+        data_tests:
+          - not_null
+      - name: branch_name
+        description: Branch display name.
+      - name: new_accounts_opened
+        description: Count of accounts opened at the branch that month.
+      - name: new_loans_originated
+        description: Count of loans originated at the branch that month.
+      - name: new_loan_principal
+        description: Sum of principal for loans originated at the branch that month, in USD.
+      - name: transaction_count
+        description: Count of transactions on accounts of the branch that month.
+      - name: transaction_volume
+        description: Sum of absolute transaction amounts for the branch that month, in USD.

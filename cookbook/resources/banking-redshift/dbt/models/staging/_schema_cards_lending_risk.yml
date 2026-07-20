@@ -1,0 +1,657 @@
+version: 2
+
+models:
+  # ---------------------------------------------------------------------------
+  # raw_cards
+  # ---------------------------------------------------------------------------
+  - name: stg_cards__card_products
+    description: Reference catalog of card products offered (debit, credit, etc.).
+    meta:
+      owner: alice.chen
+      domain: RetailBanking
+    columns:
+      - name: product_code
+        description: Unique product code identifier — primary key.
+        data_tests:
+          - unique
+          - not_null
+      - name: product_name
+        description: Human-readable product name.
+      - name: product_class
+        description: Product class category (lowercased).
+        data_tests:
+          - accepted_values:
+              values: ['debit', 'credit', 'prepaid', 'business']
+              config:
+                severity: warn
+      - name: annual_fee
+        description: Annual fee charged for the product, in USD.
+      - name: credit_limit_band
+        description: Credit limit band label (e.g. low, medium, high).
+      - name: is_active
+        description: Whether the product is currently offered.
+
+  - name: stg_cards__cards
+    description: Customer-issued cards with masked PAN, limits, and status.
+    meta:
+      owner: alice.chen
+      domain: RetailBanking
+    columns:
+      - name: card_id
+        description: Unique card identifier — primary key.
+        data_tests:
+          - unique
+          - not_null
+      - name: customer_id
+        description: Owning customer (FK to customers).
+        data_tests:
+          - not_null
+      - name: card_number_masked
+        description: PCI-masked card PAN (e.g., 483955XXXXXX9022). PII — payment card information.
+        meta:
+          pii: true
+          pii_type: PaymentCardInfo
+      - name: product_code
+        description: Card product code (FK to card_products).
+        data_tests:
+          - relationships:
+              to: ref('stg_cards__card_products')
+              field: product_code
+      - name: issued_date
+        description: Date the card was issued to the customer.
+      - name: expires_date
+        description: Card expiration date.
+      - name: status
+        description: Card lifecycle status (lowercased).
+        data_tests:
+          - accepted_values:
+              values: ['active', 'blocked', 'expired', 'lost']
+      - name: credit_limit
+        description: Card credit limit in USD (null for debit cards).
+      - name: linked_account_id
+        description: Linked deposit / credit account identifier (FK to accounts).
+
+  - name: stg_cards__card_authorizations
+    description: Card authorization events at merchants, including declines.
+    meta:
+      owner: alice.chen
+      domain: RetailBanking
+    columns:
+      - name: authorization_id
+        description: Unique authorization identifier — primary key.
+        data_tests:
+          - unique
+          - not_null
+      - name: card_id
+        description: Card that initiated the auth (FK to cards).
+        data_tests:
+          - not_null
+          - relationships:
+              to: ref('stg_cards__cards')
+              field: card_id
+      - name: merchant_id
+        description: Merchant where the auth occurred (FK to merchants).
+        data_tests:
+          - relationships:
+              to: ref('stg_cards__merchants')
+              field: merchant_id
+      - name: amount
+        description: Authorization amount in the auth currency.
+      - name: currency
+        description: ISO 4217 currency code.
+      - name: auth_status
+        description: Authorization outcome (lowercased).
+        data_tests:
+          - accepted_values:
+              values: ['approved', 'declined', 'reversed']
+      - name: decline_reason
+        description: Reason text when the auth is declined (lowercased).
+      - name: auth_timestamp
+        description: Timestamp of the authorization event.
+      - name: is_card_present
+        description: True when the card was physically present at the merchant.
+      - name: ip_address
+        description: Client IP address for card-not-present transactions. PII.
+        meta:
+          pii: true
+          pii_type: IPAddress
+
+  - name: stg_cards__card_disputes
+    description: Cardholder disputes and chargeback cases against authorizations.
+    meta:
+      owner: alice.chen
+      domain: RetailBanking
+    columns:
+      - name: dispute_id
+        description: Unique dispute identifier — primary key.
+        data_tests:
+          - unique
+          - not_null
+      - name: authorization_id
+        description: Disputed authorization (FK to card_authorizations).
+        data_tests:
+          - not_null
+          - relationships:
+              to: ref('stg_cards__card_authorizations')
+              field: authorization_id
+      - name: card_id
+        description: Card on which the dispute was filed (FK to cards).
+        data_tests:
+          - relationships:
+              to: ref('stg_cards__cards')
+              field: card_id
+      - name: dispute_reason
+        description: Reason category for the dispute (lowercased).
+      - name: dispute_amount
+        description: Original disputed amount in USD.
+      - name: opened_date
+        description: Date the dispute was filed by the cardholder.
+      - name: resolved_date
+        description: Date the dispute was resolved (null while pending).
+      - name: status
+        description: Dispute lifecycle status (lowercased).
+        data_tests:
+          - accepted_values:
+              values: ['pending', 'resolved_chargeback', 'resolved_no_chargeback']
+      - name: chargeback_amount
+        description: Amount charged back to the merchant (zero if no chargeback).
+
+  - name: stg_cards__merchants
+    description: Merchant directory with MCC code and location.
+    meta:
+      owner: alice.chen
+      domain: RetailBanking
+    columns:
+      - name: merchant_id
+        description: Unique merchant identifier — primary key.
+        data_tests:
+          - unique
+          - not_null
+      - name: merchant_name
+        description: Merchant trade name.
+      - name: mcc_code
+        description: Merchant Category Code (4-digit ISO 18245).
+      - name: mcc_description
+        description: Human-readable MCC description.
+      - name: city
+        description: Merchant city.
+      - name: state
+        description: Merchant state / region.
+      - name: country
+        description: Merchant country.
+      - name: created_at
+        description: Timestamp this merchant record was created.
+
+  # ---------------------------------------------------------------------------
+  # raw_lending
+  # ---------------------------------------------------------------------------
+  - name: stg_lending__loan_products
+    description: Reference catalog of loan offerings (mortgage, auto, personal, etc.).
+    meta:
+      owner: marcus.williams
+      domain: LendingCredit
+    columns:
+      - name: product_code
+        description: Unique loan product code — primary key.
+        data_tests:
+          - unique
+          - not_null
+      - name: product_name
+        description: Human-readable product name.
+      - name: product_class
+        description: Loan product class (lowercased).
+        data_tests:
+          - accepted_values:
+              values: ['mortgage', 'auto', 'personal', 'heloc', 'business']
+      - name: default_term_months
+        description: Default term in months for this product.
+      - name: base_apr
+        description: Base annual percentage rate (decimal — 0.045 = 4.5%).
+      - name: min_amount
+        description: Minimum loan amount supported, in USD.
+      - name: max_amount
+        description: Maximum loan amount supported, in USD.
+      - name: is_secured
+        description: True if the product requires collateral.
+      - name: is_active
+        description: Whether the product is currently offered.
+
+  - name: stg_lending__loan_applications
+    description: Loan applications with FICO, income, DTI, and decision metadata.
+    meta:
+      owner: marcus.williams
+      domain: LendingCredit
+    columns:
+      - name: application_id
+        description: Unique application identifier — primary key.
+        data_tests:
+          - unique
+          - not_null
+      - name: customer_id
+        description: Applicant customer (FK to customers).
+        data_tests:
+          - not_null
+      - name: product_code
+        description: Loan product applied for (FK to loan_products).
+        data_tests:
+          - relationships:
+              to: ref('stg_lending__loan_products')
+              field: product_code
+      - name: applied_date
+        description: Date the application was submitted.
+      - name: requested_amount
+        description: Amount requested in the application, in USD.
+      - name: fico_at_application
+        description: FICO score captured at decision time (300-850).
+      - name: annual_income
+        description: Self-reported annual income at decision time, in USD.
+      - name: dti_ratio
+        description: Debt-to-income ratio at decision time (decimal — 0.36 = 36%).
+      - name: purpose
+        description: Stated loan purpose (lowercased).
+      - name: status
+        description: Application status (lowercased).
+        data_tests:
+          - accepted_values:
+              values: ['approved', 'denied', 'pending', 'withdrawn']
+      - name: decision_date
+        description: Date the credit decision was rendered.
+      - name: denial_reason
+        description: Reason text when the application is denied.
+      - name: loan_officer_id
+        description: Employee who processed the application (FK to employees).
+      - name: branch_id
+        description: Branch where the application was filed (FK to branches).
+
+  - name: stg_lending__loans
+    description: >
+      Booked loans with principal, balance, payment schedule, status, and IFRS 9
+      impairment fields (stage, PD, LGD, EAD, ECL, days_past_due). One row per
+      loan_id.
+    meta:
+      owner: marcus.williams
+      domain: LendingCredit
+    columns:
+      - name: loan_id
+        description: Unique loan identifier — primary key.
+        data_tests:
+          - unique
+          - not_null
+      - name: application_id
+        description: Origination application (FK to loan_applications).
+        data_tests:
+          - relationships:
+              to: ref('stg_lending__loan_applications')
+              field: application_id
+      - name: customer_id
+        description: Borrower (FK to customers).
+        data_tests:
+          - not_null
+      - name: product_code
+        description: Loan product (FK to loan_products).
+        data_tests:
+          - relationships:
+              to: ref('stg_lending__loan_products')
+              field: product_code
+      - name: principal
+        description: Original loan principal at origination, in USD.
+      - name: interest_rate
+        description: Stated interest rate (decimal — 0.045 = 4.5%).
+      - name: term_months
+        description: Loan term in months.
+      - name: origination_date
+        description: Date the loan was originated.
+      - name: maturity_date
+        description: Date the loan matures.
+      - name: first_payment_date
+        description: Date of the first scheduled payment.
+      - name: next_due_date
+        description: Next scheduled payment date (null when closed).
+      - name: status
+        description: Loan lifecycle status (lowercased).
+        data_tests:
+          - accepted_values:
+              values: ['current', 'delinquent', 'paid_off', 'charged_off']
+      - name: balance
+        description: Current outstanding principal balance, in USD.
+      - name: monthly_payment
+        description: Scheduled monthly payment amount, in USD.
+      - name: branch_id
+        description: Originating branch identifier (FK to branches).
+      - name: days_past_due
+        description: Days past the next_due_date; 0 for current loans, 999 for charged-off.
+        data_tests:
+          - dbt_utils.expression_is_true:
+              expression: ">= 0"
+      - name: ifrs9_stage
+        description: IFRS 9 impairment stage (1=performing, 2=under-performing, 3=non-performing/credit-impaired).
+        data_tests:
+          - accepted_values:
+              values: [1, 2, 3]
+      - name: pd_12m
+        description: 12-month probability of default, decimal in [0, 1].
+        data_tests:
+          - dbt_utils.accepted_range:
+              min_value: 0
+              max_value: 1
+      - name: lgd
+        description: Loss given default, decimal in [0, 1].
+        data_tests:
+          - dbt_utils.accepted_range:
+              min_value: 0
+              max_value: 1
+      - name: ead
+        description: Exposure at default, in USD.
+      - name: ecl_amount
+        description: Expected credit loss = PD x LGD x EAD, in USD.
+
+  - name: stg_lending__loan_payments
+    description: Loan payment events with principal/interest split.
+    meta:
+      owner: marcus.williams
+      domain: LendingCredit
+    columns:
+      - name: payment_id
+        description: Unique loan payment identifier — primary key.
+        data_tests:
+          - unique
+          - not_null
+      - name: loan_id
+        description: Loan the payment applies to (FK to loans).
+        data_tests:
+          - not_null
+          - relationships:
+              to: ref('stg_lending__loans')
+              field: loan_id
+      - name: payment_date
+        description: Payment posting date.
+      - name: amount
+        description: Total payment amount, in USD.
+      - name: principal_portion
+        description: Principal allocation of the payment, in USD.
+      - name: interest_portion
+        description: Interest allocation of the payment, in USD.
+      - name: payment_type
+        description: Payment type (e.g., scheduled, prepayment).
+        data_tests:
+          - accepted_values:
+              values: ['scheduled', 'prepayment', 'late', 'partial']
+              config:
+                severity: warn
+      - name: status
+        description: Payment status (lowercased).
+        data_tests:
+          - accepted_values:
+              values: ['posted', 'returned', 'pending']
+              config:
+                severity: warn
+      - name: channel
+        description: Payment channel (lowercased).
+        data_tests:
+          - accepted_values:
+              values: ['ach', 'branch', 'check', 'online']
+      - name: created_at
+        description: Record creation timestamp.
+
+  - name: stg_lending__collateral
+    description: Collateral pledged against secured loans.
+    meta:
+      owner: marcus.williams
+      domain: LendingCredit
+    columns:
+      - name: collateral_id
+        description: Unique collateral identifier — primary key.
+        data_tests:
+          - unique
+          - not_null
+      - name: loan_id
+        description: Secured loan (FK to loans).
+        data_tests:
+          - not_null
+          - relationships:
+              to: ref('stg_lending__loans')
+              field: loan_id
+      - name: collateral_type
+        description: Collateral type (lowercased).
+        data_tests:
+          - accepted_values:
+              values: ['real_estate', 'auto', 'securities', 'cash', 'other']
+              config:
+                severity: warn
+      - name: description
+        description: Free-text description of the collateral.
+      - name: appraised_value
+        description: Appraised value of the collateral, in USD.
+      - name: appraisal_date
+        description: Date of the appraisal.
+      - name: ltv_ratio
+        description: Loan-to-value ratio (decimal — 0.80 = 80%).
+      - name: lien_position
+        description: Lien priority position (1 = first lien).
+
+  # ---------------------------------------------------------------------------
+  # raw_risk
+  # ---------------------------------------------------------------------------
+  - name: stg_risk__credit_scores
+    description: Bureau credit score pulls per customer.
+    meta:
+      owner: marcus.williams
+      domain: LendingCredit
+    columns:
+      - name: score_id
+        description: Unique credit score record identifier — primary key.
+        data_tests:
+          - unique
+          - not_null
+      - name: customer_id
+        description: Customer the score belongs to (FK to customers).
+        data_tests:
+          - not_null
+      - name: score_type
+        description: Score model used (uppercased — FICO or VANTAGE).
+        data_tests:
+          - accepted_values:
+              values: ['FICO', 'VANTAGE']
+      - name: score_value
+        description: Numeric score value (typically 300-850 for FICO/VantageScore).
+      - name: score_date
+        description: Date the score was pulled.
+      - name: bureau
+        description: Credit bureau source (uppercased — EQUIFAX, EXPERIAN, TRANSUNION).
+        data_tests:
+          - accepted_values:
+              values: ['EQUIFAX', 'EXPERIAN', 'TRANSUNION']
+      - name: pull_reason
+        description: Reason the score was pulled (lowercased).
+        data_tests:
+          - accepted_values:
+              values: ['consumer_request', 'credit_card_application', 'loan_application', 'periodic_refresh']
+      - name: created_at
+        description: Record creation timestamp.
+
+  - name: stg_risk__kyc_checks
+    description: Know-Your-Customer verification events.
+    meta:
+      owner: david.kim
+      domain: ComplianceAML
+    columns:
+      - name: kyc_id
+        description: Unique KYC check identifier — primary key.
+        data_tests:
+          - unique
+          - not_null
+      - name: customer_id
+        description: Customer being verified (FK to customers).
+        data_tests:
+          - not_null
+      - name: check_type
+        description: KYC check type (lowercased).
+        data_tests:
+          - accepted_values:
+              values: ['initial', 'refresh', 'edd']
+      - name: check_date
+        description: Date the check was performed.
+      - name: check_status
+        description: Outcome of the KYC check (lowercased).
+        data_tests:
+          - accepted_values:
+              values: ['passed', 'failed', 'pending', 'review']
+      - name: verification_method
+        description: How verification was performed (lowercased — passport, driver_license, ...).
+      - name: documents_provided
+        description: Comma-separated list of documents collected during the check.
+      - name: performed_by_employee_id
+        description: Employee who performed the check (FK to employees).
+      - name: next_review_date
+        description: Scheduled next review date for periodic refresh.
+      - name: risk_assessment_band
+        description: Resulting risk band (lowercased).
+        data_tests:
+          - accepted_values:
+              values: ['low', 'medium', 'high']
+              config:
+                severity: warn
+      - name: created_at
+        description: Record creation timestamp.
+
+  - name: stg_risk__aml_alerts
+    description: AML alerts raised by transaction monitoring scenarios.
+    meta:
+      owner: david.kim
+      domain: ComplianceAML
+    columns:
+      - name: alert_id
+        description: Unique AML alert identifier — primary key.
+        data_tests:
+          - unique
+          - not_null
+      - name: customer_id
+        description: Customer the alert was raised on (FK to customers).
+        data_tests:
+          - not_null
+      - name: account_id
+        description: Related account identifier (may reference closed accounts as a DQ scenario).
+      - name: transaction_id
+        description: Related transaction identifier (nullable).
+      - name: alert_type
+        description: Alert scenario type (lowercased).
+        data_tests:
+          - accepted_values:
+              values:
+                - geographic_risk
+                - high_value_cash
+                - pep_match
+                - rapid_movement
+                - sanctions_hit
+                - structuring
+                - unusual_pattern
+      - name: severity
+        description: Alert severity (lowercased).
+        data_tests:
+          - accepted_values:
+              values: ['low', 'medium', 'high', 'critical']
+      - name: status
+        description: Alert lifecycle status (lowercased).
+        data_tests:
+          - accepted_values:
+              values: ['new', 'triaging', 'escalated', 'closed_no_action', 'closed_sar_filed']
+      - name: alert_date
+        description: Date the alert was raised.
+      - name: triaged_date
+        description: Date the alert was triaged (null while not yet triaged).
+      - name: closed_date
+        description: Date the alert was closed (null while open).
+      - name: assigned_to_employee_id
+        description: Compliance analyst assigned to the alert (FK to employees).
+      - name: narrative
+        description: Free-text alert narrative written by the analyst.
+      - name: scenario_code
+        description: Internal scenario rule code (e.g., SCN-136).
+      - name: created_at
+        description: Record creation timestamp.
+
+  - name: stg_risk__sanctions_screening
+    description: OFAC and sanctions list screening events.
+    meta:
+      owner: david.kim
+      domain: ComplianceAML
+    columns:
+      - name: screening_id
+        description: Unique screening event identifier — primary key.
+        data_tests:
+          - unique
+          - not_null
+      - name: customer_id
+        description: Customer screened (FK to customers).
+        data_tests:
+          - not_null
+      - name: screening_date
+        description: Date the screening was performed.
+      - name: list_name
+        description: Sanctions list source (e.g., OFAC_CONS).
+      - name: screen_result
+        description: Screening outcome (lowercased).
+        data_tests:
+          - accepted_values:
+              values: ['hit', 'no_hit']
+      - name: match_score
+        description: Fuzzy-match score (when a hit), in [0, 1].
+      - name: matched_name
+        description: Name matched on the list (when a hit). PII.
+      - name: disposition
+        description: Analyst disposition (lowercased).
+        data_tests:
+          - accepted_values:
+              values: ['true_match', 'false_positive']
+              config:
+                severity: warn
+      - name: screened_by_system
+        description: Source system that performed the screening.
+      - name: created_at
+        description: Record creation timestamp.
+
+  - name: stg_risk__suspicious_activity_reports
+    description: Suspicious Activity Report (SAR) filings with regulators.
+    meta:
+      owner: david.kim
+      domain: ComplianceAML
+    columns:
+      - name: sar_id
+        description: Unique SAR identifier — primary key.
+        data_tests:
+          - unique
+          - not_null
+      - name: alert_id
+        description: Originating AML alert (FK to aml_alerts).
+        data_tests:
+          - not_null
+          - relationships:
+              to: ref('stg_risk__aml_alerts')
+              field: alert_id
+      - name: customer_id
+        description: Subject customer (FK to customers).
+        data_tests:
+          - not_null
+      - name: filing_date
+        description: Date the SAR was filed with the regulator.
+      - name: filing_institution
+        description: Bank entity filing the SAR.
+      - name: regulator
+        description: Receiving regulator (e.g., FinCEN).
+      - name: filing_reference
+        description: External SAR reference / control number.
+      - name: suspicious_activity_type
+        description: Suspicious activity category (lowercased).
+      - name: total_amount_involved
+        description: Total monetary amount implicated, in USD.
+      - name: narrative
+        description: Free-text SAR narrative.
+      - name: filed_by_employee_id
+        description: Employee who filed the SAR (FK to employees).
+      - name: status
+        description: SAR lifecycle status (lowercased).
+        data_tests:
+          - accepted_values:
+              values: ['filed', 'amended', 'under_review']
+      - name: created_at
+        description: Record creation timestamp.

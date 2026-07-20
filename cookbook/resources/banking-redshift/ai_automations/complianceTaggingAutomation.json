@@ -1,0 +1,29 @@
+{
+  "name": "ComplianceTaggingAutomation",
+  "fullyQualifiedName": "ComplianceTaggingAutomation",
+  "displayName": "Regulatory Compliance Tagging Automation",
+  "description": "Audits tables that fall under banking regulatory regimes (KYC/AML, IFRS 9, BCBS 239, PCI-DSS, GDPR) and applies the corresponding compliance / regulation tags so audit and compliance teams can scope reviews via the Governance Agent.",
+  "provider": "system",
+  "isTemplate": true,
+  "prompt": "Your goal is to make every regulated table easy to find by tagging it with the correct regulatory regime(s). Compliance and audit teams use these tags to scope quarterly reviews, sample for evidence, and prove control coverage.\n\n## Regulation map (apply when the entity matches)\n\n| Signal in table / schema / description                                  | Apply tag                          |\n|--------------------------------------------------------------------------|-------------------------------------|\n| KYC, customer onboarding, identity verification, beneficial owner        | `Compliance.KYC`                   |\n| AML, transaction monitoring, SAR, sanctions, PEP, watchlist              | `Compliance.AML`                   |\n| Loan staging, ECL, PD, LGD, EAD, provisioning                            | `Compliance.IFRS9`                 |\n| Risk aggregation, capital reporting, regulatory reports                  | `Compliance.BCBS239`               |\n| Card numbers, PAN, CVV, cardholder data                                  | `Compliance.PCI_DSS`               |\n| EU customer personal data, consent, right-to-be-forgotten                | `Compliance.GDPR`                  |\n| US customer personal data, opt-out                                       | `Compliance.CCPA`                  |\n| Trades, orders, execution venues, best-execution                         | `Compliance.MiFIDII`               |\n\nNot every table needs a tag. Only apply when the table's purpose is clearly governed by that regulation.\n\n## How to decide\n\n1. `getEntityDetails` to inspect name, schema, columns, description, domain, and existing tags.\n2. Cross-check against the regulation map. A single table may need MORE than one tag (e.g., a transactions table can be `Compliance.AML` AND `Compliance.PCI_DSS`).\n3. `getFilterValues(tag)` to confirm each candidate tag exists. If a tag in the map is not yet defined in the platform, SKIP it and note in the summary so the steward can add it.\n4. Apply all applicable tags in ONE patch call.\n\n## CRITICAL REQUIREMENTS\n\n- Only assign tags that already exist. NEVER create classifications or tags.\n- Preserve existing tags. Add compliance tags alongside; never remove.\n- Conservative bias: only tag when the regulatory match is unambiguous. Spurious compliance tags create false audit scope and waste reviewer cycles.\n- Skip raw debug, staging, and engineering-internal tables unless they directly contain regulated data.\n\nEntity: {{entityFqn}}",
+  "promptVariables": [
+    {
+      "name": "entityFqn",
+      "description": "Fully qualified name of the current entity being processed.",
+      "source": "entityFqn"
+    }
+  ],
+  "agent": {
+    "type": "dynamicAgent",
+    "name": "AskCollateGovernanceAgent"
+  },
+  "sourceFilter": {
+    "entityType": "table",
+    "esQuery": "",
+    "batchSize": 100
+  },
+  "airflowConfig": {},
+  "destinations": [],
+  "enabled": false,
+  "entityStatus": "Approved"
+}
