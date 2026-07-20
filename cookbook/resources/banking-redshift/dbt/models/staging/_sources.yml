@@ -1,0 +1,126 @@
+version: 2
+
+sources:
+  - name: raw_core_banking
+    database: "{{ target.database }}"
+    schema: raw_core_banking
+    description: Core banking master data — customers, accounts, branches, employees.
+    tables:
+      - name: customers
+        description: Customer master records including PII.
+      - name: customer_addresses
+        description: Historical and current customer addresses.
+      - name: customer_contacts
+        description: Customer contact channels with verification and opt-out.
+      - name: branches
+        description: Bank branch master data.
+      - name: employees
+        description: Bank employee directory.
+      - name: accounts
+        description: Customer deposit, savings, and credit accounts.
+      - name: account_holders
+        description: Mapping of customers to accounts (supports joint ownership).
+      - name: account_types
+        description: Reference table for account type codes.
+
+  - name: raw_transactions
+    database: "{{ target.database }}"
+    schema: raw_transactions
+    description: Transactional ledger plus money-movement detail tables.
+    tables:
+      - name: transactions
+        description: Core ledger of all account postings.
+      - name: transaction_categories
+        description: Reference table of transaction category codes.
+      - name: atm_withdrawals
+        description: ATM withdrawal events with terminal location and fee.
+      - name: wire_transfers
+        description: Inbound/outbound wire transfers with SWIFT/IBAN metadata.
+      - name: ach_transfers
+        description: ACH credit and debit transfers with counterparty info.
+
+  - name: raw_cards
+    database: "{{ target.database }}"
+    schema: raw_cards
+    description: Card products, issued cards, authorizations, and disputes.
+    tables:
+      - name: card_products
+        description: Reference catalog of card product offerings.
+      - name: cards
+        description: Customer cards with masked PAN and limits.
+      - name: card_authorizations
+        description: Card authorization events at merchants.
+      - name: card_disputes
+        description: Cardholder disputes and chargeback cases.
+      - name: merchants
+        description: Merchant directory with MCC code and location.
+
+  - name: raw_lending
+    database: "{{ target.database }}"
+    schema: raw_lending
+    description: Lending lifecycle — applications, booked loans, payments, collateral.
+    tables:
+      - name: loan_products
+        description: Reference catalog of loan offerings.
+      - name: loan_applications
+        description: Loan applications with FICO and DTI at decision time.
+      - name: loans
+        description: Booked loans with principal, balance, and schedule.
+      - name: loan_payments
+        description: Loan payment events with principal/interest breakdown.
+      - name: collateral
+        description: Collateral pledged against secured loans.
+
+  - name: raw_risk
+    database: "{{ target.database }}"
+    schema: raw_risk
+    description: Risk and compliance signals — credit scores, KYC, AML, sanctions, SARs.
+    tables:
+      - name: credit_scores
+        description: Bureau credit score pulls per customer over time.
+      - name: kyc_checks
+        description: Know-Your-Customer verification events.
+      - name: aml_alerts
+        description: AML alerts raised by transaction monitoring.
+      - name: sanctions_screening
+        description: OFAC and sanctions list screening events.
+      - name: suspicious_activity_reports
+        description: SAR filings with regulators.
+
+  - name: raw_wealth
+    database: "{{ target.database }}"
+    schema: raw_wealth
+    description: Wealth management — investment accounts, securities, holdings, trades.
+    tables:
+      - name: investment_accounts
+        description: Brokerage and wealth-management accounts.
+      - name: securities
+        description: Tradable securities reference table.
+      - name: holdings
+        description: Customer positions in securities as of a snapshot date.
+      - name: trades
+        description: Individual buy/sell trade executions.
+
+  - name: raw_digital
+    database: "{{ target.database }}"
+    schema: raw_digital
+    description: Digital channel telemetry — web sessions, mobile events, logins.
+    tables:
+      - name: web_sessions
+        description: Online banking web session events.
+      - name: mobile_app_events
+        description: Mobile banking app event stream.
+      - name: login_attempts
+        description: Authentication attempts across digital channels.
+
+  - name: raw_marketing
+    database: "{{ target.database }}"
+    schema: raw_marketing
+    description: Marketing campaigns, segments, and customer interactions.
+    tables:
+      - name: campaigns
+        description: Marketing campaign definitions with budget and segment.
+      - name: customer_segments
+        description: Reference table of marketing segment codes.
+      - name: customer_interactions
+        description: Logged interactions between customers and bank channels.

@@ -1,0 +1,37 @@
+source:
+  type: s3
+  serviceName: banking-s3
+  serviceConnection:
+    config:
+      type: S3
+      awsConfig:
+        awsRegion: ${AWS_REGION}
+        awsAccessKeyId: ${AWS_ACCESS_KEY_ID}
+        awsSecretAccessKey: ${AWS_SECRET_ACCESS_KEY}
+        awsSessionToken: ${AWS_SESSION_TOKEN}
+  sourceConfig:
+    config:
+      type: StorageMetadata
+      # containerFilterPattern is applied to BOTH the bucket name AND each
+      # manifest entry dataPath (e.g. raw/raw_cards/cards). To keep just our
+      # bucket AND every leaf dataset under raw/, we whitelist both shapes:
+      containerFilterPattern:
+        includes:
+          - ^collate-summit-data$
+          - ^raw/.*$
+
+sink:
+  type: metadata-rest
+  config: {}
+
+# IngestionPipeline registration: FQN leads with the service name; runId is a per-run UUID.
+ingestionPipelineFQN: banking-s3.metadata
+pipelineRunId: b67e75d4-fd67-4510-8f1c-aa8c848eaac3
+
+workflowConfig:
+  loggerLevel: INFO
+  openMetadataServerConfig:
+    hostPort: "${AI_SDK_HOST}/api"
+    authProvider: openmetadata
+    securityConfig:
+      jwtToken: "${AI_SDK_TOKEN}"

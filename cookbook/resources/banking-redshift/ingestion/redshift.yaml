@@ -1,0 +1,40 @@
+source:
+  type: redshift
+  serviceName: banking-redshift
+  serviceConnection:
+    config:
+      type: Redshift
+      hostPort: ${REDSHIFT_HOST}:${REDSHIFT_PORT}
+      username: ${REDSHIFT_USER}
+      authType:
+        password: ${REDSHIFT_PASSWORD}
+      database: ${REDSHIFT_DATABASE}
+  sourceConfig:
+    config:
+      type: DatabaseMetadata
+      includeTables: true
+      includeViews: true
+      markDeletedTables: true
+      includeOwners: true
+      schemaFilterPattern:
+        includes:
+          - raw_.*
+          - staging
+          - intermediate
+          - marts_.*
+
+sink:
+  type: metadata-rest
+  config: {}
+
+# IngestionPipeline registration: FQN leads with the service name; runId is a per-run UUID.
+ingestionPipelineFQN: banking-redshift.metadata
+pipelineRunId: c6e363fb-63f8-4d34-8592-e5d2fe75a692
+
+workflowConfig:
+  loggerLevel: INFO
+  openMetadataServerConfig:
+    hostPort: "${AI_SDK_HOST}/api"
+    authProvider: openmetadata
+    securityConfig:
+      jwtToken: "${AI_SDK_TOKEN}"

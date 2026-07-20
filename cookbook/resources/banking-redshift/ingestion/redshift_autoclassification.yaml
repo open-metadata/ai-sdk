@@ -1,0 +1,43 @@
+source:
+  type: redshift
+  serviceName: banking-redshift
+  serviceConnection:
+    config:
+      type: Redshift
+      hostPort: ${REDSHIFT_HOST}:${REDSHIFT_PORT}
+      username: ${REDSHIFT_USER}
+      authType:
+        password: ${REDSHIFT_PASSWORD}
+      database: ${REDSHIFT_DATABASE}
+  sourceConfig:
+    config:
+      type: AutoClassification
+      enableAutoClassification: true
+      storeSampleData: true
+      sampleDataCount: 50
+      confidence: 80
+      schemaFilterPattern:
+        includes:
+          - raw_.*
+          - marts_.*
+      tableFilterPattern:
+        excludes:
+          - login_attempts
+          - mobile_app_events
+          - web_sessions
+
+sink:
+  type: metadata-rest
+  config: {}
+
+# IngestionPipeline registration: FQN leads with the service name; runId is a per-run UUID.
+ingestionPipelineFQN: banking-redshift.autoClassification
+pipelineRunId: 657b2546-0851-407d-834c-0b1bf1dbef58
+
+workflowConfig:
+  loggerLevel: INFO
+  openMetadataServerConfig:
+    hostPort: "${AI_SDK_HOST}/api"
+    authProvider: openmetadata
+    securityConfig:
+      jwtToken: "${AI_SDK_TOKEN}"

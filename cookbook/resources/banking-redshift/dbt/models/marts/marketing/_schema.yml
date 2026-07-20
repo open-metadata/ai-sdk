@@ -1,0 +1,86 @@
+version: 2
+
+models:
+  - name: fct_campaign_attribution
+    description: >
+      Per-campaign attribution: number of customer interactions, unique
+      customers reached and downstream account openings within a 30-day window
+      after each interaction. Each new account is credited to its earliest
+      qualifying interaction to avoid double-counting.
+    meta:
+      owner: alice.chen
+      domain: RetailBanking
+    columns:
+      - name: campaign_id
+        description: Unique campaign identifier — primary key.
+        data_tests:
+          - unique
+          - not_null
+      - name: campaign_name
+        description: Human-readable campaign name.
+      - name: channel
+        description: Marketing channel (email, sms, branch, ...).
+      - name: objective
+        description: Campaign objective (acquisition, retention, ...).
+      - name: start_date
+        description: Campaign start date.
+      - name: end_date
+        description: Campaign end date.
+      - name: budget
+        description: Campaign budget, in USD.
+      - name: target_segment
+        description: Targeted customer segment code.
+      - name: status
+        description: Campaign lifecycle status.
+      - name: interactions_count
+        description: Number of customer_interactions tied to this campaign.
+      - name: unique_customers_reached
+        description: Distinct customers with at least one interaction in this campaign.
+      - name: attributed_account_openings
+        description: New accounts opened within 30 days of a qualifying interaction.
+      - name: attributed_aum
+        description: Sum of opening balances on attributed accounts (proxy for AUM), in USD.
+      - name: conversion_rate
+        description: attributed_account_openings / interactions_count (decimal; uses safe_divide).
+
+  - name: fct_customer_engagement
+    description: >
+      Composite customer engagement score combining digital activity (web,
+      mobile, successful logins) and branch interactions. Bucketed into a
+      coarse engagement_tier for dashboards.
+    meta:
+      owner: alice.chen
+      domain: RetailBanking
+    columns:
+      - name: customer_id
+        description: Unique customer identifier — primary key.
+        data_tests:
+          - unique
+          - not_null
+      - name: web_session_count
+        description: Total web sessions for the customer.
+      - name: mobile_event_count
+        description: Total mobile app events.
+      - name: login_success_count
+        description: Successful login attempts.
+      - name: login_failure_count
+        description: Failed login attempts.
+      - name: interaction_count
+        description: Number of in-person / branch interactions logged.
+      - name: last_mobile_event_at
+        description: Timestamp of the most recent mobile event.
+      - name: last_login_at
+        description: Timestamp of the most recent login attempt.
+      - name: last_interaction_at
+        description: Timestamp of the most recent customer interaction.
+      - name: engagement_score
+        description: >
+          Weighted score = (mobile_event_count * 0.3) + (web_session_count *
+          0.2) + (login_success_count * 0.1) + (interaction_count * 1.0).
+      - name: engagement_tier
+        description: >
+          Coarse engagement bucket derived from engagement_score:
+          highly_engaged (>=100), engaged (>=30), occasional (>=5), dormant.
+        data_tests:
+          - accepted_values:
+              values: ['highly_engaged', 'engaged', 'occasional', 'dormant']

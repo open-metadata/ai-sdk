@@ -1,0 +1,613 @@
+version: 2
+
+seeds:
+  # ---------------------------------------------------------------------------
+  # raw_core_banking
+  # ---------------------------------------------------------------------------
+  - name: customers
+    description: Customer master records including PII (SSN, tax_id, email, phone, DOB).
+    config:
+      column_types:
+        customer_id: varchar(30)
+        first_name: varchar(120)
+        last_name: varchar(80)
+        email: varchar(160)
+        phone: varchar(20)
+        ssn: varchar(11)
+        tax_id: varchar(20)
+        date_of_birth: date
+        customer_segment: varchar(40)
+        customer_type: varchar(40)
+        branch_id: varchar(30)
+        primary_employee_id: varchar(30)
+        kyc_status: varchar(40)
+        risk_band: varchar(20)
+        created_at: timestamp
+        updated_at: timestamp
+
+  - name: customer_addresses
+    description: Historical and current addresses for customers (PII).
+    config:
+      column_types:
+        address_id: varchar(30)
+        customer_id: varchar(30)
+        address_type: varchar(30)
+        address_line_1: varchar(200)
+        address_line_2: varchar(200)
+        city: varchar(80)
+        state: varchar(40)
+        postal_code: varchar(20)
+        country: varchar(40)
+        is_primary: boolean
+        effective_from: date
+        effective_to: date
+
+  - name: customer_contacts
+    description: Customer contact channels (email/phone) with verification and opt-out flags.
+    config:
+      column_types:
+        contact_id: varchar(30)
+        customer_id: varchar(30)
+        contact_type: varchar(30)
+        contact_value: varchar(200)
+        is_primary: boolean
+        is_verified: boolean
+        opt_out: boolean
+        added_at: timestamp
+
+  - name: branches
+    description: Bank branch master data including location and manager.
+    config:
+      column_types:
+        branch_id: varchar(30)
+        branch_name: varchar(120)
+        address_line_1: varchar(200)
+        city: varchar(80)
+        state: varchar(40)
+        postal_code: varchar(20)
+        country: varchar(40)
+        region: varchar(40)
+        phone: varchar(20)
+        manager_employee_id: varchar(30)
+        opened_date: date
+        closed_date: date
+        is_active: boolean
+
+  - name: employees
+    description: Bank employee directory including role and branch assignment.
+    config:
+      column_types:
+        employee_id: varchar(30)
+        first_name: varchar(60)
+        last_name: varchar(60)
+        email: varchar(120)
+        phone: varchar(20)
+        hire_date: date
+        termination_date: date
+        role: varchar(80)
+        branch_id: varchar(30)
+        manager_id: varchar(30)
+        salary_band: varchar(20)
+        is_active: boolean
+
+  - name: accounts
+    description: Customer deposit, savings, and credit accounts with balances.
+    config:
+      column_types:
+        account_id: varchar(30)
+        customer_id: varchar(30)
+        account_type: varchar(40)
+        product_code: varchar(30)
+        opened_date: date
+        closed_date: date
+        status: varchar(30)
+        balance: numeric(18,4)
+        currency: varchar(3)
+        branch_id: varchar(30)
+        interest_rate: numeric(10,6)
+        credit_limit: numeric(18,4)
+        is_joint: boolean
+        created_at: timestamp
+        updated_at: timestamp
+
+  - name: account_holders
+    description: Mapping of customers to accounts (supports joint accounts).
+    config:
+      column_types:
+        holder_id: varchar(30)
+        account_id: varchar(30)
+        customer_id: varchar(30)
+        holder_order: integer
+        relationship: varchar(40)
+        added_at: timestamp
+        removed_at: timestamp
+
+  - name: account_types
+    description: Reference table for account type codes and product categories.
+    config:
+      column_types:
+        account_type_code: varchar(40)
+        account_type_name: varchar(80)
+        product_category: varchar(40)
+
+  # ---------------------------------------------------------------------------
+  # raw_transactions
+  # ---------------------------------------------------------------------------
+  - name: transactions
+    description: Core ledger of all account postings (debits/credits).
+    config:
+      column_types:
+        transaction_id: varchar(30)
+        account_id: varchar(30)
+        posted_at: timestamp
+        amount: numeric(18,4)
+        currency: varchar(3)
+        transaction_type: varchar(40)
+        merchant_id: varchar(30)
+        description: varchar(500)
+        is_reversal: boolean
+        channel: varchar(30)
+        running_balance: numeric(18,4)
+        created_at: timestamp
+
+  - name: transaction_categories
+    description: Reference table of transaction category codes.
+    config:
+      column_types:
+        category_code: varchar(40)
+        category_name: varchar(80)
+        category_group: varchar(40)
+        sign_hint: varchar(10)
+
+  - name: atm_withdrawals
+    description: ATM withdrawal events with terminal location, network, and fee. Links to parent transactions.
+    config:
+      column_types:
+        atm_withdrawal_id: varchar(30)
+        account_id: varchar(30)
+        atm_terminal_id: varchar(30)
+        atm_city: varchar(80)
+        atm_state: varchar(40)
+        amount: numeric(18,4)
+        fee_amount: numeric(18,4)
+        withdrawn_at: timestamp
+        is_foreign: boolean
+        network: varchar(20)
+        parent_transaction_id: varchar(30)
+
+  - name: wire_transfers
+    description: Inbound and outbound wire transfers with valid ISO 13616 IBAN + BIC metadata. Links to parent transactions.
+    config:
+      column_types:
+        wire_id: varchar(30)
+        account_id: varchar(30)
+        direction: varchar(20)
+        amount: numeric(18,4)
+        currency: varchar(3)
+        from_iban: varchar(40)
+        to_iban: varchar(40)
+        swift_code: varchar(20)
+        fee_amount: numeric(18,4)
+        originator_name: varchar(120)
+        beneficiary_name: varchar(120)
+        wire_purpose: varchar(120)
+        sent_at: timestamp
+        status: varchar(30)
+        parent_transaction_id: varchar(30)
+
+  - name: ach_transfers
+    description: ACH credit and debit transfers with counterparty metadata. Links to parent transactions; includes NACHA return-reason code on returns.
+    config:
+      column_types:
+        ach_id: varchar(30)
+        account_id: varchar(30)
+        direction: varchar(20)
+        amount: numeric(18,4)
+        ach_type: varchar(20)
+        counterparty_routing: varchar(20)
+        counterparty_account_masked: varchar(40)
+        counterparty_name: varchar(120)
+        settled_date: date
+        originated_at: timestamp
+        status: varchar(30)
+        sec_code: varchar(20)
+        return_reason_code: varchar(10)
+        parent_transaction_id: varchar(30)
+
+  # ---------------------------------------------------------------------------
+  # raw_cards
+  # ---------------------------------------------------------------------------
+  - name: card_products
+    description: Reference catalog of card product offerings.
+    config:
+      column_types:
+        product_code: varchar(30)
+        product_name: varchar(80)
+        product_class: varchar(40)
+        annual_fee: numeric(18,4)
+        credit_limit_band: varchar(40)
+        is_active: boolean
+
+  - name: cards
+    description: Customer cards (credit and debit) with masked PAN and limits.
+    config:
+      column_types:
+        card_id: varchar(30)
+        customer_id: varchar(30)
+        card_number_masked: varchar(30)
+        product_code: varchar(30)
+        issued_date: date
+        expires_date: date
+        status: varchar(30)
+        credit_limit: numeric(18,4)
+        linked_account_id: varchar(30)
+
+  - name: card_authorizations
+    description: Card authorization events at merchants with approve/decline status.
+    config:
+      column_types:
+        authorization_id: varchar(30)
+        card_id: varchar(30)
+        merchant_id: varchar(30)
+        amount: numeric(18,4)
+        currency: varchar(3)
+        auth_status: varchar(30)
+        decline_reason: varchar(120)
+        auth_timestamp: timestamp
+        is_card_present: boolean
+        ip_address: varchar(45)
+
+  - name: card_disputes
+    description: Cardholder disputes and chargeback cases.
+    config:
+      column_types:
+        dispute_id: varchar(30)
+        authorization_id: varchar(30)
+        card_id: varchar(30)
+        dispute_reason: varchar(120)
+        dispute_amount: numeric(18,4)
+        opened_date: date
+        resolved_date: date
+        status: varchar(40)
+        chargeback_amount: numeric(18,4)
+
+  - name: merchants
+    description: Merchant directory with MCC code and location.
+    config:
+      column_types:
+        merchant_id: varchar(30)
+        merchant_name: varchar(120)
+        mcc_code: varchar(10)
+        mcc_description: varchar(120)
+        city: varchar(80)
+        state: varchar(40)
+        country: varchar(40)
+        created_at: timestamp
+
+  # ---------------------------------------------------------------------------
+  # raw_lending
+  # ---------------------------------------------------------------------------
+  - name: loan_products
+    description: Reference catalog of loan offerings (mortgage, auto, personal).
+    config:
+      column_types:
+        product_code: varchar(30)
+        product_name: varchar(80)
+        product_class: varchar(40)
+        default_term_months: integer
+        base_apr: numeric(10,6)
+        min_amount: numeric(18,4)
+        max_amount: numeric(18,4)
+        is_secured: boolean
+        is_active: boolean
+
+  - name: loan_applications
+    description: Loan applications including FICO and DTI at decision time.
+    config:
+      column_types:
+        application_id: varchar(30)
+        customer_id: varchar(30)
+        product_code: varchar(30)
+        applied_date: date
+        requested_amount: numeric(18,4)
+        fico_at_application: integer
+        annual_income: numeric(18,4)
+        dti_ratio: numeric(10,6)
+        purpose: varchar(120)
+        status: varchar(30)
+        decision_date: date
+        denial_reason: varchar(200)
+        loan_officer_id: varchar(30)
+        branch_id: varchar(30)
+
+  - name: loans
+    description: Booked loans with principal, balance, payment schedule, and IFRS 9 impairment fields (stage, PD, LGD, EAD, ECL, days_past_due).
+    config:
+      column_types:
+        loan_id: varchar(30)
+        application_id: varchar(30)
+        customer_id: varchar(30)
+        product_code: varchar(30)
+        principal: numeric(18,4)
+        interest_rate: numeric(10,6)
+        term_months: integer
+        origination_date: date
+        maturity_date: date
+        first_payment_date: date
+        next_due_date: date
+        status: varchar(30)
+        balance: numeric(18,4)
+        monthly_payment: numeric(18,4)
+        branch_id: varchar(30)
+        days_past_due: integer
+        ifrs9_stage: integer
+        pd_12m: numeric(10,6)
+        lgd: numeric(10,6)
+        ead: numeric(18,4)
+        ecl_amount: numeric(18,4)
+
+  - name: loan_payments
+    description: Individual loan payment events with principal/interest breakdown.
+    config:
+      column_types:
+        payment_id: varchar(30)
+        loan_id: varchar(30)
+        payment_date: date
+        amount: numeric(18,4)
+        principal_portion: numeric(18,4)
+        interest_portion: numeric(18,4)
+        payment_type: varchar(30)
+        status: varchar(30)
+        channel: varchar(30)
+        created_at: timestamp
+
+  - name: collateral
+    description: Collateral pledged against secured loans (vehicles, real estate).
+    config:
+      column_types:
+        collateral_id: varchar(30)
+        loan_id: varchar(30)
+        collateral_type: varchar(40)
+        description: varchar(500)
+        appraised_value: numeric(18,4)
+        appraisal_date: date
+        ltv_ratio: numeric(10,6)
+        lien_position: integer
+
+  # ---------------------------------------------------------------------------
+  # raw_risk
+  # ---------------------------------------------------------------------------
+  - name: credit_scores
+    description: Bureau credit score pulls per customer over time.
+    config:
+      column_types:
+        score_id: varchar(30)
+        customer_id: varchar(30)
+        score_type: varchar(40)
+        score_value: integer
+        score_date: date
+        bureau: varchar(40)
+        pull_reason: varchar(80)
+        created_at: timestamp
+
+  - name: kyc_checks
+    description: Know-Your-Customer verification events and outcomes.
+    config:
+      column_types:
+        kyc_id: varchar(30)
+        customer_id: varchar(30)
+        check_type: varchar(40)
+        check_date: date
+        check_status: varchar(40)
+        verification_method: varchar(60)
+        documents_provided: varchar(200)
+        performed_by_employee_id: varchar(30)
+        next_review_date: date
+        risk_assessment_band: varchar(20)
+        created_at: timestamp
+
+  - name: aml_alerts
+    description: Anti-money-laundering alerts raised by transaction monitoring.
+    config:
+      column_types:
+        alert_id: varchar(30)
+        customer_id: varchar(30)
+        account_id: varchar(30)
+        transaction_id: varchar(30)
+        alert_type: varchar(60)
+        severity: varchar(20)
+        status: varchar(30)
+        alert_date: date
+        triaged_date: date
+        closed_date: date
+        assigned_to_employee_id: varchar(30)
+        narrative: varchar(500)
+        scenario_code: varchar(40)
+        created_at: timestamp
+
+  - name: sanctions_screening
+    description: OFAC and sanctions list screening events for customers.
+    config:
+      column_types:
+        screening_id: varchar(30)
+        customer_id: varchar(30)
+        screening_date: date
+        list_name: varchar(80)
+        screen_result: varchar(40)
+        match_score: numeric(10,6)
+        matched_name: varchar(200)
+        disposition: varchar(40)
+        screened_by_system: varchar(60)
+        created_at: timestamp
+
+  - name: suspicious_activity_reports
+    description: SAR filings with regulators driven by AML alerts.
+    config:
+      column_types:
+        sar_id: varchar(30)
+        alert_id: varchar(30)
+        customer_id: varchar(30)
+        filing_date: date
+        filing_institution: varchar(120)
+        regulator: varchar(60)
+        filing_reference: varchar(60)
+        suspicious_activity_type: varchar(120)
+        total_amount_involved: numeric(18,4)
+        narrative: varchar(500)
+        filed_by_employee_id: varchar(30)
+        status: varchar(30)
+        created_at: timestamp
+
+  # ---------------------------------------------------------------------------
+  # raw_wealth
+  # ---------------------------------------------------------------------------
+  - name: investment_accounts
+    description: Brokerage and wealth-management accounts owned by customers.
+    config:
+      column_types:
+        investment_account_id: varchar(30)
+        customer_id: varchar(30)
+        account_type: varchar(40)
+        opened_date: date
+        status: varchar(30)
+        risk_tolerance: varchar(40)
+        investment_objective: varchar(80)
+        advisor_employee_id: varchar(30)
+        created_at: timestamp
+
+  - name: securities
+    description: Reference table of tradable securities and current prices.
+    config:
+      column_types:
+        security_id: varchar(30)
+        ticker: varchar(20)
+        isin: varchar(20)
+        name: varchar(200)
+        asset_class: varchar(40)
+        sector: varchar(60)
+        exchange: varchar(20)
+        currency: varchar(3)
+        current_price: numeric(18,4)
+        price_as_of: date
+
+  - name: holdings
+    description: Customer positions in securities as of a snapshot date.
+    config:
+      column_types:
+        holding_id: varchar(30)
+        investment_account_id: varchar(30)
+        security_id: varchar(30)
+        quantity: numeric(18,4)
+        cost_basis: numeric(18,4)
+        as_of_date: date
+        acquired_date: date
+
+  - name: trades
+    description: Individual buy/sell trade executions.
+    config:
+      column_types:
+        trade_id: varchar(30)
+        investment_account_id: varchar(30)
+        security_id: varchar(30)
+        side: varchar(10)
+        quantity: numeric(18,4)
+        trade_price: numeric(18,4)
+        commission: numeric(18,4)
+        trade_timestamp: timestamp
+        settle_date: date
+        status: varchar(30)
+        venue: varchar(40)
+
+  # ---------------------------------------------------------------------------
+  # raw_digital
+  # ---------------------------------------------------------------------------
+  - name: web_sessions
+    description: Online banking web session events with device and IP metadata.
+    config:
+      column_types:
+        session_id: varchar(60)
+        customer_id: varchar(30)
+        started_at: timestamp
+        ended_at: timestamp
+        duration_seconds: integer
+        device_type: varchar(40)
+        browser: varchar(60)
+        os: varchar(40)
+        ip_address: varchar(45)
+        user_agent: varchar(500)
+        referrer: varchar(500)
+        landing_page: varchar(500)
+        pages_viewed: integer
+
+  - name: mobile_app_events
+    description: Mobile banking app event stream with screen and geo-location.
+    config:
+      column_types:
+        event_id: varchar(30)
+        customer_id: varchar(30)
+        event_type: varchar(60)
+        event_timestamp: timestamp
+        device_os: varchar(40)
+        device_model: varchar(60)
+        app_version: varchar(20)
+        geo_latitude: numeric(10,6)
+        geo_longitude: numeric(10,6)
+        session_id: varchar(60)
+        screen_name: varchar(80)
+
+  - name: login_attempts
+    description: Authentication attempts across digital channels (success and failure).
+    config:
+      column_types:
+        login_id: varchar(30)
+        customer_id: varchar(30)
+        attempted_at: timestamp
+        success: boolean
+        failure_reason: varchar(120)
+        channel: varchar(30)
+        ip_address: varchar(45)
+        user_agent: varchar(500)
+        mfa_method: varchar(40)
+        device_fingerprint: varchar(120)
+
+  # ---------------------------------------------------------------------------
+  # raw_marketing
+  # ---------------------------------------------------------------------------
+  - name: campaigns
+    description: Marketing campaign definitions with budget and target segment.
+    config:
+      column_types:
+        campaign_id: varchar(30)
+        campaign_name: varchar(120)
+        channel: varchar(40)
+        objective: varchar(80)
+        start_date: date
+        end_date: date
+        budget: numeric(18,4)
+        target_segment: varchar(40)
+        owner_employee_id: varchar(30)
+        status: varchar(30)
+
+  - name: customer_segments
+    description: Reference table of marketing customer segment codes.
+    config:
+      column_types:
+        segment_code: varchar(40)
+        segment_name: varchar(80)
+        description: varchar(500)
+
+  - name: customer_interactions
+    description: Logged interactions between customers and bank channels.
+    config:
+      column_types:
+        interaction_id: varchar(30)
+        customer_id: varchar(30)
+        campaign_id: varchar(30)
+        channel: varchar(40)
+        topic: varchar(120)
+        employee_id: varchar(30)
+        interaction_timestamp: timestamp
+        duration_minutes: integer
+        outcome: varchar(60)
+        satisfaction_score: integer
+        notes: varchar(500)

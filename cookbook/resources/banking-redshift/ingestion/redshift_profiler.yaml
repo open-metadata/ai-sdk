@@ -1,0 +1,50 @@
+source:
+  type: redshift
+  serviceName: banking-redshift
+  serviceConnection:
+    config:
+      type: Redshift
+      hostPort: ${REDSHIFT_HOST}:${REDSHIFT_PORT}
+      username: ${REDSHIFT_USER}
+      authType:
+        password: ${REDSHIFT_PASSWORD}
+      database: ${REDSHIFT_DATABASE}
+  sourceConfig:
+    config:
+      type: Profiler
+      profileSampleConfig:
+        sampleConfigType: STATIC
+        config:
+          profileSample: 50           # percentage of rows
+          profileSampleType: PERCENTAGE
+      threadCount: 8
+      schemaFilterPattern:
+        includes:
+          - raw_.*
+          - marts_.*
+      tableFilterPattern:
+        # Skip the very large telemetry tables for profiler perf — profile on demand
+        excludes:
+          - login_attempts
+          - mobile_app_events
+          - web_sessions
+
+processor:
+  type: orm-profiler
+  config: {}
+
+sink:
+  type: metadata-rest
+  config: {}
+
+# IngestionPipeline registration: FQN leads with the service name; runId is a per-run UUID.
+ingestionPipelineFQN: banking-redshift.profiler
+pipelineRunId: 99dde126-6f22-402f-ac6e-d53cf587980b
+
+workflowConfig:
+  loggerLevel: INFO
+  openMetadataServerConfig:
+    hostPort: "${AI_SDK_HOST}/api"
+    authProvider: openmetadata
+    securityConfig:
+      jwtToken: "${AI_SDK_TOKEN}"

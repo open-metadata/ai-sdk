@@ -1,0 +1,17 @@
+# This file should be placed in ~/.dbt/profiles.yml
+# Or use DBT_PROFILES_DIR environment variable
+
+banking_redshift:
+  target: redshift
+  outputs:
+    redshift:
+      type: redshift
+      host: "{{ env_var('REDSHIFT_HOST') }}"
+      user: "{{ env_var('REDSHIFT_USER') }}"
+      password: "{{ env_var('REDSHIFT_PASSWORD') }}"
+      port: "{{ env_var('REDSHIFT_PORT', '5439') | int }}"
+      dbname: "{{ env_var('REDSHIFT_DATABASE') }}"
+      schema: dbt
+      threads: 4
+      keepalives_idle: 240
+      ra3_node: true

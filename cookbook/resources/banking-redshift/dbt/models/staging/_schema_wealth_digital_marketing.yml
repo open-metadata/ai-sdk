@@ -1,0 +1,410 @@
+version: 2
+
+models:
+  # ------------------------------------------------------------
+  # raw_wealth
+  # ------------------------------------------------------------
+  - name: stg_wealth__investment_accounts
+    description: Cleaned brokerage and wealth-management accounts with normalized status/risk fields.
+    meta:
+      owner: priya.patel
+      domain: WealthMgmt
+    columns:
+      - name: investment_account_id
+        description: Primary key — investment account identifier.
+        data_tests:
+          - unique
+          - not_null
+      - name: customer_id
+        description: Owning customer (FK to customers).
+        data_tests:
+          - not_null
+      - name: account_type
+        description: Lowercased account type code (e.g. 401k, 529_plan, ira_roth, ira_traditional, brokerage).
+        data_tests:
+          - accepted_values:
+              values: ['401k', '529_plan', 'ira_roth', 'ira_traditional', 'brokerage']
+      - name: opened_date
+        description: Date the investment account was opened.
+      - name: status
+        description: Account lifecycle status (lowercased).
+        data_tests:
+          - accepted_values:
+              values: ['active', 'closed']
+      - name: risk_tolerance
+        description: Customer-stated risk tolerance (lowercased — conservative, moderate, aggressive).
+      - name: investment_objective
+        description: Investment objective (lowercased — growth, income, preservation, ...).
+      - name: advisor_employee_id
+        description: Assigned wealth advisor (FK to employees).
+      - name: created_at
+        description: Record creation timestamp.
+
+  - name: stg_wealth__securities
+    description: Tradable securities reference table with normalized identifiers.
+    meta:
+      owner: priya.patel
+      domain: WealthMgmt
+    columns:
+      - name: security_id
+        description: Primary key — internal security identifier.
+        data_tests:
+          - unique
+          - not_null
+      - name: ticker
+        description: Uppercased exchange ticker symbol.
+      - name: isin
+        description: Uppercased ISIN (International Securities Identification Number).
+      - name: name
+        description: Security display name.
+      - name: asset_class
+        description: Asset class (lowercased).
+        data_tests:
+          - accepted_values:
+              values: ['bond', 'equity', 'etf', 'money_market', 'mutual_fund']
+      - name: sector
+        description: GICS-style sector (free text).
+      - name: exchange
+        description: Listing exchange (uppercased).
+      - name: currency
+        description: Quote currency (uppercased ISO 4217).
+      - name: current_price
+        description: Latest known price per unit in quote currency.
+      - name: price_as_of
+        description: As-of date for current_price.
+
+  - name: stg_wealth__holdings
+    description: Customer positions in securities as of a snapshot date.
+    meta:
+      owner: priya.patel
+      domain: WealthMgmt
+    columns:
+      - name: holding_id
+        description: Primary key — holding identifier.
+        data_tests:
+          - unique
+          - not_null
+      - name: investment_account_id
+        description: Owning investment account (FK to investment_accounts).
+        data_tests:
+          - not_null
+          - relationships:
+              to: ref('stg_wealth__investment_accounts')
+              field: investment_account_id
+      - name: security_id
+        description: Held security (FK to securities).
+        data_tests:
+          - not_null
+          - relationships:
+              to: ref('stg_wealth__securities')
+              field: security_id
+      - name: quantity
+        description: Number of units / shares held.
+      - name: cost_basis
+        description: Aggregate cost basis for the position, in account currency.
+      - name: as_of_date
+        description: Snapshot date for the position.
+      - name: acquired_date
+        description: Date the position was first acquired.
+
+  - name: stg_wealth__trades
+    description: Individual buy/sell trade executions with normalized side/status/venue.
+    meta:
+      owner: priya.patel
+      domain: WealthMgmt
+    columns:
+      - name: trade_id
+        description: Primary key — trade identifier.
+        data_tests:
+          - unique
+          - not_null
+      - name: investment_account_id
+        description: Investment account placing the trade (FK to investment_accounts).
+        data_tests:
+          - not_null
+          - relationships:
+              to: ref('stg_wealth__investment_accounts')
+              field: investment_account_id
+      - name: security_id
+        description: Security traded (FK to securities).
+        data_tests:
+          - not_null
+          - relationships:
+              to: ref('stg_wealth__securities')
+              field: security_id
+      - name: side
+        description: Trade side (lowercased — buy or sell).
+        data_tests:
+          - accepted_values:
+              values: ['buy', 'sell']
+      - name: quantity
+        description: Quantity executed (shares / units).
+      - name: trade_price
+        description: Execution price per unit in quote currency.
+      - name: commission
+        description: Commission charged on the trade, in account currency.
+      - name: trade_timestamp
+        description: Execution timestamp.
+      - name: settle_date
+        description: Settlement date (T+2 for most US equity trades).
+      - name: status
+        description: Order status (lowercased).
+        data_tests:
+          - accepted_values:
+              values: ['cancelled', 'executed', 'partially_filled']
+      - name: venue
+        description: Execution venue (uppercased — NASDAQ, NYSE, etc.).
+
+  # ------------------------------------------------------------
+  # raw_digital
+  # ------------------------------------------------------------
+  - name: stg_digital__web_sessions
+    description: Online banking web sessions with device, browser, and engagement signals.
+    meta:
+      owner: alice.chen
+      domain: RetailBanking
+    columns:
+      - name: session_id
+        description: Primary key — web session identifier.
+        data_tests:
+          - unique
+          - not_null
+      - name: customer_id
+        description: Customer that initiated the session (FK to customers).
+        data_tests:
+          - not_null
+      - name: started_at
+        description: Session start timestamp.
+      - name: ended_at
+        description: Session end timestamp.
+      - name: duration_seconds
+        description: Total session duration in seconds.
+      - name: device_type
+        description: Device category (lowercased).
+        data_tests:
+          - accepted_values:
+              values: ['desktop', 'mobile_web', 'tablet']
+      - name: browser
+        description: Browser family (Chrome, Firefox, Safari, ...).
+      - name: os
+        description: Operating system family and version.
+      - name: ip_address
+        description: Client IP address. PII.
+        meta:
+          pii: true
+          pii_type: IPAddress
+      - name: user_agent
+        description: Raw User-Agent string from the browser.
+      - name: referrer
+        description: Referrer URL or marker (e.g. 'direct').
+      - name: landing_page
+        description: First page viewed in the session.
+      - name: pages_viewed
+        description: Total page views during the session.
+
+  - name: stg_digital__mobile_app_events
+    description: Mobile banking app event stream with screen and geo context.
+    meta:
+      owner: alice.chen
+      domain: RetailBanking
+    columns:
+      - name: event_id
+        description: Primary key — event identifier.
+        data_tests:
+          - unique
+          - not_null
+      - name: customer_id
+        description: Customer emitting the event (FK to customers).
+        data_tests:
+          - not_null
+      - name: event_type
+        description: Normalized event type (lowercased).
+        data_tests:
+          - accepted_values:
+              values:
+                - bill_pay
+                - card_lock
+                - deposit_check
+                - login
+                - logout
+                - open_dispute
+                - search_atm
+                - transfer
+                - view_balance
+                - view_statements
+      - name: event_timestamp
+        description: Event timestamp.
+      - name: device_os
+        description: OS family and version (e.g., iOS 17.4, Android 14).
+      - name: device_model
+        description: Device hardware model (e.g., iPhone15,3).
+      - name: app_version
+        description: Mobile app version (semver).
+      - name: geo_latitude
+        description: Latitude at event time. PII — approximate location.
+        meta:
+          pii: true
+          pii_type: GeoLocation
+      - name: geo_longitude
+        description: Longitude at event time. PII — approximate location.
+        meta:
+          pii: true
+          pii_type: GeoLocation
+      - name: session_id
+        description: Owning mobile session identifier.
+      - name: screen_name
+        description: App screen on which the event was emitted.
+
+  - name: stg_digital__login_attempts
+    description: Authentication attempts across digital channels.
+    meta:
+      owner: alice.chen
+      domain: RetailBanking
+    columns:
+      - name: login_id
+        description: Primary key — login attempt identifier.
+        data_tests:
+          - unique
+          - not_null
+      - name: customer_id
+        description: Customer attempting to log in (FK to customers).
+        data_tests:
+          - not_null
+      - name: attempted_at
+        description: Timestamp of the login attempt.
+      - name: success
+        description: Whether the attempt succeeded.
+      - name: failure_reason
+        description: Reason for failure when applicable (lowercased — wrong_password, locked_account, ...).
+      - name: channel
+        description: Authentication channel (lowercased).
+        data_tests:
+          - accepted_values:
+              values: ['api', 'mobile_app', 'web']
+      - name: ip_address
+        description: Source IP address. PII.
+        meta:
+          pii: true
+          pii_type: IPAddress
+      - name: user_agent
+        description: Raw User-Agent string.
+      - name: mfa_method
+        description: MFA method used (lowercased — sms, totp, push, ...).
+      - name: device_fingerprint
+        description: Device fingerprint hash used for fraud detection.
+
+  # ------------------------------------------------------------
+  # raw_marketing
+  # ------------------------------------------------------------
+  - name: stg_marketing__campaigns
+    description: Marketing campaign definitions with budget, channel, and segment.
+    meta:
+      owner: alice.chen
+      domain: RetailBanking
+    columns:
+      - name: campaign_id
+        description: Primary key — campaign identifier.
+        data_tests:
+          - unique
+          - not_null
+      - name: campaign_name
+        description: Human-readable campaign name.
+      - name: channel
+        description: Campaign channel (lowercased).
+        data_tests:
+          - accepted_values:
+              values: ['branch_referral', 'direct_mail', 'email', 'in_app', 'sms', 'social']
+      - name: objective
+        description: Campaign objective (lowercased).
+        data_tests:
+          - accepted_values:
+              values: ['card_acquisition', 'deposit_growth', 'loan_cross_sell', 'reactivation', 'retention', 'wealth_expansion']
+      - name: start_date
+        description: Campaign start date.
+      - name: end_date
+        description: Campaign end date.
+      - name: budget
+        description: Allocated campaign budget, in USD.
+      - name: target_segment
+        description: Target customer segment (uppercased code; FK to customer_segments).
+        data_tests:
+          - relationships:
+              to: ref('stg_marketing__customer_segments')
+              field: segment_code
+      - name: owner_employee_id
+        description: Employee owning the campaign (FK to employees).
+      - name: status
+        description: Campaign lifecycle status (lowercased).
+        data_tests:
+          - accepted_values:
+              values: ['active', 'completed', 'paused']
+
+  - name: stg_marketing__customer_segments
+    description: Reference table of marketing segment codes.
+    meta:
+      owner: alice.chen
+      domain: RetailBanking
+    columns:
+      - name: segment_code
+        description: Primary key — segment code (uppercased).
+        data_tests:
+          - unique
+          - not_null
+      - name: segment_name
+        description: Display name of the segment.
+      - name: description
+        description: Free-text segment description.
+
+  - name: stg_marketing__customer_interactions
+    description: Logged interactions between customers and bank channels, optionally linked to a campaign.
+    meta:
+      owner: alice.chen
+      domain: RetailBanking
+    columns:
+      - name: interaction_id
+        description: Primary key — interaction identifier.
+        data_tests:
+          - unique
+          - not_null
+      - name: customer_id
+        description: Customer involved in the interaction (FK to customers).
+        data_tests:
+          - not_null
+      - name: campaign_id
+        description: Originating campaign, when applicable (FK to campaigns).
+        data_tests:
+          - relationships:
+              to: ref('stg_marketing__campaigns')
+              field: campaign_id
+      - name: channel
+        description: Interaction channel (lowercased).
+        data_tests:
+          - accepted_values:
+              values: ['branch_visit', 'chat', 'email', 'in_app_message', 'phone_call', 'video_meeting']
+      - name: topic
+        description: Interaction topic (lowercased).
+        data_tests:
+          - accepted_values:
+              values:
+                - account_inquiry
+                - address_change
+                - card_dispute
+                - complaint
+                - loan_question
+                - payment_assistance
+                - product_recommendation
+      - name: employee_id
+        description: Employee handling the interaction (FK to employees).
+      - name: interaction_timestamp
+        description: Interaction timestamp.
+      - name: duration_minutes
+        description: Duration of the interaction in minutes.
+      - name: outcome
+        description: Interaction outcome (lowercased).
+        data_tests:
+          - accepted_values:
+              values: ['escalated', 'follow_up', 'no_action', 'resolved', 'sale']
+      - name: satisfaction_score
+        description: Customer satisfaction score (1-5 scale).
+      - name: notes
+        description: Free-text notes captured by the agent.
