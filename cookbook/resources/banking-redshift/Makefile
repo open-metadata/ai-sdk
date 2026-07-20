@@ -96,10 +96,6 @@ glossaries:  ## Seed glossaries, terms, metrics, owners, and domains in OpenMeta
 	python scripts/create_glossaries_and_metrics.py
 	python scripts/create_owners_and_domains.py
 
-ai-automations:  ## Seed 6 governance AI Automation TEMPLATES (ownership, domain, PII, glossary, certification, compliance)
-	@echo "Required env: AI_SDK_HOST, AI_SDK_TOKEN"
-	python scripts/create_ai_automations.py
-
 context-center:  ## Seed Context Center folders, files, pages and memories (banking-themed)
 	@echo "Required env: AI_SDK_HOST, AI_SDK_TOKEN (optional: REDSHIFT_DATABASE)"
 	python scripts/create_context_center.py \
@@ -132,7 +128,6 @@ all:  ## Run the full banking-redshift demo end-to-end
 	@$(MAKE) superset-setup --no-print-directory
 	@$(MAKE) ingest-metadata --no-print-directory
 	@$(MAKE) glossaries --no-print-directory
-	@$(MAKE) ai-automations --no-print-directory
 	@$(MAKE) context-center --no-print-directory
 	@echo ""
 	@echo "banking-redshift demo is ready. See README.md for demo scenarios."
@@ -140,6 +135,6 @@ all:  ## Run the full banking-redshift demo end-to-end
 .PHONY: help install-deps generate-seeds upload-s3 init-redshift load \
         dbt dbt-seed superset-up superset-setup superset-down \
         ingest-metadata profile ingest-s3 ingest-redshift ingest-lineage \
-        ingest-dbt ingest-superset s3-lineage glossaries ai-automations \
+        ingest-dbt ingest-superset s3-lineage glossaries \
         context-center context-center-clean context-center-clean-memories \
         context-center-reset all

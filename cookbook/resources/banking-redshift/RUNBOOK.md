@@ -134,7 +134,6 @@ make ingest-superset    # charts, dashboards, dataset→Redshift lineage
 
 ```bash
 make glossaries         # 6 glossaries, ~112 terms, 35 metrics, users, domains, teams, personas, PII column tags
-make ai-automations     # 6 governance AI Automation templates
 make context-center     # Context Center folders, files, pages, memories
 ```
 
@@ -160,7 +159,7 @@ In the UI: `banking-redshift` lists 12 schemas · `customers.ssn` tagged `PII.Se
 export AI_SDK_HOST=https://other-instance.getcollate.io
 export AI_SDK_TOKEN=<its JWT>
 # leave every REDSHIFT_/SUPERSET_/AWS_ var untouched
-make ingest-metadata && make glossaries && make ai-automations && make context-center
+make ingest-metadata && make glossaries && make context-center
 ```
 
 The warehouse and Superset don't move — only metadata is re-pushed to the new host.
@@ -193,7 +192,6 @@ The warehouse and Superset don't move — only metadata is re-pushed to the new 
 | `make profile` | Redshift profiler + auto-PII classification only |
 | `make s3-lineage` | S3 container → Redshift table lineage edges |
 | `make glossaries` | Glossaries, terms, metrics, users, domains, teams, personas, PII tags |
-| `make ai-automations` | 6 governance AI Automation templates |
 | `make context-center` | Context Center folders, files, pages, memories |
 | `make context-center-reset` | Wipe + re-seed Context Center |
 

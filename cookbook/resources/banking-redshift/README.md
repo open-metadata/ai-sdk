@@ -108,8 +108,7 @@ That target walks through the steps below in order:
 7. `superset-setup` — provision database connection, datasets, charts, dashboards
 8. `ingest-metadata` — run all OpenMetadata ingestion workflows
 9. `glossaries` — seed glossaries, terms, metrics, owners, domains
-10. `ai-automations` — seed 6 governance AI Automation TEMPLATES
-11. `context-center` — seed Context Center folders, files, pages, memories
+10. `context-center` — seed Context Center folders, files, pages, memories
 
 ## Step-by-step Setup
 
