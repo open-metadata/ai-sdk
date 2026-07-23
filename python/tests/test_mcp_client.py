@@ -115,6 +115,64 @@ class TestMCPClientListTools:
         assert len(tools) == 1
         assert tools[0].name == MCPTool.SEARCH_METADATA
 
+    def test_list_tools_parses_ai_context_tools(self, client, httpx_mock: HTTPXMock):
+        """The OpenMetadata 2.0 AI Context tools parse with their schemas."""
+        httpx_mock.add_response(
+            url="https://metadata.example.com/mcp",
+            method="POST",
+            json={
+                "jsonrpc": "2.0",
+                "id": "test-id",
+                "result": {
+                    "tools": [
+                        {
+                            "name": "get_asset_context",
+                            "description": "Get the full AI Context for a data asset.",
+                            "inputSchema": {
+                                "type": "object",
+                                "properties": {
+                                    "entityType": {"type": "string", "description": "Asset type"},
+                                    "fqn": {
+                                        "type": "string",
+                                        "description": "Fully qualified name",
+                                    },
+                                    "format": {"type": "string", "description": "markdown or json"},
+                                    "query": {"type": "string", "description": "Optional question"},
+                                },
+                                "required": ["entityType", "fqn"],
+                            },
+                        },
+                        {
+                            "name": "get_persona_context",
+                            "description": "Get the persona-scoped AI Context document.",
+                            "inputSchema": {
+                                "type": "object",
+                                "properties": {
+                                    "personaName": {
+                                        "type": "string",
+                                        "description": "Persona name",
+                                    },
+                                    "format": {"type": "string", "description": "markdown or json"},
+                                },
+                            },
+                        },
+                    ]
+                },
+            },
+        )
+
+        mcp = MCPClient(client._host, client._auth, client._http)
+        tools = {tool.name: tool for tool in mcp.list_tools()}
+
+        assert MCPTool.GET_ASSET_CONTEXT in tools
+        assert MCPTool.GET_PERSONA_CONTEXT in tools
+
+        asset = tools[MCPTool.GET_ASSET_CONTEXT]
+        params = {param.name: param for param in asset.parameters}
+        assert params["entityType"].required is True
+        assert params["fqn"].required is True
+        assert params["query"].required is False
+
 
 class TestMCPClientCallTool:
     """Tests for MCPClient.call_tool()."""
