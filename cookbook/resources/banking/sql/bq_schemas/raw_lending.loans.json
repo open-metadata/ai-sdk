@@ -1,0 +1,123 @@
+[
+  {
+    "name": "loan_id",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "application_id",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "customer_id",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "product_code",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "principal",
+    "type": "NUMERIC",
+    "mode": "NULLABLE",
+    "precision": "18",
+    "scale": "4"
+  },
+  {
+    "name": "interest_rate",
+    "type": "NUMERIC",
+    "mode": "NULLABLE",
+    "precision": "10",
+    "scale": "6"
+  },
+  {
+    "name": "term_months",
+    "type": "INT64",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "origination_date",
+    "type": "DATE",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "maturity_date",
+    "type": "DATE",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "first_payment_date",
+    "type": "DATE",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "next_due_date",
+    "type": "DATE",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "status",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "balance",
+    "type": "NUMERIC",
+    "mode": "NULLABLE",
+    "precision": "18",
+    "scale": "4"
+  },
+  {
+    "name": "monthly_payment",
+    "type": "NUMERIC",
+    "mode": "NULLABLE",
+    "precision": "18",
+    "scale": "4"
+  },
+  {
+    "name": "branch_id",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "days_past_due",
+    "type": "INT64",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "ifrs9_stage",
+    "type": "INT64",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "pd_12m",
+    "type": "NUMERIC",
+    "mode": "NULLABLE",
+    "precision": "10",
+    "scale": "6"
+  },
+  {
+    "name": "lgd",
+    "type": "NUMERIC",
+    "mode": "NULLABLE",
+    "precision": "10",
+    "scale": "6"
+  },
+  {
+    "name": "ead",
+    "type": "NUMERIC",
+    "mode": "NULLABLE",
+    "precision": "18",
+    "scale": "4"
+  },
+  {
+    "name": "ecl_amount",
+    "type": "NUMERIC",
+    "mode": "NULLABLE",
+    "precision": "18",
+    "scale": "4"
+  }
+]

@@ -1,0 +1,57 @@
+[
+  {
+    "name": "kyc_id",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "customer_id",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "check_type",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "check_date",
+    "type": "DATE",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "check_status",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "verification_method",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "documents_provided",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "performed_by_employee_id",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "next_review_date",
+    "type": "DATE",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "risk_assessment_band",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "created_at",
+    "type": "TIMESTAMP",
+    "mode": "NULLABLE"
+  }
+]

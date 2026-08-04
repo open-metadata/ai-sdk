@@ -1,0 +1,44 @@
+source:
+  type: superset
+  serviceName: ${BANKING_BI_SERVICE}
+  serviceConnection:
+    config:
+      type: Superset
+      # scripts/ingest_metadata.sh exports SUPERSET_URL / SUPERSET_ADMIN_USER
+      # with defaults — os.path.expandvars does not honor ${VAR:-default}.
+      hostPort: ${SUPERSET_URL}
+      connection:
+        provider: db
+        username: ${SUPERSET_ADMIN_USER}
+        password: ${SUPERSET_ADMIN_PASSWORD}
+  sourceConfig:
+    config:
+      type: DashboardMetadata
+      lineageInformation:
+        # dbServicePrefixes, NOT the older dbServiceNames — an unknown key here
+        # is silently dropped, and the run then emits no lineage at all.
+        #
+        # Format is service[.database[.schema[.table]]]. Service-only is what we
+        # want: the database is resolved per chart from the Superset connection's
+        # `parameters.database`, which scripts/setup_superset_charts.py sets to
+        # the Redshift database or the GCP project as appropriate.
+        dbServicePrefixes:
+          - "${BANKING_DB_SERVICE}"
+      includeTags: true
+      includeDataModels: true
+
+sink:
+  type: metadata-rest
+  config: {}
+
+# IngestionPipeline registration: FQN leads with the service name; runId is a per-run UUID.
+ingestionPipelineFQN: ${BANKING_BI_SERVICE}.metadata
+pipelineRunId: 10363c4d-135b-4dde-b8cb-2f4c97dc19c3
+
+workflowConfig:
+  loggerLevel: INFO
+  openMetadataServerConfig:
+    hostPort: "${AI_SDK_HOST}/api"
+    authProvider: openmetadata
+    securityConfig:
+      jwtToken: "${AI_SDK_TOKEN}"

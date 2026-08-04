@@ -87,7 +87,7 @@ Everything else is OpenMetadata.
 
 ## Prerequisites
 
-- The [banking-redshift](../resources/banking-redshift/) cookbook ingested into an
+- The [banking](../resources/banking/) cookbook ingested into an
   **OpenMetadata 2.0** instance. This provides the tables, the `PII` classification
   on customer columns, and the `ComplianceOfficer` / `DataEngineer` personas with
   users David Kim and Sara Johnson assigned.

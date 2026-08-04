@@ -1,0 +1,83 @@
+[
+  {
+    "name": "account_id",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "customer_id",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "account_type",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "product_code",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "opened_date",
+    "type": "DATE",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "closed_date",
+    "type": "DATE",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "status",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "balance",
+    "type": "NUMERIC",
+    "mode": "NULLABLE",
+    "precision": "18",
+    "scale": "4"
+  },
+  {
+    "name": "currency",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "branch_id",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "interest_rate",
+    "type": "NUMERIC",
+    "mode": "NULLABLE",
+    "precision": "10",
+    "scale": "6"
+  },
+  {
+    "name": "credit_limit",
+    "type": "NUMERIC",
+    "mode": "NULLABLE",
+    "precision": "18",
+    "scale": "4"
+  },
+  {
+    "name": "is_joint",
+    "type": "BOOL",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "created_at",
+    "type": "TIMESTAMP",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "updated_at",
+    "type": "TIMESTAMP",
+    "mode": "NULLABLE"
+  }
+]

@@ -1,0 +1,51 @@
+[
+  {
+    "name": "dispute_id",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "authorization_id",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "card_id",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "dispute_reason",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "dispute_amount",
+    "type": "NUMERIC",
+    "mode": "NULLABLE",
+    "precision": "18",
+    "scale": "4"
+  },
+  {
+    "name": "opened_date",
+    "type": "DATE",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "resolved_date",
+    "type": "DATE",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "status",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "chargeback_amount",
+    "type": "NUMERIC",
+    "mode": "NULLABLE",
+    "precision": "18",
+    "scale": "4"
+  }
+]

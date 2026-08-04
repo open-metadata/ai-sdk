@@ -1,0 +1,72 @@
+[
+  {
+    "name": "alert_id",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "customer_id",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "account_id",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "transaction_id",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "alert_type",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "severity",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "status",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "alert_date",
+    "type": "DATE",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "triaged_date",
+    "type": "DATE",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "closed_date",
+    "type": "DATE",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "assigned_to_employee_id",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "narrative",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "scenario_code",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "created_at",
+    "type": "TIMESTAMP",
+    "mode": "NULLABLE"
+  }
+]

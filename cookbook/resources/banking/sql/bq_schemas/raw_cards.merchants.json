@@ -1,0 +1,42 @@
+[
+  {
+    "name": "merchant_id",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "merchant_name",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "mcc_code",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "mcc_description",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "city",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "state",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "country",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "created_at",
+    "type": "TIMESTAMP",
+    "mode": "NULLABLE"
+  }
+]

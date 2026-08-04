@@ -1,0 +1,35 @@
+# This file should be placed in ~/.dbt/profiles.yml
+# Or use DBT_PROFILES_DIR environment variable
+#
+# One profile, two warehouses. Pick with --target, or let the Makefile do it:
+#
+#   WAREHOUSE=bigquery make dbt
+
+banking:
+  target: redshift
+  outputs:
+    redshift:
+      type: redshift
+      host: "{{ env_var('REDSHIFT_HOST') }}"
+      user: "{{ env_var('REDSHIFT_USER') }}"
+      password: "{{ env_var('REDSHIFT_PASSWORD') }}"
+      port: "{{ env_var('REDSHIFT_PORT', '5439') | int }}"
+      dbname: "{{ env_var('REDSHIFT_DATABASE') }}"
+      schema: dbt
+      threads: 4
+      keepalives_idle: 240
+      ra3_node: true
+
+    bigquery:
+      type: bigquery
+      method: service-account
+      project: "{{ env_var('BANKING_GCP_PROJECT') }}"
+      keyfile: "{{ env_var('GOOGLE_APPLICATION_CREDENTIALS') }}"
+      dataset: dbt
+      # Must match BANKING_BQ_LOCATION in bootstrap_bigquery.sh. If dbt creates
+      # its datasets in a different region from the raw ones, every
+      # cross-dataset join fails.
+      location: "{{ env_var('BANKING_BQ_LOCATION', 'US') }}"
+      threads: 8
+      priority: interactive
+      job_retries: 1

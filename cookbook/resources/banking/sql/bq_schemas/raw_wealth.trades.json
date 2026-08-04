@@ -1,0 +1,63 @@
+[
+  {
+    "name": "trade_id",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "investment_account_id",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "security_id",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "side",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "quantity",
+    "type": "NUMERIC",
+    "mode": "NULLABLE",
+    "precision": "18",
+    "scale": "4"
+  },
+  {
+    "name": "trade_price",
+    "type": "NUMERIC",
+    "mode": "NULLABLE",
+    "precision": "18",
+    "scale": "4"
+  },
+  {
+    "name": "commission",
+    "type": "NUMERIC",
+    "mode": "NULLABLE",
+    "precision": "18",
+    "scale": "4"
+  },
+  {
+    "name": "trade_timestamp",
+    "type": "TIMESTAMP",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "settle_date",
+    "type": "DATE",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "status",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "venue",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  }
+]

@@ -1,0 +1,50 @@
+source:
+  type: bigquery
+  serviceName: banking-bigquery
+  serviceConnection:
+    config:
+      type: BigQuery
+      credentials:
+        gcpConfig:
+          path: ${GOOGLE_APPLICATION_CREDENTIALS}
+          # Required, not optional: the connector builds its SQLAlchemy URL from
+          # this field alone. Without it the URL is a bare `bigquery://` and every
+          # query fails with "Invalid project ID ''". billingProjectId does not
+          # feed the URL, and the project inside the key file is not read here.
+          projectId: ${BANKING_GCP_PROJECT}
+      billingProjectId: ${BANKING_GCP_PROJECT}
+      # Must match BANKING_BQ_LOCATION / the dbt profile. Defaults to 'us'
+      # in the connector, which silently breaks a EU-located demo.
+      usageLocation: ${BANKING_BQ_LOCATION}
+  sourceConfig:
+    config:
+      type: AutoClassification
+      enableAutoClassification: true
+      storeSampleData: true
+      sampleDataCount: 50
+      confidence: 80
+      schemaFilterPattern:
+        includes:
+          - raw_.*
+          - marts_.*
+      tableFilterPattern:
+        excludes:
+          - login_attempts
+          - mobile_app_events
+          - web_sessions
+
+sink:
+  type: metadata-rest
+  config: {}
+
+# IngestionPipeline registration: FQN leads with the service name; runId is a per-run UUID.
+ingestionPipelineFQN: banking-bigquery.autoClassification
+pipelineRunId: e2c84a19-3f76-4d05-b8e3-71a6c9d5408f
+
+workflowConfig:
+  loggerLevel: INFO
+  openMetadataServerConfig:
+    hostPort: "${AI_SDK_HOST}/api"
+    authProvider: openmetadata
+    securityConfig:
+      jwtToken: "${AI_SDK_TOKEN}"

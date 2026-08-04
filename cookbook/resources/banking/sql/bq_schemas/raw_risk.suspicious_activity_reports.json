@@ -1,0 +1,69 @@
+[
+  {
+    "name": "sar_id",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "alert_id",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "customer_id",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "filing_date",
+    "type": "DATE",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "filing_institution",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "regulator",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "filing_reference",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "suspicious_activity_type",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "total_amount_involved",
+    "type": "NUMERIC",
+    "mode": "NULLABLE",
+    "precision": "18",
+    "scale": "4"
+  },
+  {
+    "name": "narrative",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "filed_by_employee_id",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "status",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "created_at",
+    "type": "TIMESTAMP",
+    "mode": "NULLABLE"
+  }
+]

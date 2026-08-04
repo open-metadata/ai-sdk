@@ -1,0 +1,37 @@
+[
+  {
+    "name": "holder_id",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "account_id",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "customer_id",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "holder_order",
+    "type": "INT64",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "relationship",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "added_at",
+    "type": "TIMESTAMP",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "removed_at",
+    "type": "TIMESTAMP",
+    "mode": "NULLABLE"
+  }
+]

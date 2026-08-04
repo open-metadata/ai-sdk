@@ -1,0 +1,47 @@
+[
+  {
+    "name": "investment_account_id",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "customer_id",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "account_type",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "opened_date",
+    "type": "DATE",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "status",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "risk_tolerance",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "investment_objective",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "advisor_employee_id",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "created_at",
+    "type": "TIMESTAMP",
+    "mode": "NULLABLE"
+  }
+]

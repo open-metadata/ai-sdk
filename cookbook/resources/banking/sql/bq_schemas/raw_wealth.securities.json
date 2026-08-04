@@ -1,0 +1,54 @@
+[
+  {
+    "name": "security_id",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "ticker",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "isin",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "name",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "asset_class",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "sector",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "exchange",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "currency",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "current_price",
+    "type": "NUMERIC",
+    "mode": "NULLABLE",
+    "precision": "18",
+    "scale": "4"
+  },
+  {
+    "name": "price_as_of",
+    "type": "DATE",
+    "mode": "NULLABLE"
+  }
+]

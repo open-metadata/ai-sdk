@@ -1,0 +1,54 @@
+[
+  {
+    "name": "screening_id",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "customer_id",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "screening_date",
+    "type": "DATE",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "list_name",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "screen_result",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "match_score",
+    "type": "NUMERIC",
+    "mode": "NULLABLE",
+    "precision": "10",
+    "scale": "6"
+  },
+  {
+    "name": "matched_name",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "disposition",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "screened_by_system",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "created_at",
+    "type": "TIMESTAMP",
+    "mode": "NULLABLE"
+  }
+]

@@ -1,0 +1,67 @@
+[
+  {
+    "name": "session_id",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "customer_id",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "started_at",
+    "type": "TIMESTAMP",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "ended_at",
+    "type": "TIMESTAMP",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "duration_seconds",
+    "type": "INT64",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "device_type",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "browser",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "os",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "ip_address",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "user_agent",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "referrer",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "landing_page",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "pages_viewed",
+    "type": "INT64",
+    "mode": "NULLABLE"
+  }
+]

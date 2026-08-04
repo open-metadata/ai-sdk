@@ -1,0 +1,41 @@
+[
+  {
+    "name": "holding_id",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "investment_account_id",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "security_id",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "quantity",
+    "type": "NUMERIC",
+    "mode": "NULLABLE",
+    "precision": "18",
+    "scale": "4"
+  },
+  {
+    "name": "cost_basis",
+    "type": "NUMERIC",
+    "mode": "NULLABLE",
+    "precision": "18",
+    "scale": "4"
+  },
+  {
+    "name": "as_of_date",
+    "type": "DATE",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "acquired_date",
+    "type": "DATE",
+    "mode": "NULLABLE"
+  }
+]

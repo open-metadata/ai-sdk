@@ -1,0 +1,61 @@
+[
+  {
+    "name": "atm_withdrawal_id",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "account_id",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "atm_terminal_id",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "atm_city",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "atm_state",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "amount",
+    "type": "NUMERIC",
+    "mode": "NULLABLE",
+    "precision": "18",
+    "scale": "4"
+  },
+  {
+    "name": "fee_amount",
+    "type": "NUMERIC",
+    "mode": "NULLABLE",
+    "precision": "18",
+    "scale": "4"
+  },
+  {
+    "name": "withdrawn_at",
+    "type": "TIMESTAMP",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "is_foreign",
+    "type": "BOOL",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "network",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "parent_transaction_id",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  }
+]

@@ -1,0 +1,22 @@
+[
+  {
+    "name": "category_code",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "category_name",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "category_group",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "sign_hint",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  }
+]

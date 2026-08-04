@@ -1,0 +1,42 @@
+[
+  {
+    "name": "score_id",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "customer_id",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "score_type",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "score_value",
+    "type": "INT64",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "score_date",
+    "type": "DATE",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "bureau",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "pull_reason",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "created_at",
+    "type": "TIMESTAMP",
+    "mode": "NULLABLE"
+  }
+]
