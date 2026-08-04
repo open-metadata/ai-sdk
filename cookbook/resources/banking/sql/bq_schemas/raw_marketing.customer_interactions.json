@@ -1,0 +1,57 @@
+[
+  {
+    "name": "interaction_id",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "customer_id",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "campaign_id",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "channel",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "topic",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "employee_id",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "interaction_timestamp",
+    "type": "TIMESTAMP",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "duration_minutes",
+    "type": "INT64",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "outcome",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "satisfaction_score",
+    "type": "INT64",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "notes",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  }
+]

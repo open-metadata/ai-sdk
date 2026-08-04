@@ -1,0 +1,66 @@
+[
+  {
+    "name": "transaction_id",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "account_id",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "posted_at",
+    "type": "TIMESTAMP",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "amount",
+    "type": "NUMERIC",
+    "mode": "NULLABLE",
+    "precision": "18",
+    "scale": "4"
+  },
+  {
+    "name": "currency",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "transaction_type",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "merchant_id",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "description",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "is_reversal",
+    "type": "BOOL",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "channel",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "running_balance",
+    "type": "NUMERIC",
+    "mode": "NULLABLE",
+    "precision": "18",
+    "scale": "4"
+  },
+  {
+    "name": "created_at",
+    "type": "TIMESTAMP",
+    "mode": "NULLABLE"
+  }
+]

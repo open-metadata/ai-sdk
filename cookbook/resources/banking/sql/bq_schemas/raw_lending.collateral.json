@@ -1,0 +1,46 @@
+[
+  {
+    "name": "collateral_id",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "loan_id",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "collateral_type",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "description",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "appraised_value",
+    "type": "NUMERIC",
+    "mode": "NULLABLE",
+    "precision": "18",
+    "scale": "4"
+  },
+  {
+    "name": "appraisal_date",
+    "type": "DATE",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "ltv_ratio",
+    "type": "NUMERIC",
+    "mode": "NULLABLE",
+    "precision": "10",
+    "scale": "6"
+  },
+  {
+    "name": "lien_position",
+    "type": "INT64",
+    "mode": "NULLABLE"
+  }
+]

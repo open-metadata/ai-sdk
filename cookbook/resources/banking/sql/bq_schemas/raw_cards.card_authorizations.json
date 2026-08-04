@@ -1,0 +1,54 @@
+[
+  {
+    "name": "authorization_id",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "card_id",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "merchant_id",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "amount",
+    "type": "NUMERIC",
+    "mode": "NULLABLE",
+    "precision": "18",
+    "scale": "4"
+  },
+  {
+    "name": "currency",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "auth_status",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "decline_reason",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "auth_timestamp",
+    "type": "TIMESTAMP",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "is_card_present",
+    "type": "BOOL",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "ip_address",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  }
+]

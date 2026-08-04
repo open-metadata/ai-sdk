@@ -1,0 +1,81 @@
+[
+  {
+    "name": "wire_id",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "account_id",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "direction",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "amount",
+    "type": "NUMERIC",
+    "mode": "NULLABLE",
+    "precision": "18",
+    "scale": "4"
+  },
+  {
+    "name": "currency",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "from_iban",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "to_iban",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "swift_code",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "fee_amount",
+    "type": "NUMERIC",
+    "mode": "NULLABLE",
+    "precision": "18",
+    "scale": "4"
+  },
+  {
+    "name": "originator_name",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "beneficiary_name",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "wire_purpose",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "sent_at",
+    "type": "TIMESTAMP",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "status",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "parent_transaction_id",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  }
+]

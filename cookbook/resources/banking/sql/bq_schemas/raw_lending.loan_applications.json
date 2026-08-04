@@ -1,0 +1,78 @@
+[
+  {
+    "name": "application_id",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "customer_id",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "product_code",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "applied_date",
+    "type": "DATE",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "requested_amount",
+    "type": "NUMERIC",
+    "mode": "NULLABLE",
+    "precision": "18",
+    "scale": "4"
+  },
+  {
+    "name": "fico_at_application",
+    "type": "INT64",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "annual_income",
+    "type": "NUMERIC",
+    "mode": "NULLABLE",
+    "precision": "18",
+    "scale": "4"
+  },
+  {
+    "name": "dti_ratio",
+    "type": "NUMERIC",
+    "mode": "NULLABLE",
+    "precision": "10",
+    "scale": "6"
+  },
+  {
+    "name": "purpose",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "status",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "decision_date",
+    "type": "DATE",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "denial_reason",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "loan_officer_id",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "branch_id",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  }
+]

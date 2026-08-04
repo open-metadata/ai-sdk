@@ -1,0 +1,49 @@
+[
+  {
+    "name": "card_id",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "customer_id",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "card_number_masked",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "product_code",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "issued_date",
+    "type": "DATE",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "expires_date",
+    "type": "DATE",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "status",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "credit_limit",
+    "type": "NUMERIC",
+    "mode": "NULLABLE",
+    "precision": "18",
+    "scale": "4"
+  },
+  {
+    "name": "linked_account_id",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  }
+]

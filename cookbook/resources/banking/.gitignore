@@ -1,0 +1,12 @@
+# Generated at upload time from scripts/generate_s3_manifest.py
+openmetadata.json
+
+# Local credential files. The .example templates are committed; anything the
+# user fills in from them is not.
+.env
+.env.*
+!.env.*.example
+
+# Service account keys, in case one gets dropped in here.
+*-sa.json
+service-account*.json

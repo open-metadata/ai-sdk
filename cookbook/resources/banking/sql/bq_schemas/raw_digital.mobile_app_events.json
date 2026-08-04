@@ -1,0 +1,61 @@
+[
+  {
+    "name": "event_id",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "customer_id",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "event_type",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "event_timestamp",
+    "type": "TIMESTAMP",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "device_os",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "device_model",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "app_version",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "geo_latitude",
+    "type": "NUMERIC",
+    "mode": "NULLABLE",
+    "precision": "10",
+    "scale": "6"
+  },
+  {
+    "name": "geo_longitude",
+    "type": "NUMERIC",
+    "mode": "NULLABLE",
+    "precision": "10",
+    "scale": "6"
+  },
+  {
+    "name": "session_id",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "screen_name",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  }
+]

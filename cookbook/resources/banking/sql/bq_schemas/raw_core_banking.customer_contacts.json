@@ -1,0 +1,42 @@
+[
+  {
+    "name": "contact_id",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "customer_id",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "contact_type",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "contact_value",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "is_primary",
+    "type": "BOOL",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "is_verified",
+    "type": "BOOL",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "opt_out",
+    "type": "BOOL",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "added_at",
+    "type": "TIMESTAMP",
+    "mode": "NULLABLE"
+  }
+]

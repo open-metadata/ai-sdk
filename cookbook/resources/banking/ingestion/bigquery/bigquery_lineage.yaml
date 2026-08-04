@@ -1,0 +1,40 @@
+source:
+  type: bigquery-lineage
+  serviceName: banking-bigquery
+  serviceConnection:
+    config:
+      type: BigQuery
+      credentials:
+        gcpConfig:
+          path: ${GOOGLE_APPLICATION_CREDENTIALS}
+          # Required, not optional: the connector builds its SQLAlchemy URL from
+          # this field alone. Without it the URL is a bare `bigquery://` and every
+          # query fails with "Invalid project ID ''". billingProjectId does not
+          # feed the URL, and the project inside the key file is not read here.
+          projectId: ${BANKING_GCP_PROJECT}
+      billingProjectId: ${BANKING_GCP_PROJECT}
+      # Must match BANKING_BQ_LOCATION / the dbt profile. Defaults to 'us'
+      # in the connector, which silently breaks a EU-located demo.
+      usageLocation: ${BANKING_BQ_LOCATION}
+  sourceConfig:
+    config:
+      type: DatabaseLineage
+      queryLogDuration: 7
+      resultLimit: 1000
+      processViewLineage: true
+
+sink:
+  type: metadata-rest
+  config: {}
+
+# IngestionPipeline registration: FQN leads with the service name; runId is a per-run UUID.
+ingestionPipelineFQN: banking-bigquery.lineage
+pipelineRunId: 6d0b3f27-84ce-4a91-b5f2-0e7c1a94d63b
+
+workflowConfig:
+  loggerLevel: INFO
+  openMetadataServerConfig:
+    hostPort: "${AI_SDK_HOST}/api"
+    authProvider: openmetadata
+    securityConfig:
+      jwtToken: "${AI_SDK_TOKEN}"

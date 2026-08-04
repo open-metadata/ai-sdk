@@ -1,0 +1,17 @@
+[
+  {
+    "name": "segment_code",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "segment_name",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "description",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  }
+]

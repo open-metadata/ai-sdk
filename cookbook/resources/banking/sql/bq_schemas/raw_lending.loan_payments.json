@@ -1,0 +1,58 @@
+[
+  {
+    "name": "payment_id",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "loan_id",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "payment_date",
+    "type": "DATE",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "amount",
+    "type": "NUMERIC",
+    "mode": "NULLABLE",
+    "precision": "18",
+    "scale": "4"
+  },
+  {
+    "name": "principal_portion",
+    "type": "NUMERIC",
+    "mode": "NULLABLE",
+    "precision": "18",
+    "scale": "4"
+  },
+  {
+    "name": "interest_portion",
+    "type": "NUMERIC",
+    "mode": "NULLABLE",
+    "precision": "18",
+    "scale": "4"
+  },
+  {
+    "name": "payment_type",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "status",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "channel",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "created_at",
+    "type": "TIMESTAMP",
+    "mode": "NULLABLE"
+  }
+]

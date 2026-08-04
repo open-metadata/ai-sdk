@@ -1,0 +1,34 @@
+[
+  {
+    "name": "product_code",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "product_name",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "product_class",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "annual_fee",
+    "type": "NUMERIC",
+    "mode": "NULLABLE",
+    "precision": "18",
+    "scale": "4"
+  },
+  {
+    "name": "credit_limit_band",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "is_active",
+    "type": "BOOL",
+    "mode": "NULLABLE"
+  }
+]

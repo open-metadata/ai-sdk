@@ -1,0 +1,62 @@
+[
+  {
+    "name": "employee_id",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "first_name",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "last_name",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "email",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "phone",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "hire_date",
+    "type": "DATE",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "termination_date",
+    "type": "DATE",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "role",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "branch_id",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "manager_id",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "salary_band",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "is_active",
+    "type": "BOOL",
+    "mode": "NULLABLE"
+  }
+]

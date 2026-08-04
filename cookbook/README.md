@@ -6,7 +6,8 @@ Practical examples and workflows for integrating Metadata AI into your data plat
 
 | Resource | Description |
 |----------|-------------|
-| [Demo Database](./demo-database/) | PostgreSQL + dbt + Metabase setup with realistic e-commerce data. Use this as the foundation for testing all cookbook examples. |
+| [Demo Database](./resources/demo-database/) | PostgreSQL + dbt + Metabase setup with realistic e-commerce data. Use this as the foundation for testing all cookbook examples. |
+| [Banking Demo](./resources/banking/) | Full banking stack on **Redshift or BigQuery** — 38 raw tables, ~70 dbt models, 4 Superset dashboards, glossaries, PII classification, and Context Center seeding. Pick the warehouse with `WAREHOUSE=bigquery`. |
 
 ## Use Cases
 

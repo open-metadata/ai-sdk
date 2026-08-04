@@ -1,0 +1,74 @@
+[
+  {
+    "name": "ach_id",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "account_id",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "direction",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "amount",
+    "type": "NUMERIC",
+    "mode": "NULLABLE",
+    "precision": "18",
+    "scale": "4"
+  },
+  {
+    "name": "ach_type",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "counterparty_routing",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "counterparty_account_masked",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "counterparty_name",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "settled_date",
+    "type": "DATE",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "originated_at",
+    "type": "TIMESTAMP",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "status",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "sec_code",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "return_reason_code",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "parent_transaction_id",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  }
+]

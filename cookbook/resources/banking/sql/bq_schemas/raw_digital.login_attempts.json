@@ -1,0 +1,52 @@
+[
+  {
+    "name": "login_id",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "customer_id",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "attempted_at",
+    "type": "TIMESTAMP",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "success",
+    "type": "BOOL",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "failure_reason",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "channel",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "ip_address",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "user_agent",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "mfa_method",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "device_fingerprint",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  }
+]

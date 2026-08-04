@@ -1,0 +1,82 @@
+[
+  {
+    "name": "customer_id",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "first_name",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "last_name",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "email",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "phone",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "ssn",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "tax_id",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "date_of_birth",
+    "type": "DATE",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "customer_segment",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "customer_type",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "branch_id",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "primary_employee_id",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "kyc_status",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "risk_band",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "created_at",
+    "type": "TIMESTAMP",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "updated_at",
+    "type": "TIMESTAMP",
+    "mode": "NULLABLE"
+  }
+]
