@@ -6,9 +6,9 @@ import java.util.List;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-/** Information about an Ability. */
+/** Information about a Skill. */
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class AbilityInfo {
+public class SkillInfo {
 
   @JsonProperty("id")
   private String id;
@@ -31,11 +31,11 @@ public class AbilityInfo {
   @JsonProperty("tools")
   private List<String> tools;
 
-  public AbilityInfo() {
+  public SkillInfo() {
     this.tools = Collections.emptyList();
   }
 
-  public AbilityInfo(
+  public SkillInfo(
       String id,
       String name,
       String displayName,
@@ -110,7 +110,7 @@ public class AbilityInfo {
 
   @Override
   public String toString() {
-    return "AbilityInfo{"
+    return "SkillInfo{"
         + "id='"
         + id
         + '\''

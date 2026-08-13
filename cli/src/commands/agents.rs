@@ -121,10 +121,10 @@ pub async fn run_info(profile: &str, name: &str) -> CliResult<()> {
         }
     }
 
-    if !agent.abilities.is_empty() {
-        println!("  {}", "Abilities:".cyan());
-        for ability in &agent.abilities {
-            println!("    - {}", ability.display_name());
+    if !agent.skills.is_empty() {
+        println!("  {}", "Skills:".cyan());
+        for skill in &agent.skills {
+            println!("    - {}", skill.display_name());
         }
     }
 
@@ -142,7 +142,7 @@ pub async fn run_create(
     display_name: Option<&str>,
     icon: Option<&str>,
     bot_name: Option<&str>,
-    abilities: Option<Vec<String>>,
+    skills: Option<Vec<String>>,
     api_enabled: Option<bool>,
     provider: Option<&str>,
     json: bool,
@@ -156,20 +156,20 @@ pub async fn run_create(
         .id
         .ok_or_else(|| crate::error::CliError::Other(format!("Persona '{persona}' has no ID")))?;
 
-    // Build ability references if provided
-    let ability_refs = if let Some(ability_names) = abilities {
+    // Build skill references if provided
+    let skill_refs = if let Some(skill_names) = skills {
         let mut refs = Vec::new();
-        for ability_name in ability_names {
-            let ability_info = client.get_ability(&ability_name).await?;
-            let ability_id = ability_info.id.ok_or_else(|| {
-                crate::error::CliError::Other(format!("Ability '{ability_name}' has no ID"))
+        for skill_name in skill_names {
+            let skill_info = client.get_skill(&skill_name).await?;
+            let skill_id = skill_info.id.ok_or_else(|| {
+                crate::error::CliError::Other(format!("Skill '{skill_name}' has no ID"))
             })?;
             refs.push(EntityReference {
-                id: Some(ability_id),
-                name: Some(ability_info.name),
-                entity_type: Some("ability".to_string()),
-                fully_qualified_name: ability_info.fully_qualified_name,
-                display_name: ability_info.display_name,
+                id: Some(skill_id),
+                name: Some(skill_info.name),
+                entity_type: Some("skill".to_string()),
+                fully_qualified_name: skill_info.fully_qualified_name,
+                display_name: skill_info.display_name,
             });
         }
         Some(refs)
@@ -191,7 +191,7 @@ pub async fn run_create(
         display_name: display_name.map(String::from),
         icon: icon.map(String::from),
         bot_name: bot_name.map(String::from),
-        abilities: ability_refs,
+        skills: skill_refs,
         api_enabled: Some(api_enabled.unwrap_or(true)),
         provider: Some(provider.unwrap_or("user").to_string()),
         entity_status: Some("Approved".to_string()),

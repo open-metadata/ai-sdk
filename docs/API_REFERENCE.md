@@ -14,8 +14,8 @@ Comprehensive reference of all SDK methods, server endpoints, data models, and f
 | `/api/v1/bots/name/{name}` | GET | Get bot by name |
 | `/api/v1/agents/personas/` | GET/POST | List / Create personas |
 | `/api/v1/agents/personas/name/{name}` | GET | Get persona by name |
-| `/api/v1/agents/abilities/` | GET | List abilities (paginated) |
-| `/api/v1/agents/abilities/name/{name}` | GET | Get ability by name |
+| `/api/v1/agents/skills/` | GET | List skills (paginated) |
+| `/api/v1/agents/skills/name/{name}` | GET | Get skill by name |
 | `/api/v1/contextCenter/memories/` | GET/POST | List / Create memories (paginated, optional `primaryEntityFqn` filter) |
 | `/api/v1/contextCenter/memories/{id}` | GET/DELETE | Get / Delete memory by ID (`hardDelete=` query param on DELETE) |
 | `/api/v1/hybrid/nlq/search?index=contextMemory` | GET | Hybrid NLQ search over the memories index |
@@ -53,8 +53,8 @@ Entity CRUD lives on namespaces (`client.<entity>.<verb>()`). Each namespace exp
 | `personas.list(limit?) -> list[PersonaInfo]` | `GET /api/v1/agents/personas/` | No | `personas.alist()` |
 | `personas.get(name) -> PersonaInfo` | `GET /api/v1/agents/personas/name/{name}` | No | `personas.aget()` |
 | `personas.create(request) -> PersonaInfo` | `POST /api/v1/agents/personas/` | No | `personas.acreate()` |
-| `abilities.list(limit?) -> list[AbilityInfo]` | `GET /api/v1/agents/abilities/` | No | `abilities.alist()` |
-| `abilities.get(name) -> AbilityInfo` | `GET /api/v1/agents/abilities/name/{name}` | No | `abilities.aget()` |
+| `skills.list(limit?) -> list[SkillInfo]` | `GET /api/v1/agents/skills/` | No | `skills.alist()` |
+| `skills.get(name) -> SkillInfo` | `GET /api/v1/agents/skills/name/{name}` | No | `skills.aget()` |
 | `memories.list(primary_entity_fqn?, limit?) -> list[ContextMemory]` | `GET /api/v1/contextCenter/memories/` | No | `memories.alist()` |
 | `memories.get(id) -> ContextMemory` | `GET /api/v1/contextCenter/memories/{id}` | No | `memories.aget()` |
 | `memories.create(request) -> ContextMemory` | `POST /api/v1/contextCenter/memories/` | No | `memories.acreate()` |
@@ -139,8 +139,8 @@ Entity CRUD lives on namespace fields (`client.<entity>.<verb>()`).
 | `personas.list(options?): Promise<PersonaInfo[]>` | `GET /api/v1/agents/personas/` | No |
 | `personas.get(name): Promise<PersonaInfo>` | `GET /api/v1/agents/personas/name/{name}` | No |
 | `personas.create(request): Promise<PersonaInfo>` | `POST /api/v1/agents/personas/` | No |
-| `abilities.list(options?): Promise<AbilityInfo[]>` | `GET /api/v1/agents/abilities/` | No |
-| `abilities.get(name): Promise<AbilityInfo>` | `GET /api/v1/agents/abilities/name/{name}` | No |
+| `skills.list(options?): Promise<SkillInfo[]>` | `GET /api/v1/agents/skills/` | No |
+| `skills.get(name): Promise<SkillInfo>` | `GET /api/v1/agents/skills/name/{name}` | No |
 | `memories.list(options?): Promise<ContextMemory[]>` | `GET /api/v1/contextCenter/memories/` | No |
 | `memories.get(id): Promise<ContextMemory>` | `GET /api/v1/contextCenter/memories/{id}` | No |
 | `memories.create(request): Promise<ContextMemory>` | `POST /api/v1/contextCenter/memories/` | No |
@@ -183,8 +183,8 @@ Entity CRUD lives on namespace accessor methods (`client.<entity>().<verb>()`).
 | `personas().list() / personas().list(limit)` | `GET /api/v1/agents/personas/` | No |
 | `personas().get(name): PersonaInfo` | `GET /api/v1/agents/personas/name/{name}` | No |
 | `personas().create(request): PersonaInfo` | `POST /api/v1/agents/personas/` | No |
-| `abilities().list() / abilities().list(limit)` | `GET /api/v1/agents/abilities/` | No |
-| `abilities().get(name): AbilityInfo` | `GET /api/v1/agents/abilities/name/{name}` | No |
+| `skills().list() / skills().list(limit)` | `GET /api/v1/agents/skills/` | No |
+| `skills().get(name): SkillInfo` | `GET /api/v1/agents/skills/name/{name}` | No |
 | `memories().list() / memories().list(fqn, limit)` | `GET /api/v1/contextCenter/memories/` | No |
 | `memories().get(id): ContextMemory` | `GET /api/v1/contextCenter/memories/{id}` | No |
 | `memories().create(request): ContextMemory` | `POST /api/v1/contextCenter/memories/` | No |
@@ -229,12 +229,12 @@ Entity CRUD lives on namespace accessor methods (`client.<entity>().<verb>()`).
 | `personas get <name> [--json]` | `GET /api/v1/agents/personas/name/{name}` |
 | `personas create [options]` | `POST /api/v1/agents/personas/` |
 
-### Ability Commands
+### Skill Commands
 
 | Command | Endpoint |
 |---------|----------|
-| `abilities list [--limit N] [--json]` | `GET /api/v1/agents/abilities/` |
-| `abilities get <name> [--json]` | `GET /api/v1/agents/abilities/name/{name}` |
+| `skills list [--limit N] [--json]` | `GET /api/v1/agents/skills/` |
+| `skills get <name> [--json]` | `GET /api/v1/agents/skills/name/{name}` |
 
 ### Memory Commands
 
@@ -315,7 +315,7 @@ ai-sdk configure list                # List all config
   name: string
   displayName: string
   description: string
-  abilities: string[]
+  skills: string[]
   apiEnabled: boolean
 }
 ```
@@ -345,7 +345,7 @@ ai-sdk configure list                # List all config
 }
 ```
 
-### AbilityInfo
+### SkillInfo
 
 ```
 {
@@ -473,7 +473,7 @@ AISdkError (base)
 |   +-- AgentNotFoundError
 |   +-- BotNotFoundError
 |   +-- PersonaNotFoundError
-|   +-- AbilityNotFoundError
+|   +-- SkillNotFoundError
 +-- ValidationError (400)
 +-- RateLimitError (429)
 +-- AgentExecutionError (5xx)
@@ -571,7 +571,7 @@ Default: 3 retries with exponential backoff.
 | Create agent | yes | yes | yes | yes (TUI + CLI) |
 | Bots (list + get) | yes | yes | yes | yes |
 | Personas (list + get + create) | yes | yes | yes | yes (TUI + CLI) |
-| Abilities (list + get) | yes | yes | yes | yes |
+| Skills (list + get) | yes | yes | yes | yes |
 | **Context Memories** (list + get + create + delete + search) | yes (sync + async) | yes | yes | yes |
 | Conversations | `Conversation` class | manual `conversationId` | fluent `.conversationId()` | `-c` flag |
 | **MCP tools** | **yes** | no | no | no |

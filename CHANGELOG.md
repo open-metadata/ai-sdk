@@ -20,6 +20,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Changed (BREAKING)
 
+**Ability is now Skill.** Collate renamed the entity server-side, so every SDK
+follows. There is no backwards-compatible alias — the old endpoints no longer
+exist.
+
+| Old                                    | New                                 |
+| -------------------------------------- | ----------------------------------- |
+| `GET /api/v1/agents/abilities`          | `GET /api/v1/agents/skills`         |
+| `GET /api/v1/agents/abilities/name/{n}` | `GET /api/v1/agents/skills/name/{n}` |
+| `client.abilities`                      | `client.skills`                     |
+| `AbilityInfo`                           | `SkillInfo`                         |
+| `AbilityNotFoundError` / `...Exception` | `SkillNotFoundError` / `...Exception` |
+| `CreateAgentRequest.abilities`          | `CreateAgentRequest.skills`         |
+| `AgentInfo.abilities`                   | `AgentInfo.skills`                  |
+| `ai-sdk abilities list/get`             | `ai-sdk skills list/get`            |
+
+The agent payload field is `skills`, the entity reference `type` is `"skill"`,
+and the agent detail query is `?fields=persona,bot,skills`.
+
 All client CRUD methods now live on namespaces. The `client.agent(name)`
 handle factory and `client.mcp` namespace are unchanged.
 
@@ -34,8 +52,8 @@ handle factory and `client.mcp` namespace are unchanged.
 | `client.list_personas()`     | `client.personas.list()`       |
 | `client.get_persona(name)`   | `client.personas.get(name)`    |
 | `client.create_persona(req)` | `client.personas.create(req)`  |
-| `client.list_abilities()`    | `client.abilities.list()`      |
-| `client.get_ability(name)`   | `client.abilities.get(name)`   |
+| `client.list_abilities()`    | `client.skills.list()`         |
+| `client.get_ability(name)`   | `client.skills.get(name)`      |
 
 All `aXxx` async variants follow the same pattern: `client.X.aYyy()`.
 

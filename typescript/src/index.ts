@@ -42,12 +42,12 @@ export { AgentHandle, DefaultAgentHandle } from './agent.js';
 
 // Namespace classes
 export {
-  AbilitiesApi,
+  SkillsApi,
   AgentsApi,
   BotsApi,
   MemoriesApi,
   PersonasApi,
-  type AbilitiesListOptions,
+  type SkillsListOptions,
   type AgentsListOptions,
   type BotsListOptions,
   type MemoriesListOptions,
@@ -66,12 +66,12 @@ export type {
   AgentInfo,
 } from './models.js';
 
-// Extended types for bots, personas, agents, abilities, and memories
+// Extended types for bots, personas, agents, skills, and memories
 export type {
   EntityReference,
   BotInfo,
   PersonaInfo,
-  AbilityInfo,
+  SkillInfo,
   KnowledgeScope,
   CreatePersonaRequest,
   CreateAgentRequest,
@@ -96,7 +96,7 @@ export {
   TimeoutError,
   BotNotFoundError,
   PersonaNotFoundError,
-  AbilityNotFoundError,
+  SkillNotFoundError,
 } from './errors.js';
 
 // Streaming utilities (for advanced use cases)

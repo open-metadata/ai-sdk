@@ -10,7 +10,7 @@
  */
 
 import {
-  AbilityNotFoundError,
+  SkillNotFoundError,
   AgentExecutionError,
   AgentNotEnabledError,
   AgentNotFoundError,
@@ -52,7 +52,7 @@ export interface HttpClientOptions {
 /**
  * Entity type for error context.
  */
-export type EntityType = 'agent' | 'bot' | 'persona' | 'ability';
+export type EntityType = 'agent' | 'bot' | 'persona' | 'skill';
 
 /**
  * Options for individual HTTP requests.
@@ -188,8 +188,8 @@ export class HttpClient {
       if (entityType === 'persona' && entityName) {
         throw new PersonaNotFoundError(entityName);
       }
-      if (entityType === 'ability' && entityName) {
-        throw new AbilityNotFoundError(entityName);
+      if (entityType === 'skill' && entityName) {
+        throw new SkillNotFoundError(entityName);
       }
       if (agentName) {
         throw new AgentNotFoundError(agentName);

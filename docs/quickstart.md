@@ -90,10 +90,10 @@ asyncio.run(main())
 The SDK also supports creating and managing resources:
 
 ```python
-# List bots, personas, and abilities
+# List bots, personas, and skills
 bots = client.bots.list()
 personas = client.personas.list()
-abilities = client.abilities.list()
+skills = client.skills.list()
 
 # Create a persona
 from ai_sdk.models import CreatePersonaRequest

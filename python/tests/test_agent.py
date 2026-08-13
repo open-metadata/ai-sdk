@@ -259,7 +259,7 @@ class TestAgentHandleGetInfo:
         assert isinstance(info, AgentInfo)
         assert info.name == "DataQualityPlannerAgent"
         assert info.display_name == "Data Quality Planner"
-        assert "search_metadata" in info.abilities
+        assert "search_metadata" in info.skills
         assert info.api_enabled is True
 
     def test_get_info_404_raises_agent_not_found_error(self, agent, httpx_mock: HTTPXMock):

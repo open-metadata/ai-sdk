@@ -108,8 +108,8 @@ export interface CreateAgentRequest {
   icon?: string;
   /** Name of the bot that executes this agent */
   botName?: string;
-  /** List of abilities/capabilities the agent has */
-  abilities?: string[];
+  /** List of skills/capabilities the agent has */
+  skills?: string[];
   /** Scope of data and entities the agent can access */
   knowledge?: KnowledgeScope;
   /** Workflow definition prompt */
@@ -123,24 +123,24 @@ export interface CreateAgentRequest {
 }
 
 /**
- * Information about an Ability.
+ * Information about a Skill.
  *
- * Abilities define specific capabilities that can be assigned to agents.
+ * Skills define specific capabilities that can be assigned to agents.
  */
-export interface AbilityInfo {
-  /** Unique identifier of the ability */
+export interface SkillInfo {
+  /** Unique identifier of the skill */
   id: string;
-  /** Name of the ability (used as identifier) */
+  /** Name of the skill (used as identifier) */
   name: string;
   /** Human-readable display name */
   displayName?: string;
-  /** Description of the ability's purpose */
+  /** Description of the skill's purpose */
   description?: string;
-  /** Provider of the ability (e.g., "system", "user") */
+  /** Provider of the skill (e.g., "system", "user") */
   provider?: string;
   /** Fully qualified name */
   fullyQualifiedName?: string;
-  /** List of tools provided by this ability */
+  /** List of tools provided by this skill */
   tools: string[];
 }
 

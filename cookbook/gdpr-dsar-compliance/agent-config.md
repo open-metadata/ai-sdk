@@ -20,19 +20,19 @@ export AI_SDK_HOST=https://your-instance.getcollate.io
 export AI_SDK_TOKEN=your-jwt-token
 ```
 
-### Step 1: Explore Available Abilities
+### Step 1: Explore Available Skills
 
 ```bash
-# List all abilities
-ai-sdk abilities list
+# List all skills
+ai-sdk skills list
 
-# Get details on specific abilities
-ai-sdk abilities get discoveryAndSearch
-ai-sdk abilities get dataLineageAndExploration
-ai-sdk abilities get dataQualityAndTesting
+# Get details on specific skills
+ai-sdk skills get discoveryAndSearch
+ai-sdk skills get dataLineageAndExploration
+ai-sdk skills get dataQualityAndTesting
 ```
 
-The agent needs these abilities:
+The agent needs these skills:
 - **discoveryAndSearch** - Search for tables where customer data resides, find related entities
 - **dataLineageAndExploration** - Trace upstream/downstream lineage to discover all related tables
 - **dataQualityAndTesting** - Assess deletion impact, inspect table details and retention policies
@@ -79,7 +79,7 @@ ai-sdk agents create \
   --name GDPRComplianceAnalyzer \
   --description "Handles GDPR deletion requests by searching for customer data, tracing lineage, and checking retention policies" \
   --persona GDPRAnalyst \
-  --abilities discoveryAndSearch,dataLineageAndExploration,dataQualityAndTesting \
+  --skills discoveryAndSearch,dataLineageAndExploration,dataQualityAndTesting \
   --api-enabled true
 ```
 
@@ -106,7 +106,7 @@ You can also create the agent through the Collate web interface:
    - **Name:** `GDPRComplianceAnalyzer`
    - **Description:** Handles GDPR deletion requests by searching for customer data, tracing lineage, and checking retention policies
    - **Persona:** Select `DataAnalyst` or create a custom `GDPRAnalyst` persona
-   - **Abilities:** Select:
+   - **Skills:** Select:
      - Discovery and Search
      - Data Lineage and Exploration
      - Data Quality and Testing
@@ -128,7 +128,7 @@ agent = client.agents.create(
     name="GDPRComplianceAnalyzer",
     description="Handles GDPR deletion requests by searching for customer data, tracing lineage, and checking retention policies",
     persona="GDPRAnalyst",
-    abilities=["discoveryAndSearch", "dataLineageAndExploration", "dataQualityAndTesting"],
+    skills=["discoveryAndSearch", "dataLineageAndExploration", "dataQualityAndTesting"],
     api_enabled=True
 )
 
@@ -149,7 +149,7 @@ const agent = await client.agents.create({
   name: 'GDPRComplianceAnalyzer',
   description: 'Handles GDPR deletion requests by searching for customer data, tracing lineage, and checking retention policies',
   persona: 'GDPRAnalyst',
-  abilities: ['discoveryAndSearch', 'dataLineageAndExploration', 'dataQualityAndTesting'],
+  skills: ['discoveryAndSearch', 'dataLineageAndExploration', 'dataQualityAndTesting'],
   apiEnabled: true
 });
 
@@ -171,7 +171,7 @@ CreateAgentRequest request = CreateAgentRequest.builder()
     .name("GDPRComplianceAnalyzer")
     .description("Handles GDPR deletion requests by searching for customer data, tracing lineage, and checking retention policies")
     .persona("GDPRAnalyst")
-    .abilities(List.of("discoveryAndSearch", "dataLineageAndExploration", "dataQualityAndTesting"))
+    .skills(List.of("discoveryAndSearch", "dataLineageAndExploration", "dataQualityAndTesting"))
     .apiEnabled(true)
     .build();
 
@@ -229,7 +229,7 @@ ai-sdk agents info GDPRComplianceAnalyzer
 # Should show:
 # Name: GDPRComplianceAnalyzer
 # API Enabled: true
-# Abilities: discoveryAndSearch, dataLineageAndExploration, dataQualityAndTesting
+# Skills: discoveryAndSearch, dataLineageAndExploration, dataQualityAndTesting
 ```
 
 If `API Enabled` is `false`, update the agent:

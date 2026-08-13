@@ -231,7 +231,7 @@ class AgentNode(BaseModel):
         Optional[createAgentRequest.ProviderType],
         Field(
             createAgentRequest.ProviderType.user,
-            description='Provider of the Ability implementation',
+            description='Provider of the Skill implementation',
         ),
     ]
 
@@ -402,7 +402,7 @@ class CreateAgentStrategy(BaseModel):
         Optional[createAgentRequest.ProviderType],
         Field(
             createAgentRequest.ProviderType.user,
-            description='Provider of the Ability implementation',
+            description='Provider of the Skill implementation',
         ),
     ]
     tags: Annotated[

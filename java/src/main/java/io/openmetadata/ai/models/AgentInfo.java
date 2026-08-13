@@ -21,7 +21,7 @@ public class AgentInfo {
   @JsonProperty("description")
   private String description;
 
-  private List<String> abilities;
+  private List<String> skills;
 
   @JsonProperty("apiEnabled")
   private boolean apiEnabled;
@@ -32,12 +32,12 @@ public class AgentInfo {
       String name,
       String displayName,
       String description,
-      List<String> abilities,
+      List<String> skills,
       boolean apiEnabled) {
     this.name = name;
     this.displayName = displayName;
     this.description = description;
-    this.abilities = abilities;
+    this.skills = skills;
     this.apiEnabled = apiEnabled;
   }
 
@@ -65,32 +65,32 @@ public class AgentInfo {
     this.description = description;
   }
 
-  public List<String> getAbilities() {
-    return abilities;
+  public List<String> getSkills() {
+    return skills;
   }
 
-  public void setAbilities(List<String> abilities) {
-    this.abilities = abilities;
+  public void setSkills(List<String> skills) {
+    this.skills = skills;
   }
 
   /**
-   * Custom setter to handle abilities returned as either strings or EntityReferences. The API
-   * returns EntityReferences, but we want to expose just the names.
+   * Custom setter to handle skills returned as either strings or EntityReferences. The API returns
+   * EntityReferences, but we want to expose just the names.
    */
-  @JsonSetter("abilities")
-  public void setAbilitiesFromJson(List<JsonNode> abilitiesJson) {
-    if (abilitiesJson == null) {
-      this.abilities = null;
+  @JsonSetter("skills")
+  public void setSkillsFromJson(List<JsonNode> skillsJson) {
+    if (skillsJson == null) {
+      this.skills = null;
       return;
     }
-    this.abilities = new ArrayList<>();
-    for (JsonNode node : abilitiesJson) {
+    this.skills = new ArrayList<>();
+    for (JsonNode node : skillsJson) {
       if (node.isTextual()) {
         // It's a string
-        this.abilities.add(node.asText());
+        this.skills.add(node.asText());
       } else if (node.isObject() && node.has("name")) {
         // It's an EntityReference, extract the name
-        this.abilities.add(node.get("name").asText());
+        this.skills.add(node.get("name").asText());
       }
     }
   }
@@ -115,8 +115,8 @@ public class AgentInfo {
         + ", description='"
         + description
         + '\''
-        + ", abilities="
-        + abilities
+        + ", skills="
+        + skills
         + ", apiEnabled="
         + apiEnabled
         + '}';

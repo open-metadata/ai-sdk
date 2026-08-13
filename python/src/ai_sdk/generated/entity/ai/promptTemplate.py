@@ -10,7 +10,7 @@ from typing import Dict, List, Optional
 from pydantic import BaseModel, ConfigDict, Field
 from typing_extensions import Annotated
 
-from . import ability, aiApplication
+from . import skill, aiApplication
 
 
 class TemplateType(Enum):
@@ -92,7 +92,7 @@ class PromptMetrics(BaseModel):
         Optional[float],
         Field(None, description='Success rate (0-1) of executions using this template'),
     ]
-    lastUsedAt: Optional[ability.Timestamp] = None
+    lastUsedAt: Optional[skill.Timestamp] = None
 
 
 class PromptTemplate(BaseModel):
@@ -100,21 +100,21 @@ class PromptTemplate(BaseModel):
         extra='forbid',
     )
     id: Annotated[
-        ability.Uuid, Field(description='Unique identifier of the Prompt Template')
+        skill.Uuid, Field(description='Unique identifier of the Prompt Template')
     ]
     name: Annotated[
-        ability.EntityName,
+        skill.EntityName,
         Field(description='Name that identifies this Prompt Template'),
     ]
     fullyQualifiedName: Annotated[
-        Optional[ability.FullyQualifiedEntityName],
+        Optional[skill.FullyQualifiedEntityName],
         Field(None, description='Fully qualified name of the Prompt Template'),
     ]
     displayName: Annotated[
         Optional[str], Field(None, description='Display name for the Prompt Template')
     ]
     description: Annotated[
-        Optional[ability.Markdown],
+        Optional[skill.Markdown],
         Field(None, description='Description of the Prompt Template and its purpose'),
     ]
     templateContent: Annotated[
@@ -142,52 +142,52 @@ class PromptTemplate(BaseModel):
         Optional[str], Field(None, description='Template version for tracking changes')
     ]
     parentTemplate: Annotated[
-        Optional[ability.EntityReference],
+        Optional[skill.EntityReference],
         Field(
             None, description='Reference to parent template if this is a version/fork'
         ),
     ]
     usedByAgents: Annotated[
-        Optional[ability.EntityReferenceList],
+        Optional[skill.EntityReferenceList],
         Field(None, description='AI Agents using this template'),
     ]
     metrics: Optional[PromptMetrics] = None
     tags: Annotated[
-        Optional[List[ability.TagLabel]],
+        Optional[List[skill.TagLabel]],
         Field(None, description='Tags for this Prompt Template'),
     ]
     version: Annotated[
-        Optional[ability.EntityVersion],
+        Optional[skill.EntityVersion],
         Field(None, description='Metadata version of the entity'),
     ]
     owners: Annotated[
-        Optional[ability.EntityReferenceList],
+        Optional[skill.EntityReferenceList],
         Field(None, description='Owners of this Prompt Template'),
     ]
     followers: Annotated[
-        Optional[ability.EntityReferenceList],
+        Optional[skill.EntityReferenceList],
         Field(None, description='Followers of this Prompt Template'),
     ]
     domain: Annotated[
-        Optional[ability.EntityReference],
+        Optional[skill.EntityReference],
         Field(None, description='Domain the Prompt Template belongs to'),
     ]
     updatedAt: Annotated[
-        Optional[ability.Timestamp],
+        Optional[skill.Timestamp],
         Field(None, description='Last update time in Unix epoch milliseconds'),
     ]
     updatedBy: Annotated[
         Optional[str], Field(None, description='User who made the update')
     ]
     href: Annotated[
-        Optional[ability.Href], Field(None, description='Link to this resource')
+        Optional[skill.Href], Field(None, description='Link to this resource')
     ]
     changeDescription: Annotated[
-        Optional[ability.ChangeDescription],
+        Optional[skill.ChangeDescription],
         Field(None, description='Change that led to this version'),
     ]
     incrementalChangeDescription: Annotated[
-        Optional[ability.ChangeDescription],
+        Optional[skill.ChangeDescription],
         Field(None, description='Change that led to this version'),
     ]
     deleted: Annotated[
@@ -197,11 +197,11 @@ class PromptTemplate(BaseModel):
         ),
     ]
     extension: Annotated[
-        Optional[ability.EntityExtension],
+        Optional[skill.EntityExtension],
         Field(None, description='Entity extension data with custom attributes'),
     ]
     domains: Annotated[
-        Optional[ability.EntityReferenceList],
+        Optional[skill.EntityReferenceList],
         Field(None, description='Domains the Prompt Template belongs to'),
     ]
     votes: Annotated[

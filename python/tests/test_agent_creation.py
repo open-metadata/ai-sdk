@@ -37,7 +37,7 @@ def sample_agent_response():
         "name": "MyTestAgent",
         "displayName": "My Test Agent",
         "description": "An agent for testing",
-        "abilities": ["search_metadata", "analyze_quality"],
+        "skills": ["search_metadata", "analyze_quality"],
         "apiEnabled": True,
     }
 
@@ -49,7 +49,7 @@ def sample_agent_response_all_fields():
         "name": "FullAgent",
         "displayName": "Full Featured Agent",
         "description": "An agent with all configuration options",
-        "abilities": ["search_metadata", "analyze_quality", "create_tests"],
+        "skills": ["search_metadata", "analyze_quality", "create_tests"],
         "apiEnabled": True,
     }
 
@@ -83,7 +83,7 @@ class TestCreateAgentRequest:
             display_name="Full Featured Agent",
             icon="bot-icon",
             bot_name="my-bot",
-            abilities=["search", "analyze"],
+            skills=["search", "analyze"],
             knowledge=knowledge,
             prompt="workflow: step1 -> step2",
             schedule="0 0 * * *",
@@ -95,7 +95,7 @@ class TestCreateAgentRequest:
         assert request.display_name == "Full Featured Agent"
         assert request.icon == "bot-icon"
         assert request.bot_name == "my-bot"
-        assert request.abilities == ["search", "analyze"]
+        assert request.skills == ["search", "analyze"]
         assert request.knowledge is not None
         assert request.knowledge.entity_types == ["table", "database"]
         assert request.prompt == "workflow: step1 -> step2"
@@ -139,7 +139,7 @@ class TestCreateAgentRequest:
             display_name="Full Agent",
             icon="robot",
             bot_name="test-bot",
-            abilities=["search"],
+            skills=["search"],
             knowledge=knowledge,
             prompt="workflow",
             schedule="* * * * *",
@@ -151,7 +151,7 @@ class TestCreateAgentRequest:
         assert api_dict["displayName"] == "Full Agent"
         assert api_dict["icon"] == "robot"
         assert api_dict["botName"] == "test-bot"
-        assert api_dict["abilities"] == ["search"]
+        assert api_dict["skills"] == ["search"]
         assert api_dict["knowledge"] == {"entityTypes": ["table"]}
         assert api_dict["prompt"] == "workflow"
         assert api_dict["schedule"] == "* * * * *"
@@ -209,21 +209,21 @@ class TestCreateAgent:
                 "provider": "system",
             },
         )
-        # Mock ability resolution
+        # Mock skill resolution
         httpx_mock.add_response(
-            url="https://metadata.example.com/api/v1/agents/abilities/name/search_metadata",
+            url="https://metadata.example.com/api/v1/agents/skills/name/search_metadata",
             method="GET",
-            json={"id": "ability-1", "name": "search_metadata", "tools": []},
+            json={"id": "skill-1", "name": "search_metadata", "tools": []},
         )
         httpx_mock.add_response(
-            url="https://metadata.example.com/api/v1/agents/abilities/name/analyze_quality",
+            url="https://metadata.example.com/api/v1/agents/skills/name/analyze_quality",
             method="GET",
-            json={"id": "ability-2", "name": "analyze_quality", "tools": []},
+            json={"id": "skill-2", "name": "analyze_quality", "tools": []},
         )
         httpx_mock.add_response(
-            url="https://metadata.example.com/api/v1/agents/abilities/name/create_tests",
+            url="https://metadata.example.com/api/v1/agents/skills/name/create_tests",
             method="GET",
-            json={"id": "ability-3", "name": "create_tests", "tools": []},
+            json={"id": "skill-3", "name": "create_tests", "tools": []},
         )
         httpx_mock.add_response(
             url="https://metadata.example.com/api/v1/agents/dynamic/",
@@ -240,7 +240,7 @@ class TestCreateAgent:
             display_name="Full Featured Agent",
             icon="bot-icon",
             bot_name="ingestion-bot",
-            abilities=["search_metadata", "analyze_quality", "create_tests"],
+            skills=["search_metadata", "analyze_quality", "create_tests"],
             knowledge=knowledge,
             prompt="analyze -> report",
             schedule="0 */6 * * *",
@@ -251,7 +251,7 @@ class TestCreateAgent:
         assert isinstance(result, AgentInfo)
         assert result.name == "FullAgent"
         assert result.display_name == "Full Featured Agent"
-        assert result.abilities == ["search_metadata", "analyze_quality", "create_tests"]
+        assert result.skills == ["search_metadata", "analyze_quality", "create_tests"]
 
     def test_create_agent_sends_correct_body(self, client, httpx_mock: HTTPXMock):
         """create_agent sends correct request body with resolved persona ID."""

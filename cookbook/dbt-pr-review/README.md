@@ -58,7 +58,7 @@ ai-sdk agents create \
   --name DBTReviewer \
   --description "Reviews dbt model PRs for downstream impact and DQ risks" \
   --persona DBTReviewerPersona \
-  --abilities discoveryAndSearch,dataLineageAndExploration,dataQualityAndTesting \
+  --skills discoveryAndSearch,dataLineageAndExploration,dataQualityAndTesting \
   --api-enabled true
 ```
 
@@ -229,7 +229,7 @@ Ignore cosmetic changes like formatting or comments."""
 | Workflow not triggering | Check that PR changes files matching `models/**/*.sql` |
 | "Model not found" in review | Ensure models are cataloged in OpenMetadata |
 | Authentication error | Verify `AI_SDK_HOST` and `AI_SDK_TOKEN` secrets |
-| Empty review comment | Check agent has required abilities enabled |
+| Empty review comment | Check agent has required skills enabled |
 | Comment not posting | Verify workflow has `pull-requests: write` permission |
 
 ## Related Resources

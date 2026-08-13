@@ -263,7 +263,7 @@ for agent in agents:
     print(f"Name: {agent.name}")
     print(f"Display: {agent.display_name}")
     print(f"Description: {agent.description}")
-    print(f"Abilities: {agent.abilities}")
+    print(f"Skills: {agent.skills}")
     print(f"API Enabled: {agent.api_enabled}")
     print()
 ```
@@ -276,7 +276,7 @@ info = agent.get_info()
 
 print(info.name)
 print(info.description)
-print(info.abilities)
+print(info.skills)
 ```
 
 ## Creating Agents
@@ -302,7 +302,7 @@ agent = client.agents.create(CreateAgentRequest(
     persona="DataAnalyst",
     display_name="Advanced Data Agent",
     api_enabled=True,
-    abilities=["search", "query", "analyze"],
+    skills=["search", "query", "analyze"],
     prompt="Analyze user data and provide insights",
     provider="openai",
     bot_name="my-bot",  # Bot for executing actions
@@ -318,7 +318,7 @@ agent = client.agents.create(CreateAgentRequest(
 | `persona` | `str` | Yes | Name of the persona to use |
 | `display_name` | `str` | No | Human-readable name |
 | `api_enabled` | `bool` | No | Enable API access (default: False) |
-| `abilities` | `list[str]` | No | List of ability names |
+| `skills` | `list[str]` | No | List of skill names |
 | `prompt` | `str` | No | Default task/prompt |
 | `provider` | `str` | No | LLM provider |
 | `bot_name` | `str` | No | Bot for executing actions |
@@ -418,39 +418,39 @@ except PersonaNotFoundError as e:
     print(f"Persona not found: {e.persona_name}")
 ```
 
-## Ability Operations
+## Skill Operations
 
-Abilities are capabilities that can be assigned to agents.
+Skills are capabilities that can be assigned to agents.
 
 ```python
-# List all abilities
-abilities = client.abilities.list(limit=50)
-for ability in abilities:
-    print(f"{ability.name}: {ability.description}")
+# List all skills
+skills = client.skills.list(limit=50)
+for skill in skills:
+    print(f"{skill.name}: {skill.description}")
 
-# Get a specific ability
-ability = client.abilities.get("search")
-print(f"Ability: {ability.name}")
-print(f"Description: {ability.description}")
+# Get a specific skill
+skill = client.skills.get("search")
+print(f"Skill: {skill.name}")
+print(f"Description: {skill.description}")
 ```
 
-### AbilityInfo Fields
+### SkillInfo Fields
 
 | Field | Type | Description |
 |-------|------|-------------|
-| `name` | `str` | Ability identifier |
+| `name` | `str` | Skill identifier |
 | `display_name` | `str` | Human-readable name |
-| `description` | `str` | Ability description |
+| `description` | `str` | Skill description |
 
-### Ability Errors
+### Skill Errors
 
 ```python
-from ai_sdk.exceptions import AbilityNotFoundError
+from ai_sdk.exceptions import SkillNotFoundError
 
 try:
-    ability = client.abilities.get("nonexistent")
-except AbilityNotFoundError as e:
-    print(f"Ability not found: {e.ability_name}")
+    skill = client.skills.get("nonexistent")
+except SkillNotFoundError as e:
+    print(f"Skill not found: {e.skill_name}")
 ```
 
 ## Async Operations
@@ -568,7 +568,7 @@ AISdkError (base)
 ├── AgentNotEnabledError (403)
 ├── BotNotFoundError (404)
 ├── PersonaNotFoundError (404)
-├── AbilityNotFoundError (404)
+├── SkillNotFoundError (404)
 ├── RateLimitError (429)
 └── AgentExecutionError (500)
 ```
@@ -680,7 +680,7 @@ info = agent.get_info()
 info.name          # str - Agent identifier
 info.display_name  # str - Human-readable name
 info.description   # str - Agent description
-info.abilities     # list[str] - Capabilities
+info.skills     # list[str] - Capabilities
 info.api_enabled   # bool - API access enabled
 ```
 
@@ -723,10 +723,10 @@ def main():
         for persona in client.personas.list():
             print(f"  - {persona.name}: {persona.description[:50]}...")
 
-        # List abilities
-        print("\n--- Abilities ---")
-        for ability in client.abilities.list():
-            print(f"  - {ability.name}: {ability.description[:50]}...")
+        # List skills
+        print("\n--- Skills ---")
+        for skill in client.skills.list():
+            print(f"  - {skill.name}: {skill.description[:50]}...")
 
         # Simple invocation
         print("\n--- Simple Invocation ---")

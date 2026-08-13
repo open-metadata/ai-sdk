@@ -164,7 +164,7 @@ ai-sdk agents create \
   --persona "DataAnalyst" \
   --display-name "Advanced Agent" \
   --bot-name "MyBot" \
-  --abilities search,analyze \
+  --skills search,analyze \
   --provider openai \
   --json
 ```
@@ -175,7 +175,7 @@ When you run `ai-sdk agents create` without required arguments, an interactive T
 
 1. **Basic Details** - Enter name and description
 2. **Select Persona** - Choose from available personas with filter/search
-3. **Select Abilities** - Multi-select abilities (optional)
+3. **Select Skills** - Multi-select skills (optional)
 4. **Actions** - Configure task prompt and bot (optional)
 
 The wizard automatically sets `apiEnabled: true` for created agents.
@@ -235,20 +235,20 @@ When you run `ai-sdk personas create` without required arguments, an interactive
 2. **System Prompt** - Write the persona's system prompt (multiline)
 3. **Review & Submit** - Review and confirm creation
 
-### Manage Abilities
+### Manage Skills
 
 ```bash
-# List all abilities
-ai-sdk abilities list
+# List all skills
+ai-sdk skills list
 
 # List with options
-ai-sdk abilities list --limit 50 --json
+ai-sdk skills list --limit 50 --json
 
-# Get ability information
-ai-sdk abilities get <ability-name>
+# Get skill information
+ai-sdk skills get <skill-name>
 
-# Get ability info as JSON
-ai-sdk abilities get <ability-name> --json
+# Get skill info as JSON
+ai-sdk skills get <skill-name> --json
 ```
 
 ### Manage Memories
@@ -395,7 +395,7 @@ src/
 ├── commands/        # Command implementations
 │   ├── configure.rs # Configuration management
 │   ├── agents.rs    # Agent discovery and creation
-│   ├── abilities.rs # Ability listing and info
+│   ├── skills.rs # Skill listing and info
 │   ├── bots.rs      # Bot management
 │   ├── personas.rs  # Persona management
 │   ├── invoke.rs    # Agent invocation (one-shot)

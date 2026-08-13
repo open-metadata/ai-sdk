@@ -21,7 +21,7 @@ class BaseAgentWrapper(ABC):
 
     Provides common functionality for wrapping agents:
     - Agent info fetching with fallback
-    - Description building from abilities
+    - Description building from skills
     - Conversation ID management
     - Sync and async invocation
 
@@ -153,11 +153,11 @@ class BaseAgentWrapper(ABC):
             info: Agent metadata
 
         Returns:
-            Description string including abilities
+            Description string including skills
         """
-        abilities_str = ", ".join(info.abilities) if info.abilities else "general"
+        skills_str = ", ".join(info.skills) if info.skills else "general"
         base_desc = info.description or f"Metadata agent: {info.display_name}"
-        return f"{base_desc} Capabilities: {abilities_str}."
+        return f"{base_desc} Capabilities: {skills_str}."
 
     @property
     def name(self) -> str:

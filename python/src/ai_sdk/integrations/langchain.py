@@ -194,9 +194,9 @@ class AISdkAgentTool(BaseTool):
 
     def _build_description(self, info: AgentInfo) -> str:
         """Build tool description from agent info."""
-        abilities_str = ", ".join(info.abilities) if info.abilities else "general"
+        skills_str = ", ".join(info.skills) if info.skills else "general"
         base_desc = info.description or f"Metadata agent: {info.display_name}"
-        return f"{base_desc} Capabilities: {abilities_str}."
+        return f"{base_desc} Capabilities: {skills_str}."
 
     def _run(
         self,

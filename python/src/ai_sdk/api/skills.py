@@ -1,4 +1,4 @@
-"""Abilities namespace."""
+"""Skills namespace."""
 
 from __future__ import annotations
 
@@ -8,41 +8,41 @@ from typing import Any
 from urllib.parse import quote
 
 from ai_sdk._http import AsyncHTTPClient, HTTPClient
-from ai_sdk.exceptions import AbilityNotFoundError, AISdkError
-from ai_sdk.models import AbilityInfo
+from ai_sdk.exceptions import AISdkError, SkillNotFoundError
+from ai_sdk.models import SkillInfo
 
-_AbilityInfoList = builtins.list[AbilityInfo]
+_SkillInfoList = builtins.list[SkillInfo]
 
 
-class AbilitiesAPI:
-    """Namespace for ability operations."""
+class SkillsAPI:
+    """Namespace for skill operations."""
 
     def __init__(self, http: HTTPClient, async_http: AsyncHTTPClient | None) -> None:
         self._http = http
         self._async_http = async_http
 
-    def list(self, limit: int | None = None) -> _AbilityInfoList:
-        return _paginate(self._http, "/", AbilityInfo.from_dict, limit=limit)
+    def list(self, limit: int | None = None) -> _SkillInfoList:
+        return _paginate(self._http, "/", SkillInfo.from_dict, limit=limit)
 
-    async def alist(self, limit: int | None = None) -> _AbilityInfoList:
+    async def alist(self, limit: int | None = None) -> _SkillInfoList:
         if self._async_http is None:
             raise RuntimeError(
                 "Async HTTP client not available. "
                 "Use AISdk with enable_async=True for async operations."
             )
-        return await _apaginate(self._async_http, "/", AbilityInfo.from_dict, limit=limit)
+        return await _apaginate(self._async_http, "/", SkillInfo.from_dict, limit=limit)
 
-    def get(self, name: str) -> AbilityInfo:
+    def get(self, name: str) -> SkillInfo:
         try:
             encoded_name = quote(name, safe="")
             response = self._http.get(f"/name/{encoded_name}")
-            return AbilityInfo.from_dict(response)
+            return SkillInfo.from_dict(response)
         except AISdkError as e:
             if e.status_code == 404:
-                raise AbilityNotFoundError(name) from e
+                raise SkillNotFoundError(name) from e
             raise
 
-    async def aget(self, name: str) -> AbilityInfo:
+    async def aget(self, name: str) -> SkillInfo:
         if self._async_http is None:
             raise RuntimeError(
                 "Async HTTP client not available. "
@@ -51,10 +51,10 @@ class AbilitiesAPI:
         try:
             encoded_name = quote(name, safe="")
             response = await self._async_http.get(f"/name/{encoded_name}")
-            return AbilityInfo.from_dict(response)
+            return SkillInfo.from_dict(response)
         except AISdkError as e:
             if e.status_code == 404:
-                raise AbilityNotFoundError(name) from e
+                raise SkillNotFoundError(name) from e
             raise
 
 

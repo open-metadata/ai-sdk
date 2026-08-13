@@ -9,11 +9,11 @@ if TYPE_CHECKING:
 
 from ai_sdk._http import AsyncHTTPClient, HTTPClient
 from ai_sdk.agent import AgentHandle
-from ai_sdk.api.abilities import AbilitiesAPI
 from ai_sdk.api.agents import AgentsAPI
 from ai_sdk.api.bots import BotsAPI
 from ai_sdk.api.memories import MemoriesAPI
 from ai_sdk.api.personas import PersonasAPI
+from ai_sdk.api.skills import SkillsAPI
 from ai_sdk.auth import TokenAuth
 from ai_sdk.mcp._client import MCPClient
 
@@ -25,7 +25,7 @@ class AISdk:
         client.agents.list()
         client.bots.get("ingestion-bot")
         client.personas.list()
-        client.abilities.get("DataQuality")
+        client.skills.get("DataQuality")
         client.memories.search("customer churn")
 
     The agent handle factory is unchanged:
@@ -76,7 +76,7 @@ class AISdk:
         agents_url = f"{self._host}/api/v1/agents/dynamic"
         personas_url = f"{self._host}/api/v1/agents/personas"
         bots_url = f"{self._host}/api/v1/bots"
-        abilities_url = f"{self._host}/api/v1/agents/abilities"
+        skills_url = f"{self._host}/api/v1/agents/skills"
         default_agent_url = f"{self._host}/api/v1/agents"
         chat_conv_url = f"{self._host}/api/v1/assistants"
         memories_url = f"{self._host}/api/v1/contextCenter/memories"
@@ -85,7 +85,7 @@ class AISdk:
         self._http = HTTPClient(base_url=agents_url, **common_kwargs)
         self._personas_http = HTTPClient(base_url=personas_url, **common_kwargs)
         self._bots_http = HTTPClient(base_url=bots_url, **common_kwargs)
-        self._abilities_http = HTTPClient(base_url=abilities_url, **common_kwargs)
+        self._skills_http = HTTPClient(base_url=skills_url, **common_kwargs)
         self._default_http = HTTPClient(base_url=default_agent_url, **common_kwargs)
         self._chat_conv_http = HTTPClient(base_url=chat_conv_url, **common_kwargs)
         self._memories_http = HTTPClient(base_url=memories_url, **common_kwargs)
@@ -94,7 +94,7 @@ class AISdk:
         self._async_http: AsyncHTTPClient | None = None
         self._async_personas_http: AsyncHTTPClient | None = None
         self._async_bots_http: AsyncHTTPClient | None = None
-        self._async_abilities_http: AsyncHTTPClient | None = None
+        self._async_skills_http: AsyncHTTPClient | None = None
         self._async_default_http: AsyncHTTPClient | None = None
         self._async_chat_conv_http: AsyncHTTPClient | None = None
         self._async_memories_http: AsyncHTTPClient | None = None
@@ -104,7 +104,7 @@ class AISdk:
             self._async_http = AsyncHTTPClient(base_url=agents_url, **common_kwargs)
             self._async_personas_http = AsyncHTTPClient(base_url=personas_url, **common_kwargs)
             self._async_bots_http = AsyncHTTPClient(base_url=bots_url, **common_kwargs)
-            self._async_abilities_http = AsyncHTTPClient(base_url=abilities_url, **common_kwargs)
+            self._async_skills_http = AsyncHTTPClient(base_url=skills_url, **common_kwargs)
             self._async_default_http = AsyncHTTPClient(base_url=default_agent_url, **common_kwargs)
             self._async_chat_conv_http = AsyncHTTPClient(base_url=chat_conv_url, **common_kwargs)
             self._async_memories_http = AsyncHTTPClient(base_url=memories_url, **common_kwargs)
@@ -114,7 +114,7 @@ class AISdk:
         self._agents_ns: AgentsAPI | None = None
         self._bots_ns: BotsAPI | None = None
         self._personas_ns: PersonasAPI | None = None
-        self._abilities_ns: AbilitiesAPI | None = None
+        self._skills_ns: SkillsAPI | None = None
         self._memories_ns: MemoriesAPI | None = None
         self._mcp_client: MCPClient | None = None
 
@@ -141,10 +141,10 @@ class AISdk:
         return self._personas_ns
 
     @property
-    def abilities(self) -> AbilitiesAPI:
-        if self._abilities_ns is None:
-            self._abilities_ns = AbilitiesAPI(self._abilities_http, self._async_abilities_http)
-        return self._abilities_ns
+    def skills(self) -> SkillsAPI:
+        if self._skills_ns is None:
+            self._skills_ns = SkillsAPI(self._skills_http, self._async_skills_http)
+        return self._skills_ns
 
     @property
     def memories(self) -> MemoriesAPI:
@@ -206,7 +206,7 @@ class AISdk:
             self._http,
             self._personas_http,
             self._bots_http,
-            self._abilities_http,
+            self._skills_http,
             self._default_http,
             self._chat_conv_http,
             self._memories_http,
@@ -219,7 +219,7 @@ class AISdk:
             self._async_http,
             self._async_personas_http,
             self._async_bots_http,
-            self._async_abilities_http,
+            self._async_skills_http,
             self._async_default_http,
             self._async_chat_conv_http,
             self._async_memories_http,

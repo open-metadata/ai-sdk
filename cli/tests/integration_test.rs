@@ -90,7 +90,7 @@ fn get_test_agent() -> Option<String> {
                 }
             };
 
-            // Create a test agent with discoveryAndSearch ability
+            // Create a test agent with discoveryAndSearch skill
             let agent_name = unique_name("cli-invoke-test-agent");
             let output = run_cli(&[
                 "agents",
@@ -101,7 +101,7 @@ fn get_test_agent() -> Option<String> {
                 &persona,
                 "--description",
                 "Auto-created agent for CLI integration testing",
-                "--abilities",
+                "--skills",
                 "discoveryAndSearch",
                 "--api-enabled",
                 "true",
@@ -310,7 +310,7 @@ fn test_stream_agent() {
     };
 
     // Use invoke with --stream flag for streaming test
-    // Use a prompt that triggers tool use with discoveryAndSearch ability
+    // Use a prompt that triggers tool use with discoveryAndSearch skill
     let output = run_cli(&[
         "invoke",
         &agent_name,
@@ -528,38 +528,38 @@ fn test_get_bot() {
     }
 }
 
-// ==================== Ability Operations Tests ====================
+// ==================== Skill Operations Tests ====================
 
 #[test]
-fn test_list_abilities() {
+fn test_list_skills() {
     if !should_run() {
         println!("Skipping: AI_SDK_HOST and AI_SDK_TOKEN not set");
         return;
     }
 
-    let output = run_cli(&["abilities", "list"]);
+    let output = run_cli(&["skills", "list"]);
 
     if !output.status.success() {
         let stderr = String::from_utf8_lossy(&output.stderr);
-        panic!("abilities list failed: {stderr}");
+        panic!("skills list failed: {stderr}");
     }
 
     let stdout = String::from_utf8_lossy(&output.stdout);
-    println!("Abilities list output:\n{stdout}");
+    println!("Skills list output:\n{stdout}");
 }
 
 #[test]
-fn test_list_abilities_json() {
+fn test_list_skills_json() {
     if !should_run() {
         println!("Skipping: AI_SDK_HOST and AI_SDK_TOKEN not set");
         return;
     }
 
-    let output = run_cli(&["abilities", "list", "--json"]);
+    let output = run_cli(&["skills", "list", "--json"]);
 
     if !output.status.success() {
         let stderr = String::from_utf8_lossy(&output.stderr);
-        panic!("abilities list --json failed: {stderr}");
+        panic!("skills list --json failed: {stderr}");
     }
 
     let stdout = String::from_utf8_lossy(&output.stdout);
@@ -571,40 +571,40 @@ fn test_list_abilities_json() {
 }
 
 #[test]
-fn test_get_ability() {
+fn test_get_skill() {
     if !should_run() {
         println!("Skipping: AI_SDK_HOST and AI_SDK_TOKEN not set");
         return;
     }
 
-    // First list abilities to get one that exists
-    let list_output = run_cli(&["abilities", "list", "--json"]);
+    // First list skills to get one that exists
+    let list_output = run_cli(&["skills", "list", "--json"]);
     if !list_output.status.success() {
-        println!("Skipping: Could not list abilities");
+        println!("Skipping: Could not list skills");
         return;
     }
 
     let stdout = String::from_utf8_lossy(&list_output.stdout);
-    if let Ok(abilities) = serde_json::from_str::<Vec<serde_json::Value>>(&stdout) {
-        if abilities.is_empty() {
-            println!("Skipping: No abilities available");
+    if let Ok(skills) = serde_json::from_str::<Vec<serde_json::Value>>(&stdout) {
+        if skills.is_empty() {
+            println!("Skipping: No skills available");
             return;
         }
 
-        if let Some(name) = abilities[0].get("name").and_then(|n| n.as_str()) {
-            let output = run_cli(&["abilities", "get", name]);
+        if let Some(name) = skills[0].get("name").and_then(|n| n.as_str()) {
+            let output = run_cli(&["skills", "get", name]);
 
             if !output.status.success() {
                 let stderr = String::from_utf8_lossy(&output.stderr);
-                panic!("abilities get failed: {stderr}");
+                panic!("skills get failed: {stderr}");
             }
 
             let stdout = String::from_utf8_lossy(&output.stdout);
             assert!(
                 stdout.contains(name),
-                "Expected ability name in output: {stdout}"
+                "Expected skill name in output: {stdout}"
             );
-            println!("Ability info:\n{stdout}");
+            println!("Skill info:\n{stdout}");
         }
     }
 }
@@ -703,23 +703,23 @@ fn test_agent_info_includes_persona() {
 }
 
 #[test]
-fn test_agent_info_with_abilities() {
+fn test_agent_info_with_skills() {
     if !should_run() {
         println!("Skipping: AI_SDK_HOST and AI_SDK_TOKEN not set");
         return;
     }
 
     // Step 1: Create a persona
-    let persona_name = unique_name("abilities-persona");
+    let persona_name = unique_name("skills-persona");
     let create_persona_output = run_cli(&[
         "personas",
         "create",
         "--name",
         &persona_name,
         "--description",
-        "Test persona for agent with abilities",
+        "Test persona for agent with skills",
         "--prompt",
-        "You are a test assistant with search abilities.",
+        "You are a test assistant with search skills.",
     ]);
 
     if !create_persona_output.status.success() {
@@ -727,18 +727,18 @@ fn test_agent_info_with_abilities() {
         panic!("Failed to create persona: {stderr}");
     }
 
-    // Step 2: Create an agent with abilities
-    let agent_name = unique_name("abilities-agent");
+    // Step 2: Create an agent with skills
+    let agent_name = unique_name("skills-agent");
     let create_agent_output = run_cli(&[
         "agents",
         "create",
         "--name",
         &agent_name,
         "--description",
-        "Test agent with abilities for info test",
+        "Test agent with skills for info test",
         "--persona",
         &persona_name,
-        "--abilities",
+        "--skills",
         "discoveryAndSearch,dataQualityAndTesting",
         "--api-enabled",
         "true",
@@ -749,7 +749,7 @@ fn test_agent_info_with_abilities() {
         panic!("Failed to create agent: {stderr}");
     }
 
-    // Step 3: Fetch agent info and verify abilities are included
+    // Step 3: Fetch agent info and verify skills are included
     let info_output = run_cli(&["agents", "info", &agent_name]);
 
     if !info_output.status.success() {
@@ -760,10 +760,10 @@ fn test_agent_info_with_abilities() {
     let stdout = String::from_utf8_lossy(&info_output.stdout);
     println!("Agent info output:\n{stdout}");
 
-    // Verify abilities section is present
+    // Verify skills section is present
     assert!(
-        stdout.contains("Abilities:"),
-        "Expected 'Abilities:' section in output. Got:\n{stdout}"
+        stdout.contains("Skills:"),
+        "Expected 'Skills:' section in output. Got:\n{stdout}"
     );
 
     // Verify persona is also present

@@ -16,7 +16,7 @@ Available integrations:
 
 All integrations extend the BaseAgentWrapper class which provides:
 - Agent info fetching with graceful fallback
-- Automatic description building from abilities
+- Automatic description building from skills
 - Conversation ID management for multi-turn
 - Both sync and async invocation support
 

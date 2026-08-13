@@ -166,7 +166,7 @@ List<AgentInfo> agents = client.agents().list();
 for (AgentInfo agent : agents) {
     System.out.println(agent.getName() + ": " + agent.getDescription());
     System.out.println("  API Enabled: " + agent.isApiEnabled());
-    System.out.println("  Abilities: " + agent.getAbilities());
+    System.out.println("  Skills: " + agent.getSkills());
 }
 ```
 
@@ -178,7 +178,7 @@ AgentInfo info = client.agent("semantic-layer-agent").info();
 System.out.println("Name: " + info.getName());
 System.out.println("Display Name: " + info.getDisplayName());
 System.out.println("Description: " + info.getDescription());
-System.out.println("Abilities: " + info.getAbilities());
+System.out.println("Skills: " + info.getSkills());
 ```
 
 ### Create Agents
@@ -191,7 +191,7 @@ CreateAgentRequest request = CreateAgentRequest.builder()
     .description("A custom agent for data analysis")
     .persona("DataAnalyst")
     .apiEnabled(true)
-    .abilities(List.of("search", "query"))
+    .skills(List.of("search", "query"))
     .build();
 
 AgentInfo newAgent = client.agents().create(request);
@@ -240,20 +240,20 @@ PersonaInfo newPersona = client.personas().create(request);
 System.out.println("Created persona: " + newPersona.getName());
 ```
 
-### Abilities
+### Skills
 
 ```java
-import io.openmetadata.ai.models.AbilityInfo;
+import io.openmetadata.ai.models.SkillInfo;
 
-// List all abilities
-List<AbilityInfo> abilities = client.abilities().list();
-for (AbilityInfo ability : abilities) {
-    System.out.println(ability.getName() + ": " + ability.getDescription());
+// List all skills
+List<SkillInfo> skills = client.skills().list();
+for (SkillInfo skill : skills) {
+    System.out.println(skill.getName() + ": " + skill.getDescription());
 }
 
-// Get a specific ability
-AbilityInfo ability = client.abilities().get("search");
-System.out.println("Ability: " + ability.getName());
+// Get a specific skill
+SkillInfo skill = client.skills().get("search");
+System.out.println("Skill: " + skill.getName());
 ```
 
 ### Context Memories
@@ -348,9 +348,9 @@ try {
 } catch (PersonaNotFoundException e) {
     // Persona does not exist (HTTP 404)
     System.err.println("Persona not found: " + e.getPersonaName());
-} catch (AbilityNotFoundException e) {
-    // Ability does not exist (HTTP 404)
-    System.err.println("Ability not found: " + e.getAbilityName());
+} catch (SkillNotFoundException e) {
+    // Skill does not exist (HTTP 404)
+    System.err.println("Skill not found: " + e.getSkillName());
 } catch (RateLimitException e) {
     // Rate limit exceeded (HTTP 429)
     System.err.println("Rate limited. Retry after: " +

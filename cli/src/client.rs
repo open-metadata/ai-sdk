@@ -26,7 +26,7 @@ pub struct AgentInfo {
     #[serde(default)]
     pub description: Option<String>,
     #[serde(default)]
-    pub abilities: Vec<AbilityRef>,
+    pub skills: Vec<SkillRef>,
     #[serde(default)]
     pub api_enabled: bool,
     #[serde(default)]
@@ -57,20 +57,20 @@ pub struct EntityReference {
     pub display_name: Option<String>,
 }
 
-/// Ability reference that can be either a string (from list) or an object (from create).
+/// Skill reference that can be either a string (from list) or an object (from create).
 #[derive(Debug, Clone, Serialize)]
 #[serde(untagged)]
-pub enum AbilityRef {
+pub enum SkillRef {
     Name(String),
     Reference(EntityReference),
 }
 
-impl AbilityRef {
-    /// Get the display name for this ability.
+impl SkillRef {
+    /// Get the display name for this skill.
     pub fn display_name(&self) -> &str {
         match self {
-            AbilityRef::Name(s) => s,
-            AbilityRef::Reference(r) => r
+            SkillRef::Name(s) => s,
+            SkillRef::Reference(r) => r
                 .display_name
                 .as_ref()
                 .or(r.name.as_ref())
@@ -80,17 +80,17 @@ impl AbilityRef {
     }
 }
 
-impl<'de> Deserialize<'de> for AbilityRef {
+impl<'de> Deserialize<'de> for SkillRef {
     fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
     where
         D: Deserializer<'de>,
     {
         use serde::de::{self, MapAccess, Visitor};
 
-        struct AbilityRefVisitor;
+        struct SkillRefVisitor;
 
-        impl<'de> Visitor<'de> for AbilityRefVisitor {
-            type Value = AbilityRef;
+        impl<'de> Visitor<'de> for SkillRefVisitor {
+            type Value = SkillRef;
 
             fn expecting(&self, formatter: &mut std::fmt::Formatter) -> std::fmt::Result {
                 formatter.write_str("a string or an object with id/name fields")
@@ -100,14 +100,14 @@ impl<'de> Deserialize<'de> for AbilityRef {
             where
                 E: de::Error,
             {
-                Ok(AbilityRef::Name(value.to_string()))
+                Ok(SkillRef::Name(value.to_string()))
             }
 
             fn visit_string<E>(self, value: String) -> Result<Self::Value, E>
             where
                 E: de::Error,
             {
-                Ok(AbilityRef::Name(value))
+                Ok(SkillRef::Name(value))
             }
 
             fn visit_map<M>(self, map: M) -> Result<Self::Value, M::Error>
@@ -116,11 +116,11 @@ impl<'de> Deserialize<'de> for AbilityRef {
             {
                 let entity_ref =
                     EntityReference::deserialize(de::value::MapAccessDeserializer::new(map))?;
-                Ok(AbilityRef::Reference(entity_ref))
+                Ok(SkillRef::Reference(entity_ref))
             }
         }
 
-        deserializer.deserialize_any(AbilityRefVisitor)
+        deserializer.deserialize_any(SkillRefVisitor)
     }
 }
 
@@ -185,18 +185,18 @@ pub struct PersonaInfo {
     pub fully_qualified_name: Option<String>,
 }
 
-/// API response for ability listing.
+/// API response for skill listing.
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct AbilityListResponse {
-    pub data: Vec<AbilityInfo>,
+pub struct SkillListResponse {
+    pub data: Vec<SkillInfo>,
     #[serde(default)]
     pub paging: Option<Paging>,
 }
 
-/// Ability information.
+/// Skill information.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
-pub struct AbilityInfo {
+pub struct SkillInfo {
     pub id: Option<String>,
     pub name: String,
     #[serde(default)]
@@ -239,7 +239,7 @@ pub struct CreateAgentRequest {
     #[serde(rename = "botName", skip_serializing_if = "Option::is_none")]
     pub bot_name: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub abilities: Option<Vec<EntityReference>>,
+    pub skills: Option<Vec<EntityReference>>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub api_enabled: Option<bool>,
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -1010,9 +1010,9 @@ impl AISdkClient {
         format!("{}/api/v1/agents/personas{}", self.base_url, path)
     }
 
-    /// Get the base URL for ability endpoints.
-    fn abilities_url(&self, path: &str) -> String {
-        format!("{}/api/v1/agents/abilities{}", self.base_url, path)
+    /// Get the base URL for skill endpoints.
+    fn skills_url(&self, path: &str) -> String {
+        format!("{}/api/v1/agents/skills{}", self.base_url, path)
     }
 
     /// List all personas.
@@ -1103,28 +1103,25 @@ impl AISdkClient {
         serde_json::from_str(&body).map_err(|e| CliError::ParseError(e.to_string()))
     }
 
-    // ==================== Ability Operations ====================
+    // ==================== Skill Operations ====================
 
-    /// List all abilities.
+    /// List all skills.
     /// Automatically paginates through all results.
-    pub async fn list_abilities(&self) -> CliResult<Vec<AbilityInfo>> {
-        self.list_abilities_with_limit(None).await
+    pub async fn list_skills(&self) -> CliResult<Vec<SkillInfo>> {
+        self.list_skills_with_limit(None).await
     }
 
-    /// List abilities with optional limit.
+    /// List skills with optional limit.
     /// Automatically paginates through all results.
-    pub async fn list_abilities_with_limit(
-        &self,
-        limit: Option<u32>,
-    ) -> CliResult<Vec<AbilityInfo>> {
+    pub async fn list_skills_with_limit(&self, limit: Option<u32>) -> CliResult<Vec<SkillInfo>> {
         const PAGE_SIZE: u32 = 100;
         let mut results = Vec::new();
         let mut after: Option<String> = None;
 
         loop {
             let url = match &after {
-                Some(cursor) => self.abilities_url(&format!("?limit={PAGE_SIZE}&after={cursor}")),
-                None => self.abilities_url(&format!("?limit={PAGE_SIZE}")),
+                Some(cursor) => self.skills_url(&format!("?limit={PAGE_SIZE}&after={cursor}")),
+                None => self.skills_url(&format!("?limit={PAGE_SIZE}")),
             };
 
             let response = self
@@ -1137,7 +1134,7 @@ impl AISdkClient {
 
             let body = self.handle_response(response, None).await?;
 
-            let list: AbilityListResponse =
+            let list: SkillListResponse =
                 serde_json::from_str(&body).map_err(|e| CliError::ParseError(e.to_string()))?;
 
             results.extend(list.data);
@@ -1160,12 +1157,12 @@ impl AISdkClient {
         Ok(results)
     }
 
-    /// Get ability information by name.
-    pub async fn get_ability(&self, name: &str) -> CliResult<AbilityInfo> {
+    /// Get skill information by name.
+    pub async fn get_skill(&self, name: &str) -> CliResult<SkillInfo> {
         let encoded_name = encode(name);
         let response = self
             .client
-            .get(self.abilities_url(&format!("/name/{encoded_name}")))
+            .get(self.skills_url(&format!("/name/{encoded_name}")))
             .header("Authorization", self.auth_header())
             .send()
             .await
@@ -1178,14 +1175,12 @@ impl AISdkClient {
 
     // ==================== Agent Operations ====================
 
-    /// Get full agent details from the dynamic agents endpoint (includes persona, abilities).
+    /// Get full agent details from the dynamic agents endpoint (includes persona, skills).
     pub async fn get_dynamic_agent(&self, name: &str) -> CliResult<AgentInfo> {
         let encoded_name = encode(name);
         let response = self
             .client
-            .get(self.agents_url(&format!(
-                "/name/{encoded_name}?fields=persona,bot,abilities"
-            )))
+            .get(self.agents_url(&format!("/name/{encoded_name}?fields=persona,bot,skills")))
             .header("Authorization", self.auth_header())
             .send()
             .await

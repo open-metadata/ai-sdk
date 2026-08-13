@@ -9,19 +9,19 @@ from typing import List, Optional
 from pydantic import BaseModel, ConfigDict, Field
 from typing_extensions import Annotated
 
-from . import ability
+from . import skill
 
 
 class AiPersona(BaseModel):
     model_config = ConfigDict(
         extra='forbid',
     )
-    id: Annotated[ability.Uuid, Field(description='Unique ID of the AI Persona')]
+    id: Annotated[skill.Uuid, Field(description='Unique ID of the AI Persona')]
     name: Annotated[
-        ability.EntityName, Field(description='A unique name of the AI Persona')
+        skill.EntityName, Field(description='A unique name of the AI Persona')
     ]
     fullyQualifiedName: Annotated[
-        Optional[ability.FullyQualifiedEntityName],
+        Optional[skill.FullyQualifiedEntityName],
         Field(None, description='FullyQualifiedName same as `name`.'),
     ]
     displayName: Annotated[
@@ -32,7 +32,7 @@ class AiPersona(BaseModel):
         ),
     ]
     description: Annotated[
-        ability.Markdown,
+        skill.Markdown,
         Field(description='Description of the AI Persona and its characteristics.'),
     ]
     prompt: Annotated[
@@ -42,17 +42,17 @@ class AiPersona(BaseModel):
         ),
     ]
     provider: Annotated[
-        ability.ProviderType,
+        skill.ProviderType,
         Field(
             description='Provider of the AI persona (system-provided or user-created)'
         ),
     ]
     version: Annotated[
-        Optional[ability.EntityVersion],
+        Optional[skill.EntityVersion],
         Field(None, description='Metadata version of the entity.'),
     ]
     updatedAt: Annotated[
-        Optional[ability.Timestamp],
+        Optional[skill.Timestamp],
         Field(
             None,
             description='Last update time corresponding to the new version of the entity in Unix epoch time milliseconds.',
@@ -62,47 +62,47 @@ class AiPersona(BaseModel):
         Optional[str], Field(None, description='User who made the update.')
     ]
     href: Annotated[
-        Optional[ability.Href],
+        Optional[skill.Href],
         Field(None, description='Link to the resource corresponding to this entity.'),
     ]
     owners: Annotated[
-        Optional[ability.EntityReferenceList],
+        Optional[skill.EntityReferenceList],
         Field(None, description='Owners of this AI Persona.'),
     ]
     tags: Annotated[
-        Optional[List[ability.TagLabel]],
+        Optional[List[skill.TagLabel]],
         Field([], description='Tags associated with the AI Persona.'),
     ]
     changeDescription: Annotated[
-        Optional[ability.ChangeDescription],
+        Optional[skill.ChangeDescription],
         Field(None, description='Change that lead to this version of the entity.'),
     ]
     incrementalChangeDescription: Annotated[
-        Optional[ability.ChangeDescription],
+        Optional[skill.ChangeDescription],
         Field(
             None,
             description='Entity extension data with custom attributes added to the entity.',
         ),
     ]
     extension: Annotated[
-        Optional[ability.EntityExtension],
+        Optional[skill.EntityExtension],
         Field(
             None,
             description='Entity extension data with custom attributes added to the entity.',
         ),
     ]
     reviewers: Annotated[
-        Optional[ability.EntityReferenceList],
+        Optional[skill.EntityReferenceList],
         Field(
             None, description='User references of the reviewers for this AI persona.'
         ),
     ]
     entityStatus: Annotated[
-        Optional[ability.Status],
-        Field(ability.Status.Approved, description='Status of the AI persona.'),
+        Optional[skill.Status],
+        Field(skill.Status.Approved, description='Status of the AI persona.'),
     ]
     followers: Annotated[
-        Optional[ability.EntityReferenceList],
+        Optional[skill.EntityReferenceList],
         Field(None, description='Followers of this entity.'),
     ]
     deleted: Annotated[

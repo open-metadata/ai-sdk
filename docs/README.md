@@ -107,7 +107,7 @@ client.close()
 - **Framework integrations** - LangChain (more coming)
 - **Type hints** - Full type coverage
 - **Error handling** - Structured exception hierarchy
-- **Management APIs** - Create and manage agents, personas, bots, and abilities
+- **Management APIs** - Create and manage agents, personas, bots, and skills
 
 ## Requirements
 

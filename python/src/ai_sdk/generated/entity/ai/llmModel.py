@@ -10,7 +10,7 @@ from typing import List, Optional
 from pydantic import BaseModel, ConfigDict, Field
 from typing_extensions import Annotated
 
-from . import ability, aiApplication
+from . import skill, aiApplication
 
 
 class GovernanceStatus(Enum):
@@ -50,8 +50,8 @@ class TrainingType(Enum):
 
 
 class DateRange(BaseModel):
-    start: Optional[ability.Timestamp] = None
-    end: Optional[ability.Timestamp] = None
+    start: Optional[skill.Timestamp] = None
+    end: Optional[skill.Timestamp] = None
 
 
 class SensitivityLevel(Enum):
@@ -62,7 +62,7 @@ class SensitivityLevel(Enum):
 
 
 class DataLineageItem(BaseModel):
-    dataset: Optional[ability.EntityReference] = None
+    dataset: Optional[skill.EntityReference] = None
     recordCount: Annotated[
         Optional[int],
         Field(None, description='Number of records used from this dataset'),
@@ -82,8 +82,8 @@ class DataLineageItem(BaseModel):
 
 
 class TrainingPeriod(BaseModel):
-    startDate: Optional[ability.Timestamp] = None
-    endDate: Optional[ability.Timestamp] = None
+    startDate: Optional[skill.Timestamp] = None
+    endDate: Optional[skill.Timestamp] = None
     durationHours: Optional[float] = None
 
 
@@ -139,7 +139,7 @@ class BiasMetrics(BaseModel):
     disparateImpact: Optional[float] = None
     dimensionScores: Optional[DimensionScores] = None
     testMethod: Optional[str] = None
-    testDataset: Optional[ability.EntityReference] = None
+    testDataset: Optional[skill.EntityReference] = None
 
 
 class FairnessMetrics(BaseModel):
@@ -164,8 +164,8 @@ class ModelEvaluation(BaseModel):
     model_config = ConfigDict(
         extra='forbid',
     )
-    evaluatedAt: Optional[ability.Timestamp] = None
-    evaluationDataset: Optional[ability.EntityReference] = None
+    evaluatedAt: Optional[skill.Timestamp] = None
+    evaluationDataset: Optional[skill.EntityReference] = None
     accuracyMetrics: Optional[AccuracyMetrics] = None
     biasMetrics: Annotated[
         Optional[BiasMetrics],
@@ -249,11 +249,11 @@ class TrainingMetadata(BaseModel):
     ]
     trainingType: Optional[TrainingType] = None
     trainingDatasets: Annotated[
-        Optional[ability.EntityReferenceList],
+        Optional[skill.EntityReferenceList],
         Field(None, description='Datasets used for training - KEY FOR DATA LINEAGE'),
     ]
     validationDatasets: Annotated[
-        Optional[ability.EntityReferenceList],
+        Optional[skill.EntityReferenceList],
         Field(None, description='Datasets used for validation'),
     ]
     dataLineage: Annotated[
@@ -281,26 +281,26 @@ class LLMModel(BaseModel):
     model_config = ConfigDict(
         extra='forbid',
     )
-    id: Annotated[ability.Uuid, Field(description='Unique identifier of the LLM Model')]
+    id: Annotated[skill.Uuid, Field(description='Unique identifier of the LLM Model')]
     name: Annotated[
-        ability.EntityName, Field(description='Name that identifies this LLM Model')
+        skill.EntityName, Field(description='Name that identifies this LLM Model')
     ]
     fullyQualifiedName: Annotated[
-        Optional[ability.FullyQualifiedEntityName],
+        Optional[skill.FullyQualifiedEntityName],
         Field(None, description='Fully qualified name of the LLM Model'),
     ]
     displayName: Annotated[
         Optional[str], Field(None, description='Display name for the LLM Model')
     ]
     description: Annotated[
-        Optional[ability.Markdown],
+        Optional[skill.Markdown],
         Field(
             None,
             description='Description of the LLM Model, its purpose, and capabilities',
         ),
     ]
     service: Annotated[
-        Optional[ability.EntityReference],
+        Optional[skill.EntityReference],
         Field(
             None,
             description='OPTIONAL reference to LLMService where this model is hosted',
@@ -331,7 +331,7 @@ class LLMModel(BaseModel):
     trainingMetadata: Optional[TrainingMetadata] = None
     modelEvaluation: Optional[ModelEvaluation] = None
     usedByAgents: Annotated[
-        Optional[ability.EntityReferenceList],
+        Optional[skill.EntityReferenceList],
         Field(None, description='AI Agents that use this model'),
     ]
     governanceStatus: Annotated[
@@ -351,45 +351,45 @@ class LLMModel(BaseModel):
     costMetrics: Optional[CostMetrics] = None
     deploymentInfo: Optional[DeploymentInfo] = None
     owners: Annotated[
-        Optional[ability.EntityReferenceList],
+        Optional[skill.EntityReferenceList],
         Field(None, description='Owners of this LLM Model'),
     ]
     followers: Annotated[
-        Optional[ability.EntityReferenceList],
+        Optional[skill.EntityReferenceList],
         Field(None, description='Followers of this LLM Model'),
     ]
     domain: Annotated[
-        Optional[ability.EntityReference],
+        Optional[skill.EntityReference],
         Field(None, description='Domain the LLM Model belongs to'),
     ]
     dataProducts: Annotated[
-        Optional[ability.EntityReferenceList],
+        Optional[skill.EntityReferenceList],
         Field(None, description='Data products this model is part of'),
     ]
     tags: Annotated[
-        Optional[List[ability.TagLabel]],
+        Optional[List[skill.TagLabel]],
         Field(None, description='Tags for this LLM Model'),
     ]
     version: Annotated[
-        Optional[ability.EntityVersion],
+        Optional[skill.EntityVersion],
         Field(None, description='Metadata version of the entity'),
     ]
     updatedAt: Annotated[
-        Optional[ability.Timestamp],
+        Optional[skill.Timestamp],
         Field(None, description='Last update time in Unix epoch milliseconds'),
     ]
     updatedBy: Annotated[
         Optional[str], Field(None, description='User who made the update')
     ]
     href: Annotated[
-        Optional[ability.Href], Field(None, description='Link to this resource')
+        Optional[skill.Href], Field(None, description='Link to this resource')
     ]
     changeDescription: Annotated[
-        Optional[ability.ChangeDescription],
+        Optional[skill.ChangeDescription],
         Field(None, description='Change that led to this version'),
     ]
     incrementalChangeDescription: Annotated[
-        Optional[ability.ChangeDescription],
+        Optional[skill.ChangeDescription],
         Field(None, description='Change that led to this version'),
     ]
     deleted: Annotated[
@@ -400,11 +400,11 @@ class LLMModel(BaseModel):
     ]
     certification: Optional[aiApplication.AssetCertification] = None
     extension: Annotated[
-        Optional[ability.EntityExtension],
+        Optional[skill.EntityExtension],
         Field(None, description='Entity extension data with custom attributes'),
     ]
     domains: Annotated[
-        Optional[ability.EntityReferenceList],
+        Optional[skill.EntityReferenceList],
         Field(None, description='Domains the LLMModel belongs to'),
     ]
     votes: Annotated[

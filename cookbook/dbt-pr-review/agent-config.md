@@ -17,19 +17,19 @@ export AI_SDK_HOST=https://your-instance.getcollate.io
 export AI_SDK_TOKEN=your-jwt-token
 ```
 
-### Step 1: Explore Available Abilities
+### Step 1: Explore Available Skills
 
 ```bash
-# List all abilities
-ai-sdk abilities list
+# List all skills
+ai-sdk skills list
 
-# Get details on specific abilities
-ai-sdk abilities get discoveryAndSearch
-ai-sdk abilities get dataLineageAndExploration
-ai-sdk abilities get dataQualityAndTesting
+# Get details on specific skills
+ai-sdk skills get discoveryAndSearch
+ai-sdk skills get dataLineageAndExploration
+ai-sdk skills get dataQualityAndTesting
 ```
 
-The agent needs these abilities:
+The agent needs these skills:
 - **discoveryAndSearch** - Find tables by model name, search metadata
 - **dataLineageAndExploration** - Traverse downstream dependencies, assess impact
 - **dataQualityAndTesting** - Review existing DQ tests, identify risks
@@ -57,7 +57,7 @@ ai-sdk agents create \
   --name DBTReviewer \
   --description "Reviews dbt model PRs for downstream impact and DQ risks" \
   --persona DBTReviewerPersona \
-  --abilities discoveryAndSearch,dataLineageAndExploration,dataQualityAndTesting \
+  --skills discoveryAndSearch,dataLineageAndExploration,dataQualityAndTesting \
   --api-enabled true
 ```
 
@@ -82,7 +82,7 @@ ai-sdk invoke DBTReviewer "What tables depend on the orders model?"
    - **Name:** `DBTReviewer`
    - **Description:** Reviews dbt model PRs for downstream impact and DQ risks
    - **Persona:** Create new with the prompt above
-   - **Abilities:** Select:
+   - **Skills:** Select:
      - Discovery and Search
      - Data Lineage and Exploration
      - Data Quality and Testing
@@ -104,7 +104,7 @@ agent = client.agents.create(
     name="DBTReviewer",
     description="Reviews dbt model PRs for downstream impact and DQ risks",
     persona="DBTReviewerPersona",
-    abilities=["discoveryAndSearch", "dataLineageAndExploration", "dataQualityAndTesting"],
+    skills=["discoveryAndSearch", "dataLineageAndExploration", "dataQualityAndTesting"],
     api_enabled=True
 )
 
@@ -125,7 +125,7 @@ const agent = await client.agents.create({
   name: 'DBTReviewer',
   description: 'Reviews dbt model PRs for downstream impact and DQ risks',
   persona: 'DBTReviewerPersona',
-  abilities: ['discoveryAndSearch', 'dataLineageAndExploration', 'dataQualityAndTesting'],
+  skills: ['discoveryAndSearch', 'dataLineageAndExploration', 'dataQualityAndTesting'],
   apiEnabled: true
 });
 
@@ -140,5 +140,5 @@ ai-sdk agents info DBTReviewer
 # Should show:
 # Name: DBTReviewer
 # API Enabled: true
-# Abilities: discoveryAndSearch, dataLineageAndExploration, dataQualityAndTesting
+# Skills: discoveryAndSearch, dataLineageAndExploration, dataQualityAndTesting
 ```

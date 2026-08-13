@@ -30,8 +30,8 @@ public class CreateAgentRequest {
   @JsonProperty("botName")
   private String botName;
 
-  @JsonProperty("abilities")
-  private List<EntityReference> abilities;
+  @JsonProperty("skills")
+  private List<EntityReference> skills;
 
   @JsonProperty("knowledge")
   private KnowledgeScope knowledge;
@@ -58,7 +58,7 @@ public class CreateAgentRequest {
       String displayName,
       String icon,
       String botName,
-      List<EntityReference> abilities,
+      List<EntityReference> skills,
       KnowledgeScope knowledge,
       String prompt,
       String schedule,
@@ -71,7 +71,7 @@ public class CreateAgentRequest {
     this.displayName = displayName;
     this.icon = icon;
     this.botName = botName;
-    this.abilities = abilities;
+    this.skills = skills;
     this.knowledge = knowledge;
     this.prompt = prompt;
     this.schedule = schedule;
@@ -135,12 +135,12 @@ public class CreateAgentRequest {
     this.botName = botName;
   }
 
-  public List<EntityReference> getAbilities() {
-    return abilities;
+  public List<EntityReference> getSkills() {
+    return skills;
   }
 
-  public void setAbilities(List<EntityReference> abilities) {
-    this.abilities = abilities;
+  public void setSkills(List<EntityReference> skills) {
+    this.skills = skills;
   }
 
   public KnowledgeScope getKnowledge() {
@@ -196,7 +196,7 @@ public class CreateAgentRequest {
     private String displayName;
     private String icon;
     private String botName;
-    private List<String> abilityNames;
+    private List<String> skillNames;
     private KnowledgeScope knowledge;
     private String prompt;
     private String schedule;
@@ -239,9 +239,9 @@ public class CreateAgentRequest {
       return this;
     }
 
-    /** Sets the abilities by name. Will be resolved to IDs when agent is created. */
-    public Builder abilities(List<String> abilities) {
-      this.abilityNames = abilities;
+    /** Sets the skills by name. Will be resolved to IDs when agent is created. */
+    public Builder skills(List<String> skills) {
+      this.skillNames = skills;
       return this;
     }
 
@@ -274,8 +274,8 @@ public class CreateAgentRequest {
       return personaName;
     }
 
-    public List<String> getAbilityNames() {
-      return abilityNames;
+    public List<String> getSkillNames() {
+      return skillNames;
     }
 
     public CreateAgentRequest build() {
@@ -314,7 +314,7 @@ public class CreateAgentRequest {
     /**
      * Build the request with resolved entity references. Used internally by AISdk.createAgent().
      */
-    public CreateAgentRequest build(EntityReference persona, List<EntityReference> abilities) {
+    public CreateAgentRequest build(EntityReference persona, List<EntityReference> skills) {
       if (name == null || name.isEmpty()) {
         throw new IllegalArgumentException("name is required");
       }
@@ -338,7 +338,7 @@ public class CreateAgentRequest {
           displayName,
           icon,
           botName,
-          abilities,
+          skills,
           knowledge,
           prompt,
           schedule,
@@ -370,8 +370,8 @@ public class CreateAgentRequest {
         + ", botName='"
         + botName
         + '\''
-        + ", abilities="
-        + abilities
+        + ", skills="
+        + skills
         + ", knowledge="
         + knowledge
         + ", prompt='"

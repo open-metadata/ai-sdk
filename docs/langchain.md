@@ -88,7 +88,7 @@ tool = AISdkAgentTool.from_client(
 
 By default:
 - **Name**: `ai_sdk_{agent_name}` (e.g., `ai_sdk_DataQualityPlannerAgent`)
-- **Description**: Built from agent's description and abilities
+- **Description**: Built from agent's description and skills
 
 ### Create Multiple Tools
 
