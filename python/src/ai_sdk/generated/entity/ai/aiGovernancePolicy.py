@@ -10,7 +10,7 @@ from typing import List, Optional
 from pydantic import BaseModel, ConfigDict, Field
 from typing_extensions import Annotated
 
-from . import ability, aiApplication
+from . import skill, aiApplication
 
 
 class EnforcementLevel(Enum):
@@ -186,7 +186,7 @@ class PerformanceStandard(BaseModel):
         Optional[float], Field(None, description='Maximum error rate (0-1)')
     ]
     evaluationDataset: Annotated[
-        Optional[ability.EntityReference],
+        Optional[skill.EntityReference],
         Field(None, description='Dataset to use for evaluation'),
     ]
 
@@ -199,16 +199,16 @@ class PolicyViolation(BaseModel):
         Optional[str], Field(None, description='Name of the violated rule')
     ]
     violatingEntity: Annotated[
-        Optional[ability.EntityReference],
+        Optional[skill.EntityReference],
         Field(None, description='Entity that violated the policy'),
     ]
-    timestamp: Optional[ability.Timestamp] = None
+    timestamp: Optional[skill.Timestamp] = None
     details: Annotated[
         Optional[str], Field(None, description='Details about the violation')
     ]
     resolved: Optional[bool] = False
     resolvedBy: Optional[str] = None
-    resolvedAt: Optional[ability.Timestamp] = None
+    resolvedAt: Optional[skill.Timestamp] = None
 
 
 class DataAccessControl(BaseModel):
@@ -216,11 +216,11 @@ class DataAccessControl(BaseModel):
         extra='forbid',
     )
     allowedDataSources: Annotated[
-        Optional[ability.EntityReferenceList],
+        Optional[skill.EntityReferenceList],
         Field(None, description='Allowed data sources'),
     ]
     prohibitedDataSources: Annotated[
-        Optional[ability.EntityReferenceList],
+        Optional[skill.EntityReferenceList],
         Field(None, description='Prohibited data sources'),
     ]
     maxSensitivityLevel: Annotated[
@@ -242,14 +242,14 @@ class AIGovernancePolicy(BaseModel):
         extra='forbid',
     )
     id: Annotated[
-        ability.Uuid, Field(description='Unique identifier of the AI Governance Policy')
+        skill.Uuid, Field(description='Unique identifier of the AI Governance Policy')
     ]
     name: Annotated[
-        ability.EntityName,
+        skill.EntityName,
         Field(description='Name that identifies this AI Governance Policy'),
     ]
     fullyQualifiedName: Annotated[
-        Optional[ability.FullyQualifiedEntityName],
+        Optional[skill.FullyQualifiedEntityName],
         Field(None, description='Fully qualified name of the AI Governance Policy'),
     ]
     displayName: Annotated[
@@ -257,7 +257,7 @@ class AIGovernancePolicy(BaseModel):
         Field(None, description='Display name for the AI Governance Policy'),
     ]
     description: Annotated[
-        Optional[ability.Markdown],
+        Optional[skill.Markdown],
         Field(None, description='Description of the policy and its purpose'),
     ]
     policyType: PolicyType
@@ -274,7 +274,7 @@ class AIGovernancePolicy(BaseModel):
     ]
     performanceStandards: Optional[PerformanceStandard] = None
     appliesTo: Annotated[
-        Optional[ability.EntityReferenceList],
+        Optional[skill.EntityReferenceList],
         Field(None, description='Entities this policy applies to'),
     ]
     enforcementLevel: Annotated[
@@ -288,11 +288,11 @@ class AIGovernancePolicy(BaseModel):
         Field(True, description='Whether this policy is currently active'),
     ]
     effectiveDate: Annotated[
-        Optional[ability.Timestamp],
+        Optional[skill.Timestamp],
         Field(None, description='Date when policy becomes effective'),
     ]
     expirationDate: Annotated[
-        Optional[ability.Timestamp], Field(None, description='Date when policy expires')
+        Optional[skill.Timestamp], Field(None, description='Date when policy expires')
     ]
     approvedBy: Annotated[
         Optional[str], Field(None, description='Who approved this policy')
@@ -302,41 +302,41 @@ class AIGovernancePolicy(BaseModel):
         Field(None, description='Recent policy violations'),
     ]
     owners: Annotated[
-        Optional[ability.EntityReferenceList],
+        Optional[skill.EntityReferenceList],
         Field(None, description='Owners of this AI Governance Policy'),
     ]
     followers: Annotated[
-        Optional[ability.EntityReferenceList],
+        Optional[skill.EntityReferenceList],
         Field(None, description='Followers of this AI Governance Policy'),
     ]
     domain: Annotated[
-        Optional[ability.EntityReference],
+        Optional[skill.EntityReference],
         Field(None, description='Domain the policy belongs to'),
     ]
     tags: Annotated[
-        Optional[List[ability.TagLabel]],
+        Optional[List[skill.TagLabel]],
         Field(None, description='Tags for this AI Governance Policy'),
     ]
     version: Annotated[
-        Optional[ability.EntityVersion],
+        Optional[skill.EntityVersion],
         Field(None, description='Metadata version of the entity'),
     ]
     updatedAt: Annotated[
-        Optional[ability.Timestamp],
+        Optional[skill.Timestamp],
         Field(None, description='Last update time in Unix epoch milliseconds'),
     ]
     updatedBy: Annotated[
         Optional[str], Field(None, description='User who made the update')
     ]
     href: Annotated[
-        Optional[ability.Href], Field(None, description='Link to this resource')
+        Optional[skill.Href], Field(None, description='Link to this resource')
     ]
     changeDescription: Annotated[
-        Optional[ability.ChangeDescription],
+        Optional[skill.ChangeDescription],
         Field(None, description='Change that led to this version'),
     ]
     incrementalChangeDescription: Annotated[
-        Optional[ability.ChangeDescription],
+        Optional[skill.ChangeDescription],
         Field(None, description='Change that led to this version'),
     ]
     deleted: Annotated[
@@ -346,11 +346,11 @@ class AIGovernancePolicy(BaseModel):
         ),
     ]
     extension: Annotated[
-        Optional[ability.EntityExtension],
+        Optional[skill.EntityExtension],
         Field(None, description='Entity extension data with custom attributes'),
     ]
     domains: Annotated[
-        Optional[ability.EntityReferenceList],
+        Optional[skill.EntityReferenceList],
         Field(None, description='Domains the policy belongs to'),
     ]
     votes: Annotated[

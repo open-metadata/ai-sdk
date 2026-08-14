@@ -25,7 +25,7 @@ Practical examples and workflows for integrating Metadata AI into your data plat
 Each cookbook entry includes:
 - **Step-by-step tutorial** - Detailed walkthrough
 - **Importable artifacts** - Workflow files, config snippets
-- **Agent configuration** - Required Dynamic Agents and abilities
+- **Agent configuration** - Required Dynamic Agents and skills
 
 ## Prerequisites
 

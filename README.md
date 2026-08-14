@@ -37,7 +37,7 @@ result = client.mcp.call_tool("search_metadata", {"query": "customers"})
 
 ### Collate Agents — Pre-built AI assistants from AI Studio
 
-With [Collate](https://www.getcollate.io), you get access to **AI Studio** — a platform for creating and managing AI agents that are purpose-built for data teams. Each agent combines a persona, a set of abilities, and full context and semantics access into a ready-to-use assistant you can invoke from any SDK:
+With [Collate](https://www.getcollate.io), you get access to **AI Studio** — a platform for creating and managing AI agents that are purpose-built for data teams. Each agent combines a persona, a set of skills, and full context and semantics access into a ready-to-use assistant you can invoke from any SDK:
 
 ```python
 from ai_sdk import AISdk
@@ -54,7 +54,7 @@ response = client.agent("DataQualityPlannerAgent").call(
 print(response.response)
 ```
 
-Agents support **streaming**, **multi-turn conversations**, and **async** out of the box. You can also create and manage agents programmatically — define personas, assign abilities, and deploy custom agents through the SDK.
+Agents support **streaming**, **multi-turn conversations**, and **async** out of the box. You can also create and manage agents programmatically — define personas, assign skills, and deploy custom agents through the SDK.
 
 ## Quick Start
 
@@ -320,7 +320,7 @@ All SDKs share a consistent API surface with language-idiomatic patterns:
 - **Async support** — Native async/await in Python, TypeScript, and Java
 - **Typed errors** — Structured error hierarchy (authentication, not-found, rate-limit, etc.)
 - **Automatic retries** — Exponential backoff with configurable limits
-- **Management APIs** — Create and configure agents, personas, and abilities programmatically
+- **Management APIs** — Create and configure agents, personas, and skills programmatically
 
 ## Documentation
 

@@ -6,7 +6,7 @@
  * these together and exposes them as readonly fields.
  */
 
-export { AbilitiesApi, type AbilitiesListOptions } from './abilities.js';
+export { SkillsApi, type SkillsListOptions } from './skills.js';
 export { AgentsApi, type AgentsListOptions } from './agents.js';
 export { BotsApi, type BotsListOptions } from './bots.js';
 export {

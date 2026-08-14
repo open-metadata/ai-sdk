@@ -11,7 +11,7 @@ from uuid import UUID
 from pydantic import BaseModel, ConfigDict, Field
 from typing_extensions import Annotated
 
-from . import ability
+from . import skill
 
 
 class AgentNodeType(Enum):
@@ -131,10 +131,10 @@ class AgentNode(BaseModel):
     ]
     position: Optional[NodePosition] = None
     provider: Annotated[
-        Optional[ability.ProviderType],
+        Optional[skill.ProviderType],
         Field(
-            ability.ProviderType.user,
-            description='Provider of the Ability implementation',
+            skill.ProviderType.user,
+            description='Provider of the Skill implementation',
         ),
     ]
 
@@ -165,12 +165,12 @@ class AgentStrategy(BaseModel):
     model_config = ConfigDict(
         extra='forbid',
     )
-    id: Annotated[ability.Uuid, Field(description='Unique ID of the Agent Strategy')]
+    id: Annotated[skill.Uuid, Field(description='Unique ID of the Agent Strategy')]
     name: Annotated[
-        ability.EntityName, Field(description='A unique name of the Agent Strategy')
+        skill.EntityName, Field(description='A unique name of the Agent Strategy')
     ]
     fullyQualifiedName: Annotated[
-        Optional[ability.FullyQualifiedEntityName],
+        Optional[skill.FullyQualifiedEntityName],
         Field(None, description='FullyQualifiedName same as `name`.'),
     ]
     displayName: Annotated[
@@ -181,7 +181,7 @@ class AgentStrategy(BaseModel):
         ),
     ]
     description: Annotated[
-        Optional[ability.Markdown],
+        Optional[skill.Markdown],
         Field(None, description='Description of the strategy and its use case.'),
     ]
     nodes: Annotated[
@@ -198,26 +198,26 @@ class AgentStrategy(BaseModel):
         ),
     ]
     provider: Annotated[
-        Optional[ability.ProviderType],
+        Optional[skill.ProviderType],
         Field(
-            ability.ProviderType.user,
-            description='Provider of the Ability implementation',
+            skill.ProviderType.user,
+            description='Provider of the Skill implementation',
         ),
     ]
     tags: Annotated[
-        Optional[List[ability.TagLabel]],
+        Optional[List[skill.TagLabel]],
         Field([], description='Tags for this Agent Strategy.'),
     ]
     owner: Annotated[
-        Optional[ability.EntityReference],
+        Optional[skill.EntityReference],
         Field(None, description='Owner of this Agent Strategy'),
     ]
     version: Annotated[
-        Optional[ability.EntityVersion],
+        Optional[skill.EntityVersion],
         Field(None, description='Metadata version of the entity.'),
     ]
     updatedAt: Annotated[
-        Optional[ability.Timestamp],
+        Optional[skill.Timestamp],
         Field(
             None,
             description='Last update time corresponding to the new version of the entity in Unix epoch time milliseconds.',
@@ -227,15 +227,15 @@ class AgentStrategy(BaseModel):
         Optional[str], Field(None, description='User who made the update.')
     ]
     href: Annotated[
-        Optional[ability.Href],
+        Optional[skill.Href],
         Field(None, description='Link to the resource corresponding to this entity.'),
     ]
     changeDescription: Annotated[
-        Optional[ability.ChangeDescription],
+        Optional[skill.ChangeDescription],
         Field(None, description='Change that lead to this version of the entity.'),
     ]
     incrementalChangeDescription: Annotated[
-        Optional[ability.ChangeDescription],
+        Optional[skill.ChangeDescription],
         Field(None, description='Change that lead to this version of the entity.'),
     ]
     deleted: Annotated[

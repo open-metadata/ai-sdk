@@ -10,7 +10,7 @@ from typing import Any, Dict, List, Optional
 from pydantic import BaseModel, ConfigDict, Field
 from typing_extensions import Annotated
 
-from . import ability
+from . import skill
 
 
 class Environment(Enum):
@@ -33,7 +33,7 @@ class ModelCall(BaseModel):
         extra='forbid',
     )
     model: Annotated[
-        Optional[ability.EntityReference], Field(None, description='LLM Model used')
+        Optional[skill.EntityReference], Field(None, description='LLM Model used')
     ]
     prompt: Annotated[
         Optional[str], Field(None, description='Prompt sent to the model')
@@ -51,7 +51,7 @@ class ModelCall(BaseModel):
         Optional[float], Field(None, description='Latency in milliseconds')
     ]
     cost: Annotated[Optional[float], Field(None, description='Cost for this call')]
-    timestamp: Optional[ability.Timestamp] = None
+    timestamp: Optional[skill.Timestamp] = None
     purpose: Annotated[
         Optional[str], Field(None, description='Purpose of this model call')
     ]
@@ -76,7 +76,7 @@ class DataAccess(BaseModel):
         extra='forbid',
     )
     dataSource: Annotated[
-        ability.EntityReference,
+        skill.EntityReference,
         Field(description='Reference to the data source (Table, Dashboard, etc.)'),
     ]
     accessType: Annotated[AccessType, Field(description='Type of access')]
@@ -89,7 +89,7 @@ class DataAccess(BaseModel):
     query: Annotated[
         Optional[str], Field(None, description='Query executed (if applicable)')
     ]
-    timestamp: Optional[ability.Timestamp] = None
+    timestamp: Optional[skill.Timestamp] = None
     piiAccessed: Annotated[
         Optional[bool], Field(None, description='Whether PII data was accessed')
     ]
@@ -101,7 +101,7 @@ class ToolCall(BaseModel):
         extra='forbid',
     )
     tool: Annotated[
-        Optional[ability.EntityReference],
+        Optional[skill.EntityReference],
         Field(None, description='Reference to MCP Tool or custom tool'),
     ]
     parameters: Annotated[
@@ -115,7 +115,7 @@ class ToolCall(BaseModel):
     latencyMs: Annotated[
         Optional[float], Field(None, description='Latency in milliseconds')
     ]
-    timestamp: Optional[ability.Timestamp] = None
+    timestamp: Optional[skill.Timestamp] = None
     errorMessage: Annotated[
         Optional[str], Field(None, description='Error message if failed')
     ]
@@ -175,20 +175,20 @@ class AgentExecution(BaseModel):
         extra='forbid',
     )
     id: Annotated[
-        Optional[ability.Uuid],
+        Optional[skill.Uuid],
         Field(None, description='Unique identifier of the Agent Execution'),
     ]
     agent: Annotated[
-        ability.EntityReference, Field(description='AI Agent that was executed')
+        skill.EntityReference, Field(description='AI Agent that was executed')
     ]
     agentId: Annotated[
-        ability.Uuid, Field(description='ID of the AI Agent (for indexing)')
+        skill.Uuid, Field(description='ID of the AI Agent (for indexing)')
     ]
     timestamp: Annotated[
-        ability.Timestamp, Field(description='Execution start timestamp')
+        skill.Timestamp, Field(description='Execution start timestamp')
     ]
     endTimestamp: Annotated[
-        Optional[ability.Timestamp], Field(None, description='Execution end timestamp')
+        Optional[skill.Timestamp], Field(None, description='Execution end timestamp')
     ]
     status: ExecutionStatus
     input: Annotated[

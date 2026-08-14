@@ -146,7 +146,7 @@ class TestAgentInfo:
         assert info.name == "DataQualityPlannerAgent"
         assert info.display_name == "Data Quality Planner"
         assert info.description == "Analyzes data quality and suggests improvements"
-        assert info.abilities == ["search_metadata", "analyze_quality", "create_tests"]
+        assert info.skills == ["search_metadata", "analyze_quality", "create_tests"]
         assert info.api_enabled is True
 
     def test_from_dict_defaults_missing_fields(self):
@@ -156,7 +156,7 @@ class TestAgentInfo:
         assert info.name == "TestAgent"
         assert info.display_name is None  # None when not provided
         assert info.description is None  # None when not provided
-        assert info.abilities == []
+        assert info.skills == []
         assert info.api_enabled is False
 
 

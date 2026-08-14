@@ -30,7 +30,7 @@ public class AISdkHttpClient implements AutoCloseable {
   private static final String API_BASE_PATH = "/api/v1/agents/dynamic";
   private static final String BOTS_API_PATH = "/api/v1/bots";
   private static final String PERSONAS_API_PATH = "/api/v1/agents/personas";
-  private static final String ABILITIES_API_PATH = "/api/v1/agents/abilities";
+  private static final String SKILLS_API_PATH = "/api/v1/agents/skills";
   private static final String CHAT_CONVERSATIONS_PATH = "/api/v1/assistants/chatConversations";
   private static final String DEFAULT_AGENT_INVOKE_PATH = "/api/v1/agents/invoke";
   private static final String DEFAULT_AGENT_RUN_PATH = "/api/v1/agents/run";
@@ -621,38 +621,37 @@ public class AISdkHttpClient implements AutoCloseable {
     }
   }
 
-  // ==================== Ability Operations ====================
+  // ==================== Skill Operations ====================
 
   /**
-   * Lists all abilities with automatic pagination.
+   * Lists all skills with automatic pagination.
    *
-   * @return a list of all ability information
+   * @return a list of all skill information
    */
-  public List<AbilityInfo> listAbilities() {
-    return listAbilities(null);
+  public List<SkillInfo> listSkills() {
+    return listSkills(null);
   }
 
   /**
-   * Lists abilities with optional limit. Automatically paginates through all results.
+   * Lists skills with optional limit. Automatically paginates through all results.
    *
-   * @param limit the maximum number of abilities to return, or null for all
-   * @return a list of ability information
+   * @param limit the maximum number of skills to return, or null for all
+   * @return a list of skill information
    */
-  public List<AbilityInfo> listAbilities(Integer limit) {
-    return paginateList(
-        host + ABILITIES_API_PATH, limit, new TypeReference<List<AbilityInfo>>() {});
+  public List<SkillInfo> listSkills(Integer limit) {
+    return paginateList(host + SKILLS_API_PATH, limit, new TypeReference<List<SkillInfo>>() {});
   }
 
   /**
-   * Gets an ability by name.
+   * Gets a skill by name.
    *
-   * @param name the name of the ability
-   * @return the ability information
-   * @throws AbilityNotFoundException if the ability is not found
+   * @param name the name of the skill
+   * @return the skill information
+   * @throws SkillNotFoundException if the skill is not found
    */
-  public AbilityInfo getAbilityByName(String name) {
+  public SkillInfo getSkillByName(String name) {
     String encodedName = URLEncoder.encode(name, StandardCharsets.UTF_8);
-    String url = host + ABILITIES_API_PATH + "/name/" + encodedName;
+    String url = host + SKILLS_API_PATH + "/name/" + encodedName;
     HttpRequest request =
         HttpRequest.newBuilder()
             .uri(URI.create(url))
@@ -661,12 +660,11 @@ public class AISdkHttpClient implements AutoCloseable {
             .GET()
             .build();
 
-    HttpResponse<String> response =
-        executeWithRetryForResource(request, ResourceType.ABILITY, name);
+    HttpResponse<String> response = executeWithRetryForResource(request, ResourceType.SKILL, name);
     try {
-      return objectMapper.readValue(response.body(), AbilityInfo.class);
+      return objectMapper.readValue(response.body(), SkillInfo.class);
     } catch (JsonProcessingException e) {
-      throw new AISdkException("Failed to parse ability response", e);
+      throw new AISdkException("Failed to parse skill response", e);
     }
   }
 
@@ -676,7 +674,7 @@ public class AISdkHttpClient implements AutoCloseable {
     AGENT,
     BOT,
     PERSONA,
-    ABILITY
+    SKILL
   }
 
   private HttpResponse<String> executeWithRetryForResource(
@@ -738,8 +736,8 @@ public class AISdkHttpClient implements AutoCloseable {
             throw new BotNotFoundException(resourceName != null ? resourceName : "unknown");
           case PERSONA:
             throw new PersonaNotFoundException(resourceName != null ? resourceName : "unknown");
-          case ABILITY:
-            throw new AbilityNotFoundException(resourceName != null ? resourceName : "unknown");
+          case SKILL:
+            throw new SkillNotFoundException(resourceName != null ? resourceName : "unknown");
           case AGENT:
           default:
             throw new AgentNotFoundException(resourceName != null ? resourceName : "unknown");

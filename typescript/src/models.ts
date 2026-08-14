@@ -95,8 +95,8 @@ export interface AgentInfo {
   displayName: string;
   /** Agent description */
   description: string;
-  /** List of agent abilities/capabilities */
-  abilities: string[];
+  /** List of agent skills/capabilities */
+  skills: string[];
   /** Whether the agent is enabled for API access */
   apiEnabled: boolean;
 }
@@ -134,7 +134,7 @@ export interface ApiAgentInfo {
   name: string;
   displayName?: string;
   description?: string;
-  abilities?: string[];
+  skills?: string[];
   apiEnabled?: boolean;
 }
 
@@ -146,7 +146,7 @@ export function mapAgentInfo(data: ApiAgentInfo): AgentInfo {
     name: data.name,
     displayName: data.displayName || data.name,
     description: data.description || '',
-    abilities: data.abilities || [],
+    skills: data.skills || [],
     apiEnabled: data.apiEnabled ?? false,
   };
 }

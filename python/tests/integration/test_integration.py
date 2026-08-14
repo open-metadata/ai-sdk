@@ -66,7 +66,7 @@ def test_agent_name(client: AISdk) -> str | None:
     """Get or create a test agent for invoke/stream tests.
 
     Creates a new agent using an existing persona so it has LLM backend configured.
-    Includes the discoveryAndSearch ability for proper testing.
+    Includes the discoveryAndSearch skill for proper testing.
     """
     # First check if there's a manually specified test agent
     if name := os.getenv("AI_SDK_TEST_AGENT"):
@@ -77,7 +77,7 @@ def test_agent_name(client: AISdk) -> str | None:
     if not personas:
         return None
 
-    # Create a test agent with this persona and discoveryAndSearch ability
+    # Create a test agent with this persona and discoveryAndSearch skill
     agent_name = unique_name("invoke-test-agent")
     try:
         request = CreateAgentRequest(
@@ -85,7 +85,7 @@ def test_agent_name(client: AISdk) -> str | None:
             description="Auto-created agent for integration testing",
             persona=personas[0].name,
             mode="chat",
-            abilities=["discoveryAndSearch"],
+            skills=["discoveryAndSearch"],
             api_enabled=True,
         )
         client.agents.create(request)
@@ -162,7 +162,7 @@ class TestAgentOperations:
         agent = client.agent(test_agent_name)
         chunks = []
 
-        # Use a prompt that triggers tool use with discoveryAndSearch ability
+        # Use a prompt that triggers tool use with discoveryAndSearch skill
         for event in agent.stream("do we have any customer data"):
             if event.content:
                 chunks.append(event.content)
@@ -204,7 +204,7 @@ class TestAsyncOperations:
         agent = async_client.agent(test_agent_name)
         chunks = []
 
-        # Use a prompt that triggers tool use with discoveryAndSearch ability
+        # Use a prompt that triggers tool use with discoveryAndSearch skill
         async for event in agent.astream("do we have any customer data"):
             if event.content:
                 chunks.append(event.content)
@@ -342,37 +342,37 @@ class TestBotOperations:
         assert bot is not None
 
 
-class TestAbilityOperations:
-    """Test ability listing operations."""
+class TestSkillOperations:
+    """Test skill listing operations."""
 
-    def test_list_abilities(self, client: AISdk) -> None:
-        """Test listing abilities."""
-        abilities = client.abilities.list()
-        assert isinstance(abilities, list)
-        print(f"Found {len(abilities)} abilities")
+    def test_list_skills(self, client: AISdk) -> None:
+        """Test listing skills."""
+        skills = client.skills.list()
+        assert isinstance(skills, list)
+        print(f"Found {len(skills)} skills")
 
-    def test_list_abilities_with_limit(self, client: AISdk) -> None:
-        """Test listing abilities with limit."""
-        abilities = client.abilities.list(limit=5)
-        assert isinstance(abilities, list)
-        assert len(abilities) <= 5
+    def test_list_skills_with_limit(self, client: AISdk) -> None:
+        """Test listing skills with limit."""
+        skills = client.skills.list(limit=5)
+        assert isinstance(skills, list)
+        assert len(skills) <= 5
 
-    def test_ability_has_expected_fields(self, client: AISdk) -> None:
-        """Test that abilities have expected fields."""
-        abilities = client.abilities.list()
-        if not abilities:
-            pytest.skip("No abilities available")
+    def test_skill_has_expected_fields(self, client: AISdk) -> None:
+        """Test that skills have expected fields."""
+        skills = client.skills.list()
+        if not skills:
+            pytest.skip("No skills available")
 
-        ability = abilities[0]
-        assert hasattr(ability, "name")
-        assert hasattr(ability, "description")
-        print(f"Ability: {ability.name}")
+        skill = skills[0]
+        assert hasattr(skill, "name")
+        assert hasattr(skill, "description")
+        print(f"Skill: {skill.name}")
 
     @pytest.mark.asyncio
-    async def test_async_list_abilities(self, async_client: AISdk) -> None:
-        """Test async listing abilities."""
-        abilities = await async_client.abilities.alist()
-        assert isinstance(abilities, list)
+    async def test_async_list_skills(self, async_client: AISdk) -> None:
+        """Test async listing skills."""
+        skills = await async_client.skills.alist()
+        assert isinstance(skills, list)
 
 
 class TestAgentCRUDOperations:
@@ -400,25 +400,25 @@ class TestAgentCRUDOperations:
         assert created.name == agent_name
         print(f"Created agent: {created.name}")
 
-    def test_create_agent_with_abilities(self, client: AISdk) -> None:
-        """Test creating an agent with abilities."""
+    def test_create_agent_with_skills(self, client: AISdk) -> None:
+        """Test creating an agent with skills."""
         personas = client.personas.list()
-        abilities = client.abilities.list()
+        skills = client.skills.list()
 
         if not personas:
             pytest.skip("No personas available")
-        if not abilities:
-            pytest.skip("No abilities available")
+        if not skills:
+            pytest.skip("No skills available")
 
-        agent_name = unique_name("agent-abilities")
-        ability_names = [a.name for a in abilities[:2]]  # Use first 2 abilities
+        agent_name = unique_name("agent-skills")
+        skill_names = [a.name for a in skills[:2]]  # Use first 2 skills
 
         request = CreateAgentRequest(
             name=agent_name,
-            description="Integration test agent with abilities",
+            description="Integration test agent with skills",
             persona=personas[0].name,
             mode="agent",
-            abilities=ability_names,
+            skills=skill_names,
             api_enabled=True,
         )
 
@@ -426,7 +426,7 @@ class TestAgentCRUDOperations:
 
         assert created is not None
         assert created.name == agent_name
-        print(f"Created agent with abilities: {created.name}")
+        print(f"Created agent with skills: {created.name}")
 
     @pytest.mark.asyncio
     async def test_async_create_agent(self, async_client: AISdk) -> None:

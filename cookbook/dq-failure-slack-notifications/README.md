@@ -34,7 +34,7 @@ When a Data Quality test fails in Collate, this workflow:
 
 ## Step 1: Create the Agent
 
-First, create a Dynamic Agent with the abilities needed for DQ analysis.
+First, create a Dynamic Agent with the skills needed for DQ analysis.
 
 See [agent-config.md](./agent-config.md) for detailed setup instructions using the CLI, UI, or SDKs.
 
@@ -57,7 +57,7 @@ ai-sdk agents create \
   --name DataQualityAnalyzer \
   --description "Analyzes DQ test failures, explores lineage impact, and suggests remediation" \
   --persona DQAnalyst \
-  --abilities dataLineageAndExploration,dataQualityAndTesting,discoveryAndSearch \
+  --skills dataLineageAndExploration,dataQualityAndTesting,discoveryAndSearch \
   --api-enabled true
 ```
 
@@ -308,7 +308,7 @@ const formatted = samples.slice(0, 3)
 | Webhook not receiving events | Check Collate notification config, verify URL is accessible |
 | Agent returns error | Verify agent is API-enabled, check JWT token permissions |
 | Slack message not posting | Verify Slack credentials, check channel permissions |
-| Empty analysis | Ensure agent has required abilities assigned |
+| Empty analysis | Ensure agent has required skills assigned |
 
 ## Related Resources
 

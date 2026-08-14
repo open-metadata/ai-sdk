@@ -71,15 +71,15 @@ class PersonaNotFoundError(AISdkError):
         self.persona_name = persona_name
 
 
-class AbilityNotFoundError(AISdkError):
-    """Raised when an ability is not found."""
+class SkillNotFoundError(AISdkError):
+    """Raised when a skill is not found."""
 
-    def __init__(self, ability_name: str):
+    def __init__(self, skill_name: str):
         super().__init__(
-            f"Ability not found: {ability_name}",
+            f"Skill not found: {skill_name}",
             status_code=404,
         )
-        self.ability_name = ability_name
+        self.skill_name = skill_name
 
 
 class MCPError(AISdkError):

@@ -89,14 +89,14 @@ describe('AISdk', () => {
             name: 'DataQualityPlannerAgent',
             displayName: 'Data Quality Planner',
             description: 'Plans data quality tests',
-            abilities: ['analyze', 'suggest'],
+            skills: ['analyze', 'suggest'],
             apiEnabled: true,
           },
           {
             name: 'SqlQueryAgent',
             displayName: 'SQL Query Agent',
             description: 'Executes SQL queries',
-            abilities: ['query'],
+            skills: ['query'],
             apiEnabled: true,
           },
         ],
@@ -419,7 +419,7 @@ describe('AgentHandle', () => {
         name: 'DataQualityAgent',
         displayName: 'Data Quality Agent',
         description: 'Analyzes data quality',
-        abilities: ['analyze', 'report'],
+        skills: ['analyze', 'report'],
         apiEnabled: true,
       };
 
@@ -437,7 +437,7 @@ describe('AgentHandle', () => {
 
       expect(info.name).toBe('DataQualityAgent');
       expect(info.displayName).toBe('Data Quality Agent');
-      expect(info.abilities).toContain('analyze');
+      expect(info.skills).toContain('analyze');
     });
   });
 });
@@ -1116,12 +1116,12 @@ describe('Agent creation', () => {
             provider: 'system',
           }),
       });
-      // Mock ability resolution
+      // Mock skill resolution
       mockFetch.mockResolvedValueOnce({
         ok: true,
         json: () =>
           Promise.resolve({
-            id: 'ability-1',
+            id: 'skill-1',
             name: 'analyze',
             tools: [],
           }),
@@ -1130,7 +1130,7 @@ describe('Agent creation', () => {
         ok: true,
         json: () =>
           Promise.resolve({
-            id: 'ability-2',
+            id: 'skill-2',
             name: 'report',
             tools: [],
           }),
@@ -1143,7 +1143,7 @@ describe('Agent creation', () => {
             name: 'my-custom-agent',
             displayName: 'My Custom Agent',
             description: 'A custom agent for data analysis',
-            abilities: ['analyze', 'report'],
+            skills: ['analyze', 'report'],
             apiEnabled: true,
           }),
       });
@@ -1159,13 +1159,13 @@ describe('Agent creation', () => {
         persona: 'data-analyst',
         mode: 'chat',
         displayName: 'My Custom Agent',
-        abilities: ['analyze', 'report'],
+        skills: ['analyze', 'report'],
         apiEnabled: true,
       });
 
       expect(agent.name).toBe('my-custom-agent');
       expect(agent.displayName).toBe('My Custom Agent');
-      expect(agent.abilities).toEqual(['analyze', 'report']);
+      expect(agent.skills).toEqual(['analyze', 'report']);
       expect(agent.apiEnabled).toBe(true);
     });
 
@@ -1189,7 +1189,7 @@ describe('Agent creation', () => {
             name: 'test-agent',
             displayName: 'Test Agent',
             description: 'Test',
-            abilities: [],
+            skills: [],
             apiEnabled: false,
           }),
       });
@@ -1240,7 +1240,7 @@ describe('Agent creation', () => {
             name: 'test-agent',
             displayName: 'Test Agent',
             description: 'Test',
-            abilities: [],
+            skills: [],
             apiEnabled: false,
           }),
       });
@@ -1282,7 +1282,7 @@ describe('Agent creation', () => {
             name: 'test-agent',
             displayName: 'Test',
             description: 'Test',
-            abilities: [],
+            skills: [],
             apiEnabled: false,
           }),
       });

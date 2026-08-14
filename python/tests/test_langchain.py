@@ -36,7 +36,7 @@ def mock_agent_info(httpx_mock: HTTPXMock):
             "name": "DataQualityAgent",
             "displayName": "Data Quality Agent",
             "description": "Analyzes data quality issues in tables",
-            "abilities": ["search_metadata", "analyze_quality"],
+            "skills": ["search_metadata", "analyze_quality"],
             "apiEnabled": True,
         },
     )
@@ -166,7 +166,7 @@ class TestCreateAISdkTools:
                 "name": "Agent1",
                 "displayName": "Agent 1",
                 "description": "First",
-                "abilities": [],
+                "skills": [],
                 "apiEnabled": True,
             },
         )
@@ -176,7 +176,7 @@ class TestCreateAISdkTools:
                 "name": "Agent2",
                 "displayName": "Agent 2",
                 "description": "Second",
-                "abilities": [],
+                "skills": [],
                 "apiEnabled": True,
             },
         )
@@ -204,7 +204,7 @@ class TestCreateAISdkTools:
                 "name": "EnabledAgent",
                 "displayName": "Enabled",
                 "description": "",
-                "abilities": [],
+                "skills": [],
                 "apiEnabled": True,
             },
         )

@@ -11,7 +11,7 @@ def sample_agent_info_dict():
         "name": "DataQualityPlannerAgent",
         "displayName": "Data Quality Planner",
         "description": "Analyzes data quality and suggests improvements",
-        "abilities": ["search_metadata", "analyze_quality", "create_tests"],
+        "skills": ["search_metadata", "analyze_quality", "create_tests"],
         "apiEnabled": True,
     }
 
@@ -41,7 +41,7 @@ def sample_agents_list_response(sample_agent_info_dict):
                 "name": "SqlQueryAgent",
                 "displayName": "SQL Query Agent",
                 "description": "Generates SQL queries",
-                "abilities": ["generate_sql", "explain_query"],
+                "skills": ["generate_sql", "explain_query"],
                 "apiEnabled": True,
             },
         ]

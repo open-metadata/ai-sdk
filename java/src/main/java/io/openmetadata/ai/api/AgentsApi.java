@@ -6,18 +6,18 @@ import java.util.Objects;
 
 import io.openmetadata.ai.AISdk;
 import io.openmetadata.ai.internal.AISdkHttpClient;
-import io.openmetadata.ai.models.AbilityInfo;
 import io.openmetadata.ai.models.AgentInfo;
 import io.openmetadata.ai.models.CreateAgentRequest;
 import io.openmetadata.ai.models.EntityReference;
 import io.openmetadata.ai.models.PersonaInfo;
+import io.openmetadata.ai.models.SkillInfo;
 
 /**
  * Namespace for dynamic agent CRUD operations.
  *
  * <p>Holds a back-reference to the parent {@link AISdk} so that {@link
- * #create(CreateAgentRequest.Builder)} can resolve persona / ability names to entity references via
- * the personas / abilities namespaces.
+ * #create(CreateAgentRequest.Builder)} can resolve persona / skill names to entity references via
+ * the personas / skills namespaces.
  */
 public class AgentsApi {
 
@@ -40,8 +40,8 @@ public class AgentsApi {
   }
 
   /**
-   * Create a new dynamic agent. Persona and ability names on the builder are resolved to entity
-   * references via the personas and abilities namespaces.
+   * Create a new dynamic agent. Persona and skill names on the builder are resolved to entity
+   * references via the personas and skills namespaces.
    */
   public AgentInfo create(CreateAgentRequest.Builder builder) {
     Objects.requireNonNull(builder, "Builder cannot be null");
@@ -54,17 +54,17 @@ public class AgentsApi {
     EntityReference personaRef =
         EntityReference.builder().id(personaInfo.getId()).type("persona").build();
 
-    List<EntityReference> abilityRefs = null;
-    List<String> abilityNames = builder.getAbilityNames();
-    if (abilityNames != null && !abilityNames.isEmpty()) {
-      abilityRefs = new ArrayList<>();
-      for (String abilityName : abilityNames) {
-        AbilityInfo abilityInfo = client.abilities().get(abilityName);
-        abilityRefs.add(EntityReference.builder().id(abilityInfo.getId()).type("ability").build());
+    List<EntityReference> skillRefs = null;
+    List<String> skillNames = builder.getSkillNames();
+    if (skillNames != null && !skillNames.isEmpty()) {
+      skillRefs = new ArrayList<>();
+      for (String skillName : skillNames) {
+        SkillInfo skillInfo = client.skills().get(skillName);
+        skillRefs.add(EntityReference.builder().id(skillInfo.getId()).type("skill").build());
       }
     }
 
-    CreateAgentRequest request = builder.build(personaRef, abilityRefs);
+    CreateAgentRequest request = builder.build(personaRef, skillRefs);
     return http.createAgent(request);
   }
 }

@@ -153,15 +153,15 @@ export class PersonaNotFoundError extends AISdkError {
 }
 
 /**
- * Error thrown when the specified ability is not found (404).
+ * Error thrown when the specified skill is not found (404).
  */
-export class AbilityNotFoundError extends AISdkError {
-  /** The name of the ability that was not found */
-  public readonly abilityName: string;
+export class SkillNotFoundError extends AISdkError {
+  /** The name of the skill that was not found */
+  public readonly skillName: string;
 
-  constructor(abilityName: string) {
-    super(`Ability not found: ${abilityName}`, 404);
-    this.name = 'AbilityNotFoundError';
-    this.abilityName = abilityName;
+  constructor(skillName: string) {
+    super(`Skill not found: ${skillName}`, 404);
+    this.name = 'SkillNotFoundError';
+    this.skillName = skillName;
   }
 }

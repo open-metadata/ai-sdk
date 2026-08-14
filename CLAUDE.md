@@ -85,7 +85,7 @@ for event in client.agent().stream("message"):
 client.agents.list()
 client.bots.get("ingestion-bot")
 client.personas.list()
-client.abilities.get("DataQuality")
+client.skills.get("DataQuality")
 
 # Context Center memories
 client.memories.list(primary_entity_fqn="db.tbl")

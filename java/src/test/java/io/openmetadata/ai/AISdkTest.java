@@ -164,14 +164,14 @@ class AISdkTest {
     client.close();
   }
 
-  // ==================== Ability Method Tests ====================
+  // ==================== Skill Method Tests ====================
 
   @Test
-  @DisplayName("getAbility method throws on null name")
-  void getAbilityMethodThrowsOnNullName() {
+  @DisplayName("getSkill method throws on null name")
+  void getSkillMethodThrowsOnNullName() {
     AISdk client = AISdk.builder().host("https://metadata.example.com").token("test-token").build();
 
-    assertThrows(NullPointerException.class, () -> client.abilities().get(null));
+    assertThrows(NullPointerException.class, () -> client.skills().get(null));
     client.close();
   }
 
@@ -280,12 +280,12 @@ class AISdkTest {
   @DisplayName("AgentInfo contains expected fields")
   void agentInfoContainsExpectedFields() {
     AgentInfo info =
-        new AgentInfo("test-agent", "Test Agent", "A test agent", Arrays.asList("ability1"), true);
+        new AgentInfo("test-agent", "Test Agent", "A test agent", Arrays.asList("skill1"), true);
 
     assertEquals("test-agent", info.getName());
     assertEquals("Test Agent", info.getDisplayName());
     assertEquals("A test agent", info.getDescription());
-    assertEquals(Arrays.asList("ability1"), info.getAbilities());
+    assertEquals(Arrays.asList("skill1"), info.getSkills());
     assertTrue(info.isApiEnabled());
   }
 
@@ -384,27 +384,27 @@ class AISdkTest {
     assertEquals("user", request.getProvider());
   }
 
-  // ==================== Ability Model Tests ====================
+  // ==================== Skill Model Tests ====================
 
   @Test
-  @DisplayName("AbilityInfo contains expected fields")
-  void abilityInfoContainsExpectedFields() {
-    AbilityInfo info =
-        new AbilityInfo(
-            "ability-123",
-            "test-ability",
-            "Test Ability",
-            "A test ability",
+  @DisplayName("SkillInfo contains expected fields")
+  void skillInfoContainsExpectedFields() {
+    SkillInfo info =
+        new SkillInfo(
+            "skill-123",
+            "test-skill",
+            "Test Skill",
+            "A test skill",
             "system",
-            "test-ability-fqn",
+            "test-skill-fqn",
             Arrays.asList("tool1", "tool2"));
 
-    assertEquals("ability-123", info.getId());
-    assertEquals("test-ability", info.getName());
-    assertEquals("Test Ability", info.getDisplayName());
-    assertEquals("A test ability", info.getDescription());
+    assertEquals("skill-123", info.getId());
+    assertEquals("test-skill", info.getName());
+    assertEquals("Test Skill", info.getDisplayName());
+    assertEquals("A test skill", info.getDescription());
     assertEquals("system", info.getProvider());
-    assertEquals("test-ability-fqn", info.getFullyQualifiedName());
+    assertEquals("test-skill-fqn", info.getFullyQualifiedName());
     assertEquals(Arrays.asList("tool1", "tool2"), info.getTools());
   }
 
@@ -514,7 +514,7 @@ class AISdkTest {
             .displayName("Test Agent")
             .icon("icon.png")
             .botName("test-bot")
-            .abilities(Arrays.asList("ability1", "ability2"))
+            .skills(Arrays.asList("skill1", "skill2"))
             .knowledge(knowledge)
             .prompt("Custom prompt")
             .schedule("0 0 * * *")
@@ -638,12 +638,12 @@ class AISdkTest {
   }
 
   @Test
-  @DisplayName("AbilityNotFoundException contains ability name")
-  void abilityNotFoundExceptionContainsAbilityName() {
-    AbilityNotFoundException exception = new AbilityNotFoundException("test-ability");
-    assertEquals("test-ability", exception.getAbilityName());
+  @DisplayName("SkillNotFoundException contains skill name")
+  void skillNotFoundExceptionContainsSkillName() {
+    SkillNotFoundException exception = new SkillNotFoundException("test-skill");
+    assertEquals("test-skill", exception.getSkillName());
     assertEquals(404, exception.getStatusCode());
-    assertTrue(exception.getMessage().contains("test-ability"));
+    assertTrue(exception.getMessage().contains("test-skill"));
   }
 
   // ==================== Stream Content Filtering Tests ====================

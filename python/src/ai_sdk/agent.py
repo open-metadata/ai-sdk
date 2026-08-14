@@ -311,7 +311,7 @@ class AgentHandle:
 
     def get_info(self) -> AgentInfo:
         """
-        Get agent metadata including abilities and description.
+        Get agent metadata including skills and description.
 
         Returns:
             AgentInfo with agent metadata

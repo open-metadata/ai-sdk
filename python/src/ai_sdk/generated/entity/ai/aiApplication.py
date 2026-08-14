@@ -10,7 +10,7 @@ from typing import List, Optional
 from pydantic import BaseModel, ConfigDict, Field
 from typing_extensions import Annotated
 
-from . import ability
+from . import skill
 
 
 class VoteType(Enum):
@@ -24,13 +24,13 @@ class AccessDetails(BaseModel):
         extra='forbid',
     )
     timestamp: Annotated[
-        ability.Timestamp,
+        skill.Timestamp,
         Field(
             description='Timestamp of data asset accessed for creation, update, read.'
         ),
     ]
     accessedBy: Annotated[
-        Optional[ability.EntityReference],
+        Optional[skill.EntityReference],
         Field(
             None,
             description='User, Pipeline, Query that created,updated or accessed the data asset',
@@ -109,7 +109,7 @@ class ModelConfiguration(BaseModel):
         extra='forbid',
     )
     model: Annotated[
-        ability.EntityReference, Field(description='Reference to LLMModel entity')
+        skill.EntityReference, Field(description='Reference to LLMModel entity')
     ]
     purpose: Annotated[
         Purpose, Field(description='Purpose of this model in the application workflow')
@@ -149,7 +149,7 @@ class RiskAssessment(BaseModel):
         Field(None, description='Risk mitigation measures in place'),
     ]
     assessedBy: Optional[str] = None
-    assessedAt: Optional[ability.Timestamp] = None
+    assessedAt: Optional[skill.Timestamp] = None
 
 
 class DataClassification(BaseModel):
@@ -320,7 +320,7 @@ class ConformityAssessment(BaseModel):
         Optional[str], Field(None, description='Certificate number if issued')
     ]
     validUntil: Annotated[
-        Optional[ability.Timestamp],
+        Optional[skill.Timestamp],
         Field(None, description='Certificate validity date'),
     ]
 
@@ -496,7 +496,7 @@ class Verification(BaseModel):
         Field(None, description='Verifier (internal auditor, external body, etc.)'),
     ]
     verifiedAt: Annotated[
-        Optional[ability.Timestamp],
+        Optional[skill.Timestamp],
         Field(None, description='Timestamp of verification'),
     ]
     verificationNotes: Annotated[
@@ -518,11 +518,11 @@ class AiComplianceRecord(BaseModel):
         Field(None, description='Person or team who performed the assessment'),
     ]
     assessedAt: Annotated[
-        Optional[ability.Timestamp],
+        Optional[skill.Timestamp],
         Field(None, description='When the assessment was performed'),
     ]
     nextReviewDate: Annotated[
-        Optional[ability.Timestamp],
+        Optional[skill.Timestamp],
         Field(None, description='When the next compliance review is due'),
     ]
     status: Annotated[Status, Field(description='Compliance status')]
@@ -570,7 +570,7 @@ class BiasMetrics(BaseModel):
     model_config = ConfigDict(
         extra='forbid',
     )
-    lastEvaluatedAt: Optional[ability.Timestamp] = None
+    lastEvaluatedAt: Optional[skill.Timestamp] = None
     evaluationMethod: Annotated[
         Optional[str],
         Field(
@@ -601,7 +601,7 @@ class BiasMetrics(BaseModel):
         Field(None, description='Bias scores by demographic dimension'),
     ]
     testDataset: Annotated[
-        Optional[ability.EntityReference],
+        Optional[skill.EntityReference],
         Field(None, description='Dataset used for bias evaluation'),
     ]
     biasDetected: Annotated[
@@ -641,7 +641,7 @@ class PerformanceMetrics(BaseModel):
         Optional[float], Field(None, description='Total cost across all executions')
     ]
     currency: Optional[str] = 'USD'
-    lastExecutionAt: Optional[ability.Timestamp] = None
+    lastExecutionAt: Optional[skill.Timestamp] = None
 
 
 class QualityMetrics(BaseModel):
@@ -721,11 +721,11 @@ class Votes(BaseModel):
         Optional[int], Field(0, description='Total down-votes the entity has')
     ]
     upVoters: Annotated[
-        Optional[ability.EntityReferenceList],
+        Optional[skill.EntityReferenceList],
         Field(None, description='List of all the Users who upVoted'),
     ]
     downVoters: Annotated[
-        Optional[ability.EntityReferenceList],
+        Optional[skill.EntityReferenceList],
         Field(None, description='List of all the Users who downVoted'),
     ]
 
@@ -772,9 +772,9 @@ class GovernanceMetadata(BaseModel):
         Field(None, description='Registration status - used to track Shadow AI'),
     ]
     registeredBy: Optional[str] = None
-    registeredAt: Optional[ability.Timestamp] = None
+    registeredAt: Optional[skill.Timestamp] = None
     approvedBy: Optional[str] = None
-    approvedAt: Optional[ability.Timestamp] = None
+    approvedAt: Optional[skill.Timestamp] = None
     riskAssessment: Annotated[
         Optional[RiskAssessment],
         Field(None, description='Risk assessment for this AI application'),
@@ -784,7 +784,7 @@ class GovernanceMetadata(BaseModel):
         Field(None, description='Classification of data accessed by this application'),
     ]
     governancePolicies: Annotated[
-        Optional[ability.EntityReferenceList],
+        Optional[skill.EntityReferenceList],
         Field(None, description='Governance policies applied to this application'),
     ]
     aiCompliance: Annotated[
@@ -813,13 +813,13 @@ class AssetCertification(BaseModel):
     model_config = ConfigDict(
         extra='forbid',
     )
-    tagLabel: ability.TagLabel
+    tagLabel: skill.TagLabel
     appliedDate: Annotated[
-        ability.Timestamp,
+        skill.Timestamp,
         Field(description='The date when the certification was applied.'),
     ]
     expiryDate: Annotated[
-        ability.Timestamp, Field(description='The date when the certification expires.')
+        skill.Timestamp, Field(description='The date when the certification expires.')
     ]
 
 
@@ -828,21 +828,21 @@ class AIApplication(BaseModel):
         extra='forbid',
     )
     id: Annotated[
-        ability.Uuid, Field(description='Unique identifier of the AI Application.')
+        skill.Uuid, Field(description='Unique identifier of the AI Application.')
     ]
     name: Annotated[
-        ability.EntityName,
+        skill.EntityName,
         Field(description='Name that identifies this AI Application.'),
     ]
     fullyQualifiedName: Annotated[
-        Optional[ability.FullyQualifiedEntityName],
+        Optional[skill.FullyQualifiedEntityName],
         Field(None, description='Fully qualified name of the AI Application.'),
     ]
     displayName: Annotated[
         Optional[str], Field(None, description='Display name for the AI Application.')
     ]
     description: Annotated[
-        Optional[ability.Markdown],
+        Optional[skill.Markdown],
         Field(
             None,
             description='Description of the AI Application, its purpose, and usage.',
@@ -858,39 +858,39 @@ class AIApplication(BaseModel):
         ),
     ]
     primaryModel: Annotated[
-        Optional[ability.EntityReference],
+        Optional[skill.EntityReference],
         Field(None, description='Primary/default LLM model used by this application'),
     ]
     promptTemplates: Annotated[
-        Optional[ability.EntityReferenceList],
+        Optional[skill.EntityReferenceList],
         Field(None, description='Prompt templates used by this application'),
     ]
     tools: Annotated[
-        Optional[ability.EntityReferenceList],
+        Optional[skill.EntityReferenceList],
         Field(
             None, description='MCP tools or other tools available to this application'
         ),
     ]
     dataSources: Annotated[
-        Optional[ability.EntityReferenceList],
+        Optional[skill.EntityReferenceList],
         Field(
             None,
             description='Data sources (tables, APIs, etc.) this application can access',
         ),
     ]
     knowledgeBases: Annotated[
-        Optional[ability.EntityReferenceList],
+        Optional[skill.EntityReferenceList],
         Field(None, description='Vector databases, document stores used for RAG'),
     ]
     upstreamApplications: Annotated[
-        Optional[ability.EntityReferenceList],
+        Optional[skill.EntityReferenceList],
         Field(
             None,
             description='Other AI applications this application depends on (multi-agent orchestration)',
         ),
     ]
     downstreamApplications: Annotated[
-        Optional[ability.EntityReferenceList],
+        Optional[skill.EntityReferenceList],
         Field(None, description='AI applications that depend on this application'),
     ]
     framework: Optional[FrameworkInfo] = None
@@ -900,7 +900,7 @@ class AIApplication(BaseModel):
     qualityMetrics: Optional[QualityMetrics] = None
     safetyMetrics: Optional[SafetyMetrics] = None
     testSuites: Annotated[
-        Optional[ability.EntityReferenceList],
+        Optional[skill.EntityReferenceList],
         Field(None, description='Test suites for validating this AI application'),
     ]
     sourceCode: Annotated[
@@ -913,45 +913,45 @@ class AIApplication(BaseModel):
         Optional[str], Field(None, description='Link to external documentation')
     ]
     owners: Annotated[
-        Optional[ability.EntityReferenceList],
+        Optional[skill.EntityReferenceList],
         Field(None, description='Owners of this AI Application'),
     ]
     followers: Annotated[
-        Optional[ability.EntityReferenceList],
+        Optional[skill.EntityReferenceList],
         Field(None, description='Followers of this AI Application'),
     ]
     domain: Annotated[
-        Optional[ability.EntityReference],
+        Optional[skill.EntityReference],
         Field(None, description='Domain the AI Application belongs to'),
     ]
     dataProducts: Annotated[
-        Optional[ability.EntityReferenceList],
+        Optional[skill.EntityReferenceList],
         Field(None, description='Data products this AI Application is part of'),
     ]
     tags: Annotated[
-        Optional[List[ability.TagLabel]],
+        Optional[List[skill.TagLabel]],
         Field(None, description='Tags for this AI Application'),
     ]
     version: Annotated[
-        Optional[ability.EntityVersion],
+        Optional[skill.EntityVersion],
         Field(None, description='Metadata version of the entity'),
     ]
     updatedAt: Annotated[
-        Optional[ability.Timestamp],
+        Optional[skill.Timestamp],
         Field(None, description='Last update time in Unix epoch milliseconds'),
     ]
     updatedBy: Annotated[
         Optional[str], Field(None, description='User who made the update')
     ]
     href: Annotated[
-        Optional[ability.Href], Field(None, description='Link to this resource')
+        Optional[skill.Href], Field(None, description='Link to this resource')
     ]
     changeDescription: Annotated[
-        Optional[ability.ChangeDescription],
+        Optional[skill.ChangeDescription],
         Field(None, description='Change that led to this version'),
     ]
     incrementalChangeDescription: Annotated[
-        Optional[ability.ChangeDescription],
+        Optional[skill.ChangeDescription],
         Field(None, description='Change that led to this version'),
     ]
     deleted: Annotated[
@@ -962,11 +962,11 @@ class AIApplication(BaseModel):
     ]
     certification: Optional[AssetCertification] = None
     extension: Annotated[
-        Optional[ability.EntityExtension],
+        Optional[skill.EntityExtension],
         Field(None, description='Entity extension data with custom attributes'),
     ]
     domains: Annotated[
-        Optional[ability.EntityReferenceList],
+        Optional[skill.EntityReferenceList],
         Field(None, description='Domains the AI Application belongs to'),
     ]
     votes: Annotated[Optional[Votes], Field(None, description='Votes on the entity')]

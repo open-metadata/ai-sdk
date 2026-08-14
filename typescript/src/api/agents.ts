@@ -26,7 +26,7 @@ export interface AgentsListOptions {
  * Namespace for dynamic agent CRUD operations.
  *
  * Holds a back-reference to AISdk so that {@link create} can resolve
- * persona/ability names to entity references through the personas/abilities
+ * persona/skill names to entity references through the personas/skills
  * namespaces.
  */
 export class AgentsApi {
@@ -55,19 +55,19 @@ export class AgentsApi {
   /**
    * Create a new dynamic agent.
    *
-   * Resolves the persona name and any ability names to entity references
-   * via {@link AISdk.personas} and {@link AISdk.abilities} before issuing
+   * Resolves the persona name and any skill names to entity references
+   * via {@link AISdk.personas} and {@link AISdk.skills} before issuing
    * the create request.
    */
   async create(request: CreateAgentRequest): Promise<AgentInfo> {
     const personaInfo = await this.client.personas.get(request.persona);
 
-    let abilityRefs: Array<{ id: string; type: string }> | undefined;
-    if (request.abilities && request.abilities.length > 0) {
-      abilityRefs = [];
-      for (const abilityName of request.abilities) {
-        const abilityInfo = await this.client.abilities.get(abilityName);
-        abilityRefs.push({ id: abilityInfo.id, type: 'ability' });
+    let skillRefs: Array<{ id: string; type: string }> | undefined;
+    if (request.skills && request.skills.length > 0) {
+      skillRefs = [];
+      for (const skillName of request.skills) {
+        const skillInfo = await this.client.skills.get(skillName);
+        skillRefs.push({ id: skillInfo.id, type: 'skill' });
       }
     }
 
@@ -79,7 +79,7 @@ export class AgentsApi {
       displayName: request.displayName,
       icon: request.icon,
       botName: request.botName,
-      abilities: abilityRefs,
+      skills: skillRefs,
       knowledge: request.knowledge,
       prompt: request.prompt,
       schedule: request.schedule,

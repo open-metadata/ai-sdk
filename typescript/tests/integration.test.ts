@@ -44,7 +44,7 @@ describe.skipIf(!shouldRun)('Integration Tests', () => {
       token: AI_SDK_TOKEN!,
     });
 
-    // Create a test agent with discoveryAndSearch ability for proper streaming tests
+    // Create a test agent with discoveryAndSearch skill for proper streaming tests
     const personas = await client.personas.list();
     if (personas.length > 0) {
       const agentName = uniqueName('invoke-test-agent');
@@ -54,7 +54,7 @@ describe.skipIf(!shouldRun)('Integration Tests', () => {
           description: 'Auto-created agent for integration testing',
           persona: personas[0].name,
           mode: 'chat',
-          abilities: ['discoveryAndSearch'],
+          skills: ['discoveryAndSearch'],
           apiEnabled: true,
         });
         testAgentName = agentName;
@@ -130,7 +130,7 @@ describe.skipIf(!shouldRun)('Integration Tests', () => {
       const agent = client.agent(testAgentName);
       const chunks: string[] = [];
 
-      // Use a prompt that triggers tool use with discoveryAndSearch ability
+      // Use a prompt that triggers tool use with discoveryAndSearch skill
       for await (const event of agent.stream('do we have any customer data')) {
         if (event.content) {
           chunks.push(event.content);
@@ -226,29 +226,29 @@ describe.skipIf(!shouldRun)('Integration Tests', () => {
     });
   });
 
-  describe('Ability Operations', () => {
-    it('should list abilities', async () => {
-      const abilities = await client.abilities.list();
-      expect(Array.isArray(abilities)).toBe(true);
-      console.log(`Found ${abilities.length} abilities`);
+  describe('Skill Operations', () => {
+    it('should list skills', async () => {
+      const skills = await client.skills.list();
+      expect(Array.isArray(skills)).toBe(true);
+      console.log(`Found ${skills.length} skills`);
     });
 
-    it('should list abilities with limit', async () => {
-      const abilities = await client.abilities.list({ limit: 5 });
-      expect(Array.isArray(abilities)).toBe(true);
-      expect(abilities.length).toBeLessThanOrEqual(5);
+    it('should list skills with limit', async () => {
+      const skills = await client.skills.list({ limit: 5 });
+      expect(Array.isArray(skills)).toBe(true);
+      expect(skills.length).toBeLessThanOrEqual(5);
     });
 
-    it('should have expected fields on abilities', async () => {
-      const abilities = await client.abilities.list();
-      if (abilities.length === 0) {
-        console.log('Skipping: No abilities available');
+    it('should have expected fields on skills', async () => {
+      const skills = await client.skills.list();
+      if (skills.length === 0) {
+        console.log('Skipping: No skills available');
         return;
       }
 
-      const ability = abilities[0];
-      expect(ability.name).toBeDefined();
-      console.log(`Ability: ${ability.name}`);
+      const skill = skills[0];
+      expect(skill.name).toBeDefined();
+      console.log(`Skill: ${skill.name}`);
     });
   });
 
@@ -274,34 +274,34 @@ describe.skipIf(!shouldRun)('Integration Tests', () => {
       console.log(`Created agent: ${created.name}`);
     });
 
-    it('should create an agent with abilities', async () => {
+    it('should create an agent with skills', async () => {
       const personas = await client.personas.list();
-      const abilities = await client.abilities.list();
+      const skills = await client.skills.list();
 
       if (personas.length === 0) {
         console.log('Skipping: No personas available');
         return;
       }
-      if (abilities.length === 0) {
-        console.log('Skipping: No abilities available');
+      if (skills.length === 0) {
+        console.log('Skipping: No skills available');
         return;
       }
 
-      const agentName = uniqueName('agent-abilities');
-      const abilityNames = abilities.slice(0, 2).map((a) => a.name);
+      const agentName = uniqueName('agent-skills');
+      const skillNames = skills.slice(0, 2).map((a) => a.name);
 
       const created = await client.agents.create({
         name: agentName,
-        description: 'Integration test agent with abilities',
+        description: 'Integration test agent with skills',
         persona: personas[0].name,
         mode: 'agent',
-        abilities: abilityNames,
+        skills: skillNames,
         apiEnabled: true,
       });
 
       expect(created).toBeDefined();
       expect(created.name).toBe(agentName);
-      console.log(`Created agent with abilities: ${created.name}`);
+      console.log(`Created agent with skills: ${created.name}`);
     });
   });
 });

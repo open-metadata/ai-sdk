@@ -206,7 +206,7 @@ class TestAsyncLangChainIntegration:
                 "name": "TestAgent",
                 "displayName": "Test Agent",
                 "description": "Test agent",
-                "abilities": [],
+                "skills": [],
                 "apiEnabled": True,
             },
         )

@@ -64,7 +64,7 @@ public class IntegrationTest {
         List<PersonaInfo> personas = client.personas().list();
         if (!personas.isEmpty()) {
           String personaName = personas.get(0).getName();
-          // Create a test agent with discoveryAndSearch ability
+          // Create a test agent with discoveryAndSearch skill
           String agentName = uniqueName("invoke-test-agent");
           CreateAgentRequest.Builder builder =
               CreateAgentRequest.builder()
@@ -73,7 +73,7 @@ public class IntegrationTest {
                   .persona(personaName)
                   .mode("chat")
                   .apiEnabled(true) // Enable API access for invoke/stream
-                  .abilities(Arrays.asList("discoveryAndSearch"));
+                  .skills(Arrays.asList("discoveryAndSearch"));
           client.agents().create(builder);
           testAgentName = agentName;
           System.out.println("Created test agent: " + testAgentName);
@@ -191,7 +191,7 @@ public class IntegrationTest {
       AgentHandle agent = client.agent(testAgentName);
       List<String> chunks = new ArrayList<>();
 
-      // Use a prompt that triggers tool use with discoveryAndSearch ability
+      // Use a prompt that triggers tool use with discoveryAndSearch skill
       agent.stream(
           "do we have any customer data",
           event -> {
@@ -366,40 +366,40 @@ public class IntegrationTest {
     }
   }
 
-  // ==================== Ability Operations Tests ====================
+  // ==================== Skill Operations Tests ====================
 
   @Nested
-  @DisplayName("Ability Operations Tests")
-  class AbilityOperationsTests {
+  @DisplayName("Skill Operations Tests")
+  class SkillOperationsTests {
 
     @Test
-    @DisplayName("List abilities returns a list")
-    void testListAbilities() {
-      List<AbilityInfo> abilities = client.abilities().list();
-      assertNotNull(abilities);
-      System.out.println("Found " + abilities.size() + " abilities");
+    @DisplayName("List skills returns a list")
+    void testListSkills() {
+      List<SkillInfo> skills = client.skills().list();
+      assertNotNull(skills);
+      System.out.println("Found " + skills.size() + " skills");
     }
 
     @Test
-    @DisplayName("List abilities with limit respects limit")
-    void testListAbilitiesWithLimit() {
-      List<AbilityInfo> abilities = client.abilities().list(5);
-      assertNotNull(abilities);
-      assertTrue(abilities.size() <= 5);
+    @DisplayName("List skills with limit respects limit")
+    void testListSkillsWithLimit() {
+      List<SkillInfo> skills = client.skills().list(5);
+      assertNotNull(skills);
+      assertTrue(skills.size() <= 5);
     }
 
     @Test
-    @DisplayName("Abilities have expected fields")
-    void testAbilityFields() {
-      List<AbilityInfo> abilities = client.abilities().list();
-      if (abilities.isEmpty()) {
-        System.out.println("Skipping: No abilities available");
+    @DisplayName("Skills have expected fields")
+    void testSkillFields() {
+      List<SkillInfo> skills = client.skills().list();
+      if (skills.isEmpty()) {
+        System.out.println("Skipping: No skills available");
         return;
       }
 
-      AbilityInfo ability = abilities.get(0);
-      assertNotNull(ability.getName());
-      System.out.println("Ability: " + ability.getName());
+      SkillInfo skill = skills.get(0);
+      assertNotNull(skill.getName());
+      System.out.println("Skill: " + skill.getName());
     }
   }
 
@@ -435,41 +435,41 @@ public class IntegrationTest {
     }
 
     @Test
-    @DisplayName("Create agent with abilities")
-    void testCreateAgentWithAbilities() {
+    @DisplayName("Create agent with skills")
+    void testCreateAgentWithSkills() {
       List<PersonaInfo> personas = client.personas().list();
-      List<AbilityInfo> abilities = client.abilities().list();
+      List<SkillInfo> skills = client.skills().list();
 
       if (personas.isEmpty()) {
         System.out.println("Skipping: No personas available");
         return;
       }
-      if (abilities.isEmpty()) {
-        System.out.println("Skipping: No abilities available");
+      if (skills.isEmpty()) {
+        System.out.println("Skipping: No skills available");
         return;
       }
 
-      String agentName = uniqueName("agent-abilities");
-      List<String> abilityNames =
-          abilities.stream()
+      String agentName = uniqueName("agent-skills");
+      List<String> skillNames =
+          skills.stream()
               .limit(2)
-              .map(AbilityInfo::getName)
+              .map(SkillInfo::getName)
               .collect(java.util.stream.Collectors.toList());
 
       CreateAgentRequest.Builder builder =
           CreateAgentRequest.builder()
               .name(agentName)
-              .description("Integration test agent with abilities")
+              .description("Integration test agent with skills")
               .persona(personas.get(0).getName())
               .mode("agent")
-              .abilities(abilityNames)
+              .skills(skillNames)
               .apiEnabled(true);
 
       AgentInfo created = client.agents().create(builder);
 
       assertNotNull(created);
       assertEquals(agentName, created.getName());
-      System.out.println("Created agent with abilities: " + created.getName());
+      System.out.println("Created agent with skills: " + created.getName());
     }
   }
 }

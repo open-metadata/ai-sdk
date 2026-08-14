@@ -3,11 +3,11 @@ package io.openmetadata.ai;
 import java.time.Duration;
 import java.util.Objects;
 
-import io.openmetadata.ai.api.AbilitiesApi;
 import io.openmetadata.ai.api.AgentsApi;
 import io.openmetadata.ai.api.BotsApi;
 import io.openmetadata.ai.api.MemoriesApi;
 import io.openmetadata.ai.api.PersonasApi;
+import io.openmetadata.ai.api.SkillsApi;
 import io.openmetadata.ai.internal.AISdkHttpClient;
 
 /**
@@ -52,7 +52,7 @@ public class AISdk implements AutoCloseable {
   private final AgentsApi agentsApi;
   private final BotsApi botsApi;
   private final PersonasApi personasApi;
-  private final AbilitiesApi abilitiesApi;
+  private final SkillsApi skillsApi;
   private final MemoriesApi memoriesApi;
 
   private AISdk(Builder builder) {
@@ -72,7 +72,7 @@ public class AISdk implements AutoCloseable {
     this.agentsApi = new AgentsApi(httpClient, this);
     this.botsApi = new BotsApi(httpClient);
     this.personasApi = new PersonasApi(httpClient);
-    this.abilitiesApi = new AbilitiesApi(httpClient);
+    this.skillsApi = new SkillsApi(httpClient);
     this.memoriesApi = new MemoriesApi(memoriesHttpClient, searchHttpClient);
   }
 
@@ -123,9 +123,9 @@ public class AISdk implements AutoCloseable {
     return personasApi;
   }
 
-  /** Returns the abilities namespace. */
-  public AbilitiesApi abilities() {
-    return abilitiesApi;
+  /** Returns the skills namespace. */
+  public SkillsApi skills() {
+    return skillsApi;
   }
 
   /** Returns the memories namespace. */

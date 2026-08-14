@@ -82,7 +82,7 @@ Import Guide:
 
     # Models
     from ai_sdk.models import (
-        AbilityInfo,
+        SkillInfo,
         AgentInfo,
         BotInfo,
         CreateAgentRequest,
@@ -99,7 +99,7 @@ Import Guide:
 
     # Exceptions
     from ai_sdk.exceptions import (
-        AbilityNotFoundError,
+        SkillNotFoundError,
         AgentExecutionError,
         AgentNotEnabledError,
         AgentNotFoundError,
@@ -126,7 +126,6 @@ from ai_sdk.client import AISdk
 from ai_sdk.config import AISdkConfig
 from ai_sdk.conversation import Conversation
 from ai_sdk.exceptions import (
-    AbilityNotFoundError,
     AgentExecutionError,
     AgentNotEnabledError,
     AgentNotFoundError,
@@ -135,9 +134,9 @@ from ai_sdk.exceptions import (
     BotNotFoundError,
     PersonaNotFoundError,
     RateLimitError,
+    SkillNotFoundError,
 )
 from ai_sdk.models import (
-    AbilityInfo,
     BotInfo,
     ContextMemory,
     CreateAgentRequest,
@@ -151,14 +150,13 @@ from ai_sdk.models import (
     MemoryType,
     MemoryVisibility,
     PersonaInfo,
+    SkillInfo,
 )
 
 __all__ = [
     "AISdk",
     "AISdkConfig",
     "AISdkError",
-    "AbilityInfo",
-    "AbilityNotFoundError",
     "AgentExecutionError",
     "AgentNotEnabledError",
     "AgentNotFoundError",
@@ -180,5 +178,7 @@ __all__ = [
     "PersonaInfo",
     "PersonaNotFoundError",
     "RateLimitError",
+    "SkillInfo",
+    "SkillNotFoundError",
     "__version__",
 ]

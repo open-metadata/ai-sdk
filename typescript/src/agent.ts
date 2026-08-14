@@ -236,7 +236,7 @@ export class AgentHandle {
   }
 
   /**
-   * Get agent metadata including abilities and description.
+   * Get agent metadata including skills and description.
    *
    * @returns Promise resolving to agent information
    *
@@ -248,7 +248,7 @@ export class AgentHandle {
    * const info = await agent.getInfo();
    * console.log('Agent:', info.displayName);
    * console.log('Description:', info.description);
-   * console.log('Abilities:', info.abilities.join(', '));
+   * console.log('Skills:', info.skills.join(', '));
    * ```
    */
   async getInfo(): Promise<AgentInfo> {

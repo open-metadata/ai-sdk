@@ -20,7 +20,7 @@ class AgentsAPI:
     """Namespace for dynamic agent CRUD operations.
 
     Holds a back-reference to AISdk so that create() can resolve the
-    persona/ability names to entity references via the personas/abilities
+    persona/skill names to entity references via the personas/skills
     namespaces.
     """
 
@@ -63,12 +63,12 @@ class AgentsAPI:
         persona = self._client.personas.get(request.persona)
         api_dict = request.to_api_dict()
         api_dict["persona"] = {"id": persona.id, "type": "persona"}
-        if request.abilities:
-            ability_refs = []
-            for ability_name in request.abilities:
-                ability_info = self._client.abilities.get(ability_name)
-                ability_refs.append({"id": ability_info.id, "type": "ability"})
-            api_dict["abilities"] = ability_refs
+        if request.skills:
+            skill_refs = []
+            for skill_name in request.skills:
+                skill_info = self._client.skills.get(skill_name)
+                skill_refs.append({"id": skill_info.id, "type": "skill"})
+            api_dict["skills"] = skill_refs
         response = self._http.post("/", json=api_dict)
         return AgentInfo.from_dict(response)
 
@@ -81,12 +81,12 @@ class AgentsAPI:
         persona = await self._client.personas.aget(request.persona)
         api_dict = request.to_api_dict()
         api_dict["persona"] = {"id": persona.id, "type": "persona"}
-        if request.abilities:
-            ability_refs = []
-            for ability_name in request.abilities:
-                ability_info = await self._client.abilities.aget(ability_name)
-                ability_refs.append({"id": ability_info.id, "type": "ability"})
-            api_dict["abilities"] = ability_refs
+        if request.skills:
+            skill_refs = []
+            for skill_name in request.skills:
+                skill_info = await self._client.skills.aget(skill_name)
+                skill_refs.append({"id": skill_info.id, "type": "skill"})
+            api_dict["skills"] = skill_refs
         response = await self._async_http.post("/", json=api_dict)
         return AgentInfo.from_dict(response)
 

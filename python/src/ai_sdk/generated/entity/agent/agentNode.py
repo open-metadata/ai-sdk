@@ -389,5 +389,5 @@ class AgentNode(BaseModel):
     position: Optional[nodePosition.NodePosition] = None
     provider: Annotated[
         Optional[ProviderType],
-        Field(ProviderType.user, description='Provider of the Ability implementation'),
+        Field(ProviderType.user, description='Provider of the Skill implementation'),
     ]

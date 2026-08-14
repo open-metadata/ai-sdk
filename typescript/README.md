@@ -93,7 +93,7 @@ const agents = await client.agents.list();
 
 for (const agent of agents) {
   console.log(`${agent.displayName}: ${agent.description}`);
-  console.log(`  Abilities: ${agent.abilities.join(', ')}`);
+  console.log(`  Skills: ${agent.skills.join(', ')}`);
 }
 
 // With pagination
@@ -108,7 +108,7 @@ const info = await agent.getInfo();
 
 console.log('Name:', info.displayName);
 console.log('Description:', info.description);
-console.log('Abilities:', info.abilities);
+console.log('Skills:', info.skills);
 console.log('API Enabled:', info.apiEnabled);
 ```
 
@@ -121,7 +121,7 @@ const newAgent = await client.agents.create({
   persona: 'DataAnalyst',
   mode: 'chat',
   apiEnabled: true,
-  abilities: ['search', 'query'],
+  skills: ['search', 'query'],
 });
 
 console.log('Created agent:', newAgent.name);
@@ -162,18 +162,18 @@ const newPersona = await client.personas.create({
 console.log('Created persona:', newPersona.name);
 ```
 
-### Abilities
+### Skills
 
 ```typescript
-// List all abilities
-const abilities = await client.abilities.list();
-for (const ability of abilities) {
-  console.log(`${ability.name}: ${ability.description}`);
+// List all skills
+const skills = await client.skills.list();
+for (const skill of skills) {
+  console.log(`${skill.name}: ${skill.description}`);
 }
 
-// Get a specific ability
-const ability = await client.abilities.get('search');
-console.log('Ability:', ability.name);
+// Get a specific skill
+const skill = await client.skills.get('search');
+console.log('Skill:', skill.name);
 ```
 
 ### Context Memories
@@ -240,7 +240,7 @@ import {
   AgentNotEnabledError,
   BotNotFoundError,
   PersonaNotFoundError,
-  AbilityNotFoundError,
+  SkillNotFoundError,
   RateLimitError,
   AgentExecutionError,
   NetworkError,
@@ -260,8 +260,8 @@ try {
     console.error(`Bot not found: ${error.botName}`);
   } else if (error instanceof PersonaNotFoundError) {
     console.error(`Persona not found: ${error.personaName}`);
-  } else if (error instanceof AbilityNotFoundError) {
-    console.error(`Ability not found: ${error.abilityName}`);
+  } else if (error instanceof SkillNotFoundError) {
+    console.error(`Skill not found: ${error.skillName}`);
   } else if (error instanceof RateLimitError) {
     console.error(`Rate limited - retry after ${error.retryAfter} seconds`);
   } else if (error instanceof TimeoutError) {
@@ -306,7 +306,7 @@ interface AgentInfo {
   name: string;            // Agent identifier
   displayName: string;     // Human-readable name
   description: string;     // Agent description
-  abilities: string[];     // List of capabilities
+  skills: string[];     // List of capabilities
   apiEnabled: boolean;     // Whether API access is enabled
 }
 ```
@@ -332,13 +332,13 @@ interface PersonaInfo {
 }
 ```
 
-### AbilityInfo
+### SkillInfo
 
 ```typescript
-interface AbilityInfo {
-  name: string;            // Ability identifier
+interface SkillInfo {
+  name: string;            // Skill identifier
   displayName: string;     // Human-readable name
-  description: string;     // Ability description
+  description: string;     // Skill description
 }
 ```
 
@@ -351,7 +351,7 @@ interface CreateAgentRequest {
   persona: string;         // Required: persona name
   displayName?: string;    // Human-readable name
   apiEnabled?: boolean;    // Enable API access
-  abilities?: string[];    // List of ability names
+  skills?: string[];    // List of skill names
   prompt?: string;         // Default task/prompt
   provider?: string;       // LLM provider
   botName?: string;        // Bot for actions

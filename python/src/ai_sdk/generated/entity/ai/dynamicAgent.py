@@ -10,7 +10,7 @@ from typing import List, Optional
 from pydantic import BaseModel, ConfigDict, Field
 from typing_extensions import Annotated
 
-from . import ability
+from . import skill
 
 
 class AgentMode(Enum):
@@ -30,7 +30,7 @@ class Asset(BaseModel):
     )
     id: Annotated[str, Field(description='Unique identifier of the asset.')]
     fullyQualifiedName: Annotated[
-        Optional[ability.FullyQualifiedEntityName],
+        Optional[skill.FullyQualifiedEntityName],
         Field(
             None,
             description='Fully qualified name of a data asset the attachment belongsTo`.',
@@ -51,7 +51,7 @@ class Asset(BaseModel):
         Optional[AssetType], Field(AssetType.Inline, description='Type of the asset.')
     ]
     updatedAt: Annotated[
-        Optional[ability.Timestamp],
+        Optional[skill.Timestamp],
         Field(
             None,
             description='Last update time corresponding to the new version of the entity in Unix epoch time milliseconds.',
@@ -68,7 +68,7 @@ class Asset(BaseModel):
         ),
     ]
     entityLink: Annotated[
-        ability.EntityLink,
+        skill.EntityLink,
         Field(description='Link to the entity that this asset belongs to.'),
     ]
 
@@ -85,7 +85,7 @@ class KnowledgeScope(BaseModel):
         ),
     ]
     services: Annotated[
-        Optional[List[ability.EntityReference]],
+        Optional[List[skill.EntityReference]],
         Field(
             None,
             description='Specific services the agent is limited to (e.g., Snowflake)',
@@ -104,10 +104,10 @@ class DynamicAgent(BaseModel):
     model_config = ConfigDict(
         extra='forbid',
     )
-    id: Annotated[ability.Uuid, Field(description='Unique ID of the Agent')]
-    name: Annotated[ability.EntityName, Field(description='A unique name of the Agent')]
+    id: Annotated[skill.Uuid, Field(description='Unique ID of the Agent')]
+    name: Annotated[skill.EntityName, Field(description='A unique name of the Agent')]
     fullyQualifiedName: Annotated[
-        Optional[ability.FullyQualifiedEntityName],
+        Optional[skill.FullyQualifiedEntityName],
         Field(None, description='FullyQualifiedName same as `name`.'),
     ]
     displayName: Annotated[
@@ -125,14 +125,14 @@ class DynamicAgent(BaseModel):
         ),
     ]
     description: Annotated[
-        ability.Markdown, Field(description='Description of the Agent and its purpose.')
+        skill.Markdown, Field(description='Description of the Agent and its purpose.')
     ]
     provider: Annotated[
-        ability.ProviderType,
+        skill.ProviderType,
         Field(description='Provider of the agent (system-provided or user-created)'),
     ]
     persona: Annotated[
-        ability.EntityReference,
+        skill.EntityReference,
         Field(description='AI Persona that defines the system prompt for the agent'),
     ]
     knowledge: Annotated[
@@ -142,9 +142,9 @@ class DynamicAgent(BaseModel):
             description='Knowledge scope defining what information the agent can access',
         ),
     ]
-    abilities: Annotated[
-        Optional[List[ability.EntityReference]],
-        Field([], description='List of abilities available to the agent'),
+    skills: Annotated[
+        Optional[List[skill.EntityReference]],
+        Field([], description='List of skills available to the agent'),
     ]
     mode: Annotated[AgentMode, Field(description='Interaction mode for the agent')]
     prompt: Annotated[
@@ -158,7 +158,7 @@ class DynamicAgent(BaseModel):
         ),
     ]
     bot: Annotated[
-        Optional[ability.EntityReference],
+        Optional[skill.EntityReference],
         Field(
             None,
             description="Bot that will execute this dynamic agent on behalf of users. The bot's JWT token will be used for gRPC requests instead of the user's token. This field is resolved at runtime from botName.",
@@ -172,11 +172,11 @@ class DynamicAgent(BaseModel):
         ),
     ]
     version: Annotated[
-        Optional[ability.EntityVersion],
+        Optional[skill.EntityVersion],
         Field(None, description='Metadata version of the entity.'),
     ]
     updatedAt: Annotated[
-        Optional[ability.Timestamp],
+        Optional[skill.Timestamp],
         Field(
             None,
             description='Last update time corresponding to the new version of the entity in Unix epoch time milliseconds.',
@@ -186,45 +186,45 @@ class DynamicAgent(BaseModel):
         Optional[str], Field(None, description='User who made the update.')
     ]
     href: Annotated[
-        Optional[ability.Href],
+        Optional[skill.Href],
         Field(None, description='Link to the resource corresponding to this entity.'),
     ]
     owners: Annotated[
-        Optional[ability.EntityReferenceList],
+        Optional[skill.EntityReferenceList],
         Field(None, description='Owners of this Agent.'),
     ]
     tags: Annotated[
-        Optional[List[ability.TagLabel]],
+        Optional[List[skill.TagLabel]],
         Field([], description='Tags associated with the Agent.'),
     ]
     changeDescription: Annotated[
-        Optional[ability.ChangeDescription],
+        Optional[skill.ChangeDescription],
         Field(None, description='Change that lead to this version of the entity.'),
     ]
     incrementalChangeDescription: Annotated[
-        Optional[ability.ChangeDescription],
+        Optional[skill.ChangeDescription],
         Field(
             None,
             description='Entity extension data with custom attributes added to the entity.',
         ),
     ]
     extension: Annotated[
-        Optional[ability.EntityExtension],
+        Optional[skill.EntityExtension],
         Field(
             None,
             description='Entity extension data with custom attributes added to the entity.',
         ),
     ]
     reviewers: Annotated[
-        Optional[ability.EntityReferenceList],
+        Optional[skill.EntityReferenceList],
         Field(None, description='User references of the reviewers for this agent.'),
     ]
     entityStatus: Annotated[
-        Optional[ability.Status],
-        Field(ability.Status.Approved, description='Status of the agent.'),
+        Optional[skill.Status],
+        Field(skill.Status.Approved, description='Status of the agent.'),
     ]
     followers: Annotated[
-        Optional[ability.EntityReferenceList],
+        Optional[skill.EntityReferenceList],
         Field(None, description='Followers of this entity.'),
     ]
     deleted: Annotated[
@@ -234,7 +234,7 @@ class DynamicAgent(BaseModel):
         ),
     ]
     strategy: Annotated[
-        Optional[ability.EntityReference],
+        Optional[skill.EntityReference],
         Field(
             None,
             description='Reference to an Agent Strategy Template that this agent is based on',

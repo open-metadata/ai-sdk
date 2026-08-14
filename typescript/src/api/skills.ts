@@ -1,26 +1,26 @@
 /**
- * Abilities namespace.
+ * Skills namespace.
  *
- * Backed by an HttpClient rooted at /api/v1/agents/abilities.
+ * Backed by an HttpClient rooted at /api/v1/agents/skills.
  */
 
 import type { HttpClient } from '../http.js';
 import type { PaginatedResponse } from '../models.js';
-import type { AbilityInfo } from '../types.js';
+import type { SkillInfo } from '../types.js';
 
 /**
- * Options for list operations on the abilities namespace.
+ * Options for list operations on the skills namespace.
  */
-export interface AbilitiesListOptions {
-  /** Maximum number of abilities to return. If omitted, returns all abilities. */
+export interface SkillsListOptions {
+  /** Maximum number of skills to return. If omitted, returns all skills. */
   limit?: number;
 }
 
 /**
- * API response for an ability.
+ * API response for a skill.
  * @internal
  */
-interface ApiAbilityInfo {
+interface ApiSkillInfo {
   id: string;
   name: string;
   displayName?: string;
@@ -30,7 +30,7 @@ interface ApiAbilityInfo {
   tools?: string[];
 }
 
-function mapAbilityInfo(data: ApiAbilityInfo): AbilityInfo {
+function mapSkillInfo(data: ApiSkillInfo): SkillInfo {
   return {
     id: data.id,
     name: data.name,
@@ -43,9 +43,9 @@ function mapAbilityInfo(data: ApiAbilityInfo): AbilityInfo {
 }
 
 /**
- * Namespace for ability operations.
+ * Namespace for skill operations.
  */
-export class AbilitiesApi {
+export class SkillsApi {
   private readonly http: HttpClient;
 
   constructor(http: HttpClient) {
@@ -53,32 +53,32 @@ export class AbilitiesApi {
   }
 
   /**
-   * List all abilities.
+   * List all skills.
    *
    * Automatically paginates through all results.
    */
-  async list(options?: AbilitiesListOptions): Promise<AbilityInfo[]> {
-    return paginate<ApiAbilityInfo, AbilityInfo>(
-      (params) => this.http.get<PaginatedResponse<ApiAbilityInfo>>('/', params),
-      mapAbilityInfo,
+  async list(options?: SkillsListOptions): Promise<SkillInfo[]> {
+    return paginate<ApiSkillInfo, SkillInfo>(
+      (params) => this.http.get<PaginatedResponse<ApiSkillInfo>>('/', params),
+      mapSkillInfo,
       options?.limit
     );
   }
 
   /**
-   * Get an ability by name.
+   * Get a skill by name.
    *
-   * @throws {AbilityNotFoundError} If the ability is not found.
+   * @throws {SkillNotFoundError} If the skill is not found.
    */
-  async get(name: string): Promise<AbilityInfo> {
-    const response = await this.http.get<ApiAbilityInfo>(
+  async get(name: string): Promise<SkillInfo> {
+    const response = await this.http.get<ApiSkillInfo>(
       `/name/${encodeURIComponent(name)}`,
       undefined,
       undefined,
-      'ability',
+      'skill',
       name
     );
-    return mapAbilityInfo(response);
+    return mapSkillInfo(response);
   }
 }
 

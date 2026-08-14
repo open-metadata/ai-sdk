@@ -73,10 +73,10 @@ enum Commands {
         action: PersonasAction,
     },
 
-    /// Manage abilities
-    Abilities {
+    /// Manage skills
+    Skills {
         #[command(subcommand)]
-        action: AbilitiesAction,
+        action: SkillsAction,
     },
 
     /// Manage Context Center memories (CRUD + hybrid search)
@@ -205,9 +205,9 @@ enum AgentsAction {
         #[arg(long)]
         bot_name: Option<String>,
 
-        /// Comma-separated list of abilities
+        /// Comma-separated list of skills
         #[arg(long, value_delimiter = ',')]
-        abilities: Option<Vec<String>>,
+        skills: Option<Vec<String>>,
 
         /// Enable API access for this agent
         #[arg(long)]
@@ -299,10 +299,10 @@ enum PersonasAction {
 }
 
 #[derive(Subcommand)]
-enum AbilitiesAction {
-    /// List all abilities
+enum SkillsAction {
+    /// List all skills
     List {
-        /// Maximum number of abilities to return
+        /// Maximum number of skills to return
         #[arg(short, long)]
         limit: Option<u32>,
 
@@ -311,9 +311,9 @@ enum AbilitiesAction {
         json: bool,
     },
 
-    /// Get detailed information about an ability
+    /// Get detailed information about a skill
     Get {
-        /// Name of the ability
+        /// Name of the skill
         name: String,
 
         /// Output response as JSON
@@ -350,7 +350,7 @@ async fn main() {
                 display_name,
                 icon,
                 bot_name,
-                abilities,
+                skills,
                 api_enabled,
                 provider,
                 json,
@@ -367,7 +367,7 @@ async fn main() {
                             display_name.as_deref(),
                             icon.as_deref(),
                             bot_name.as_deref(),
-                            abilities,
+                            skills,
                             api_enabled.or(Some(true)), // Default to true if not specified
                             provider.as_deref(),
                             json,
@@ -428,12 +428,12 @@ async fn main() {
             }
         },
 
-        Commands::Abilities { action } => match action {
-            AbilitiesAction::List { limit, json } => {
-                commands::abilities::run_list(&cli.profile, limit, json).await
+        Commands::Skills { action } => match action {
+            SkillsAction::List { limit, json } => {
+                commands::skills::run_list(&cli.profile, limit, json).await
             }
-            AbilitiesAction::Get { name, json } => {
-                commands::abilities::run_get(&cli.profile, &name, json).await
+            SkillsAction::Get { name, json } => {
+                commands::skills::run_get(&cli.profile, &name, json).await
             }
         },
 

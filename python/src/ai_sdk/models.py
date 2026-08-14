@@ -161,9 +161,9 @@ class AgentInfo(BaseModel):
         description="Human-readable display name",
     )
     description: str | None = Field(default=None, description="Agent description")
-    abilities: list[str] = Field(
+    skills: list[str] = Field(
         default_factory=list,
-        description="List of agent abilities/capabilities",
+        description="List of agent skills/capabilities",
     )
     api_enabled: bool = Field(
         default=False,
@@ -173,11 +173,11 @@ class AgentInfo(BaseModel):
     @classmethod
     def from_dict(cls, data: dict[str, Any]) -> AgentInfo:
         """Create from API response format."""
-        # Handle abilities that might be EntityReferences or strings
-        abilities = data.get("abilities", [])
-        if abilities and isinstance(abilities[0], dict):
+        # Handle skills that might be EntityReferences or strings
+        skills = data.get("skills", [])
+        if skills and isinstance(skills[0], dict):
             # Extract names from EntityReferences
-            data = {**data, "abilities": [a.get("name", a.get("id", "")) for a in abilities]}
+            data = {**data, "skills": [a.get("name", a.get("id", "")) for a in skills]}
         return cls.model_validate(data)
 
 
@@ -368,9 +368,9 @@ class CreateAgentRequest(BaseModel):
         default=None,
         description="Name of the bot that executes this agent",
     )
-    abilities: list[str] | None = Field(
+    skills: list[str] | None = Field(
         default=None,
-        description="List of abilities/capabilities for the agent",
+        description="List of skills/capabilities for the agent",
     )
     knowledge: KnowledgeScope | None = Field(
         default=None,
@@ -410,8 +410,8 @@ class CreateAgentRequest(BaseModel):
             d["icon"] = self.icon
         if self.bot_name is not None:
             d["botName"] = self.bot_name
-        if self.abilities is not None:
-            d["abilities"] = self.abilities
+        if self.skills is not None:
+            d["skills"] = self.skills
         if self.knowledge is not None:
             d["knowledge"] = self.knowledge.to_api_dict()
         if self.prompt is not None:
@@ -602,33 +602,33 @@ class MemorySearchResults(BaseModel):
         )
 
 
-class AbilityInfo(BaseModel):
-    """Represents an Ability."""
+class SkillInfo(BaseModel):
+    """Represents a Skill."""
 
     model_config = ConfigDict(alias_generator=to_camel, validate_by_name=True)
 
-    id: str = Field(..., description="Unique identifier of the ability")
-    name: str = Field(..., description="Name of the ability")
+    id: str = Field(..., description="Unique identifier of the skill")
+    name: str = Field(..., description="Name of the skill")
     display_name: str | None = Field(
         default=None,
         description="Human-readable display name",
     )
-    description: str | None = Field(default=None, description="Description of the ability")
+    description: str | None = Field(default=None, description="Description of the skill")
     provider: str | None = Field(
         default=None,
-        description="Provider of the ability (e.g., 'system' or 'user')",
+        description="Provider of the skill (e.g., 'system' or 'user')",
     )
     fully_qualified_name: str | None = Field(
         default=None,
-        description="Fully qualified name of the ability",
+        description="Fully qualified name of the skill",
     )
     tools: list[str] = Field(
         default_factory=list,
-        description="List of tools provided by this ability",
+        description="List of tools provided by this skill",
     )
 
     @classmethod
-    def from_dict(cls, data: dict[str, Any]) -> AbilityInfo:
+    def from_dict(cls, data: dict[str, Any]) -> SkillInfo:
         """Create from API response format."""
         return cls.model_validate(data)
 

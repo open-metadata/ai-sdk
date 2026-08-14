@@ -39,7 +39,7 @@ When a customer requests data deletion under GDPR (e.g., "delete all my data"), 
 
 ## Step 1: Create the Agent
 
-Create a Dynamic Agent with PII search and lineage tracing abilities.
+Create a Dynamic Agent with PII search and lineage tracing skills.
 
 See [agent-config.md](./agent-config.md) for detailed setup instructions using the CLI, UI, or SDKs.
 
@@ -70,7 +70,7 @@ ai-sdk agents create \
   --name GDPRComplianceAnalyzer \
   --description "Handles GDPR deletion requests by searching for customer data, tracing lineage, and checking retention policies" \
   --persona GDPRAnalyst \
-  --abilities discoveryAndSearch,dataLineageAndExploration \
+  --skills discoveryAndSearch,dataLineageAndExploration \
   --api-enabled true
 ```
 

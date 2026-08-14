@@ -20,18 +20,18 @@ export AI_SDK_HOST=https://your-instance.getcollate.io
 export AI_SDK_TOKEN=your-jwt-token
 ```
 
-### Step 1: Explore Available Abilities
+### Step 1: Explore Available Skills
 
 ```bash
-# List all abilities
-ai-sdk abilities list
+# List all skills
+ai-sdk skills list
 
-# Get details on specific abilities
-ai-sdk abilities get dataLineageAndExploration
-ai-sdk abilities get dataQualityAndTesting
+# Get details on specific skills
+ai-sdk skills get dataLineageAndExploration
+ai-sdk skills get dataQualityAndTesting
 ```
 
-The agent needs these abilities:
+The agent needs these skills:
 - **dataLineageAndExploration** - Traverse upstream/downstream dependencies, get entity details
 - **dataQualityAndTesting** - DQ assessment, test case generation, root cause analysis
 - **discoveryAndSearch** - Find assets, search metadata, list entities
@@ -67,7 +67,7 @@ ai-sdk agents create \
   --name DataQualityAnalyzer \
   --description "Analyzes DQ test failures, explores lineage impact, and suggests remediation steps" \
   --persona DQAnalyst \
-  --abilities dataLineageAndExploration,dataQualityAndTesting,discoveryAndSearch \
+  --skills dataLineageAndExploration,dataQualityAndTesting,discoveryAndSearch \
   --api-enabled true
 ```
 
@@ -94,7 +94,7 @@ You can also create the agent through the Collate web interface:
    - **Name:** `DataQualityAnalyzer`
    - **Description:** Analyzes DQ test failures, explores lineage impact, and suggests remediation steps
    - **Persona:** Select `DataAnalyst` or create a custom one
-   - **Abilities:** Select:
+   - **Skills:** Select:
      - Data Lineage and Exploration
      - Data Quality and Testing
      - Discovery and Search
@@ -116,7 +116,7 @@ agent = client.agents.create(
     name="DataQualityAnalyzer",
     description="Analyzes DQ test failures, explores lineage impact, and suggests remediation steps",
     persona="DataAnalyst",
-    abilities=["dataLineageAndExploration", "dataQualityAndTesting", "discoveryAndSearch"],
+    skills=["dataLineageAndExploration", "dataQualityAndTesting", "discoveryAndSearch"],
     api_enabled=True
 )
 
@@ -137,7 +137,7 @@ const agent = await client.agents.create({
   name: 'DataQualityAnalyzer',
   description: 'Analyzes DQ test failures, explores lineage impact, and suggests remediation steps',
   persona: 'DataAnalyst',
-  abilities: ['dataLineageAndExploration', 'dataQualityAndTesting', 'discoveryAndSearch'],
+  skills: ['dataLineageAndExploration', 'dataQualityAndTesting', 'discoveryAndSearch'],
   apiEnabled: true
 });
 
@@ -159,7 +159,7 @@ CreateAgentRequest request = CreateAgentRequest.builder()
     .name("DataQualityAnalyzer")
     .description("Analyzes DQ test failures, explores lineage impact, and suggests remediation steps")
     .persona("DataAnalyst")
-    .abilities(List.of("dataLineageAndExploration", "dataQualityAndTesting", "discoveryAndSearch"))
+    .skills(List.of("dataLineageAndExploration", "dataQualityAndTesting", "discoveryAndSearch"))
     .apiEnabled(true)
     .build();
 
@@ -210,7 +210,7 @@ ai-sdk agents info DataQualityAnalyzer
 # Should show:
 # Name: DataQualityAnalyzer
 # API Enabled: true
-# Abilities: dataLineageAndExploration, dataQualityAndTesting, discoveryAndSearch
+# Skills: dataLineageAndExploration, dataQualityAndTesting, discoveryAndSearch
 ```
 
 If `API Enabled` is `false`, update the agent:

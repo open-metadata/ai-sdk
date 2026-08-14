@@ -6,7 +6,7 @@
  */
 
 import { AgentHandle, DefaultAgentHandle } from './agent.js';
-import { AbilitiesApi } from './api/abilities.js';
+import { SkillsApi } from './api/skills.js';
 import { AgentsApi } from './api/agents.js';
 import { BotsApi } from './api/bots.js';
 import { MemoriesApi } from './api/memories.js';
@@ -35,7 +35,7 @@ const DEFAULT_RETRY_DELAY = 1000;
  * client.agents.list();
  * client.bots.get('ingestion-bot');
  * client.personas.create(req);
- * client.abilities.list();
+ * client.skills.list();
  * client.memories.search('customer churn');
  * ```
  *
@@ -70,7 +70,7 @@ export class AISdk {
   private readonly agentsHttp: HttpClient;
   private readonly botsHttp: HttpClient;
   private readonly personasHttp: HttpClient;
-  private readonly abilitiesHttp: HttpClient;
+  private readonly skillsHttp: HttpClient;
   private readonly memoriesHttp: HttpClient;
   private readonly searchHttp: HttpClient;
   private readonly defaultAgentHttp: HttpClient;
@@ -82,8 +82,8 @@ export class AISdk {
   public readonly bots: BotsApi;
   /** Namespace for persona operations. */
   public readonly personas: PersonasApi;
-  /** Namespace for ability operations. */
-  public readonly abilities: AbilitiesApi;
+  /** Namespace for skill operations. */
+  public readonly skills: SkillsApi;
   /** Namespace for Context Center memory operations (CRUD + hybrid search). */
   public readonly memories: MemoriesApi;
 
@@ -134,8 +134,8 @@ export class AISdk {
       baseUrl: `${this.hostUrl}/api/v1/agents/personas`,
       ...httpDefaults,
     });
-    this.abilitiesHttp = new HttpClient({
-      baseUrl: `${this.hostUrl}/api/v1/agents/abilities`,
+    this.skillsHttp = new HttpClient({
+      baseUrl: `${this.hostUrl}/api/v1/agents/skills`,
       ...httpDefaults,
     });
     this.memoriesHttp = new HttpClient({
@@ -164,7 +164,7 @@ export class AISdk {
     this.agents = new AgentsApi(this.agentsHttp, this);
     this.bots = new BotsApi(this.botsHttp);
     this.personas = new PersonasApi(this.personasHttp);
-    this.abilities = new AbilitiesApi(this.abilitiesHttp);
+    this.skills = new SkillsApi(this.skillsHttp);
     this.memories = new MemoriesApi(this.memoriesHttp, this.searchHttp);
   }
 

@@ -3,10 +3,10 @@
 //! A 4-step wizard for creating new agents:
 //! 1. Basic Details - name and description
 //! 2. Select Persona - choose from available personas
-//! 3. Select Abilities - multi-select from available abilities (optional)
+//! 3. Select Skills - multi-select from available skills (optional)
 //! 4. Actions - task prompt and bot selection (optional)
 
-use crate::client::{AISdkClient, AbilityInfo, BotInfo, PersonaInfo};
+use crate::client::{AISdkClient, BotInfo, PersonaInfo, SkillInfo};
 use crate::commands::agents::run_create;
 use crate::config::ResolvedConfig;
 use crate::error::{CliError, CliResult};
@@ -38,7 +38,7 @@ use tokio::sync::mpsc;
 enum Step {
     BasicDetails,
     SelectPersona,
-    SelectAbilities,
+    SelectSkills,
     Actions,
 }
 
@@ -47,7 +47,7 @@ impl Step {
         match self {
             Step::BasicDetails => 1,
             Step::SelectPersona => 2,
-            Step::SelectAbilities => 3,
+            Step::SelectSkills => 3,
             Step::Actions => 4,
         }
     }
@@ -56,7 +56,7 @@ impl Step {
         match self {
             Step::BasicDetails => "Basic Details",
             Step::SelectPersona => "Select Persona",
-            Step::SelectAbilities => "Select Abilities",
+            Step::SelectSkills => "Select Skills",
             Step::Actions => "Select Bot",
         }
     }
@@ -79,8 +79,8 @@ struct CreateAgentWizard {
     description_input: TextInput,
     /// Persona selector.
     persona_select: SingleSelect,
-    /// Abilities multi-selector.
-    abilities_select: MultiSelect,
+    /// Skills multi-selector.
+    skills_select: MultiSelect,
     /// Bot selector.
     bot_select: SingleSelect,
     /// Current focus in basic details step.
@@ -97,14 +97,14 @@ struct CreateAgentWizard {
     validation_error: Option<String>,
     /// Loaded personas.
     personas: Vec<PersonaInfo>,
-    /// Loaded abilities.
-    abilities: Vec<AbilityInfo>,
+    /// Loaded skills.
+    skills: Vec<SkillInfo>,
     /// Loaded bots.
     bots: Vec<BotInfo>,
     /// Whether personas have been loaded.
     personas_loaded: bool,
-    /// Whether abilities have been loaded.
-    abilities_loaded: bool,
+    /// Whether skills have been loaded.
+    skills_loaded: bool,
     /// Whether bots have been loaded.
     bots_loaded: bool,
     /// Scroll offset for persona prompt preview.
@@ -123,8 +123,8 @@ impl CreateAgentWizard {
         let mut persona_select = SingleSelect::new("Select Persona");
         persona_select.focused = false;
 
-        let mut abilities_select = MultiSelect::new("Select Abilities (optional)");
-        abilities_select.focused = false;
+        let mut skills_select = MultiSelect::new("Select Skills (optional)");
+        skills_select.focused = false;
 
         let mut bot_select = SingleSelect::new("Select Bot");
         bot_select.focused = false;
@@ -134,7 +134,7 @@ impl CreateAgentWizard {
             name_input,
             description_input,
             persona_select,
-            abilities_select,
+            skills_select,
             bot_select,
             basic_focus: BasicDetailsFocus::Name,
             status: WizardStatus::Idle,
@@ -143,10 +143,10 @@ impl CreateAgentWizard {
             success: false,
             validation_error: None,
             personas: Vec::new(),
-            abilities: Vec::new(),
+            skills: Vec::new(),
             bots: Vec::new(),
             personas_loaded: false,
-            abilities_loaded: false,
+            skills_loaded: false,
             bots_loaded: false,
             prompt_scroll_offset: 0,
         }
@@ -213,7 +213,7 @@ impl CreateAgentWizard {
         match self.step {
             Step::BasicDetails => self.validate_basic_details().is_ok(),
             Step::SelectPersona => self.validate_persona().is_ok(),
-            Step::SelectAbilities => true, // Abilities are optional
+            Step::SelectSkills => true, // Skills are optional
             Step::Actions => self.validate_bot().is_ok(),
         }
     }
@@ -238,11 +238,11 @@ impl CreateAgentWizard {
                     return;
                 }
                 self.persona_select.focused = false;
-                self.abilities_select.focused = true;
-                self.step = Step::SelectAbilities;
+                self.skills_select.focused = true;
+                self.step = Step::SelectSkills;
             }
-            Step::SelectAbilities => {
-                self.abilities_select.focused = false;
+            Step::SelectSkills => {
+                self.skills_select.focused = false;
                 self.bot_select.focused = true;
                 self.step = Step::Actions;
             }
@@ -265,15 +265,15 @@ impl CreateAgentWizard {
                 self.basic_focus = BasicDetailsFocus::Name;
                 self.step = Step::BasicDetails;
             }
-            Step::SelectAbilities => {
-                self.abilities_select.focused = false;
+            Step::SelectSkills => {
+                self.skills_select.focused = false;
                 self.persona_select.focused = true;
                 self.step = Step::SelectPersona;
             }
             Step::Actions => {
                 self.bot_select.focused = false;
-                self.abilities_select.focused = true;
-                self.step = Step::SelectAbilities;
+                self.skills_select.focused = true;
+                self.step = Step::SelectSkills;
             }
         }
     }
@@ -304,8 +304,8 @@ impl CreateAgentWizard {
             Step::SelectPersona => {
                 self.persona_select.enter_filter_char(c);
             }
-            Step::SelectAbilities => {
-                self.abilities_select.enter_filter_char(c);
+            Step::SelectSkills => {
+                self.skills_select.enter_filter_char(c);
             }
             Step::Actions => {
                 self.bot_select.enter_filter_char(c);
@@ -327,11 +327,11 @@ impl CreateAgentWizard {
                     self.persona_select.delete_filter_char();
                 }
             }
-            Step::SelectAbilities => {
-                if self.abilities_select.filter.is_empty() {
+            Step::SelectSkills => {
+                if self.skills_select.filter.is_empty() {
                     self.prev_step();
                 } else {
-                    self.abilities_select.delete_filter_char();
+                    self.skills_select.delete_filter_char();
                 }
             }
             Step::Actions => {
@@ -352,7 +352,7 @@ impl CreateAgentWizard {
                 BasicDetailsFocus::Description => self.description_input.delete_char_forward(),
             },
             Step::SelectPersona => {}
-            Step::SelectAbilities => {}
+            Step::SelectSkills => {}
             Step::Actions => {}
         }
     }
@@ -365,7 +365,7 @@ impl CreateAgentWizard {
                 BasicDetailsFocus::Description => self.description_input.move_cursor_left(),
             },
             Step::SelectPersona => {}
-            Step::SelectAbilities => {}
+            Step::SelectSkills => {}
             Step::Actions => {}
         }
     }
@@ -378,7 +378,7 @@ impl CreateAgentWizard {
                 BasicDetailsFocus::Description => self.description_input.move_cursor_right(),
             },
             Step::SelectPersona => {}
-            Step::SelectAbilities => {}
+            Step::SelectSkills => {}
             Step::Actions => {}
         }
     }
@@ -395,8 +395,8 @@ impl CreateAgentWizard {
                 self.persona_select.select_previous();
                 self.reset_prompt_scroll();
             }
-            Step::SelectAbilities => {
-                self.abilities_select.select_previous();
+            Step::SelectSkills => {
+                self.skills_select.select_previous();
             }
             Step::Actions => {
                 self.bot_select.select_previous();
@@ -416,8 +416,8 @@ impl CreateAgentWizard {
                 self.persona_select.select_next();
                 self.reset_prompt_scroll();
             }
-            Step::SelectAbilities => {
-                self.abilities_select.select_next();
+            Step::SelectSkills => {
+                self.skills_select.select_next();
             }
             Step::Actions => {
                 self.bot_select.select_next();
@@ -463,9 +463,9 @@ impl CreateAgentWizard {
         }
     }
 
-    /// Get the selected abilities.
-    fn selected_abilities(&self) -> Vec<String> {
-        self.abilities_select
+    /// Get the selected skills.
+    fn selected_skills(&self) -> Vec<String> {
+        self.skills_select
             .selected_items()
             .iter()
             .map(|item| item.name.clone())
@@ -528,10 +528,10 @@ impl CreateAgentWizard {
         self.personas_loaded = true;
     }
 
-    /// Set abilities from API response.
-    fn set_abilities(&mut self, abilities: Vec<AbilityInfo>) {
-        self.abilities = abilities.clone();
-        let items: Vec<SelectItem> = abilities
+    /// Set skills from API response.
+    fn set_skills(&mut self, skills: Vec<SkillInfo>) {
+        self.skills = skills.clone();
+        let items: Vec<SelectItem> = skills
             .into_iter()
             .map(|a| {
                 let display = a.display_name.clone().unwrap_or_else(|| a.name.clone());
@@ -546,8 +546,8 @@ impl CreateAgentWizard {
                 item
             })
             .collect();
-        self.abilities_select.set_items(items);
-        self.abilities_loaded = true;
+        self.skills_select.set_items(items);
+        self.skills_loaded = true;
     }
 
     /// Set bots from API response.
@@ -576,7 +576,7 @@ impl CreateAgentWizard {
 /// Event from async operations.
 enum AsyncEvent {
     PersonasLoaded(Result<Vec<PersonaInfo>, String>),
-    AbilitiesLoaded(Result<Vec<AbilityInfo>, String>),
+    SkillsLoaded(Result<Vec<SkillInfo>, String>),
     BotsLoaded(Result<Vec<BotInfo>, String>),
     SubmitSuccess,
     SubmitError(String),
@@ -636,16 +636,14 @@ async fn run_wizard_loop(
             });
         }
 
-        if wizard.step == Step::SelectAbilities
-            && !wizard.abilities_loaded
-            && !wizard.status.is_loading()
+        if wizard.step == Step::SelectSkills && !wizard.skills_loaded && !wizard.status.is_loading()
         {
-            wizard.status = WizardStatus::Loading("Loading abilities...".to_string());
+            wizard.status = WizardStatus::Loading("Loading skills...".to_string());
             let tx = async_tx.clone();
             let profile = profile.to_string();
             tokio::spawn(async move {
-                let result = load_abilities(&profile).await;
-                let _ = tx.send(AsyncEvent::AbilitiesLoaded(result)).await;
+                let result = load_skills(&profile).await;
+                let _ = tx.send(AsyncEvent::SkillsLoaded(result)).await;
             });
         }
 
@@ -678,11 +676,11 @@ async fn run_wizard_loop(
                     AsyncEvent::PersonasLoaded(Err(e)) => {
                         wizard.status = WizardStatus::Error(e);
                     }
-                    AsyncEvent::AbilitiesLoaded(Ok(abilities)) => {
-                        wizard.set_abilities(abilities);
+                    AsyncEvent::SkillsLoaded(Ok(skills)) => {
+                        wizard.set_skills(skills);
                         wizard.status = WizardStatus::Idle;
                     }
-                    AsyncEvent::AbilitiesLoaded(Err(e)) => {
+                    AsyncEvent::SkillsLoaded(Err(e)) => {
                         wizard.status = WizardStatus::Error(e);
                     }
                     AsyncEvent::BotsLoaded(Ok(bots)) => {
@@ -743,11 +741,11 @@ async fn run_wizard_loop(
                                         let name = wizard.name_input.value.trim().to_string();
                                         let description = wizard.description_input.value.trim().to_string();
                                         let persona = wizard.selected_persona_name().unwrap_or_default();
-                                        let abilities = wizard.selected_abilities();
-                                        let abilities_opt = if abilities.is_empty() {
+                                        let skills = wizard.selected_skills();
+                                        let skills_opt = if skills.is_empty() {
                                             None
                                         } else {
-                                            Some(abilities)
+                                            Some(skills)
                                         };
                                         let bot_name = wizard.selected_bot_name();
                                         let tx = async_tx.clone();
@@ -763,7 +761,7 @@ async fn run_wizard_loop(
                                                 None,    // display_name
                                                 None,    // icon
                                                 bot_name.as_deref(),
-                                                abilities_opt,
+                                                skills_opt,
                                                 Some(true), // api_enabled always true
                                                 None,    // provider
                                                 false,   // json output
@@ -824,8 +822,8 @@ async fn run_wizard_loop(
                                     wizard.handle_page_down(10);
                                 }
                                 KeyCode::Char(' ') => {
-                                    if wizard.step == Step::SelectAbilities {
-                                        wizard.abilities_select.toggle_current();
+                                    if wizard.step == Step::SelectSkills {
+                                        wizard.skills_select.toggle_current();
                                     } else {
                                         wizard.handle_char(' ');
                                     }
@@ -862,12 +860,12 @@ async fn load_personas(profile: &str) -> Result<Vec<PersonaInfo>, String> {
     client.list_personas().await.map_err(|e| e.to_string())
 }
 
-/// Load abilities from API.
-async fn load_abilities(profile: &str) -> Result<Vec<AbilityInfo>, String> {
+/// Load skills from API.
+async fn load_skills(profile: &str) -> Result<Vec<SkillInfo>, String> {
     let config = ResolvedConfig::load(profile).map_err(|e| e.to_string())?;
     let client = AISdkClient::new(&config).map_err(|e| e.to_string())?;
-    // Fetch all abilities with automatic pagination
-    client.list_abilities().await.map_err(|e| e.to_string())
+    // Fetch all skills with automatic pagination
+    client.list_skills().await.map_err(|e| e.to_string())
 }
 
 /// Load bots from API.
@@ -906,7 +904,7 @@ fn render_wizard(frame: &mut Frame, wizard: &mut CreateAgentWizard) {
     match wizard.step {
         Step::BasicDetails => render_basic_details(frame, wizard, content_area),
         Step::SelectPersona => render_select_persona(frame, wizard, content_area),
-        Step::SelectAbilities => render_select_abilities(frame, wizard, content_area),
+        Step::SelectSkills => render_select_skills(frame, wizard, content_area),
         Step::Actions => render_actions(frame, wizard, content_area),
     }
 
@@ -916,7 +914,7 @@ fn render_wizard(frame: &mut Frame, wizard: &mut CreateAgentWizard) {
     let extra_hints: Vec<(&str, &str)> = match wizard.step {
         Step::BasicDetails => vec![("Tab", "Next field")],
         Step::SelectPersona => vec![("PgUp/PgDn", "Scroll prompt")],
-        Step::SelectAbilities => vec![("Space", "Toggle")],
+        Step::SelectSkills => vec![("Space", "Toggle")],
         Step::Actions => vec![],
     };
     render_wizard_footer(
@@ -1068,19 +1066,19 @@ fn render_select_persona(frame: &mut Frame, wizard: &mut CreateAgentWizard, area
     }
 }
 
-/// Render select abilities step.
-fn render_select_abilities(frame: &mut Frame, wizard: &mut CreateAgentWizard, area: Rect) {
+/// Render select skills step.
+fn render_select_skills(frame: &mut Frame, wizard: &mut CreateAgentWizard, area: Rect) {
     let chunks = Layout::default()
         .direction(Direction::Vertical)
         .margin(1)
         .constraints([
-            Constraint::Min(8),    // Abilities list
+            Constraint::Min(8),    // Skills list
             Constraint::Length(2), // Hint
         ])
         .split(area);
 
-    // Render abilities multi-selector
-    wizard.abilities_select.render(frame, chunks[0]);
+    // Render skills multi-selector
+    wizard.skills_select.render(frame, chunks[0]);
 
     // Render hint
     let hint = Line::from(vec![
