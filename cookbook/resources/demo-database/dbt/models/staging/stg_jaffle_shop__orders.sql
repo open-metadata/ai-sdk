@@ -11,6 +11,11 @@ cleaned as (
         coalesce(order_total, 0) as order_total,
         coalesce(shipping_cost, 0) as shipping_cost,
         coalesce(discount_amount, 0) as discount_amount,
+        round(coalesce(order_total, 0) * 0.08, 2) as tax_amount,
+        coalesce(order_total, 0)
+            + coalesce(shipping_cost, 0)
+            + round(coalesce(order_total, 0) * 0.08, 2)
+            - coalesce(discount_amount, 0) as gross_total,
         coupon_code,
         created_at,
         updated_at
