@@ -49,7 +49,7 @@ jobs:
       - name: Upgrade npm for trusted publishing
         working-directory: .
         run: |
-          npm install -g npm@latest
+          npm install -g npm@11
           echo "npm version: $(npm --version)"
 
       - name: Install dependencies
