@@ -99,5 +99,5 @@ jobs:
     uses: ./.github/workflows/ai-sdk-release-cli.yml
     with:
       version: ${{ needs.validate.outputs.version }}
-      release_tag: ${{ github.event.release.tag_name || '' }}
+      release_tag: ${{ github.event.release.tag_name || format('v{0}', needs.validate.outputs.version) }}
     secrets: inherit
