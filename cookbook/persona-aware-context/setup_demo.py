@@ -1,10 +1,36 @@
 """
-Configure the banking-redshift instance for the Persona-aware Context demo.
+Configure the Jaffle Shop demo database for the Persona-aware Context demo.
 
-Run this ONCE (with an admin token) after the banking-redshift cookbook has
-been ingested. It is idempotent — safe to re-run.
+Run this ONCE (with an admin token) after ``cookbook/resources/demo-database``
+has been ingested into OpenMetadata. It is idempotent — safe to re-run.
 
-It sets up the three things the demo shows off:
+It sets up everything the demo shows off:
+
+  Access — the demo users must be able to read the catalog at all
+      Freshly created users inherit whatever default roles the ``Organization``
+      team carries. On instances where that list is empty every non-admin call
+      fails with ``403 ... operations [ViewAll] not allowed``, which looks like
+      "the demo is broken" rather than "the users have no role". The script
+      grants each demo user the built-in ``DataConsumer`` role so both can read
+      metadata — the *difference* between them then comes from ownership and
+      persona, not from one of them being locked out. Disable with
+      ``--skip-roles``.
+
+  Data — profiles, sample rows, and PII column tags
+      PII masking only bites on columns tagged ``PII.Sensitive``, and it is only
+      *visible* if those columns have a profile to hide. A freshly ingested
+      Jaffle Shop has neither, so the script:
+        * tags the sensitive columns (``email``, ``phone_number``,
+          ``ssn_last_four``, ``date_of_birth``, names, address) on the customer
+          tables — ``--skip-pii-tags`` to opt out;
+        * profiles the demo tables straight from the running demo Postgres and
+          pushes column profiles + sample rows over the REST API —
+          ``--skip-profiles`` to opt out (also skipped automatically when
+          ``psycopg2`` is missing or the database is unreachable);
+        * executes the data-quality tests that dbt ingestion registered but never
+          ran, so the ``dataQuality`` section reports an actual verdict instead of
+          "0 passed, 0 failed" — plus one extra test that genuinely fails on the
+          demo data. ``--skip-tests`` to opt out.
 
   Axis B — AI Persona Context
       Attaches a ``contextDefinition`` (rules + sections) to the
@@ -39,14 +65,23 @@ It sets up the three things the demo shows off:
       builds whose PII masking is policy-driven rather than owner-driven, e.g.
       an enterprise authorizer. It is a no-op on stock open-source builds.)
 
-  Foundational context — per-person operating rule (Context Center)
-      Upserts a PRIVATE ``Preference`` memory per user, owned by and visible only
-      to that user, attached to the demo table. Each person's ``get_asset_context``
-      then carries only their own operating rule, so the SAME question yields
-      visibly different answers (compliance: lead with owner/governance, cite the
-      policy + glossary, point to the certified dataset; engineering: give the dbt
-      model path, freshness SLA, and a runnable SELECT). This is the easy-to-show,
-      non-PII behavioral difference. Disable with ``--skip-ground-rules``.
+  Operating rules — how each role should answer
+      Each persona also gets its OWN Knowledge Center article ("Compliance
+      Operating Rules" / "Engineering Operating Rules") pulled in by a second
+      persona rule over ``entityType: page``. The articles are deliberately not
+      attached to any table: the persona filter is the only thing that selects
+      them, so each one appears in exactly one persona's document. That is the
+      easy-to-show, non-PII behavioural difference — compliance leads with
+      owner/governance and cites the policy, engineering gives the dbt model
+      path, the SLA, and a runnable SELECT.
+
+      The same guidance is ALSO upserted as a private ``Preference`` memory per
+      user (owned by that person, attached to the demo table), which is how you
+      would model a genuinely per-*person* rule. Note that on current builds
+      ``get_asset_context`` surfaces ``Private`` memories to admins only, so the
+      visible per-role difference comes from the persona articles above; the
+      memories are there for the Context Center UI and for builds that render
+      them. Disable with ``--skip-ground-rules``.
 
   Access tokens
       Prints a paste-ready ``export DEMO_*_TOKEN=...`` line per demo user.
@@ -59,13 +94,16 @@ It sets up the three things the demo shows off:
 --------------------------------------------------------------------------------
 Prerequisites
 --------------------------------------------------------------------------------
-* The banking-redshift cookbook ingested for the PII tables + classification.
-  The two demo USERS (``david.kim`` / ``sara.johnson``) and the
-  ``ComplianceOfficer`` / ``DataEngineer`` PERSONAS are CREATED by this script if
-  missing — so the only hard requirement is an admin token and a reachable
-  instance with the banking tables.
+* The Jaffle Shop demo database ingested into OpenMetadata as a database service
+  (``make demo-database`` + ``make demo-dbt`` from the repo root, then an
+  OpenMetadata metadata ingestion against ``localhost:5433``). Pass
+  ``--service`` if you named the service something other than "jaffle shop".
+  Everything else — USERS (``david.kim`` / ``sara.johnson``), PERSONAS
+  (``ComplianceOfficer`` / ``DataEngineer``), roles, PII tags, profiles,
+  glossary, article, memories — is created by this script.
 * An ADMIN token — persona AI-context config requires admin.
-* ``pip install requests``
+* ``pip install requests``; ``pip install psycopg2-binary`` for the profiling
+  step (optional — skipped with a warning if missing).
 
 --------------------------------------------------------------------------------
 Usage
@@ -73,8 +111,9 @@ Usage
     export AI_SDK_HOST=http://localhost:8585
     export AI_SDK_TOKEN=<admin-jwt>
 
-    python setup_demo.py                 # discover PII tables via search
-    python setup_demo.py --pii-table-fqn redshift.banking.marts_core.dim_customers
+    python setup_demo.py                 # the whole demo, end to end
+    python setup_demo.py --service "jaffle shop"
+    python setup_demo.py --pii-table-fqn "jaffle shop.jaffle_shop.marts_core.dim_customers"
     python setup_demo.py --with-pii-policy
     python setup_demo.py --dry-run       # print what it would do, change nothing
 """
@@ -83,6 +122,9 @@ from __future__ import annotations
 
 import argparse
 import base64
+import datetime
+import decimal
+import importlib.util
 import json
 import logging
 import os
@@ -100,6 +142,51 @@ PII_TAG = "PII.Sensitive"
 # unmasked PII in get_asset_context; the Data Engineer stays a non-owner.
 PII_OWNER_USERNAME = "david.kim"  # David Kim -> ComplianceOfficer
 
+# The database service holding the Jaffle Shop demo tables, as named in
+# OpenMetadata. Override with --service if your ingestion used another name.
+DEFAULT_SERVICE = "jaffle shop"
+
+# The demo tables, relative to the service FQN. The FIRST one is the "hero"
+# asset every scene focuses on: the glossary terms, the knowledge article, and
+# the per-person operating rules all attach to it.
+DEMO_TABLE_SUFFIXES: list[str] = [
+    "jaffle_shop.marts_core.dim_customers",
+    "jaffle_shop.staging.stg_jaffle_shop__customers",
+    "jaffle_shop.raw_jaffle_shop.customers",
+    "jaffle_shop.marts_core.fct_orders",
+]
+
+# Columns tagged PII.Sensitive wherever they appear in the demo tables. This is
+# the actual masking lever: OpenMetadata drops the profile of a PII.Sensitive
+# COLUMN for non-owners — a table-level tag alone changes nothing.
+PII_COLUMN_NAMES: frozenset[str] = frozenset(
+    {
+        "first_name",
+        "last_name",
+        "full_name",
+        "email",
+        "customer_email",
+        "phone_number",
+        "date_of_birth",
+        "ssn_last_four",
+        "address_line_1",
+        "postal_code",
+    }
+)
+
+# The running demo database (cookbook/resources/demo-database). Profiles and
+# sample rows are read from here and pushed to OpenMetadata, because a plain
+# metadata ingestion carries neither — and with no profile there is nothing for
+# PII masking to visibly remove.
+DEMO_DB_DSN = "postgresql://jaffle_user:jaffle_pass@localhost:5433/jaffle_shop"
+
+# Rows pulled per table for the sample-data payload.
+SAMPLE_ROW_LIMIT = 20
+
+# Every non-admin needs at least this role to read the catalog. Instances whose
+# Organization team has no default roles hand new users nothing at all.
+BASELINE_ROLE = "DataConsumer"
+
 
 # ---------------------------------------------------------------------------
 # Persona context definitions (Axis B)
@@ -109,9 +196,77 @@ PII_OWNER_USERNAME = "david.kim"  # David Kim -> ComplianceOfficer
 # `sections` differ. That makes the side-by-side contrast unambiguous. In a
 # real deployment you would also scope each persona to its own domain — adjust
 # `queryFilter` to taste (build it in the Explore UI and copy the payload).
-_PII_TABLES_FILTER = {"term": {"tags.tagFQN": PII_TAG}}
+#
+# `cacheTtlMinutes` is deliberately short. The rendered persona document is
+# cached server-side, so a long TTL means catalog edits made while you are
+# demoing (or a second run of this script) do not show up and the demo looks
+# broken. Five minutes keeps it responsive; raise it for production.
+#
+# The filter is scoped to the demo SERVICE as well as the tag, so an instance
+# that happens to carry PII.Sensitive elsewhere (OpenMetadata's own sample data
+# does) doesn't drag unrelated tables into the persona document.
 
-PERSONA_CONFIGS: list[dict[str, Any]] = [
+
+def _pii_tables_filter(service: str) -> dict[str, Any]:
+    """Search filter for "PII-tagged tables inside the demo service"."""
+    return {
+        "bool": {
+            "must": [
+                {"term": {"tags.tagFQN": PII_TAG}},
+                {"term": {"service.name.keyword": service}},
+            ]
+        }
+    }
+
+
+# Each persona also carries its own OPERATING RULES: a Knowledge Center article
+# describing how that role should answer, pulled in by a second persona rule over
+# `entityType: page`. Unlike the shared governance article these are NOT attached
+# to any table — the persona's own filter is what makes each one appear in exactly
+# one persona's document and nowhere else.
+OPERATING_RULE_ARTICLES: dict[str, dict[str, str]] = {
+    "ComplianceOfficer": {
+        "name": "compliance-operating-rules",
+        "displayName": "Compliance Operating Rules",
+        "description": (
+            "# Compliance Operating Rules\n\n"
+            "When you explain any dataset:\n\n"
+            "- Lead with its owner, its domain, and its governance status.\n"
+            "- Name the sensitive columns and say which classification they carry.\n"
+            "- Cite the governing policy (retention, consent basis) and the glossary term.\n"
+            "- Point to the certified dataset rather than a raw table.\n"
+            "- If a field is masked for the caller, say so explicitly instead of guessing.\n"
+        ),
+    },
+    "DataEngineer": {
+        "name": "engineering-operating-rules",
+        "displayName": "Engineering Operating Rules",
+        "description": (
+            "# Engineering Operating Rules\n\n"
+            "When you explain any dataset:\n\n"
+            "- Give the dbt model path, e.g. `models/marts/core/dim_customers.sql`.\n"
+            "- State the freshness SLA and the upstream models it depends on.\n"
+            "- List the join keys someone will actually need.\n"
+            "- Include a short, runnable `SELECT` the reader can paste.\n"
+            "- Prefer the masked mart over a raw table when the query does not need PII.\n"
+        ),
+    },
+}
+
+
+def _operating_rules_filter(persona: str) -> dict[str, Any]:
+    """Search filter selecting exactly one persona's operating-rules article.
+
+    Note the explicit ``query`` wrapper. The table rules above match with a bare
+    clause, but the page index does not — without the wrapper this rule silently
+    matches zero articles and the section renders empty.
+    """
+    return {
+        "query": {"term": {"name.keyword": OPERATING_RULE_ARTICLES[persona]["name"]}}
+    }
+
+
+_PERSONA_TEMPLATES: list[dict[str, Any]] = [
     {
         "persona": "ComplianceOfficer",
         "displayName": "Compliance Officer",
@@ -119,13 +274,13 @@ PERSONA_CONFIGS: list[dict[str, Any]] = [
             "Compliance and data-governance persona: sensitive/PII data, glossary "
             "terms, and data-quality standing."
         ),
-        "settings": {"enabled": True, "characterBudget": 400000, "cacheTtlMinutes": 30},
+        "settings": {"enabled": True, "characterBudget": 400000, "cacheTtlMinutes": 5},
         "rules": [
             {
                 "name": "Sensitive customer and account data",
                 "description": "Customer/account tables carrying sensitive PII.",
                 "entityType": "table",
-                "queryFilter": _PII_TABLES_FILTER,
+                "queryFilter": None,  # filled in by persona_configs()
                 # `articles` surfaces attached Context Center Knowledge Articles
                 # (the compliance "ground rules") in this persona's document.
                 # NB: for entityType "table" the server allows only ASSET_SECTIONS
@@ -151,13 +306,13 @@ PERSONA_CONFIGS: list[dict[str, Any]] = [
             "Data-engineering persona: schema, constraints, joins, lineage, and "
             "profiling for building and fixing pipelines."
         ),
-        "settings": {"enabled": True, "characterBudget": 400000, "cacheTtlMinutes": 30},
+        "settings": {"enabled": True, "characterBudget": 400000, "cacheTtlMinutes": 5},
         "rules": [
             {
                 "name": "Customer and account data pipelines",
                 "description": "The same customer/account tables, seen as pipelines.",
                 "entityType": "table",
-                "queryFilter": _PII_TABLES_FILTER,
+                "queryFilter": None,  # filled in by persona_configs()
                 "sections": ["schema", "constraints", "joins", "lineage", "profile"],
                 "maxAssets": 50,
                 "alwaysInContext": True,
@@ -166,6 +321,38 @@ PERSONA_CONFIGS: list[dict[str, Any]] = [
         ],
     },
 ]
+
+
+def persona_configs(service: str) -> list[dict[str, Any]]:
+    """The persona templates, resolved against ``service``.
+
+    Fills in the asset rule's ``queryFilter`` and appends the persona's own
+    operating-rules page rule.
+    """
+    configs: list[dict[str, Any]] = []
+    for template in _PERSONA_TEMPLATES:
+        persona = template["persona"]
+        config = dict(template)
+        config["rules"] = [
+            {**rule, "queryFilter": _pii_tables_filter(service)}
+            for rule in template["rules"]
+        ]
+        config["rules"].append(
+            {
+                "name": f"{OPERATING_RULE_ARTICLES[persona]['displayName']} (how to answer)",
+                "description": "How this role should answer questions about a dataset.",
+                "entityType": "page",
+                "queryFilter": _operating_rules_filter(persona),
+                "sections": ["titleSummary", "fullBody"],
+                "maxAssets": 5,
+                "fullyRendered": True,
+                "alwaysInContext": True,
+                "enabled": True,
+            }
+        )
+        configs.append(config)
+    return configs
+
 
 # The two demo users. Created if missing (name + email are required), then given
 # a default persona so no-argument get_persona_context resolves it. Edit the
@@ -211,7 +398,10 @@ GLOSSARY_TERMS: list[dict[str, str]] = [
     {
         "name": "PersonallyIdentifiableInformation",
         "displayName": "Personally Identifiable Information",
-        "description": "Data that can identify a specific individual — e.g. SSN, tax ID, date of birth.",
+        "description": (
+            "Data that can identify a specific individual — e.g. email, phone number, "
+            "date of birth, or the last four digits of a national ID."
+        ),
     },
     {
         "name": "DataRetention",
@@ -225,22 +415,145 @@ GLOSSARY_TERMS: list[dict[str, str]] = [
     },
 ]
 # Which of the above get tagged onto the demo PII table.
-GLOSSARY_TERMS_ON_TABLE: list[str] = ["PersonallyIdentifiableInformation", "DataRetention"]
+GLOSSARY_TERMS_ON_TABLE: list[str] = [
+    "PersonallyIdentifiableInformation",
+    "DataRetention",
+]
 
 # One Knowledge Center article, linked to the PII table via a HAS relationship so
 # the ComplianceOfficer persona's `articles` section renders it. The body lives in
 # `description` — that is what the AI-context builder renders (fullContentOf).
+#
+# The body is deliberately LONG and split into three self-contained topics. The
+# context builder inlines an attached item in full only while it stays under
+# MAX_ITEM_CHARS (~1500); past that it marks the item `contentTruncated` and
+# returns ONE chunk (chunked every ~380 words), picked by semantic similarity to
+# the caller's `query`. Three ~400-word topics therefore land in three different
+# chunks — which is what makes the `?query=` parameter visibly change the excerpt
+# in explore_context_endpoint.ipynb. Shorten this and that demo stops working.
+_ARTICLE_ACCESS_CONTROL = """\
+## Sensitive fields, access control, and retention
+
+`dim_customers` is the certified customer master for the Jaffle Shop warehouse and it
+carries directly identifying personal data. The fields classified `PII.Sensitive` are
+`first_name`, `last_name`, `full_name`, `email`, `phone_number` and `postal_code`; the
+upstream staging and raw customer tables additionally carry `date_of_birth` and
+`ssn_last_four`. Treat all of them as restricted. Raw values must never be pasted into
+tickets, dashboards, spreadsheets, chat threads, or model prompts, and must never be
+copied into a schema outside the `marts_core` and `staging` boundary.
+
+Access is granted through ownership, not through ad-hoc requests. A person who owns the
+asset in OpenMetadata sees the full column profile and sample values; everyone else sees
+the same table with those columns dropped from the profile entirely. That is deliberate:
+the masking happens on the server, before the payload is serialised, so an assistant that
+answers on a non-owner's behalf never receives the sensitive values in the first place and
+therefore cannot leak them, quote them, or summarise them. If you need access, request
+ownership or a delegated grant through the data governance team rather than exporting a
+copy of the table.
+
+The retention window for identifying customer attributes is twenty-four months from the
+customer's last recorded order. After that window `email`, `phone_number`, `postal_code`,
+`date_of_birth` and `ssn_last_four` are nulled by the quarterly erasure job, while the
+surrogate `customer_id` and the aggregate lifetime metrics are preserved so that historical
+revenue reporting stays reconcilable. Deletion requests received directly from a customer
+are honoured within thirty days and take precedence over the standard window.
+
+Any analysis that leaves the warehouse — an exported CSV, a shared dashboard, a model
+training set — must use the pseudonymised view rather than this table. When you report on
+customer data, state the retention window you relied on and name the lawful basis for
+processing. If you cannot identify a lawful basis, stop and escalate before running the
+query. Contract-basis processing covers order fulfilment and support; anything marketing
+related requires recorded consent, which lives on the campaign side of the model and is
+not inferable from this table alone.
+"""
+
+_ARTICLE_FRESHNESS = """\
+## Refresh cadence, freshness SLA, and upstream dependencies
+
+`dim_customers` is a dbt model materialised as a table in the `marts_core` schema. The
+source of record is `raw_jaffle_shop.customers`, which is loaded by the ingestion job that
+lands the operational Postgres extract. From there the model passes through
+`staging.stg_jaffle_shop__customers`, where types are cast, whitespace is trimmed and the
+`full_name` field is derived, and through `intermediate.int_orders__enriched`, which
+supplies the order-level aggregates: `total_orders`, `completed_orders`,
+`cancelled_orders`, `lifetime_value`, `avg_order_value`, `first_order_date`,
+`last_order_date`, `total_items_purchased` and `orders_with_coupon`. Support-ticket counts
+join in from `staging.stg_support__tickets`.
+
+The pipeline runs every night at 02:00 UTC and typically completes in under four minutes
+on the demo dataset. The freshness SLA is six hours: if the newest `customer_created_at`
+in the table is more than six hours behind the newest row in the raw extract, the model is
+considered stale and the on-call analytics engineer is paged. Because the model is a full
+rebuild rather than an incremental merge, a failed run leaves the previous successful
+build in place — stale but internally consistent — which is the behaviour downstream
+consumers should assume when they see an old timestamp.
+
+Two consequences follow for anyone querying it. First, intraday changes are invisible: a
+customer who registered this morning will not appear until tomorrow's build, so never use
+this table for operational lookups or for anything that needs same-day accuracy. Use the
+raw customer table for that, accepting that it carries no derived metrics and no
+classification. Second, the derived metrics are computed as of the build time, not as of
+query time, so `days_since_last_order` drifts by up to one day and should be treated as an
+approximation in any cohort analysis.
+
+Downstream, no marts currently read from `dim_customers` directly in the demo catalog, but
+the analytics views `customer_ltv` and `campaign_roi` reproduce parts of the same logic
+independently. If you change a metric definition here, check those two before you assume
+the change is contained. Schema changes require a pull request against the dbt project and
+a heads-up in the analytics channel one working day before the merge, so that dashboard
+owners can adjust.
+"""
+
+_ARTICLE_DATA_QUALITY = """\
+## Known data-quality issues and the dbt test suite
+
+The model ships with a small test suite, and it does not currently pass cleanly — the
+failures are known, understood and accepted rather than unnoticed, so do not treat a red
+result as a reason to distrust the whole table.
+
+The most visible issue is null contact detail. Roughly eight percent of rows have a null
+`email` and about four percent have a null `phone_number`, `full_name`, `city`, `state`
+or `postal_code`. These are genuine gaps in the operational source: guest checkouts and
+records imported from the pre-migration system were never backfilled. A `not_null` test on
+`email` is therefore deliberately configured as a warning rather than an error. When you
+compute any contactability or deliverability rate, divide by the count of non-null values
+rather than by the row count, and say which denominator you used, otherwise the number
+will silently disagree with the marketing team's.
+
+The second issue is segment drift. `value_segment` is derived from `lifetime_value` using
+fixed thresholds that were set when the catalogue was much smaller. On the current data
+the high-value tier is over-populated relative to its intended definition. The thresholds
+are under review; until they change, treat `value_segment` as indicative rather than
+authoritative and prefer a direct `lifetime_value` comparison when precision matters.
+
+The third issue is a reconciliation gap. `lifetime_value` sums the net order value of
+completed orders only, whereas the finance mart `fct_daily_revenue` recognises revenue at
+payment capture. The two will not tie out for orders that are captured but not yet marked
+complete, and the difference grows at the end of a reporting period. Neither number is
+wrong; they answer different questions. Say which one you used.
+
+Uniqueness and referential integrity are healthy: `customer_id` is unique and not null,
+every `customer_id` in `fct_orders` resolves here, and `country` is single-valued in the
+demo data. Test results are attached to the asset and surface in its context profile, so
+check the current pass and fail counts there before quoting a figure rather than relying
+on this article, which records the shape of the problems rather than today's numbers.
+"""
+
 KNOWLEDGE_ARTICLE: dict[str, str] = {
-    "name": "customer-pii-handling-policy",
-    "displayName": "Customer PII Handling Policy",
+    "name": "customer-360-data-model",
+    "displayName": "Customer 360 Data Model",
     "description": (
-        "# Customer PII Handling Policy\n\n"
-        "- Treat `ssn`, `tax_id`, and `date_of_birth` as **restricted**: never export "
-        "or paste raw values.\n"
-        "- Cite the applicable **data-retention** window when reporting on customer data.\n"
-        "- Confirm a lawful **consent basis** before processing personal data.\n"
+        "# Customer 360 Data Model\n\n"
+        "Governance, operations, and quality notes for the certified customer master.\n\n"
+        f"{_ARTICLE_ACCESS_CONTROL}\n"
+        f"{_ARTICLE_FRESHNESS}\n"
+        f"{_ARTICLE_DATA_QUALITY}"
     ),
 }
+
+# Articles created by earlier revisions of this script, removed on re-run so the
+# demo table does not end up carrying two overlapping governance documents.
+SUPERSEDED_ARTICLE_NAMES: list[str] = ["customer-pii-handling-policy"]
 
 # Optional policy path (enterprise / policy-driven masking builds only).
 PII_POLICY_NAME = "compliance-view-pii"
@@ -275,7 +588,7 @@ GROUND_RULES: list[dict[str, str]] = [
         "question": "How should I answer questions about a dataset?",
         "answer": (
             "When explaining any dataset, always:\n"
-            "- Give the dbt model path (e.g. `models/marts/dim_customers.sql`).\n"
+            "- Give the dbt model path (e.g. `models/marts/core/dim_customers.sql`).\n"
             "- State the freshness SLA and the frequent join keys.\n"
             "- Include a short, runnable `SELECT` the reader can paste."
         ),
@@ -321,16 +634,22 @@ class OMClient:
     def get(self, path: str, params: dict[str, Any] | None = None) -> requests.Response:
         return self._session.get(f"{self.base}{path}", params=params, timeout=TIMEOUT)
 
-    def _mutate(self, method: str, path: str, payload: Any, content_type: str | None) -> None:
+    def _mutate(
+        self, method: str, path: str, payload: Any, content_type: str | None
+    ) -> None:
         if self.dry_run:
-            logger.info("[dry-run] %s %s\n%s", method, path, json.dumps(payload, indent=2))
+            logger.info(
+                "[dry-run] %s %s\n%s", method, path, json.dumps(payload, indent=2)
+            )
             return
         headers = {"Content-Type": content_type} if content_type else None
         response = self._session.request(
             method, f"{self.base}{path}", json=payload, headers=headers, timeout=TIMEOUT
         )
         if response.status_code >= 400:
-            raise RuntimeError(f"{method} {path} -> {response.status_code}: {response.text}")
+            raise RuntimeError(
+                f"{method} {path} -> {response.status_code}: {response.text}"
+            )
 
     def put(self, path: str, payload: Any) -> None:
         self._mutate("PUT", path, payload, None)
@@ -351,7 +670,9 @@ class OMClient:
         if self.dry_run:
             logger.info("[dry-run] %s %s", method, path)
             return None
-        return self._session.request(method, f"{self.base}{path}", json=payload, timeout=TIMEOUT)
+        return self._session.request(
+            method, f"{self.base}{path}", json=payload, timeout=TIMEOUT
+        )
 
 
 # ---------------------------------------------------------------------------
@@ -392,9 +713,21 @@ def _ref(entity: dict[str, Any], entity_type: str) -> dict[str, Any]:
     }
 
 
-def discover_pii_tables(client: OMClient, limit: int) -> list[str]:
-    """Find tables carrying the PII.Sensitive tag via the search API."""
-    query_filter = json.dumps({"query": {"term": {"tags.tagFQN": PII_TAG}}})
+def demo_tables(client: OMClient, service: str) -> list[str]:
+    """The demo tables that actually exist in this instance, hero table first."""
+    present: list[str] = []
+    for suffix in DEMO_TABLE_SUFFIXES:
+        fqn = f"{service}.{suffix}"
+        if get_entity(client, "tables", fqn) is None:
+            logger.warning("  table '%s' not found — skipping it", fqn)
+            continue
+        present.append(fqn)
+    return present
+
+
+def discover_pii_tables(client: OMClient, service: str, limit: int) -> list[str]:
+    """Find tables in ``service`` carrying the PII.Sensitive tag, via the search API."""
+    query_filter = json.dumps({"query": _pii_tables_filter(service)})
     response = client.get(
         "/v1/search/query",
         params={
@@ -406,7 +739,8 @@ def discover_pii_tables(client: OMClient, limit: int) -> list[str]:
     )
     if response.status_code != 200:
         logger.warning(
-            "PII table search failed (HTTP %s); pass --pii-table-fqn", response.status_code
+            "PII table search failed (HTTP %s); pass --pii-table-fqn",
+            response.status_code,
         )
         return []
     hits = response.json().get("hits", {}).get("hits", [])
@@ -419,16 +753,16 @@ def discover_pii_tables(client: OMClient, limit: int) -> list[str]:
 
 
 # ---------------------------------------------------------------------------
-# Demo users — create them if the ingest didn't
+# Demo users — create them, and make sure they can read anything at all
 # ---------------------------------------------------------------------------
 
 
 def ensure_users_exist(client: OMClient) -> None:
     """Create each demo user if missing (idempotent).
 
-    Normally the banking-redshift ingest seeds ``david.kim`` / ``sara.johnson``;
-    this makes the demo self-contained. Only ``name`` + ``email`` are required.
-    It does NOT generate access tokens — do that per user (see README).
+    This makes the demo self-contained — no ingest is expected to seed
+    ``david.kim`` / ``sara.johnson``. Only ``name`` + ``email`` are required.
+    It does NOT generate access tokens; that happens in ``print_user_tokens``.
     """
     for entry in DEMO_USERS:
         if get_entity(client, "users", entry["username"]) is not None:
@@ -445,17 +779,468 @@ def ensure_users_exist(client: OMClient) -> None:
         )
 
 
+def grant_baseline_role(client: OMClient) -> None:
+    """Give both demo users the ``DataConsumer`` role so they can read the catalog.
+
+    A new user's effective permissions come from the default roles of the teams
+    they join — normally ``Organization`` carries ``DataConsumer``. On instances
+    where that list has been emptied, a brand-new user can call nothing at all
+    and every scene fails with ``403 ... operations [ViewAll] not allowed``. The
+    demo's point is that David and Sara see *different* things, not that one of
+    them is locked out, so both get the same baseline role here and diverge only
+    through ownership and persona.
+    """
+    role = get_entity(client, "roles", BASELINE_ROLE)
+    if role is None:
+        logger.warning("  role '%s' not found — skipping baseline grant", BASELINE_ROLE)
+        return
+    role_ref = _ref(role, "role")
+    for entry in DEMO_USERS:
+        username = entry["username"]
+        user = get_entity_fields(client, "users", username, "roles")
+        if user is None:
+            logger.warning("  user '%s' not found — skipping baseline role", username)
+            continue
+        roles = user.get("roles") or []
+        if any(existing.get("id") == role_ref["id"] for existing in roles):
+            logger.info("  %s already has '%s' — skipping", username, BASELINE_ROLE)
+            continue
+        patch = (
+            [{"op": "add", "path": "/roles/-", "value": role_ref}]
+            if roles
+            else [{"op": "add", "path": "/roles", "value": [role_ref]}]
+        )
+        logger.info("  granting '%s' to %s", BASELINE_ROLE, username)
+        client.json_patch(f"/v1/users/{user['id']}", patch)
+
+
+# ---------------------------------------------------------------------------
+# Data — PII column tags (the masking lever's precondition)
+# ---------------------------------------------------------------------------
+
+
+def tag_pii_columns(client: OMClient, table_fqns: list[str]) -> None:
+    """Tag the sensitive columns of each demo table with ``PII.Sensitive``.
+
+    Masking is per COLUMN: OpenMetadata removes the profile of a column tagged
+    ``PII.Sensitive`` for anyone who is not an admin, a bot, or an owner of the
+    asset. A table-level tag is documentation — it masks nothing. Without this
+    step Scene 2 renders two identical documents.
+    """
+    for fqn in table_fqns:
+        table = get_entity_fields(client, "tables", fqn, "columns,tags")
+        if table is None:
+            logger.warning("  table '%s' not found — skipping PII tags", fqn)
+            continue
+        label = {
+            "tagFQN": PII_TAG,
+            "source": "Classification",
+            "labelType": "Manual",
+            "state": "Confirmed",
+        }
+        patch: list[dict[str, Any]] = []
+        tagged: list[str] = []
+        # The table-level tag masks nothing; it is documentation, and it keeps the
+        # asset's `tags` field from reading as empty in the Context Profile.
+        table_tags = table.get("tags") or []
+        if not any(tag.get("tagFQN") == PII_TAG for tag in table_tags):
+            patch.append(
+                {"op": "add", "path": "/tags/-", "value": label}
+                if table_tags
+                else {"op": "add", "path": "/tags", "value": [label]}
+            )
+            tagged.append("(table)")
+        for index, column in enumerate(table.get("columns") or []):
+            if column.get("name") not in PII_COLUMN_NAMES:
+                continue
+            existing = column.get("tags") or []
+            if any(tag.get("tagFQN") == PII_TAG for tag in existing):
+                continue
+            path = f"/columns/{index}/tags"
+            patch.append(
+                {"op": "add", "path": f"{path}/-", "value": label}
+                if existing
+                else {"op": "add", "path": path, "value": [label]}
+            )
+            tagged.append(column["name"])
+        if not patch:
+            logger.info("  '%s' already tagged — skipping", fqn)
+            continue
+        logger.info("  tagging '%s': %s", fqn, ", ".join(tagged))
+        client.json_patch(f"/v1/tables/{table['id']}", patch)
+
+
+# ---------------------------------------------------------------------------
+# Data — column profiles + sample rows, read from the demo database
+# ---------------------------------------------------------------------------
+
+_NUMERIC_TYPES = frozenset(
+    {"BIGINT", "DECIMAL", "DOUBLE", "FLOAT", "INT", "NUMERIC", "SMALLINT", "TINYINT"}
+)
+
+
+def _json_safe(value: object) -> object:
+    """Coerce a psycopg2 value into something ``json.dumps`` accepts."""
+    if isinstance(value, (datetime.date, datetime.datetime, datetime.time)):
+        return value.isoformat()
+    if isinstance(value, decimal.Decimal):
+        return float(value)
+    if isinstance(value, (bytes, bytearray)):
+        return value.decode("utf-8", errors="replace")
+    return value
+
+
+def _split_fqn(fqn: str) -> tuple[str, str] | None:
+    """Return ``(schema, table)`` for a table FQN, or None if it is malformed."""
+    parts = fqn.split(".")
+    if len(parts) < 4:
+        logger.warning(
+            "  cannot parse schema/table out of '%s' — skipping profile", fqn
+        )
+        return None
+    return parts[-2], parts[-1]
+
+
+def _column_profile(
+    cursor: Any, schema: str, table: str, column: dict[str, Any]
+) -> dict[str, Any]:
+    """Profile one column with a handful of aggregates."""
+    name = column["name"]
+    qualified = f'"{schema}"."{table}"'
+    cursor.execute(
+        f'SELECT count(*), count("{name}"), count(DISTINCT "{name}") FROM {qualified}'  # noqa: S608
+    )
+    total, non_null, distinct = cursor.fetchone()
+    profile: dict[str, Any] = {
+        "name": name,
+        "valuesCount": float(total),
+        "nullCount": float(total - non_null),
+        "nullProportion": float(total - non_null) / total if total else 0.0,
+        "distinctCount": float(distinct),
+        "uniqueProportion": float(distinct) / total if total else 0.0,
+        "valuesPercentage": float(non_null) / total if total else 0.0,
+    }
+    if column.get("dataType") in _NUMERIC_TYPES:
+        cursor.execute(
+            f'SELECT min("{name}"), max("{name}"), avg("{name}") FROM {qualified}'  # noqa: S608
+        )
+    else:
+        cursor.execute(
+            f'SELECT min(length("{name}"::text)), max(length("{name}"::text)), '  # noqa: S608
+            f'avg(length("{name}"::text)) FROM {qualified}'
+        )
+    low, high, mean = cursor.fetchone()
+    if low is None:
+        return profile
+    if column.get("dataType") in _NUMERIC_TYPES:
+        profile.update(min=float(low), max=float(high), mean=float(mean))
+    else:
+        profile.update(minLength=float(low), maxLength=float(high), mean=float(mean))
+    return profile
+
+
+def _profile_one_table(client: OMClient, cursor: Any, fqn: str, timestamp: int) -> bool:
+    """Push sample rows + a column profile for one table. True if anything landed."""
+    table = get_entity_fields(client, "tables", fqn, "columns")
+    if table is None:
+        logger.warning("  table '%s' not found — skipping profile", fqn)
+        return False
+    location = _split_fqn(fqn)
+    if location is None:
+        return False
+    schema, name = location
+    columns = table.get("columns") or []
+    column_names = [column["name"] for column in columns]
+    quoted = ", ".join(f'"{column}"' for column in column_names)
+    cursor.execute(
+        f'SELECT {quoted} FROM "{schema}"."{name}" LIMIT {SAMPLE_ROW_LIMIT}'  # noqa: S608
+    )
+    rows = [[_json_safe(value) for value in row] for row in cursor.fetchall()]
+    client.put(
+        f"/v1/tables/{table['id']}/sampleData", {"columns": column_names, "rows": rows}
+    )
+
+    cursor.execute(f'SELECT count(*) FROM "{schema}"."{name}"')  # noqa: S608
+    (row_count,) = cursor.fetchone()
+    client.put(
+        f"/v1/tables/{table['id']}/tableProfile",
+        {
+            "tableProfile": {
+                "timestamp": timestamp,
+                "rowCount": float(row_count),
+                "columnCount": float(len(columns)),
+            },
+            "columnProfile": [
+                dict(_column_profile(cursor, schema, name, column), timestamp=timestamp)
+                for column in columns
+            ],
+        },
+    )
+    logger.info("  profiled '%s' (%d rows, %d columns)", fqn, row_count, len(columns))
+    return True
+
+
+def seed_profiles_and_samples(
+    client: OMClient, table_fqns: list[str], dsn: str
+) -> None:
+    """Read the demo database and push column profiles + sample rows to OpenMetadata.
+
+    A metadata-only ingestion gives you schemas and lineage but no profile and no
+    sample values — and PII masking that has nothing to hide is invisible. Rather
+    than shipping invented numbers, this profiles the live demo Postgres
+    (``cookbook/resources/demo-database``, port 5433) and uploads the result.
+
+    Skipped, loudly but harmlessly, when ``psycopg2`` is not installed or the
+    database is not reachable: everything else in the demo still works, Scene 2
+    just has less to show.
+    """
+    if client.dry_run:
+        logger.info("[dry-run] would profile %d table(s) from %s", len(table_fqns), dsn)
+        return
+    if importlib.util.find_spec("psycopg2") is None:
+        logger.warning(
+            "  psycopg2 not installed — skipping profiles "
+            "(pip install psycopg2-binary, or pass --skip-profiles)"
+        )
+        return
+
+    import psycopg2
+
+    try:
+        connection = psycopg2.connect(dsn, connect_timeout=TIMEOUT)
+    except psycopg2.Error as error:
+        logger.warning(
+            "  demo database unreachable at %s (%s) — skipping profiles. "
+            "Start it with `make demo-database`.",
+            dsn,
+            str(error).strip(),
+        )
+        return
+
+    timestamp = int(datetime.datetime.now(tz=datetime.UTC).timestamp() * 1000)
+    profiled = 0
+    try:
+        with connection, connection.cursor() as cursor:
+            for fqn in table_fqns:
+                profiled += _profile_one_table(client, cursor, fqn, timestamp)
+    finally:
+        connection.close()
+    logger.info("  %d table(s) profiled", profiled)
+
+
+# ---------------------------------------------------------------------------
+# Data — execute the ingested data-quality tests
+# ---------------------------------------------------------------------------
+
+# One extra test the dbt project does not define, added because it genuinely
+# FAILS on the demo data (guest checkouts leave `email` null). A data-quality
+# section where everything is green says nothing; one real failure is what makes
+# the compliance persona's `dataQuality` section worth reading.
+EXTRA_TEST_CASES: list[dict[str, str]] = [
+    {
+        "table_suffix": "jaffle_shop.marts_core.dim_customers",
+        "column": "email",
+        "name": "not_null_dim_customers_email",
+        "displayName": "dim_customers.email is not null",
+        "description": "Contact-detail completeness: every customer should have an email.",
+        "testDefinition": "columnValuesToBeNotNull",
+    },
+]
+
+# dbt ingestion registers its own short-named test definitions; a native
+# OpenMetadata test suite uses the long names. Both mean the same thing here.
+_NOT_NULL_DEFINITIONS = frozenset({"not_null", "columnValuesToBeNotNull"})
+_UNIQUE_DEFINITIONS = frozenset({"unique", "columnValuesToBeUnique"})
+_ACCEPTED_VALUES_DEFINITIONS = frozenset({"accepted_values", "columnValuesToBeInSet"})
+
+
+def ensure_extra_test_cases(client: OMClient, service: str) -> None:
+    """Create the demo's own test cases if the ingest didn't (idempotent)."""
+    for spec in EXTRA_TEST_CASES:
+        table_fqn = f"{service}.{spec['table_suffix']}"
+        case_fqn = f"{table_fqn}.{spec['column']}.{spec['name']}"
+        if get_entity(client, "dataQuality/testCases", case_fqn) is not None:
+            logger.info("  test case '%s' already present — skipping", spec["name"])
+            continue
+        if get_entity(client, "tables", table_fqn) is None:
+            logger.warning("  table '%s' not found — skipping test case", table_fqn)
+            continue
+        logger.info("  creating test case '%s'", spec["name"])
+        client.post(
+            "/v1/dataQuality/testCases",
+            {
+                "name": spec["name"],
+                "displayName": spec["displayName"],
+                "description": spec["description"],
+                "entityLink": f"<#E::table::{table_fqn}::columns::{spec['column']}>",
+                "testDefinition": spec["testDefinition"],
+                "parameterValues": [],
+            },
+        )
+
+
+def _test_case_column(entity_link: str) -> str | None:
+    """Pull the column name out of an ``<#E::table::fqn::columns::name>`` link."""
+    marker = "::columns::"
+    if marker not in entity_link:
+        return None
+    return entity_link.split(marker, 1)[1].rstrip(">")
+
+
+def _evaluate_test(
+    cursor: Any,
+    schema: str,
+    table: str,
+    column: str,
+    definition: str,
+    parameters: list[Any],
+) -> tuple[str, str] | None:
+    """Run one test against the demo database. Returns ``(status, message)``."""
+    qualified = f'"{schema}"."{table}"'
+    if definition in _NOT_NULL_DEFINITIONS:
+        cursor.execute(f'SELECT count(*) FROM {qualified} WHERE "{column}" IS NULL')  # noqa: S608
+        (bad,) = cursor.fetchone()
+        return (
+            "Success" if bad == 0 else "Failed",
+            f"Found {bad} null value(s) in {column}",
+        )
+    if definition in _UNIQUE_DEFINITIONS:
+        cursor.execute(
+            f'SELECT count(*) FROM (SELECT "{column}" FROM {qualified} '  # noqa: S608
+            f'WHERE "{column}" IS NOT NULL GROUP BY "{column}" HAVING count(*) > 1) AS duplicates'
+        )
+        (bad,) = cursor.fetchone()
+        return (
+            "Success" if bad == 0 else "Failed",
+            f"Found {bad} duplicate value(s) in {column}",
+        )
+    if definition in _ACCEPTED_VALUES_DEFINITIONS:
+        raw = next((str(item.get("value", "")) for item in parameters), "")
+        allowed = [
+            value.strip().strip("'\"[] ") for value in raw.split(",") if value.strip()
+        ]
+        if not allowed:
+            return None
+        cursor.execute(
+            f'SELECT count(*) FROM {qualified} WHERE "{column}" IS NOT NULL '  # noqa: S608
+            f'AND "{column}"::text <> ALL(%s)',
+            (allowed,),
+        )
+        (bad,) = cursor.fetchone()
+        return (
+            "Success" if bad == 0 else "Failed",
+            f"Found {bad} unexpected value(s) in {column}",
+        )
+    return None
+
+
+def _run_tests_for_table(
+    client: OMClient, cursor: Any, fqn: str, timestamp: int
+) -> tuple[int, int]:
+    """Execute every test case attached to one table. Returns ``(passed, failed)``."""
+    suite = get_entity_fields(
+        client, "dataQuality/testSuites", f"{fqn}.testSuite", "tests"
+    )
+    if suite is None:
+        logger.info("  '%s' has no test suite — skipping", fqn)
+        return (0, 0)
+    location = _split_fqn(fqn)
+    if location is None:
+        return (0, 0)
+    schema, table = location
+    passed = failed = 0
+    for entry in suite.get("tests") or []:
+        case = get_entity_fields(
+            client,
+            "dataQuality/testCases",
+            entry["fullyQualifiedName"],
+            "testDefinition",
+        )
+        if case is None:
+            continue
+        column = _test_case_column(case.get("entityLink") or "")
+        definition = (case.get("testDefinition") or {}).get("name")
+        if column is None or definition is None:
+            continue
+        outcome = _evaluate_test(
+            cursor, schema, table, column, definition, case.get("parameterValues") or []
+        )
+        if outcome is None:
+            logger.info(
+                "    %s: '%s' not executable here — skipping", case["name"], definition
+            )
+            continue
+        status, message = outcome
+        client.post(
+            f"/v1/dataQuality/testCases/testCaseResults/{entry['fullyQualifiedName']}",
+            {"timestamp": timestamp, "testCaseStatus": status, "result": message},
+        )
+        logger.info("    %-8s %s — %s", status, case["name"], message)
+        passed += status == "Success"
+        failed += status == "Failed"
+    return (passed, failed)
+
+
+def run_data_quality_tests(client: OMClient, table_fqns: list[str], dsn: str) -> None:
+    """Execute the ingested dbt tests against the demo database and record results.
+
+    dbt ingestion registers the test *definitions* but never their results, so
+    every asset reports "0 passed, 0 failed" — which the context builder
+    correctly refuses to call healthy. Running them here turns the compliance
+    persona's `dataQuality` section into something with an actual verdict.
+    """
+    if client.dry_run:
+        logger.info(
+            "[dry-run] would execute the test suites of %d table(s)", len(table_fqns)
+        )
+        return
+    if importlib.util.find_spec("psycopg2") is None:
+        logger.warning("  psycopg2 not installed — skipping test execution")
+        return
+
+    import psycopg2
+
+    try:
+        connection = psycopg2.connect(dsn, connect_timeout=TIMEOUT)
+    except psycopg2.Error as error:
+        logger.warning(
+            "  demo database unreachable at %s (%s) — skipping test execution",
+            dsn,
+            str(error).strip(),
+        )
+        return
+
+    timestamp = int(datetime.datetime.now(tz=datetime.UTC).timestamp() * 1000)
+    passed = failed = 0
+    try:
+        with connection, connection.cursor() as cursor:
+            for fqn in table_fqns:
+                table_passed, table_failed = _run_tests_for_table(
+                    client, cursor, fqn, timestamp
+                )
+                passed += table_passed
+                failed += table_failed
+    finally:
+        connection.close()
+    logger.info("  %d passed, %d failed", passed, failed)
+
+
 # ---------------------------------------------------------------------------
 # Axis B — persona context definitions
 # ---------------------------------------------------------------------------
 
 
-def existing_rule_names(client: OMClient, persona_id: str) -> set[str]:
+def existing_rule_ids(client: OMClient, persona_id: str) -> dict[str, str]:
+    """Map rule name -> rule id for the rules already on this persona."""
     response = client.get(f"/v1/personas/{persona_id}/aiContext")
     if response.status_code != 200:
-        return set()
+        return {}
     rules = response.json().get("rules", []) or []
-    return {rule.get("name") for rule in rules if isinstance(rule, dict)}
+    return {
+        rule["name"]: rule["id"]
+        for rule in rules
+        if isinstance(rule, dict) and "name" in rule and "id" in rule
+    }
 
 
 def _persona_user_ids(client: OMClient, persona_name: str) -> list[str]:
@@ -502,21 +1287,37 @@ def configure_persona(client: OMClient, config: dict[str, Any]) -> None:
     if persona_id is None:
         persona_id = create_persona(client, config)
     if persona_id is None:
-        logger.warning("Persona '%s' not resolvable (dry-run?) — skipping AI context.", name)
+        logger.warning(
+            "Persona '%s' not resolvable (dry-run?) — skipping AI context.", name
+        )
         return
 
     logger.info("Persona '%s' (%s): enabling AI context", name, persona_id)
     client.put(f"/v1/personas/{persona_id}/aiContext", config["settings"])
 
-    present = existing_rule_names(client, persona_id)
+    # Rules are replaced rather than skipped when they already exist, so editing
+    # a filter or a section list in this file and re-running actually takes
+    # effect. Skipping would leave a stale rule in place and look like the edit
+    # did nothing.
+    present = existing_rule_ids(client, persona_id)
     for rule in config["rules"]:
+        verb = "adding"
         if rule["name"] in present:
-            logger.info("  rule '%s' already present — skipping", rule["name"])
-            continue
+            verb = "replacing"
+            client.send(
+                "DELETE",
+                f"/v1/personas/{persona_id}/aiContext/rules/{present[rule['name']]}",
+                None,
+            )
         # queryFilter must be a JSON-ENCODED STRING, not a nested object.
         body = dict(rule)
         body["queryFilter"] = json.dumps(rule["queryFilter"])
-        logger.info("  adding rule '%s' (sections: %s)", rule["name"], ", ".join(rule["sections"]))
+        logger.info(
+            "  %s rule '%s' (sections: %s)",
+            verb,
+            rule["name"],
+            ", ".join(rule["sections"]),
+        )
         client.post(f"/v1/personas/{persona_id}/aiContext/rules", body)
 
 
@@ -547,9 +1348,15 @@ def _ensure_default_persona(
     """Set the user's defaultPersona so no-argument get_persona_context resolves it."""
     current = user.get("defaultPersona") or {}
     if current.get("id") == persona_ref["id"]:
-        logger.info("  %s default persona already '%s' — skipping", username, persona_ref.get("name"))
+        logger.info(
+            "  %s default persona already '%s' — skipping",
+            username,
+            persona_ref.get("name"),
+        )
         return
-    logger.info("  setting %s default persona -> '%s'", username, persona_ref.get("name"))
+    logger.info(
+        "  setting %s default persona -> '%s'", username, persona_ref.get("name")
+    )
     client.json_patch(
         f"/v1/users/{user['id']}",
         [{"op": "add", "path": "/defaultPersona", "value": persona_ref}],
@@ -572,7 +1379,9 @@ def assign_default_personas(client: OMClient) -> None:
             continue
         persona = get_entity(client, "personas", entry["persona"])
         if persona is None:
-            logger.warning("  persona '%s' not found — skipping for %s", entry["persona"], username)
+            logger.warning(
+                "  persona '%s' not found — skipping for %s", entry["persona"], username
+            )
             continue
         persona_ref = _ref(persona, "persona")
         _ensure_persona_membership(client, user, persona_ref, username)
@@ -587,7 +1396,9 @@ def assign_default_personas(client: OMClient) -> None:
 def add_table_owner(client: OMClient, fqn: str, user_id: str, username: str) -> None:
     response = client.get(f"/v1/tables/name/{fqn}", params={"fields": "owners"})
     if response.status_code != 200:
-        logger.warning("  table '%s' not found (HTTP %s) — skipping", fqn, response.status_code)
+        logger.warning(
+            "  table '%s' not found (HTTP %s) — skipping", fqn, response.status_code
+        )
         return
     owners = response.json().get("owners") or []
     if any(owner.get("id") == user_id for owner in owners):
@@ -606,9 +1417,13 @@ def add_table_owner(client: OMClient, fqn: str, user_id: str, username: str) -> 
 def assign_pii_ownership(client: OMClient, table_fqns: list[str]) -> None:
     user_id = get_id_by_name(client, "users", PII_OWNER_USERNAME)
     if user_id is None:
-        logger.error("Cannot assign ownership — user '%s' not found.", PII_OWNER_USERNAME)
+        logger.error(
+            "Cannot assign ownership — user '%s' not found.", PII_OWNER_USERNAME
+        )
         return
-    logger.info("Assigning %s as owner of %d PII table(s)", PII_OWNER_USERNAME, len(table_fqns))
+    logger.info(
+        "Assigning %s as owner of %d PII table(s)", PII_OWNER_USERNAME, len(table_fqns)
+    )
     for fqn in table_fqns:
         add_table_owner(client, fqn, user_id, PII_OWNER_USERNAME)
 
@@ -635,7 +1450,12 @@ def create_pii_policy_and_role(client: OMClient) -> None:
                     "name": "allow-view-pii-tables",
                     "effect": "allow",
                     "resources": ["table"],
-                    "operations": ["ViewAll", "ViewDataProfile", "ViewSampleData", "ViewTests"],
+                    "operations": [
+                        "ViewAll",
+                        "ViewDataProfile",
+                        "ViewSampleData",
+                        "ViewTests",
+                    ],
                     "condition": f"matchAnyTag('{PII_TAG}')",
                 }
             ],
@@ -655,7 +1475,13 @@ def create_pii_policy_and_role(client: OMClient) -> None:
         logger.info("Assigning role '%s' to %s", PII_ROLE_NAME, PII_OWNER_USERNAME)
         client.json_patch(
             f"/v1/users/{user_id}",
-            [{"op": "add", "path": "/roles/0", "value": {"id": role_id, "type": "role"}}],
+            [
+                {
+                    "op": "add",
+                    "path": "/roles/0",
+                    "value": {"id": role_id, "type": "role"},
+                }
+            ],
         )
 
 
@@ -671,7 +1497,9 @@ def _delete_superseded_memories(client: OMClient) -> None:
         if memory is None:
             continue
         logger.info("  removing superseded memory '%s'", name)
-        client.send("DELETE", f"/v1/contextCenter/memories/{memory['id']}?hardDelete=true", None)
+        client.send(
+            "DELETE", f"/v1/contextCenter/memories/{memory['id']}?hardDelete=true", None
+        )
 
 
 def create_ground_rules(client: OMClient, table_fqns: list[str]) -> None:
@@ -694,7 +1522,9 @@ def create_ground_rules(client: OMClient, table_fqns: list[str]) -> None:
     for rule in GROUND_RULES:
         user = get_entity(client, "users", rule["username"])
         if user is None:
-            logger.warning("  user '%s' not found — skipping operating rule", rule["username"])
+            logger.warning(
+                "  user '%s' not found — skipping operating rule", rule["username"]
+            )
             continue
         payload: dict[str, Any] = {
             "name": rule["name"],
@@ -709,7 +1539,9 @@ def create_ground_rules(client: OMClient, table_fqns: list[str]) -> None:
         if primary_entity is not None:
             payload["primaryEntity"] = primary_entity
         logger.info(
-            "  upserting operating-rule memory '%s' for %s", rule["name"], rule["username"]
+            "  upserting operating-rule memory '%s' for %s",
+            rule["name"],
+            rule["username"],
         )
         client.put("/v1/contextCenter/memories", payload)
 
@@ -777,6 +1609,18 @@ def assign_glossary_terms_to_table(client: OMClient, table_fqn: str) -> None:
     client.json_patch(f"/v1/tables/name/{table_fqn}", patch)
 
 
+def _delete_superseded_articles(client: OMClient) -> None:
+    """Remove knowledge articles created by earlier revisions (best-effort)."""
+    for name in SUPERSEDED_ARTICLE_NAMES:
+        article = get_entity(client, "contextCenter/pages", name)
+        if article is None:
+            continue
+        logger.info("  removing superseded article '%s'", name)
+        client.send(
+            "DELETE", f"/v1/contextCenter/pages/{article['id']}?hardDelete=true", None
+        )
+
+
 def ensure_knowledge_article(client: OMClient, table_fqn: str) -> None:
     """Create a Knowledge Center article linked to the PII table (idempotent).
 
@@ -792,7 +1636,8 @@ def ensure_knowledge_article(client: OMClient, table_fqn: str) -> None:
         return
     verb = (
         "already present — updating"
-        if get_entity(client, "contextCenter/pages", KNOWLEDGE_ARTICLE["name"]) is not None
+        if get_entity(client, "contextCenter/pages", KNOWLEDGE_ARTICLE["name"])
+        is not None
         else "creating"
     )
     logger.info(
@@ -814,9 +1659,41 @@ def ensure_knowledge_article(client: OMClient, table_fqn: str) -> None:
     )
 
 
+def ensure_operating_rule_articles(client: OMClient) -> None:
+    """Upsert one operating-rules article per persona (idempotent).
+
+    Deliberately NOT linked to any table: if these were attached to the demo
+    asset both personas would see both, because the ``articles`` section renders
+    everything attached to the asset. Keeping them unattached means the only
+    thing that pulls one in is the persona's own page rule — which is exactly the
+    behaviour the demo is showing off.
+    """
+    for persona, article in OPERATING_RULE_ARTICLES.items():
+        verb = (
+            "updating"
+            if get_entity(client, "contextCenter/pages", article["name"]) is not None
+            else "creating"
+        )
+        logger.info(
+            "  %s operating-rules article '%s' (%s)", verb, article["name"], persona
+        )
+        client.put(
+            "/v1/contextCenter/pages",
+            {
+                "name": article["name"],
+                "displayName": article["displayName"],
+                "pageType": "Article",
+                "description": article["description"],
+                "page": {},
+            },
+        )
+
+
 def enrich_governance_context(client: OMClient, table_fqns: list[str]) -> None:
-    """Glossary terms + one knowledge article, both attached to the demo PII table."""
+    """Glossary terms + knowledge articles, attached to the demo PII table."""
     ensure_glossary(client)
+    ensure_operating_rule_articles(client)
+    _delete_superseded_articles(client)
     if not table_fqns:
         logger.warning("  no PII table resolved — skipping glossary tags + article")
         return
@@ -834,7 +1711,9 @@ def _encode_password(password: str) -> str:
     return base64.b64encode(password.encode("utf-8")).decode("ascii")
 
 
-def _acquire_user_token(client: OMClient, entry: dict[str, str], password: str) -> str | None:
+def _acquire_user_token(
+    client: OMClient, entry: dict[str, str], password: str
+) -> str | None:
     """Admin-reset the user's password, log in as them, return their access token.
 
     Returns None (with a warning) if the instance blocks it — e.g. SSO, where
@@ -878,7 +1757,11 @@ def _acquire_user_token(client: OMClient, entry: dict[str, str], password: str) 
     )
     if login is None or login.status_code >= 400:
         code = "n/a" if login is None else login.status_code
-        logger.warning("  login failed for '%s' (HTTP %s) — generate a token manually", username, code)
+        logger.warning(
+            "  login failed for '%s' (HTTP %s) — generate a token manually",
+            username,
+            code,
+        )
         return None
     token = login.json().get("accessToken")
     if not token:
@@ -920,13 +1803,25 @@ def print_user_tokens(client: OMClient, password: str) -> None:
 # ---------------------------------------------------------------------------
 
 
-def _resolve_pii_tables(client: OMClient, explicit: list[str], limit: int) -> list[str]:
+def _resolve_demo_tables(
+    client: OMClient, explicit: list[str], service: str, limit: int
+) -> list[str]:
+    """The tables every later step operates on, most specific source first.
+
+    Explicit ``--pii-table-fqn`` wins, then ``DEMO_TABLE_FQN``, then the known
+    Jaffle Shop demo tables, and finally — for instances that carry PII tags from
+    somewhere else entirely — whatever search turns up inside the service.
+    """
     if explicit:
         return explicit
     env_fqn = os.environ.get("DEMO_TABLE_FQN")
     if env_fqn:
         return [env_fqn]
-    discovered = discover_pii_tables(client, limit)
+    known = demo_tables(client, service)
+    if known:
+        logger.info("Using %d demo table(s) from service '%s'", len(known), service)
+        return known
+    discovered = discover_pii_tables(client, service, limit)
     if discovered:
         logger.info("Discovered %d PII table(s) via search", len(discovered))
     return discovered
@@ -934,14 +1829,26 @@ def _resolve_pii_tables(client: OMClient, explicit: list[str], limit: int) -> li
 
 def main() -> None:
     logging.basicConfig(level=logging.INFO, format="%(message)s")
-    parser = argparse.ArgumentParser(description="Configure the Persona-aware Context demo")
+    parser = argparse.ArgumentParser(
+        description="Configure the Persona-aware Context demo"
+    )
     parser.add_argument("--host", default=os.environ.get("AI_SDK_HOST"))
     parser.add_argument("--token", default=os.environ.get("AI_SDK_TOKEN"))
+    parser.add_argument(
+        "--service",
+        default=os.environ.get("DEMO_SERVICE", DEFAULT_SERVICE),
+        help=f"Database service holding the demo tables (default: {DEFAULT_SERVICE!r}).",
+    )
+    parser.add_argument(
+        "--demo-db-dsn",
+        default=os.environ.get("DEMO_DB_DSN", DEMO_DB_DSN),
+        help="Postgres DSN of the running demo database, used for profiling.",
+    )
     parser.add_argument(
         "--pii-table-fqn",
         action="append",
         default=[],
-        help="FQN of a PII table to own (repeatable). Defaults to search discovery.",
+        help="FQN of a demo table (repeatable). Defaults to the known Jaffle Shop tables.",
     )
     parser.add_argument(
         "--max-owned-tables",
@@ -959,13 +1866,37 @@ def main() -> None:
         action="store_true",
         help="Skip creating the demo users (david.kim / sara.johnson).",
     )
-    parser.add_argument("--skip-personas", action="store_true", help="Skip Axis B persona config.")
+    parser.add_argument(
+        "--skip-roles",
+        action="store_true",
+        help=f"Skip granting the demo users the baseline '{BASELINE_ROLE}' role.",
+    )
+    parser.add_argument(
+        "--skip-pii-tags",
+        action="store_true",
+        help="Skip tagging sensitive columns with PII.Sensitive.",
+    )
+    parser.add_argument(
+        "--skip-profiles",
+        action="store_true",
+        help="Skip profiling the demo database into column profiles + sample rows.",
+    )
+    parser.add_argument(
+        "--skip-tests",
+        action="store_true",
+        help="Skip executing the ingested data-quality tests against the demo database.",
+    )
+    parser.add_argument(
+        "--skip-personas", action="store_true", help="Skip Axis B persona config."
+    )
     parser.add_argument(
         "--skip-default-persona",
         action="store_true",
         help="Skip assigning each demo user's default persona (and membership).",
     )
-    parser.add_argument("--skip-ownership", action="store_true", help="Skip Axis A ownership.")
+    parser.add_argument(
+        "--skip-ownership", action="store_true", help="Skip Axis A ownership."
+    )
     parser.add_argument(
         "--skip-ground-rules",
         action="store_true",
@@ -986,7 +1917,9 @@ def main() -> None:
         default=DEMO_PASSWORD,
         help="Password set on demo users so the script can log in as them (basic-auth only).",
     )
-    parser.add_argument("--dry-run", action="store_true", help="Print changes without applying.")
+    parser.add_argument(
+        "--dry-run", action="store_true", help="Print changes without applying."
+    )
     args = parser.parse_args()
 
     if not args.host or not args.token:
@@ -1002,32 +1935,52 @@ def main() -> None:
             logger.info("=== Demo users — create if missing ===")
             ensure_users_exist(client)
 
+        if not args.skip_roles:
+            logger.info("\n=== Access — baseline role so both users can read ===")
+            grant_baseline_role(client)
+
+        logger.info("\n=== Demo tables ===")
+        table_fqns = _resolve_demo_tables(
+            client, args.pii_table_fqn, args.service, args.max_owned_tables
+        )
+        if not table_fqns:
+            logger.warning(
+                "No demo tables resolved in service '%s'. Ingest the demo database, pass "
+                "--service/--pii-table-fqn, or set DEMO_TABLE_FQN — every scene below "
+                "needs an asset to attach to.",
+                args.service,
+            )
+
+        if not args.skip_pii_tags:
+            logger.info("\n=== Data — PII column tags (the masking lever) ===")
+            tag_pii_columns(client, table_fqns)
+
+        if not args.skip_profiles:
+            logger.info("\n=== Data — column profiles + sample rows ===")
+            seed_profiles_and_samples(client, table_fqns, args.demo_db_dsn)
+
+        if not args.skip_tests:
+            logger.info("\n=== Data — execute the data-quality tests ===")
+            ensure_extra_test_cases(client, args.service)
+            run_data_quality_tests(client, table_fqns, args.demo_db_dsn)
+
+        # Knowledge first: the persona rules below select the operating-rules
+        # articles by name, so those articles have to exist before the rules are
+        # written or the first run renders an empty section.
+        if not args.skip_knowledge:
+            logger.info(
+                "\n=== Axis B enrichment — glossary terms + knowledge articles ==="
+            )
+            enrich_governance_context(client, table_fqns)
+
         if not args.skip_personas:
             logger.info("\n=== Axis B — persona context definitions ===")
-            for config in PERSONA_CONFIGS:
+            for config in persona_configs(args.service):
                 configure_persona(client, config)
 
         if not args.skip_default_persona:
             logger.info("\n=== Axis B — default persona per user ===")
             assign_default_personas(client)
-
-        needs_tables = not (
-            args.skip_ownership and args.skip_ground_rules and args.skip_knowledge
-        )
-        table_fqns = (
-            _resolve_pii_tables(client, args.pii_table_fqn, args.max_owned_tables)
-            if needs_tables
-            else []
-        )
-        if needs_tables and not table_fqns:
-            logger.warning(
-                "No PII tables resolved. Pass --pii-table-fqn <fqn> or set DEMO_TABLE_FQN "
-                "so get_asset_context and the ground-rules memories can attach to an asset."
-            )
-
-        if not args.skip_knowledge:
-            logger.info("\n=== Axis B enrichment — glossary terms + knowledge article ===")
-            enrich_governance_context(client, table_fqns)
 
         if not args.skip_ownership:
             logger.info("\n=== Axis A — PII ownership (masking lever) ===")
