@@ -306,7 +306,7 @@ Real-world examples showing how teams use the AI SDK in production workflows.
 | [MCP Impact Analysis](cookbook/mcp-impact-analysis/) | AI-powered impact analysis for schema changes — run in CI to catch breaking changes before they ship | Python SDK, LangChain |
 | [DQ Failure Slack Notifications](cookbook/dq-failure-slack-notifications/) | Automatically analyze Data Quality failures and post root-cause summaries to Slack | n8n, Slack |
 | [dbt Model PR Review](cookbook/dbt-pr-review/) | GitHub Action that reviews dbt model changes for downstream impact and DQ risks on every PR | GitHub Actions, Python SDK |
-| [GDPR DSAR Compliance](cookbook/gdpr-dsar-compliance/) | Trace PII across your data to handle data deletion and access requests | TypeScript SDK, Browser |
+| [GDPR DSAR Compliance](cookbook/gdpr-dsar-compliance/) | Trace PII with an AI Studio agent, then extend it with a visible custom workflow and governed expert handoff | TypeScript/Python SDKs, LangGraph, optional Langfuse, Browser |
 | [MCP Metadata Chatbot](cookbook/mcp-metadata-chatbot/) | Multi-agent chatbot with specialist agents for discovery, lineage, and curation | Python SDK, LangChain |
 
 Each entry includes a step-by-step tutorial, importable artifacts, and the agent configuration needed to get started.

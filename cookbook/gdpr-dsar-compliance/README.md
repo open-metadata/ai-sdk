@@ -12,6 +12,16 @@ When a customer requests data deletion under GDPR (e.g., "delete all my data"), 
 5. **Checks retention policies** on each table to identify conflicts with immediate deletion
 6. Produces a structured compliance report with deletion steps, retention conflicts, and impact assessment
 
+This cookbook has two runnable iterations:
+
+- **AI Studio integration** — the browser uses a thin credential-protecting
+  Node server to invoke the complete `GDPRComplianceAnalyzer`. There is no local
+  model, tool loop, or agent definition.
+- **Extended custom agent** — an explicit LangGraph reuses that same AI Studio
+  agent as one tool, adds live Data Steward / Domain expert discovery from
+  Collate, and can record the split in Langfuse. See [extended/](./extended/)
+  and the complete [three-act demo guide](./DEMO_GUIDE.md).
+
 ## Prerequisites
 
 - Collate/OpenMetadata instance with metadata ingested (tables, lineage, retention policies)
@@ -22,64 +32,53 @@ When a customer requests data deletion under GDPR (e.g., "delete all my data"), 
 ## Architecture
 
 ```
-┌────────────┐     DSAR request     ┌──────────────────────┐
-│  Browser   │ ───────────────────► │ GDPRCompliance       │
-│  (UI form) │                      │ Analyzer Agent       │
-└─────┬──────┘                      └──────────┬───────────┘
-      │                                        │
-      │  SSE stream                            │ 1. searches for customer tables
-      │◄───────────────────────────────────────┘ 2. traces lineage for related tables
-      │                                          3. inspects columns for PII
-      ▼                                          4. checks retention policies
-┌────────────┐
-│ Compliance │
-│ Report     │
-└────────────┘
+┌────────────┐   POST /api/analyze   ┌────────────────┐   AI SDK invoke   ┌──────────────────────┐
+│  Browser   │ ────────────────────► │ Thin Node      │ ────────────────► │ GDPRCompliance       │
+│  (UI form) │ ◄──────────────────── │ server         │ ◄──────────────── │ Analyzer (AI Studio) │
+└────────────┘   completed report    └────────────────┘                   └──────────┬───────────┘
+                                                                                   │
+                                                             1. searches catalog  │
+                                                             2. traces lineage    │
+                                                             3. inspects PII      │
+                                                             4. checks retention  │
+                                                                                   ▼
+                                                                        Collate context + RBAC
 ```
 
 ## Step 1: Create the Agent
 
-Create a Dynamic Agent with PII search and lineage tracing skills.
+Create a Dynamic Agent with PII search and lineage tracing skills. The setup
+also prevents similarly named assets from unrelated local services entering the
+report:
 
-See [agent-config.md](./agent-config.md) for detailed setup instructions using the CLI, UI, or SDKs.
+- the `GDPRAnalyst` AI persona contains a fail-closed rule for the Jaffle Shop
+  service and database;
+- the Dynamic Agent's `knowledge.services` scope is restricted to the Jaffle
+  Shop database service.
 
-**Quick setup with CLI:**
+After ingesting PostgreSQL, run:
 
 ```bash
-# Create the Persona
-ai-sdk personas create \
-  --name GDPRAnalyst \
-  --description "GDPR compliance and PII analysis specialist" \
-  --prompt "You are a GDPR compliance analyst. You MUST execute the full analysis yourself and produce a complete compliance report. Do NOT stop to ask the user what to do next — complete every step autonomously.
-
-When a customer requests data deletion, execute ALL of these steps:
-
-1. STEP 1 — SEARCH: Search for tables where the customer's data likely resides (e.g., 'customers', 'payments', 'orders'). Use the search tools to find them.
-2. STEP 2 — TRACE LINEAGE: For EACH table found in Step 1, trace its lineage (both upstream and downstream). Do this yourself — call the lineage tools for every table. This will reveal derived views, staging tables, marts, and analytics tables that also contain customer data.
-3. STEP 3 — INSPECT TABLE DETAILS: For EACH table discovered (from both Step 1 and Step 2), get its full details — columns, tags, classifications, and retention period. Do not skip any table.
-4. STEP 4 — PRODUCE THE FULL COMPLIANCE REPORT with these sections:
-  - A table listing every affected asset with: table name, PII columns found, retention period, and whether there is a retention conflict
-  - Retention conflicts: flag every case where a downstream table has a longer retention than its source (e.g., a view with P5Y retention pulling email from a P90D source table)
-  - Recommended deletion order respecting foreign key dependencies
-  - Risk flags: orphaned FK references, free-text fields with unstructured PII, PII duplicated across tables with different retention
-
-IMPORTANT: Do not present intermediate findings and ask the user for next steps. Execute the full workflow and deliver the complete report."
-
-# Create the Agent
-ai-sdk agents create \
-  --name GDPRComplianceAnalyzer \
-  --description "Handles GDPR deletion requests by searching for customer data, tracing lineage, and checking retention policies" \
-  --persona GDPRAnalyst \
-  --skills discoveryAndSearch,dataLineageAndExploration \
-  --api-enabled true
+export AI_SDK_SERVICE="jaffle shop"
+export AI_SDK_DATABASE="jaffle_shop"
+make setup-gdpr-agent
 ```
 
-## Step 2: Configure the Token
+The command creates missing entities and updates an existing
+`GDPRAnalyst`/`GDPRComplianceAnalyzer` to the requested scope. See
+[agent-config.md](./agent-config.md) for the exact persona rule and manual UI
+setup.
 
-Open `cookbook/gdpr-dsar-compliance/index.html` and set your JWT token:
+## Step 2: Configure the Connection
 
-```javascript
-const TOKEN = "your-jwt-token";
+Keep the JWT on the server, not in the HTML:
+
+```bash
+export AI_SDK_HOST="https://your-instance.getcollate.io"
+export AI_SDK_TOKEN="your-jwt-token"
+export AI_SDK_AGENT="GDPRComplianceAnalyzer"  # optional; this is the default
+export AI_SDK_SERVICE="jaffle shop"            # used by setup-gdpr-agent
+export AI_SDK_DATABASE="jaffle_shop"           # used by setup-gdpr-agent
 ```
 
 ## Step 3: Start the Demo
@@ -103,7 +102,8 @@ Open `http://localhost:8080` (or the port you specified).
 
 Type your Data Subject Access Request in the text area and click **Submit Request** (or press `Ctrl+Enter`).
 
-The agent will stream its response in real-time, showing which tools it uses (searching the catalog, tracing lineage) as it builds the compliance report.
+The UI shows a working state while the AI Studio agent completes its tool calls,
+then renders the report and the names of the tools used.
 
 ![img.png](img.png)
 
@@ -146,7 +146,7 @@ policies are compatible with a 90-day customer data retention window.
 The server uses the [TypeScript SDK](../../typescript/) (`@openmetadata/ai-sdk` on npm). It uses the SDK's `agent().invoke()` method to get the complete compliance report after the agent finishes all tool calls (search, lineage, detail inspection):
 
 ```javascript
-import { AISdk } from './ai-sdk.js';
+import { AISdk } from '@openmetadata/ai-sdk';
 
 const client = new AISdk({ host: HOST, token: TOKEN });
 
@@ -179,21 +179,36 @@ from ai_sdk import AISdk
 client = AISdk(host="https://...", token="...")
 
 # Process a DSAR from your ticketing system
-response = client.agent("GDPRComplianceAnalyzer").invoke(
+response = client.agent("GDPRComplianceAnalyzer").call(
     "Customer Michael Perez (customer_id: 1, email: mperez@example.com) has "
     "requested deletion of all his personal data. Search for tables where his "
     "data resides, trace lineage, identify PII, and check retention policies."
 )
 
 # Send the compliance report to your DSAR tracking tool
-print(response.content)
+print(response.response)
 ```
+
+### Extend It With Your Own Agent
+
+Run the final iteration when you need application-specific orchestration around
+the governed AI Studio analysis:
+
+```bash
+export OPENAI_API_KEY="your-provider-key"
+make demo-gdpr-extended
+```
+
+Open `http://localhost:8081`. The shared UI now animates the three LangGraph
+nodes and adds catalog-backed assignee recommendations to the same compliance
+report. See [extended/README.md](./extended/README.md) for the architecture,
+tool contracts, and optional Langfuse trace setup.
 
 ## Troubleshooting
 
 | Issue | Solution |
 |-------|----------|
-| No response from agent | Verify `TOKEN` is correct; check browser console for errors |
+| No response from agent | Verify `AI_SDK_TOKEN` is correct; check the server and browser consoles |
 | Agent returns empty analysis | Ensure PII classification tags are applied to your assets in Collate |
 | CORS error in browser | Use `serve.js` instead of a plain static server — it proxies API calls |
 | `Proxy error` in response | Check that `AI_SDK_HOST` is reachable from where `serve.js` runs |
@@ -204,6 +219,7 @@ print(response.content)
 - [Metadata AI TypeScript SDK](../../typescript/)
 - [Metadata AI Python SDK](../../python/)
 - [Metadata AI CLI](../../cli/)
+- [Three-act Retrieve / Build / Extend demo guide](./DEMO_GUIDE.md)
 - [Collate PII Classification Documentation](https://docs.getcollate.io)
 
 

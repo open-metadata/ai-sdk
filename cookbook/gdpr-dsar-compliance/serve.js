@@ -53,6 +53,17 @@ function needsContinuation(text) {
 }
 
 createServer(async (req, res) => {
+  // ── GET /api/config — lets the shared UI identify this iteration ──
+  if (req.method === "GET" && req.url === "/api/config") {
+    res.writeHead(200, { "Content-Type": "application/json" });
+    res.end(JSON.stringify({
+      runtimeLabel: "AI Studio agent · no local LLM",
+      responseTitle: "Compliance Report",
+      workingLabel: "AI Studio agent is analyzing (this may take a few minutes)...",
+    }));
+    return;
+  }
+
   // ── POST /api/analyze — multi-turn invoke, return JSON ────────────
   if (req.method === "POST" && req.url === "/api/analyze") {
     try {
