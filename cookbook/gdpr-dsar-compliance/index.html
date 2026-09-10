@@ -16,7 +16,7 @@
     }
 
     .container {
-      max-width: 860px;
+      max-width: 1100px;
       margin: 0 auto;
       padding: 2rem 1.5rem;
     }
@@ -35,6 +35,220 @@
       color: #555;
       margin-top: 0.25rem;
       font-size: 0.95rem;
+    }
+
+    .runtime-badge {
+      display: inline-flex;
+      align-items: center;
+      margin-top: 0.75rem;
+      padding: 0.25rem 0.6rem;
+      border-radius: 999px;
+      background: #ede9fe;
+      color: #5b21b6;
+      font-size: 0.78rem;
+      font-weight: 600;
+    }
+
+    /* Extended demo: explicit LangGraph ownership boundary */
+    #workflow-card { display: none; }
+    #workflow-card.visible { display: block; }
+
+    .workflow-heading {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    .workflow-heading h2 { margin-bottom: 0.2rem; }
+
+    .workflow-heading p {
+      color: #666;
+      font-size: 0.86rem;
+    }
+
+    .observability-badge {
+      flex: none;
+      border: 1px solid #d1d5db;
+      border-radius: 999px;
+      color: #6b7280;
+      font-size: 0.74rem;
+      font-weight: 600;
+      padding: 0.25rem 0.6rem;
+    }
+
+    .observability-badge.enabled {
+      background: #ecfdf5;
+      border-color: #a7f3d0;
+      color: #047857;
+    }
+
+    .workflow-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 2.2rem;
+      margin-top: 1rem;
+    }
+
+    .workflow-node {
+      --node-color: #7c3aed;
+      --node-soft: #f5f3ff;
+      position: relative;
+      min-height: 220px;
+      border: 1px solid #ddd6fe;
+      border-top: 4px solid var(--node-color);
+      border-radius: 8px;
+      padding: 1rem;
+      background: #fff;
+      transition: box-shadow 0.2s, transform 0.2s, opacity 0.2s;
+    }
+
+    .workflow-node.owner-bridge {
+      --node-color: #0f766e;
+      --node-soft: #f0fdfa;
+      border-color: #99f6e4;
+    }
+
+    .workflow-node.owner-internal {
+      --node-color: #2563eb;
+      --node-soft: #eff6ff;
+      border-color: #bfdbfe;
+    }
+
+    .workflow-node::after {
+      content: "→";
+      position: absolute;
+      right: -1.75rem;
+      top: calc(50% - 1rem);
+      color: #9ca3af;
+      font-size: 1.5rem;
+      font-weight: 700;
+    }
+
+    .workflow-node:last-child::after { display: none; }
+
+    .workflow-node.waiting { opacity: 0.55; }
+
+    .workflow-node.active {
+      transform: translateY(-2px);
+      box-shadow: 0 0 0 3px color-mix(in srgb, var(--node-color) 16%, transparent);
+    }
+
+    .workflow-node.completed { background: var(--node-soft); }
+
+    .workflow-node.failed {
+      border-color: #fca5a5;
+      border-top-color: #dc2626;
+      background: #fef2f2;
+    }
+
+    .node-owner {
+      display: inline-block;
+      color: var(--node-color);
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.055em;
+      text-transform: uppercase;
+      margin-bottom: 0.45rem;
+    }
+
+    .node-title-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.5rem;
+    }
+
+    .node-title {
+      font-size: 0.98rem;
+      font-weight: 700;
+    }
+
+    .node-status {
+      color: #6b7280;
+      font-size: 0.72rem;
+      font-weight: 600;
+    }
+
+    .workflow-node.active .node-status { color: var(--node-color); }
+    .workflow-node.completed .node-status { color: #047857; }
+    .workflow-node.failed .node-status { color: #dc2626; }
+
+    .node-kind {
+      color: #6b7280;
+      font-size: 0.76rem;
+      margin: 0.15rem 0 0.6rem;
+    }
+
+    .node-does {
+      color: #374151;
+      font-size: 0.82rem;
+      line-height: 1.45;
+    }
+
+    .node-output {
+      border-top: 1px solid #e5e7eb;
+      color: #6b7280;
+      font-size: 0.76rem;
+      line-height: 1.4;
+      margin-top: 0.75rem;
+      padding-top: 0.65rem;
+    }
+
+    .node-run-detail {
+      color: #374151;
+      display: none;
+      font-size: 0.76rem;
+      line-height: 1.4;
+      margin-top: 0.55rem;
+    }
+
+    .workflow-node.completed .node-run-detail { display: block; }
+
+    .trace-link {
+      display: none;
+      margin-top: 1rem;
+      padding: 0.65rem 0.8rem;
+      border-radius: 6px;
+      background: #ecfdf5;
+      border: 1px solid #a7f3d0;
+      font-size: 0.82rem;
+    }
+
+    .trace-link.visible { display: block; }
+    .trace-link a { color: #047857; font-weight: 600; }
+
+    .mermaid-source {
+      margin-top: 1rem;
+      font-size: 0.78rem;
+      color: #6b7280;
+    }
+
+    .mermaid-source summary { cursor: pointer; }
+
+    .mermaid-source pre {
+      overflow-x: auto;
+      margin-top: 0.5rem;
+      padding: 0.75rem;
+      border-radius: 6px;
+      background: #111827;
+      color: #e5e7eb;
+      font-size: 0.72rem;
+      white-space: pre-wrap;
+    }
+
+    @media (max-width: 820px) {
+      .workflow-grid { grid-template-columns: 1fr; gap: 2rem; }
+      .workflow-node { min-height: auto; }
+      .workflow-node::after {
+        content: "↓";
+        left: calc(50% - 0.5rem);
+        right: auto;
+        top: auto;
+        bottom: -1.8rem;
+      }
+      .workflow-heading { flex-direction: column; }
     }
 
     .card {
@@ -221,6 +435,7 @@
     <header>
       <h1>GDPR DSAR Compliance</h1>
       <p>Submit a Data Subject Access Request to trace customer data, discover related tables via lineage, and check retention policies.</p>
+      <span id="runtime-label" class="runtime-badge">AI Studio agent</span>
     </header>
 
     <!-- DSAR Input -->
@@ -232,9 +447,26 @@
       <button id="submit-btn">Submit Request</button>
     </div>
 
+    <!-- Only the extended runtime exposes /api/graph, so Act 2 stays minimal. -->
+    <div id="workflow-card" class="card">
+      <div class="workflow-heading">
+        <div>
+          <h2>Who is doing the work?</h2>
+          <p>The live LangGraph separates governed Collate context from application-owned reasoning.</p>
+        </div>
+        <span id="observability-badge" class="observability-badge">Langfuse off</span>
+      </div>
+      <div id="workflow-grid" class="workflow-grid"></div>
+      <div id="trace-link" class="trace-link"></div>
+      <details class="mermaid-source">
+        <summary>Show the LangGraph Mermaid source</summary>
+        <pre id="mermaid-source"></pre>
+      </details>
+    </div>
+
     <!-- Response -->
     <div id="response" class="card">
-      <h2>Compliance Report</h2>
+      <h2 id="response-title">Compliance Report</h2>
       <div id="tools-bar" class="tools-bar">
         <div class="spinner"></div>
         <span id="tools-label">Agent is working...</span>
@@ -251,12 +483,237 @@
     const toolsLabel      = document.getElementById("tools-label");
     const submitBtn       = document.getElementById("submit-btn");
     const dsarInput       = document.getElementById("dsar-input");
+    const runtimeLabel    = document.getElementById("runtime-label");
+    const responseTitle   = document.getElementById("response-title");
+    const workflowCard    = document.getElementById("workflow-card");
+    const workflowGrid    = document.getElementById("workflow-grid");
+    const observability   = document.getElementById("observability-badge");
+    const traceLink       = document.getElementById("trace-link");
+    const mermaidSource   = document.getElementById("mermaid-source");
+    let workingLabel      = "Agent is analyzing (this may take a few minutes)...";
+    let streamEndpoint    = null;
+    let workflowNodeIds   = [];
 
     function showError(msg) {
       responseCard.classList.add("visible");
       toolsBar.classList.remove("visible");
-      responseContent.innerHTML = '<div class="error-msg">' + msg + '</div>';
+      responseContent.innerHTML = "";
+      const error = document.createElement("div");
+      error.className = "error-msg";
+      error.textContent = msg;
+      responseContent.appendChild(error);
       submitBtn.disabled = false;
+    }
+
+    function configureObservability(config) {
+      if (!config) return;
+      observability.textContent = config.enabled ? "Langfuse tracing on" : "Langfuse tracing off";
+      observability.classList.toggle("enabled", Boolean(config.enabled));
+      observability.title = config.status || "";
+    }
+
+    function renderWorkflow(graph) {
+      if (!graph.nodes || graph.nodes.length === 0) return;
+      workflowNodeIds = graph.nodes.map(function (node) { return node.id; });
+      workflowGrid.innerHTML = "";
+
+      graph.nodes.forEach(function (node) {
+        const card = document.createElement("div");
+        card.className = "workflow-node owner-" + node.ownerKey;
+        card.dataset.node = node.id;
+        card.dataset.label = node.label;
+
+        const owner = document.createElement("span");
+        owner.className = "node-owner";
+        owner.textContent = node.owner;
+
+        const titleRow = document.createElement("div");
+        titleRow.className = "node-title-row";
+        const title = document.createElement("span");
+        title.className = "node-title";
+        title.textContent = node.label;
+        const status = document.createElement("span");
+        status.className = "node-status";
+        status.textContent = "Ready";
+        titleRow.append(title, status);
+
+        const kind = document.createElement("p");
+        kind.className = "node-kind";
+        kind.textContent = node.kind;
+        const does = document.createElement("p");
+        does.className = "node-does";
+        does.textContent = node.does;
+        const output = document.createElement("p");
+        output.className = "node-output";
+        output.textContent = "Output: " + node.output;
+        const runDetail = document.createElement("p");
+        runDetail.className = "node-run-detail";
+
+        card.append(owner, titleRow, kind, does, output, runDetail);
+        workflowGrid.appendChild(card);
+      });
+
+      mermaidSource.textContent = graph.mermaid || "";
+      configureObservability(graph.observability);
+      workflowCard.classList.add("visible");
+    }
+
+    function resetWorkflow() {
+      traceLink.classList.remove("visible");
+      traceLink.innerHTML = "";
+      workflowNodeIds.forEach(function (nodeId, index) {
+        const node = workflowGrid.querySelector('[data-node="' + nodeId + '"]');
+        if (!node) return;
+        node.classList.remove("active", "completed", "failed");
+        node.classList.toggle("waiting", index !== 0);
+        node.querySelector(".node-status").textContent = index === 0 ? "Running…" : "Waiting";
+        node.querySelector(".node-run-detail").textContent = "";
+        if (index === 0) node.classList.add("active");
+      });
+    }
+
+    function completeWorkflowNode(event) {
+      const nodeId = event.node || (event.step && event.step.node);
+      const node = workflowGrid.querySelector('[data-node="' + nodeId + '"]');
+      if (!node) return;
+
+      node.classList.remove("active", "waiting");
+      node.classList.add("completed");
+      const duration = event.step && typeof event.step.durationMs === "number"
+        ? (event.step.durationMs < 1000
+          ? event.step.durationMs + " ms"
+          : (event.step.durationMs / 1000).toFixed(1) + " s")
+        : "Done";
+      node.querySelector(".node-status").textContent = "✓ " + duration;
+      if (event.step && event.step.summary) {
+        const runDetails = [event.step.summary].concat(event.step.details || []);
+        node.querySelector(".node-run-detail").textContent = runDetails.join(" · ");
+      }
+
+      const index = workflowNodeIds.indexOf(nodeId);
+      const nextId = workflowNodeIds[index + 1];
+      if (nextId) {
+        const next = workflowGrid.querySelector('[data-node="' + nextId + '"]');
+        next.classList.remove("waiting");
+        next.classList.add("active");
+        next.querySelector(".node-status").textContent = "Running…";
+        toolsLabel.textContent = next.dataset.label + " is running...";
+      }
+    }
+
+    function failActiveWorkflowNode() {
+      const node = workflowGrid.querySelector(".workflow-node.active");
+      if (!node) return;
+      node.classList.remove("active", "waiting");
+      node.classList.add("failed");
+      node.querySelector(".node-status").textContent = "Failed";
+    }
+
+    function renderResult(data) {
+      toolsBar.classList.remove("visible");
+      if (!data.response) {
+        responseContent.textContent = "Agent returned an empty response.";
+        return;
+      }
+
+      responseContent.innerHTML = marked.parse(data.response);
+      const toolLines = [];
+      if (data.toolsUsed && data.toolsUsed.length > 0) {
+        toolLines.push("LangGraph tools: " + data.toolsUsed.join(", "));
+      }
+      if (data.collateToolsUsed && data.collateToolsUsed.length > 0) {
+        toolLines.push("Inside the AI Studio GDPR Agent: " + data.collateToolsUsed.join(", "));
+      }
+      if (toolLines.length > 0) {
+        const footer = document.createElement("p");
+        footer.style.cssText = "margin-top:1rem;font-size:0.8rem;color:#888;";
+        footer.textContent = toolLines.join(" · ");
+        responseContent.appendChild(footer);
+      }
+
+      if (data.traceUrl) {
+        const link = document.createElement("a");
+        link.href = data.traceUrl;
+        link.target = "_blank";
+        link.rel = "noopener noreferrer";
+        link.textContent = "Open this execution in Langfuse ↗";
+        traceLink.innerHTML = "";
+        traceLink.append("Full nested trace available: ", link);
+        traceLink.classList.add("visible");
+      }
+    }
+
+    fetch("/api/config")
+      .then(function (res) { return res.ok ? res.json() : {}; })
+      .then(function (config) {
+        if (config.runtimeLabel) runtimeLabel.textContent = config.runtimeLabel;
+        if (config.responseTitle) responseTitle.textContent = config.responseTitle;
+        if (config.workingLabel) workingLabel = config.workingLabel;
+        if (config.streamEndpoint) streamEndpoint = config.streamEndpoint;
+        configureObservability(config.observability);
+      })
+      .catch(function () { /* The defaults keep the static page usable. */ });
+
+    fetch("/api/graph")
+      .then(function (res) {
+        if (!res.ok) throw new Error("No workflow graph");
+        return res.json();
+      })
+      .then(renderWorkflow)
+      .catch(function () { /* Act 2 intentionally has no application graph. */ });
+
+    async function submitStreaming(message) {
+      const res = await fetch(streamEndpoint, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message }),
+      });
+      if (!res.ok) {
+        const data = await res.json().catch(function () { return {}; });
+        throw new Error(data.error || "API error (" + res.status + ")");
+      }
+      if (!res.body) throw new Error("Streaming is not supported by this browser");
+
+      const reader = res.body.getReader();
+      const decoder = new TextDecoder();
+      let buffer = "";
+      let receivedResult = false;
+
+      async function processLine(line) {
+        if (!line.trim()) return;
+        const event = JSON.parse(line);
+        if (event.type === "error") throw new Error(event.error || "Workflow failed");
+        if (event.type === "node") completeWorkflowNode(event);
+        if (event.type === "result") {
+          receivedResult = true;
+          renderResult(event);
+        }
+      }
+
+      while (true) {
+        const chunk = await reader.read();
+        buffer += decoder.decode(chunk.value || new Uint8Array(), { stream: !chunk.done });
+        const lines = buffer.split("\n");
+        buffer = lines.pop() || "";
+        for (const line of lines) await processLine(line);
+        if (chunk.done) break;
+      }
+      if (buffer.trim()) await processLine(buffer);
+      if (!receivedResult) throw new Error("Workflow ended without a result");
+    }
+
+    async function submitRegular(message) {
+      const res = await fetch("/api/analyze", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "API error (" + res.status + ")");
+      (data.execution || []).forEach(function (step) {
+        completeWorkflowNode({ node: step.node, step: step });
+      });
+      renderResult(data);
     }
 
     async function submitDSAR() {
@@ -267,35 +724,15 @@
       responseContent.innerHTML = "";
       responseCard.classList.add("visible");
       toolsBar.classList.add("visible");
-      toolsLabel.textContent = "Agent is analyzing (this may take a few minutes)...";
+      toolsLabel.textContent = workingLabel;
       submitBtn.disabled = true;
+      resetWorkflow();
 
       try {
-        const res = await fetch("/api/analyze", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ message }),
-        });
-
-        const data = await res.json();
-
-        if (!res.ok) {
-          throw new Error(data.error || "API error (" + res.status + ")");
-        }
-
-        toolsBar.classList.remove("visible");
-        if (data.response) {
-          responseContent.innerHTML = marked.parse(data.response);
-          if (data.toolsUsed && data.toolsUsed.length > 0) {
-            var p = document.createElement("p");
-            p.style.cssText = "margin-top:1rem;font-size:0.8rem;color:#888;";
-            p.textContent = "Tools used: " + data.toolsUsed.join(", ");
-            responseContent.appendChild(p);
-          }
-        } else {
-          responseContent.textContent = "Agent returned an empty response.";
-        }
+        if (streamEndpoint) await submitStreaming(message);
+        else await submitRegular(message);
       } catch (err) {
+        failActiveWorkflowNode();
         showError(err.message);
       } finally {
         toolsBar.classList.remove("visible");

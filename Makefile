@@ -179,7 +179,8 @@ release:  ## Create a GitHub Release (usage: make release [B=branch])
         lint lint-python lint-rust lint-typescript lint-java lint-n8n \
         format format-python format-rust format-typescript format-java format-n8n \
         install-hooks install-local install-dbt install-dbt-starburst demo-database demo-database-stop demo-dbt \
-        demo-export-seeds demo-dbt-starburst-seed demo-dbt-starburst demo-gdpr demo-n8n
+        demo-export-seeds demo-dbt-starburst-seed demo-dbt-starburst setup-gdpr-agent \
+        demo-gdpr demo-gdpr-extended demo-n8n
 
 install-local:  ## Install Python SDK locally in editable mode (for development)
 	@echo "Installing Python SDK (editable, all extras)..."
@@ -234,11 +235,22 @@ demo-dbt-starburst:  ## Run + test dbt models against Starburst
 	@echo ""
 	cd cookbook/resources/demo-database/dbt && DBT_PROFILES_DIR=$$(pwd) dbt test --target starburst
 
+setup-gdpr-agent:  ## Create/update the Jaffle Shop-scoped AI Studio GDPR agent
+	@python3 -m pip install -e "python/" --quiet
+	@echo "Configuring scoped GDPRAnalyst persona and GDPRComplianceAnalyzer agent..."
+	@PYTHONPATH="$(CURDIR)/python/src" python3 cookbook/gdpr-dsar-compliance/setup_agent.py
+
 demo-gdpr:  ## Start the GDPR DSAR compliance demo
 	@echo "Installing dependencies..."
 	@cd cookbook/gdpr-dsar-compliance && npm install --silent
 	@echo "Starting server (SDK runs server-side)..."
 	@node cookbook/gdpr-dsar-compliance/serve.js
+
+demo-gdpr-extended:  ## Start the custom-agent GDPR demo with expert handoff
+	@echo "Installing Python SDK + LangGraph + optional Langfuse tracing..."
+	@python3 -m pip install -e "python/[langchain]" "langgraph>=1,<2" "langfuse>=4,<5" --quiet
+	@echo "Starting extended server on port $${PORT:-8081}..."
+	@PYTHONPATH="$(CURDIR)/python/src" python3 cookbook/gdpr-dsar-compliance/extended/server.py
 
 demo-n8n:  ## Build n8n node and start n8n with it loaded
 	@echo "Building n8n node..."

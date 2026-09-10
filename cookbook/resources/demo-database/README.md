@@ -210,18 +210,19 @@ cd cookbook/resources/demo-database
 # Glossaries and metrics
 python scripts/create_glossaries_and_metrics.py
 
-# Users, domains, and table ownership
+# Users, Data Steward persona, domain experts, and table ownership
 python scripts/create_owners_and_domains.py
 ```
 
-The ownership script creates 5 users, 4 domains, and assigns every table to an owner and domain:
+The ownership script creates 5 users, a Data Steward persona, 4 domains with
+experts, and assigns every table to an owner and domain:
 
-| Domain | Schemas | Owner |
-|--------|---------|-------|
-| Finance | `marts_finance`, `raw_stripe` | Bob Smith (Finance Analyst) |
-| Marketing | `marts_marketing`, `raw_marketing` | Carol Williams (Marketing Analyst) |
-| Sales | `marts_core`, `raw_jaffle_shop`, `raw_inventory`, `raw_support` | Eve Davis (Product Analyst) / Dave Brown (raw) |
-| Data Engineering | `staging`, `intermediate` | Alice Johnson (DE Lead) |
+| Domain | Schemas | Owner | Domain expert |
+|--------|---------|-------|---------------|
+| Finance | `marts_finance`, `raw_stripe` | Bob Smith (Finance Analyst) | Bob Smith |
+| Marketing | `marts_marketing`, `raw_marketing` | Carol Williams (Marketing Analyst) | Carol Williams |
+| Sales | `marts_core`, `raw_jaffle_shop`, `raw_inventory`, `raw_support` | Eve Davis (Product Analyst) / Dave Brown (raw) | Eve Davis |
+| Data Engineering | `staging`, `intermediate` | Alice Johnson (Data Steward / DE Lead) | Alice Johnson |
 
 After ingestion, you should see:
 - **6 raw schemas** with source tables
@@ -240,6 +241,7 @@ After ingestion, you should see:
 | Data Profiling | Profile `fct_orders` to understand data distributions |
 | Lineage Analysis | Trace lineage from `raw_stripe.payments` to `fct_monthly_revenue` |
 | MCP Integration | Query metadata via Claude/LLM for impact analysis |
+| GDPR expert handoff | Recommend the live Data Steward and affected Domain experts after a DSAR analysis |
 
 ## Running against Starburst (Iceberg)
 

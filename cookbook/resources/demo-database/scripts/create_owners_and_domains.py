@@ -1,6 +1,6 @@
 """
-Create OpenMetadata Users, Domains, and assign ownership and domain
-membership to the Jaffle Shop demo database tables.
+Create OpenMetadata users, a Data Steward persona, Domains with experts, and
+assign ownership and domain membership to the Jaffle Shop demo tables.
 
 Requires:
     pip install openmetadata-ingestion
@@ -24,8 +24,10 @@ import logging
 import os
 import sys
 from dataclasses import dataclass, field
+from typing import Any
 
 from metadata.generated.schema.api.domains.createDomain import CreateDomainRequest
+from metadata.generated.schema.api.teams.createPersona import CreatePersonaRequest
 from metadata.generated.schema.api.teams.createUser import CreateUserRequest
 from metadata.generated.schema.entity.data.table import Table
 from metadata.generated.schema.entity.domains.domain import Domain, DomainType
@@ -33,6 +35,7 @@ from metadata.generated.schema.entity.services.connections.metadata.openMetadata
     AuthProvider,
     OpenMetadataConnection,
 )
+from metadata.generated.schema.entity.teams.persona import Persona
 from metadata.generated.schema.entity.teams.user import User
 from metadata.generated.schema.security.client.openMetadataJWTClientConfig import (
     OpenMetadataJWTClientConfig,
@@ -83,7 +86,10 @@ USERS: list[dict[str, str]] = [
         "name": "alice.johnson",
         "email": "alice.johnson@jaffleshop.com",
         "displayName": "Alice Johnson",
-        "description": "Data Engineering Lead responsible for data pipelines and transformations.",
+        "description": (
+            "Lead Data Steward and Data Engineering Lead responsible for governance, "
+            "PII classification, data quality, pipelines, and transformations."
+        ),
     },
     {
         "name": "bob.smith",
@@ -116,7 +122,7 @@ USERS: list[dict[str, str]] = [
 # Domain definitions
 # ---------------------------------------------------------------------------
 
-DOMAINS: list[dict[str, str | DomainType]] = [
+DOMAINS: list[dict[str, Any]] = [
     {
         "name": "Finance",
         "displayName": "Finance",
@@ -140,6 +146,32 @@ DOMAINS: list[dict[str, str | DomainType]] = [
         "displayName": "Data Engineering",
         "description": "Staging and intermediate transformation layers managed by the data platform team.",
         "domainType": DomainType.Aggregate,
+    },
+]
+
+# The expert relationships are first-class catalog context. The extended GDPR
+# demo reads them at request time instead of maintaining a separate routing
+# table in application code.
+DOMAIN_EXPERTS: dict[str, list[str]] = {
+    "Finance": ["bob.smith"],
+    "Marketing": ["carol.williams"],
+    "Sales": ["eve.davis"],
+    "DataEngineering": ["alice.johnson"],
+}
+
+
+# Personas are another governed signal the extended demo uses when proposing a
+# human handoff. Alice is deliberately both the cross-domain Data Steward and a
+# domain expert, making the provenance of her recommendation easy to show.
+PERSONAS: list[dict[str, Any]] = [
+    {
+        "name": "DataSteward",
+        "displayName": "Data Steward",
+        "description": (
+            "Governance and privacy specialist responsible for data quality, "
+            "classification, retention, and regulatory compliance."
+        ),
+        "users": ["alice.johnson"],
     },
 ]
 
@@ -205,6 +237,8 @@ class CreationResult:
     users_failed: list[str] = field(default_factory=list)
     domains_created: list[str] = field(default_factory=list)
     domains_failed: list[str] = field(default_factory=list)
+    personas_created: list[str] = field(default_factory=list)
+    personas_failed: list[str] = field(default_factory=list)
     owners_assigned: list[str] = field(default_factory=list)
     owners_failed: list[str] = field(default_factory=list)
     domains_assigned: list[str] = field(default_factory=list)
@@ -215,6 +249,7 @@ class CreationResult:
         return bool(
             self.users_failed
             or self.domains_failed
+            or self.personas_failed
             or self.owners_failed
             or self.domains_assign_failed
         )
@@ -223,12 +258,14 @@ class CreationResult:
         total_ok = (
             len(self.users_created)
             + len(self.domains_created)
+            + len(self.personas_created)
             + len(self.owners_assigned)
             + len(self.domains_assigned)
         )
         total_fail = (
             len(self.users_failed)
             + len(self.domains_failed)
+            + len(self.personas_failed)
             + len(self.owners_failed)
             + len(self.domains_assign_failed)
         )
@@ -250,6 +287,12 @@ class CreationResult:
             len(DOMAINS),
         )
         logger.info(
+            "Personas       : %d created, %d failed (of %d)",
+            len(self.personas_created),
+            len(self.personas_failed),
+            len(PERSONAS),
+        )
+        logger.info(
             "Owners Assigned: %d assigned, %d failed",
             len(self.owners_assigned),
             len(self.owners_failed),
@@ -266,6 +309,8 @@ class CreationResult:
             logger.warning("Failed users: %s", ", ".join(self.users_failed))
         if self.domains_failed:
             logger.warning("Failed domains: %s", ", ".join(self.domains_failed))
+        if self.personas_failed:
+            logger.warning("Failed personas: %s", ", ".join(self.personas_failed))
         if self.owners_failed:
             logger.warning(
                 "Failed owner assignments: %s", ", ".join(self.owners_failed)
@@ -309,11 +354,20 @@ def create_users(metadata: OpenMetadata, result: CreationResult) -> dict[str, Us
     return user_map
 
 
-def create_domains(metadata: OpenMetadata, result: CreationResult) -> dict[str, Domain]:
-    """Create all domains and return a mapping of name -> entity."""
+def create_domains(
+    metadata: OpenMetadata,
+    result: CreationResult,
+    user_map: dict[str, User],
+) -> dict[str, Domain]:
+    """Create all domains with their experts and return name -> entity."""
     domain_map: dict[str, Domain] = {}
     for d in DOMAINS:
         name = d["name"]
+        experts = [
+            username
+            for username in DOMAIN_EXPERTS.get(name, [])
+            if username in user_map
+        ]
         try:
             entity = metadata.create_or_update(
                 data=CreateDomainRequest(
@@ -321,6 +375,7 @@ def create_domains(metadata: OpenMetadata, result: CreationResult) -> dict[str, 
                     displayName=d["displayName"],
                     description=Markdown(d["description"]),
                     domainType=d["domainType"],
+                    experts=experts or None,
                 )
             )
         except Exception:
@@ -329,8 +384,45 @@ def create_domains(metadata: OpenMetadata, result: CreationResult) -> dict[str, 
             continue
         domain_map[name] = entity
         result.domains_created.append(name)
-        logger.info("Created domain: %s", name)
+        logger.info(
+            "Created domain: %s%s",
+            name,
+            f" (experts: {', '.join(experts)})" if experts else "",
+        )
     return domain_map
+
+
+def create_personas(
+    metadata: OpenMetadata,
+    result: CreationResult,
+    user_map: dict[str, User],
+) -> dict[str, Persona]:
+    """Create demo personas with membership and return name -> entity."""
+    persona_map: dict[str, Persona] = {}
+    for spec in PERSONAS:
+        name = str(spec["name"])
+        member_ids = [
+            user_map[username].id
+            for username in spec.get("users", [])
+            if isinstance(username, str) and username in user_map
+        ]
+        try:
+            entity = metadata.create_or_update(
+                data=CreatePersonaRequest(
+                    name=EntityName(name),
+                    displayName=str(spec["displayName"]),
+                    description=Markdown(str(spec["description"])),
+                    users=member_ids or None,
+                )
+            )
+        except Exception:
+            logger.exception("Failed to create persona: %s", name)
+            result.personas_failed.append(name)
+            continue
+        persona_map[name] = entity
+        result.personas_created.append(name)
+        logger.info("Created persona: %s (%d users)", name, len(member_ids))
+    return persona_map
 
 
 def _resolve_owner(schema: str, user_map: dict[str, User]) -> User | None:
@@ -462,7 +554,10 @@ def _assign_domain(
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
-        description="Seed OpenMetadata with users, domains, and table ownership for Jaffle Shop."
+        description=(
+            "Seed OpenMetadata with users, personas, domain experts, and table "
+            "ownership for Jaffle Shop."
+        )
     )
     parser.add_argument(
         "--host",
@@ -503,7 +598,10 @@ def main() -> None:
     user_map = create_users(metadata, result)
 
     logger.info("--- Creating Domains ---")
-    domain_map = create_domains(metadata, result)
+    domain_map = create_domains(metadata, result, user_map)
+
+    logger.info("--- Creating Personas ---")
+    create_personas(metadata, result, user_map)
 
     logger.info("--- Assigning Owners & Domains to Tables ---")
     assign_owners_and_domains(
