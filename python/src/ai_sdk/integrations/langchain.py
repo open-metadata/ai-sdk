@@ -92,7 +92,7 @@ class AISdkAgentTool(BaseTool):
 
     name: str = ""
     description: str = ""
-    args_schema: type[BaseModel] = AISdkAgentInput
+    args_schema: type[BaseModel] = AISdkAgentInput  # ty: ignore[invalid-mutable-override]
 
     # Agent handle - using private attribute pattern
     _agent_handle: AgentHandle

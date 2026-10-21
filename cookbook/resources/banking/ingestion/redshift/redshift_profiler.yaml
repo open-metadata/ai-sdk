@@ -9,6 +9,7 @@ source:
       authType:
         password: ${REDSHIFT_PASSWORD}
       database: ${REDSHIFT_DATABASE}
+      sslMode: require
   sourceConfig:
     config:
       type: Profiler
@@ -18,6 +19,30 @@ source:
           profileSample: 50           # percentage of rows
           profileSampleType: PERCENTAGE
       threadCount: 8
+      # Same list as the schema default (profilerConfiguration.json metricType). Left implicit,
+      # the pipeline registered on the server comes back with `metrics: [null, ...]` and the
+      # ingestion client fails to parse it.
+      metrics:
+        - mean
+        - valuesCount
+        - columnCount
+        - distinctCount
+        - distinctProportion
+        - max
+        - min
+        - nullCount
+        - rowCount
+        - stddev
+        - sum
+        - uniqueCount
+        - uniqueProportion
+        - columnNames
+        - nullProportion
+        - median
+        - firstQuartile
+        - thirdQuartile
+        - interQuartileRange
+        - nonParametricSkew
       schemaFilterPattern:
         includes:
           - raw_.*

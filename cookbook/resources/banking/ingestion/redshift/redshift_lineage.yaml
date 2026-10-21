@@ -9,6 +9,7 @@ source:
       authType:
         password: ${REDSHIFT_PASSWORD}
       database: ${REDSHIFT_DATABASE}
+      sslMode: require
   sourceConfig:
     config:
       type: DatabaseLineage
