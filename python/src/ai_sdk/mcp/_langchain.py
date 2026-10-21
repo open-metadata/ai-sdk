@@ -42,8 +42,8 @@ def _create_langchain_tool(mcp_client: MCPClient, info: ToolInfo) -> BaseTool:
     class MCPToolWrapper(BaseTool):
         name: str = tool_name_str
         description: str = tool_description
-        args_schema: type[BaseModel] = tool_args_schema
-        handle_tool_error: bool = True
+        args_schema: type[BaseModel] = tool_args_schema  # ty: ignore[invalid-mutable-override]
+        handle_tool_error: bool = True  # ty: ignore[invalid-mutable-override]
 
         _mcp_client: MCPClient
         _tool_name: MCPTool
