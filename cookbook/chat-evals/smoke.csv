@@ -1,3 +1,3 @@
-id,question,contains,not_contains,must_reference,must_not_reference,required_tools
-revenue-owner,Who owns the revenue orders table?,Finance,,warehouse.analytics.finance.orders,warehouse.analytics.finance.orders_staging,
-completed-revenue,"What was completed-order revenue from July 1 through September 30, 2026?",revenue,,warehouse.analytics.finance.orders,,
+id,question,contains,not_contains,must_reference,must_not_reference
+revenue-owner,Who owns the revenue orders table?,Finance,,warehouse.analytics.finance.orders,warehouse.analytics.finance.orders_staging
+completed-revenue,"What was completed-order revenue from July 1 through September 30, 2026?",revenue,,warehouse.analytics.finance.orders,
