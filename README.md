@@ -297,6 +297,86 @@ client.memories.search(
 
 See each SDK's README for the full surface (sync + async, all enum values, model fields).
 
+## Collate AI Chat Evals
+
+Use `ai-sdk evals` to check whether Collate AI Chat answers your business questions correctly and whether a context change improves or breaks those answers. Define cases in **CSV or JSON**, run them through fresh chat conversations, and keep a JSON report with each answer, its SQL evidence, and grading results.
+
+The workflow is:
+
+1. **Define success:** a question plus an expert-reviewed answer, reference SQL, or pass criteria.
+2. **Ask Collate:** only the question goes to the agent; expectations stay with the grader.
+3. **Grade and compare:** check the answer, review the reasons for any failure, and compare runs before and after a context change.
+
+### Define your cases
+
+Save your cases as `evals.json` (a JSON array) or `evals.csv` (one case per record). This example uses the banking demo; replace its question, reference value, and catalog names with verified expectations for your data:
+
+```json
+[
+  {
+    "id": "bank-wide-revenue",
+    "question": "Using the published fee and trade reporting marts in banking-redshift, what is bank-wide fee and commission revenue over all available history? Include fees without a customer and show the query result.",
+    "expected_answer": "Bank-wide fee and commission revenue is 732,834.",
+    "guidelines": "Use fct_fee_revenue and fct_trades as the reporting definition. Include ATM, wire and account fees plus trade commissions. The primary conclusion and query results must agree with the reference; merely mentioning it as an alternative is insufficient.",
+    "must_reference": [
+      "banking-redshift.dev.marts_finance.fct_fee_revenue",
+      "banking-redshift.dev.marts_wealth.fct_trades"
+    ],
+    "require_sql": true
+  }
+]
+```
+
+| Field | Meaning |
+| --- | --- |
+| `id` | Required unique case ID, used to match cases between runs. |
+| `question` | Required standalone question sent to Collate AI Chat. |
+| `expected_answer` | Optional expert reference answer. Exact mode compares the whole answer with whitespace normalized; LLM mode assesses meaning. |
+| `expected_sql` | Optional expert reference SQL. Exact mode compares query text; LLM mode assesses semantic equivalence. The grader does not execute this SQL. |
+| `guidelines` | Optional rubric describing a correct answer, such as the intended metric, sources, filters, and treatment of missing data. Requires LLM mode. |
+| `contains` | List of case-insensitive substrings that must all appear in answer text. |
+| `not_contains` | List of case-insensitive substrings that must all be absent from answer text. |
+| `must_reference` | List of exact catalog fully qualified names that must all be referenced. A reference does not establish that SQL used the source. |
+| `must_not_reference` | List of exact catalog fully qualified names that must all be absent from the answer's references. |
+| `require_sql` | Boolean, default `false`: require SQL attached to the answer's table, chart, or SQL block. This checks that SQL evidence exists; use a reference/rubric to assess correctness. |
+
+Every case needs at least one expectation or condition beyond its ID and question. Omitted lists default to empty. CSV uses the same field names, with `|` separating list items; quote fields containing commas, quotes, or newlines. All configured checks must pass.
+
+### Run and compare
+
+Build the CLI from source and run the following from the repository root:
+
+```bash
+cargo build --release --manifest-path cli/Cargo.toml
+export PATH="$PWD/cli/target/release:$PATH"
+
+export AI_SDK_HOST="https://your-instance.getcollate.io"
+export AI_SDK_TOKEN="your-user-or-bot-jwt"
+export EVAL_JUDGE_TOKEN="your-judge-api-key"
+
+ai-sdk evals validate -f evals.json
+ai-sdk evals run -f evals.json --judge llm --judge-model your-model \
+  --label before-context-update -o before.json
+
+# After updating the relevant context, repeat the same cases:
+ai-sdk evals run -f evals.json --judge llm --judge-model your-model \
+  --label after-context-update -o after.json
+ai-sdk evals compare before.json after.json
+```
+
+| Grading mode | When to use it |
+| --- | --- |
+| `--judge exact` (default) | Literal answer/SQL comparisons and deterministic conditions such as required text, catalog references, or SQL evidence. No judge credential is needed. |
+| `--judge llm` | Expert answers, SQL, or rubrics whose meaning matters more than exact wording. Requires `EVAL_JUDGE_TOKEN` and `--judge-model`; deterministic conditions still apply. |
+
+The example above uses LLM mode because it includes `guidelines`. The judge defaults to OpenAI's Chat Completions endpoint; use `--judge-url FULL_URL` for a compatible endpoint. To grade answers produced by another application, use `ai-sdk evals report -f evals.json --answers answers.json --judge llm --judge-model your-model -o external.json`.
+
+Reports distinguish **PASS** (every check passed), **FAIL** (a condition failed), and **ERROR** (execution or grading could not complete). `run` and `report` exit nonzero on any FAIL or ERROR. `compare` flags previous passes that became failures/errors, as well as changed or removed cases. Use fresh output paths; existing reports are never overwritten. Keep the same identity, cases, grader, and data snapshot when comparing context changes.
+
+**Choose conditions that test the conclusion you care about.** For example, `contains: ["732,834"]` also accepts an answer that mentions that number as an alternative while giving a different total. LLM judging can assess that distinction using an expert reference and rubric. It evaluates the answer and SQL; automatic execution and comparison of the expert and generated queries' results is not implemented.
+
+See the [full eval guide](cookbook/chat-evals/) for field types/defaults, report interpretation, and external-answer format. Try [smoke.csv](cookbook/chat-evals/smoke.csv) with [sample-answers.json](cookbook/chat-evals/sample-answers.json) for an offline harness check, or the live-tested [banking CSV](cookbook/chat-evals/banking-devrel-marts.csv) / [JSON](cookbook/chat-evals/banking-devrel-marts.json) fixtures on devrel.
+
 ## Cookbook
 
 Real-world examples showing how teams use the AI SDK in production workflows.
@@ -332,6 +412,7 @@ All SDKs share a consistent API surface with language-idiomatic patterns:
 | [TypeScript SDK](typescript/README.md) | Full TypeScript reference |
 | [Java SDK](java/README.md) | Full Java reference |
 | [CLI](cli/README.md) | CLI usage and commands |
+| [Evals](#collate-ai-chat-evals) | Define CSV/JSON cases, grade answers and SQL, and compare runs |
 | [MCP Tools](docs/mcp.md) | MCP integration guide |
 | [LangChain Integration](docs/langchain.md) | Using agents and tools with LangChain |
 | [Async Patterns](docs/async.md) | Async usage across SDKs |
