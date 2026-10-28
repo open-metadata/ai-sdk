@@ -326,6 +326,20 @@ ai-sdk invoke semantic-layer-agent "Tell me more" -c <conversation-id>
 ai-sdk invoke planner "Create a test plan" --stream --json
 ```
 
+### Evaluate Collate AI Chat
+
+Evaluate CSV or JSON cases through the default AskCollate planner, retain local JSON reports, and gate CI on failures:
+
+```bash
+ai-sdk evals validate -f cases.csv
+ai-sdk evals run -f cases.csv -o run.json
+ai-sdk evals run -f cases.json --judge llm --judge-model "$EVAL_JUDGE_MODEL" -o semantic-run.json
+ai-sdk evals report -f cases.csv --answers external-answers.json -o external-run.json
+ai-sdk evals compare before.json after.json
+```
+
+Exact mode is the default. Semantic judging requires `EVAL_JUDGE_TOKEN`; `--judge-url` selects a compatible Chat Completions endpoint. All configured conditions must pass. Reports are never overwritten. See the [chat evals cookbook](../cookbook/chat-evals/) for the format, examples, architecture, and limitations.
+
 ### Output Formats
 
 **Default (Human-readable):**

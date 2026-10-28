@@ -85,6 +85,12 @@ enum Commands {
         action: commands::memories::MemoriesCommand,
     },
 
+    /// Evaluate Collate AI Chat using CSV or JSON cases and local run reports
+    Evals {
+        #[command(subcommand)]
+        action: commands::evals::EvalsCommand,
+    },
+
     /// Invoke an agent with a message
     Invoke {
         /// Name of the agent to invoke (omit when --default is set)
@@ -438,6 +444,8 @@ async fn main() {
         },
 
         Commands::Memories { action } => commands::memories::run(&cli.profile, action).await,
+
+        Commands::Evals { action } => commands::evals::run(&cli.profile, action).await,
 
         Commands::Invoke {
             agent,
