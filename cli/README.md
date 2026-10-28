@@ -326,6 +326,24 @@ ai-sdk invoke semantic-layer-agent "Tell me more" -c <conversation-id>
 ai-sdk invoke planner "Create a test plan" --stream --json
 ```
 
+### Evaluate Collate AI Chat
+
+Evaluate CSV or JSON cases through Collate AI Chat, retain local JSON reports, and gate CI on failures:
+
+Each case pairs a standalone `question` with expert references or assertions. The agent receives only the question; the grader checks its answer and structured SQL evidence afterward. Every configured condition must pass. `--judge exact` is the default and uses literal checks; `--judge llm` also evaluates the meaning of reference answers/SQL and semantic rubrics. The grader never executes the reference SQL.
+
+```bash
+ai-sdk evals validate -f cases.csv
+ai-sdk evals run -f cases.csv -o run.json
+ai-sdk evals run -f cases.json --judge llm --judge-model "$EVAL_JUDGE_MODEL" -o semantic-run.json
+ai-sdk evals report -f cases.csv --answers external-answers.json -o external-run.json
+ai-sdk evals compare before.json after.json
+```
+
+Semantic judging requires `EVAL_JUDGE_TOKEN` and `--judge-model`; `--judge-url` selects a compatible Chat Completions endpoint. Reports are never overwritten. `run`/`report` exit nonzero on any FAIL or ERROR; `compare` detects regressions from previous passes.
+
+See the [evaluation method](../cookbook/chat-evals/#how-the-evaluation-works), [case-field reference](../cookbook/chat-evals/#case-fields), [grading-mode comparison](../cookbook/chat-evals/#choose-the-grading-mode), and [report-field reference](../cookbook/chat-evals/#report-fields). Start with `smoke.csv` for an offline harness check or `banking-devrel-marts.csv` for the live devrel example.
+
 ### Output Formats
 
 **Default (Human-readable):**

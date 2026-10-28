@@ -1,0 +1,17 @@
+[
+  {
+    "id": "revenue-owner",
+    "question": "Who owns the revenue orders table?",
+    "expected_answer": "The Finance team owns the revenue orders table.",
+    "guidelines": "Name Finance as the owner and link the canonical orders table. Do not recommend the staging copy as the source of truth.",
+    "must_reference": ["warehouse.analytics.finance.orders"],
+    "must_not_reference": ["warehouse.analytics.finance.orders_staging"]
+  },
+  {
+    "id": "completed-revenue",
+    "question": "What was completed-order revenue from July 1 through September 30, 2026?",
+    "expected_sql": "SELECT SUM(amount) AS revenue FROM finance.orders WHERE status = 'completed' AND order_date >= DATE '2026-07-01' AND order_date < DATE '2026-10-01'",
+    "guidelines": "Use completed orders only. Sum amount without multiplying rows through a join. Include the whole final day of September; exclude October. Return the result or clearly explain if data is unavailable; missing data is a failing eval rather than a correct numeric answer.",
+    "must_reference": ["warehouse.analytics.finance.orders"]
+  }
+]
