@@ -303,6 +303,7 @@ Real-world examples showing how teams use the AI SDK in production workflows.
 
 | Use Case | What It Does | Stack |
 |----------|-------------|-------|
+| [Collate AI Chat Evals](cookbook/chat-evals/) | Evaluate CSV/JSON cases through AskCollate, grade answers and SQL, and compare context changes | AI SDK CLI, optional LLM judge |
 | [MCP Impact Analysis](cookbook/mcp-impact-analysis/) | AI-powered impact analysis for schema changes — run in CI to catch breaking changes before they ship | Python SDK, LangChain |
 | [DQ Failure Slack Notifications](cookbook/dq-failure-slack-notifications/) | Automatically analyze Data Quality failures and post root-cause summaries to Slack | n8n, Slack |
 | [dbt Model PR Review](cookbook/dbt-pr-review/) | GitHub Action that reviews dbt model changes for downstream impact and DQ risks on every PR | GitHub Actions, Python SDK |

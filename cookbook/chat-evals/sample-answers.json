@@ -1,0 +1,21 @@
+{
+  "revenue-owner": {
+    "response": "Finance owns the [revenue orders table](#table/warehouse.analytics.finance.orders)."
+  },
+  "completed-revenue": {
+    "response": "Completed-order revenue was 42 for [orders](#table/warehouse.analytics.finance.orders).",
+    "components": [
+      {
+        "type": "table",
+        "content": {
+          "isAnswer": true,
+          "cols": ["revenue"],
+          "rows": [{"revenue": "42"}],
+          "sqlQueryConfig": {
+            "queryText": "SELECT SUM(amount) AS revenue FROM finance.orders WHERE status = 'completed' AND order_date >= DATE '2026-07-01' AND order_date < DATE '2026-10-01'"
+          }
+        }
+      }
+    ]
+  }
+}
