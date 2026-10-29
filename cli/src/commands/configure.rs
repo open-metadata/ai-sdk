@@ -46,12 +46,11 @@ pub fn run_interactive(profile: &str) -> CliResult<()> {
         return Err(CliError::InvalidConfig("Host URL is required".to_string()));
     }
 
-    // Prompt for token
-    print!("API Token: ");
-    io::stdout().flush()?;
-
-    let mut token_input = String::new();
-    io::stdin().read_line(&mut token_input)?;
+    // Prompt for token without echoing input to the terminal.
+    let token_input = inquire::Password::new("API Token:")
+        .without_confirmation()
+        .prompt()
+        .map_err(io::Error::other)?;
     let token_input = token_input.trim();
 
     let profile_creds = credentials.profiles.entry(profile.to_string()).or_default();

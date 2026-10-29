@@ -20,6 +20,7 @@ toml = "0.8"
 dirs = "5"
 thiserror = "1"
 colored = "2"
+inquire = { version = "0.9", default-features = false, features = ["crossterm"] }
 futures-util = "0.3"
 urlencoding = "2.1"
 
