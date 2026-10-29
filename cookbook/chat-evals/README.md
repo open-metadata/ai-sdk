@@ -19,7 +19,7 @@ flowchart LR
 
 1. **Define the reference.** A data expert chooses a real question and its correct answer, SQL, or pass conditions. Check the reference against the warehouse and agree on the metric definition, sources, date range, and customer population. For example, raw trade commissions and the reporting mart's commissions produced different totals in the banking demo; the reference must make the intended definition clear.
 2. **Ask Collate.** `run` sends only `question` to a fresh conversation. Collate uses the same catalog context and available data connections as it would for a normal chat question. References and grading rules are withheld from the agent. Cases run one at a time and must be standalone questions; a follow-up such as "include account fees too" needs its earlier context written into the question.
-3. **Collect the evidence.** Keep the final answer, query results, SQL evidence, and conversation ID. SQL is read from the query attached to a result table, chart, or SQL block. Queries explicitly marked as intermediate, and queries still running, are excluded from grading. SQL mentioned only in prose does not satisfy a SQL-evidence check.
+3. **Collect the evidence.** Keep the final answer, query results, SQL evidence, and conversation ID. SQL is read from the query attached to a result table, chart, or SQL code component. Queries explicitly marked as intermediate, and queries still running, are excluded from grading. If no structured answer SQL is available, fenced `sql` blocks in the final answer are used instead. SQL mentioned only in unmarked prose does not satisfy a SQL-evidence check.
 4. **Grade the response.** Apply every configured deterministic assertion. In `--judge llm` mode, an independent model also compares the expert references and rubric with the answer and its components. Every check must pass; the LLM cannot override a failed deterministic assertion. The judge returns a boolean verdict and reasoning, rather than a weighted score.
 5. **Record and compare.** Save a report with a result for each case. Run the same definitions after a context change and use `compare` to identify previous passes that now fail. Review the evidence to determine whether the cause is missing context, a source-definition mismatch, an agent failure, or an overly restrictive test.
 
@@ -32,6 +32,8 @@ flowchart LR
 | [smoke.csv](smoke.csv) | Two fictional, shallow checks that verify CSV parsing, assertions, reports, and exit codes. Start here to check the harness. | Exact mode; use `report` with the sample answers below for an offline run. |
 | [sample-answers.json](sample-answers.json) | Fictional answer payloads keyed by the smoke cases' IDs. This is input to `report`, not an eval suite. | No Collate connection needed with exact-mode reporting. |
 | [cases.json](cases.json) | Fictional expert answer/SQL references and semantic rubrics. Adapt these to your data. | Requires `--judge llm` and judge credentials because it contains `guidelines`. |
+| [sql-only.json](sql-only.json), [sql-only-answers.json](sql-only-answers.json) | Compare generated SQL with an expert reference without executing queries, including when SQL Studio is disabled. Includes a fictional structured SQL response for offline grading. | Exact or LLM mode; offline `report` needs no Collate connection. See [SQL-only evaluation](#sql-only-evaluation-without-sql-studio). |
+| [banking-devrel-sql.json](banking-devrel-sql.json) | SQL-only demo using the devrel banking reporting marts. Compares generated bank-wide fee and commission SQL with an expert reference; no numeric answer or query execution required. | Use LLM mode to allow equivalent SQL. `run` needs a Collate token with access to `banking-redshift` and judge credentials. |
 | [banking-devrel.csv](banking-devrel.csv) | Three real devrel snapshot checks covering open discovery, account-fee reconciliation, and segment revenue. Open discovery can choose sources that differ from the reference definition. | Exact mode; `run` needs a Collate token with access to `banking-redshift`. |
 | [banking-devrel-marts.csv](banking-devrel-marts.csv), [banking-devrel-marts.json](banking-devrel-marts.json) | Equivalent definitions of the live-tested banking question with reporting marts explicitly named and SQL evidence required. Start here for a reproducible devrel demo. | Exact mode; `run` needs the same banking access. |
 
@@ -87,7 +89,7 @@ To evaluate an API-enabled agent configured in AI Studio, pass its name using `-
 | --- | --- | --- |
 | `contains`, `not_contains`, reference checks, and `require_sql` | Deterministic checks. | The same deterministic checks still apply. |
 | `expected_answer` | Compare the full answer after normalizing whitespace. Capitalization, punctuation, formatting, and extra prose still matter. | Judge whether the answer and components satisfy the expert reference in meaning. |
-| `expected_sql` | At least one structured answer SQL statement must match, ignoring only leading/trailing whitespace. Aliases and internal formatting differences can fail. | Judge semantic equivalence across the answer's SQL: sources, joins, grain, aggregation, filters, null handling, and date boundaries. |
+| `expected_sql` | At least one answer SQL statement must match, ignoring only leading/trailing whitespace. Aliases and internal formatting differences can fail. | Judge semantic equivalence across the answer's SQL: sources, joins, grain, aggregation, filters, null handling, and date boundaries. |
 | `guidelines` | Execution rejects the suite; exact mode cannot grade a rubric. | Include the rubric in the semantic assessment. |
 | Model calls | None. | One judge call for each case containing `expected_answer`, `expected_sql`, or `guidelines`. A case with only deterministic assertions makes no judge call. |
 
@@ -113,13 +115,55 @@ ai-sdk evals compare before.json after.json
 
 The judge defaults to OpenAI's Chat Completions URL. `--judge-url FULL_URL` supports another endpoint implementing the same request and response format, including strict `json_schema` output. The implementation follows the official [Chat Completions API](https://developers.openai.com/api/reference/resources/chat/subresources/completions/methods/create) and [Structured Outputs](https://developers.openai.com/api/docs/guides/structured-outputs?api-mode=chat) contracts. The judge receives the question, expert reference, rubric, answer, and answer components, including returned rows; configure an appropriate endpoint for the customer's data. The Collate JWT is not sent to the judge.
 
-SQL judging compares intent, source tables, joins, filters, grain, aggregation, null handling, and date boundaries. The judge uses SQL attached to result tables, charts, or SQL blocks, because the final prose often omits it. A configured SQL reference without structured SQL evidence fails. If a query used for the final answer reports a failed execution, the case also fails.
+SQL judging compares intent, source tables, joins, filters, grain, aggregation, null handling, and date boundaries. The judge uses SQL attached to result tables, charts, or SQL code components, falling back to fenced `sql` blocks in the final answer when structured SQL is absent. A configured SQL reference without SQL evidence fails. If a query used for the final answer reports a failed execution, the case also fails.
 
 This is an LLM assessment of equivalence, not a formal SQL proof or a comparison of separately executed reference results. The harness never executes the expert SQL. For numeric correctness, include a known expected answer against a stable dataset as well. Keep human-reviewed gold cases to calibrate the judge. Cases with a rubric require `--judge llm`; missing configuration and malformed/refused/truncated judge responses produce errors rather than passing.
 
+## SQL-only evaluation without SQL Studio
+
+For the devrel demo, use [banking-devrel-sql.json](banking-devrel-sql.json). It compares generated bank-wide fee and commission revenue SQL against a reference using `banking-redshift.dev.marts_finance.fct_fee_revenue` and `banking-redshift.dev.marts_wealth.fct_trades`. It asks for SQL without execution and does not require a numeric answer.
+
+[sql-only.json](sql-only.json) is a fictional minimal example of the same SQL-only workflow:
+
+```json
+[
+  {
+    "id": "completed-revenue-sql",
+    "question": "Write a SQL query for completed-order revenue from finance.orders from July 1 through September 30, 2026. Revenue is the sum of amount for orders whose status is completed. Include the whole final day of September and exclude October. Return the query as a SQL code block without executing it.",
+    "expected_sql": "SELECT SUM(amount) AS revenue FROM finance.orders WHERE status = 'completed' AND order_date >= DATE '2026-07-01' AND order_date < DATE '2026-10-01'"
+  }
+]
+```
+
+These identifiers are fictional; adapt the question and reference SQL to your catalog. There is no numeric `expected_answer` because this case grades SQL generation. `expected_sql` already requires SQL evidence, so `require_sql: true` is optional. Neither grading mode executes the generated or reference SQL.
+
+With the CLI built as above, try exact grading offline:
+
+```bash
+ai-sdk evals validate -f cookbook/chat-evals/sql-only.json
+ai-sdk evals report -f cookbook/chat-evals/sql-only.json \
+  --answers cookbook/chat-evals/sql-only-answers.json \
+  --judge exact -o /tmp/collate-evals-sql-only.json
+```
+
+The expected result is **1/1 passed**, without Collate credentials, a judge credential, or a database connection. The supplied answer has a nonempty `response` and a structured `code` component with `content.codeType: "sql"`, `content.codeContent` containing the query, and `content.isAnswer: true`. No result rows or execution status are needed. A fenced `sql` block in `response` also provides SQL evidence when no structured answer SQL is available.
+
+To run the devrel demo, configure the Collate connection as in [Run against Collate AI Chat](#run-against-collate-ai-chat), using `https://devrel.getcollate.io` as the host. Use semantic grading to allow equivalent SQL with different aliases or formatting:
+
+```bash
+export EVAL_JUDGE_TOKEN="your-judge-api-key"
+export EVAL_JUDGE_MODEL="your-structured-output-capable-model"
+
+ai-sdk evals run -f cookbook/chat-evals/banking-devrel-sql.json \
+  --judge llm --judge-model "$EVAL_JUDGE_MODEL" \
+  -o sql-only-run.json
+```
+
+The agent can return an unexecuted query as a fenced `sql` block or a structured SQL code component. `run` uses the agent's existing tools and permissions; the eval command itself does not disable query execution. `--judge exact` also works for live runs, but requires an identical statement except for leading/trailing whitespace. A pass assesses the query against the reference, not its execution or numeric result.
+
 ## Banking example tested on devrel
 
-[banking-devrel.csv](banking-devrel.csv) contains three standalone questions derived from [this banking conversation](https://devrel.getcollate.io/conversations/88650faa-3670-4457-9af0-c82d906151df). The reference values were checked by re-executing its reporting SQL against `banking-redshift` on October 28, 2026. The fixture requires structured answer SQL as well as its configured text/reference checks.
+[banking-devrel.csv](banking-devrel.csv) contains three standalone questions derived from [this banking conversation](https://devrel.getcollate.io/conversations/88650faa-3670-4457-9af0-c82d906151df). The reference values were checked by re-executing its reporting SQL against `banking-redshift` on October 28, 2026. The fixture requires answer SQL as well as its configured text/reference checks.
 
 The reference definition uses `fct_trades.total_commission`, whose total is 299,377, and fee mart totals of 22,422 (ATM), 169,840 (wire), and 241,195 (account), giving 732,834. Raw trades produced a different commission total during the live test. The broad questions intentionally leave discovery open, so differences can reveal a source-definition mismatch rather than an arithmetic bug. A number merely mentioned as an alternative can satisfy a substring check; use a semantic rubric when the primary conclusion matters.
 
@@ -138,13 +182,13 @@ JSON is an array of case objects. CSV has one case per record and uses the same 
 | `id` | Required string | Unique, stable case identifier, such as `completed-revenue`. It matches external answers to cases and matches cases across reports. Keep it unchanged when rerunning the same test. |
 | `question` | Required string | The exact message sent to AskCollate. Include enough business context to answer it in a new conversation. Example: `What was completed-order revenue for July through September 2026?` |
 | `expected_answer` | Optional string; default `null` | An expert's reference answer. Exact mode compares it against the **whole answer**, with whitespace normalized; LLM mode evaluates meaning using the answer and components together. This is not a substring check. Example: `Completed-order revenue is 42.` |
-| `expected_sql` | Optional string; default `null` | An expert's reference SQL statement. It also requires structured SQL evidence. Exact mode requires one identical statement except outer whitespace; LLM mode assesses equivalence. Example: `SELECT SUM(amount) FROM finance.orders WHERE status = 'completed'`. This SQL is never executed by the grader. |
+| `expected_sql` | Optional string; default `null` | An expert's reference SQL statement. It also requires SQL evidence from answer components or, when structured SQL is absent, fenced `sql` blocks in the final answer. Exact mode requires one identical statement except outer whitespace; LLM mode assesses equivalence. Example: `SELECT SUM(amount) FROM finance.orders WHERE status = 'completed'`. This SQL is never executed by the grader. |
 | `guidelines` | Optional string; default `null` | A semantic rubric describing additional pass criteria, such as `Exclude cancelled orders; do not multiply revenue through a join.` Requires `--judge llm`. Include how ambiguity or unavailable data should be handled when that matters. |
 | `contains` | Array of strings; default `[]` | **Every** value must appear as a case-insensitive substring in the answer text. Example: `["732,834", "299,377"]`. It does not inspect result rows, establish the relationship between a number and a metric, or determine whether the number is the primary conclusion. |
 | `not_contains` | Array of strings; default `[]` | **None** of these case-insensitive substrings may appear in the answer text. Example: `["estimated revenue"]`. A phrase mentioned as a warning or rejected alternative still counts as present. |
 | `must_reference` | Array of strings; default `[]` | **Every** exact, case-sensitive catalog fully qualified name (FQN) must be referenced. Example: `["banking-redshift.dev.marts_wealth.fct_trades"]`. This checks catalog references, not SQL table usage. |
 | `must_not_reference` | Array of strings; default `[]` | **None** of these exact catalog FQNs may be referenced. Example: `["warehouse.analytics.finance.orders_staging"]`. A citation mentioned only as a rejected source still counts as a reference. |
-| `require_sql` | Boolean; default `false` | Require at least one nonempty structured answer SQL statement. This works without `expected_sql` or an LLM judge. It checks that query evidence is available, not whether the query is correct. Setting it to `false` does not disable the SQL requirement implied by `expected_sql`. |
+| `require_sql` | Boolean; default `false` | Require at least one nonempty answer SQL statement, from structured components or a fenced `sql` block fallback. This works without `expected_sql` or an LLM judge. It checks that query evidence is available, not whether the query is correct. Setting it to `false` does not disable the SQL requirement implied by `expected_sql`. |
 
 Catalog references come from `#entityType/FQN` links in final answer text, component entity references, supported asset components such as lineage/profile, and SQL code components' table provenance. Link FQNs are URL-decoded before comparison. A bare FQN in prose is insufficient. A lineage reference does not establish that the SQL used that table; express SQL source requirements through `expected_sql` or the semantic rubric.
 
@@ -272,7 +316,7 @@ These payload fields use `camelCase`, matching Collate responses:
 | --- | --- |
 | `response` | Required final answer text. This is where `contains`, `not_contains`, and exact answer comparison operate. |
 | `conversationId` | Optional originating conversation ID, saved for traceability. |
-| `components` | Optional structured table/chart/code/asset components; defaults to `[]`. Supply query configuration when grading SQL evidence. |
+| `components` | Optional structured table/chart/code/asset components; defaults to `[]`. Supply query configuration when available; SQL-only answers can instead use fenced `sql` blocks in `response`. |
 | `usage` | Optional usage information from the producing agent; `null` if unavailable. |
 
 ```bash

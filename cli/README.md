@@ -330,7 +330,7 @@ ai-sdk invoke planner "Create a test plan" --stream --json
 
 Evaluate CSV or JSON cases through Collate AI Chat, retain local JSON reports, and gate CI on failures:
 
-Each case pairs a standalone `question` with expert references or assertions. The agent receives only the question; the grader checks its answer and structured SQL evidence afterward. Every configured condition must pass. `--judge exact` is the default and uses literal checks; `--judge llm` also evaluates the meaning of reference answers/SQL and semantic rubrics. The grader never executes the reference SQL.
+Each case pairs a standalone `question` with expert references or assertions. The agent receives only the question; the grader checks its answer and SQL evidence afterward. SQL comes from structured answer components, falling back to fenced `sql` blocks when structured SQL is absent. Every configured condition must pass. `--judge exact` is the default and uses literal checks; `--judge llm` also evaluates the meaning of reference answers/SQL and semantic rubrics. The grader never executes the reference SQL.
 
 ```bash
 ai-sdk evals validate -f cases.csv
