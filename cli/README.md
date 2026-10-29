@@ -78,6 +78,8 @@ The CLI stores configuration in `~/.ai-sdk/`:
 ai-sdk configure
 ```
 
+API token input is hidden as you type or paste it, like a password prompt. Press Enter to keep an existing token.
+
 ### Manual Configuration
 
 ```bash
