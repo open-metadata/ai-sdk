@@ -1,0 +1,15 @@
+{
+  "completed-revenue-sql": {
+    "response": "Here is the query for completed-order revenue from July through September 2026. It has not been executed.",
+    "components": [
+      {
+        "type": "code",
+        "content": {
+          "isAnswer": true,
+          "codeType": "sql",
+          "codeContent": "SELECT SUM(amount) AS revenue FROM finance.orders WHERE status = 'completed' AND order_date >= DATE '2026-07-01' AND order_date < DATE '2026-10-01'"
+        }
+      }
+    ]
+  }
+}

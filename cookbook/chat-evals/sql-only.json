@@ -1,0 +1,7 @@
+[
+  {
+    "id": "completed-revenue-sql",
+    "question": "Write a SQL query for completed-order revenue from finance.orders from July 1 through September 30, 2026. Revenue is the sum of amount for orders whose status is completed. Include the whole final day of September and exclude October. Return the query as a SQL code block without executing it.",
+    "expected_sql": "SELECT SUM(amount) AS revenue FROM finance.orders WHERE status = 'completed' AND order_date >= DATE '2026-07-01' AND order_date < DATE '2026-10-01'"
+  }
+]

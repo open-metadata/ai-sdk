@@ -338,7 +338,7 @@ Save your cases as `evals.json` (a JSON array) or `evals.csv` (one case per reco
 | `not_contains` | List of case-insensitive substrings that must all be absent from answer text. |
 | `must_reference` | List of exact catalog fully qualified names that must all be referenced. A reference does not establish that SQL used the source. |
 | `must_not_reference` | List of exact catalog fully qualified names that must all be absent from the answer's references. |
-| `require_sql` | Boolean, default `false`: require SQL attached to the answer's table, chart, or SQL block. This checks that SQL evidence exists; use a reference/rubric to assess correctness. |
+| `require_sql` | Boolean, default `false`: require SQL attached to the answer's table, chart, or SQL code component, falling back to fenced `sql` blocks in the answer. This checks that SQL evidence exists; use a reference/rubric to assess correctness. |
 
 Every case needs at least one expectation or condition beyond its ID and question. Omitted lists default to empty. CSV uses the same field names, with `|` separating list items; quote fields containing commas, quotes, or newlines. All configured checks must pass.
 

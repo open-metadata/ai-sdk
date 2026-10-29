@@ -169,7 +169,7 @@ fn exact_grading_uses_answer_sql_and_exact_catalog_references() {
     let ws = Workspace::new();
     ws.json("cases.json", json!([
         {"id":"ok", "question":"Q", "expected_sql":"SELECT SUM(amount) FROM orders", "must_reference":["warehouse.db.orders"], "must_not_reference":["warehouse.db.old_orders"]},
-        {"id":"prose_sql", "question":"Q", "expected_sql":"SELECT 1"},
+        {"id":"markdown_sql", "question":"Q", "expected_sql":"SELECT 1"},
         {"id":"probe_sql", "question":"Q", "expected_sql":"SELECT 1"},
         {"id":"failed_sql", "question":"Q", "contains":["answer"]},
         {"id":"prefix", "question":"Q", "must_reference":["warehouse.db.orders"]},
@@ -181,7 +181,7 @@ fn exact_grading_uses_answer_sql_and_exact_catalog_references() {
     ]));
     ws.json("answers.json", json!({
         "ok":{"response":"Revenue from [Orders](#table/warehouse.db.orders)", "components":[{"type":"table", "content":{"isAnswer":true, "sqlQueryConfig":{"queryText":"SELECT SUM(amount) FROM orders"}}}]},
-        "prose_sql":{"response":"```sql\nSELECT 1\n```"},
+        "markdown_sql":{"response":"```sql\nSELECT 1\n```"},
         "probe_sql":{"response":"Answer", "components":[{"type":"table", "content":{"isAnswer":false,"sqlQueryConfig":{"queryText":"SELECT 1"}}}]},
         "failed_sql":{"response":"Answer", "components":[{"type":"code","content":{"codeType":"sql","codeContent":"SELECT 1","isAnswer":true,"status":"failed"}}]},
         "prefix":{"response":"[Orders](#table/warehouse.db.orders_backup)"},
@@ -214,9 +214,117 @@ fn exact_grading_uses_answer_sql_and_exact_catalog_references() {
         .collect();
     assert_eq!(
         statuses,
-        ["PASS", "FAIL", "FAIL", "FAIL", "FAIL", "FAIL", "FAIL", "FAIL", "FAIL", "ERROR"]
+        ["PASS", "PASS", "FAIL", "FAIL", "FAIL", "FAIL", "FAIL", "FAIL", "FAIL", "ERROR"]
     );
     assert_eq!(report["complete"], true);
+}
+
+#[test]
+fn sql_only_answers_use_sql_fences_as_a_fallback_to_structured_evidence() {
+    let ws = Workspace::new();
+    let examples = [
+        (
+            "fenced",
+            json!({"response":"Query, not executed:\n```sql\nSELECT 1\n```"}),
+            "SELECT 1",
+            "PASS",
+        ),
+        (
+            "tilde_fence",
+            json!({"response":"~~~SQL\nSELECT 1\n~~~"}),
+            "SELECT 1",
+            "PASS",
+        ),
+        (
+            "multiple",
+            json!({"response":"```sql\nSELECT 0\n```\n\n```sql\nSELECT 1\n```"}),
+            "SELECT 1",
+            "PASS",
+        ),
+        (
+            "code_component",
+            json!({"response":"Query, not executed.","components":[{"type":"code","content":{"isAnswer":true,"codeType":"sql","codeContent":"SELECT 1"}}]}),
+            "SELECT 1",
+            "PASS",
+        ),
+        (
+            "inline",
+            json!({"response":"Use `SELECT 1`."}),
+            "SELECT 1",
+            "FAIL",
+        ),
+        (
+            "untyped_fence",
+            json!({"response":"```\nSELECT 1\n```"}),
+            "SELECT 1",
+            "FAIL",
+        ),
+        (
+            "python_fence",
+            json!({"response":"```python\nSELECT 1\n```"}),
+            "SELECT 1",
+            "FAIL",
+        ),
+        (
+            "blank_fence",
+            json!({"response":"```sql\n   \n```"}),
+            "SELECT 1",
+            "FAIL",
+        ),
+        (
+            "literal_whitespace",
+            json!({"response":"```sql\nSELECT 'a b'\n```"}),
+            "SELECT 'a  b'",
+            "FAIL",
+        ),
+        (
+            "structured_first",
+            json!({"response":"```sql\nSELECT 1\n```","components":[{"type":"table","content":{"isAnswer":true,"sqlQueryConfig":{"queryText":"SELECT 2"}}}]}),
+            "SELECT 1",
+            "FAIL",
+        ),
+        (
+            "failed_component",
+            json!({"response":"```sql\nSELECT 1\n```","components":[{"type":"table","content":{"isAnswer":true,"status":"failed"}}]}),
+            "SELECT 1",
+            "FAIL",
+        ),
+    ];
+    ws.json("cases.json", json!(examples.iter().map(|(id, _, sql, _)| json!({
+        "id": id, "question": "Write SQL without executing it.", "expected_sql": sql, "require_sql": true
+    })).collect::<Vec<_>>()));
+    ws.json(
+        "answers.json",
+        Value::Object(
+            examples
+                .iter()
+                .map(|(id, answer, _, _)| (id.to_string(), answer.clone()))
+                .collect(),
+        ),
+    );
+    let output = ws.cli(
+        &[
+            "report",
+            "-f",
+            "cases.json",
+            "--answers",
+            "answers.json",
+            "-o",
+            "run.json",
+        ],
+        &[],
+    );
+    assert!(!output.status.success());
+    let report = ws.read("run.json");
+    assert_eq!(report["complete"], true);
+    for (result, (id, _, _, status)) in report["results"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .zip(examples.iter())
+    {
+        assert_eq!(result["status"], *status, "case {id}: {result}");
+    }
 }
 
 #[tokio::test(flavor = "multi_thread")]

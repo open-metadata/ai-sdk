@@ -3,6 +3,7 @@
 use crate::config::ResolvedConfig;
 use crate::error::{CliError, CliResult};
 use clap::{Args, Subcommand, ValueEnum};
+use pulldown_cmark::{CodeBlockKind, Event, Parser, Tag, TagEnd};
 use reqwest::{Client, RequestBuilder};
 use serde::{Deserialize, Serialize};
 use serde_json::{json, Value};
@@ -322,10 +323,39 @@ fn collect_component(component: &Value, evidence: &mut Evidence) {
     }
 }
 
+fn collect_markdown_sql(response: &str, evidence: &mut Evidence) {
+    let mut query = None;
+    for event in Parser::new(response) {
+        match event {
+            Event::Start(Tag::CodeBlock(CodeBlockKind::Fenced(language)))
+                if language.trim().eq_ignore_ascii_case("sql") =>
+            {
+                query = Some(String::new());
+            }
+            Event::Text(text) => {
+                if let Some(query) = &mut query {
+                    query.push_str(&text);
+                }
+            }
+            Event::End(TagEnd::CodeBlock) => {
+                if let Some(query) = query.take().filter(|sql| !sql.trim().is_empty()) {
+                    evidence.sql.insert(query);
+                }
+            }
+            _ => {}
+        }
+    }
+}
+
 fn evidence(output: &AgentOutput) -> Evidence {
     let mut evidence = Evidence::default();
     for component in output.components.iter().filter(is_answer_component) {
         collect_component(component, &mut evidence);
+    }
+    // SQL-only answers can contain a query without creating a result component.
+    // Prefer structured provenance when it is available.
+    if evidence.sql.is_empty() {
+        collect_markdown_sql(&output.response, &mut evidence);
     }
     // Only catalog links count; a bare FQN mentioned in passing is not a citation.
     for suffix in output.response.split("](").skip(1) {
@@ -414,7 +444,7 @@ fn deterministic_checks(case: &EvalCase, output: &AgentOutput, mode: JudgeMode) 
             &mut checks,
             "sql_present",
             !evidence.sql.is_empty(),
-            "This case requires structured answer SQL evidence; prose is insufficient".into(),
+            "This case requires answer SQL in a structured component or a fenced sql block".into(),
         );
     }
     if mode == JudgeMode::Exact {
