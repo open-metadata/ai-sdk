@@ -4,7 +4,7 @@ name: Release
 # Validates version consistency, then publishes all SDKs in parallel:
 #   - Python SDK → PyPI
 #   - TypeScript SDK → npm
-#   - Java SDK → Maven Central
+#   - Java SDK → Maven repository on GitHub Pages
 #   - CLI binaries → attached to the GitHub Release
 #
 # For individual SDK releases, push SDK-specific tags instead:
@@ -50,7 +50,7 @@ jobs:
             TAG="${{ github.event.release.tag_name }}"
             VERSION="${TAG#v}"
           fi
-          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
           echo "Release version: $VERSION"
 
       - name: Validate VERSION file matches release tag
@@ -88,10 +88,13 @@ jobs:
   release-java:
     name: Java SDK
     needs: validate
+    permissions:
+      contents: write
+      pages: write
+      id-token: write
     uses: ./.github/workflows/ai-sdk-release-java.yml
     with:
       version: ${{ needs.validate.outputs.version }}
-    secrets: inherit
 
   release-cli:
     name: CLI Binaries

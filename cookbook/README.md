@@ -13,6 +13,7 @@ Practical examples and workflows for integrating Metadata AI into your data plat
 
 | Use Case | Description | Tools |
 |----------|-------------|-------|
+| [Java SDK from GitHub Pages](./java-sdk/) | Verify anonymous Maven downloads, then list agents and ask a question | Java SDK, Maven |
 | [Collate AI Chat Evals](./chat-evals/) | CSV/JSON questions, optional semantic answer/SQL judging, local reports, and regression comparisons | AI SDK CLI |
 | [MCP Impact Analysis](./mcp-impact-analysis/) | AI-powered impact analysis for schema changes using MCP tools | Python SDK, LangChain |
 | [DQ Failure Slack Notifications](./dq-failure-slack-notifications/) | Automatically analyze Data Quality failures and send impact summaries to Slack | n8n, Slack |

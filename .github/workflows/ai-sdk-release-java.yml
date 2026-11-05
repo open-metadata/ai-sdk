@@ -18,19 +18,26 @@ on:
         description: 'Version to release (e.g., 0.2.0)'
 
 permissions:
-  contents: read
+  contents: write
+  pages: write
+  id-token: write
 
 concurrency:
-  group: release-java-${{ github.ref }}
-  cancel-in-progress: true
+  # All versions update the same repository branch and Pages site.
+  group: java-maven-pages
+  cancel-in-progress: false
+  queue: max
 
 jobs:
   build-and-publish:
-    name: Build and Publish to Maven Central
+    name: Build and Publish to GitHub Pages
     runs-on: ubuntu-latest
-    environment: publish
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     defaults:
       run:
+        shell: bash
         working-directory: java
 
     steps:
@@ -43,81 +50,114 @@ jobs:
           java-version: '11'
           distribution: 'temurin'
           cache: 'maven'
-          server-id: central
-          server-username: MAVEN_USERNAME
-          server-password: MAVEN_PASSWORD
-          gpg-private-key: ${{ secrets.OSSRH_GPG_SECRET_KEY }}
-          gpg-passphrase: MAVEN_GPG_PASSPHRASE
 
-      - name: Setup settings-security.xml
+      - name: Configure GitHub Pages
+        uses: actions/configure-pages@v5
+
+      - name: Verify release version
+        id: version
+        env:
+          INPUT_VERSION: ${{ inputs.version }}
         run: |
-          rm -rf ~/.m2/settings-security.xml
-          echo "<settingsSecurity><master>${{ secrets.MAVEN_MASTER_PASSWORD }}</master></settingsSecurity>" > ~/.m2/settings-security.xml
+          VERSION="${INPUT_VERSION:-${GITHUB_REF_NAME#java-v}}"
+          POM_VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
+          if [ "$POM_VERSION" != "$VERSION" ]; then
+            echo "::error::pom.xml version ($POM_VERSION) must exactly match the release version ($VERSION)."
+            exit 1
+          fi
+          if [[ "$VERSION" == *-SNAPSHOT ]]; then
+            echo "::error::Publish a release version, not a SNAPSHOT."
+            exit 1
+          fi
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
 
-      - name: Verify GPG key is valid
+      - name: Restore published Maven repository
         working-directory: .
         run: |
-          echo "Checking imported GPG keys..."
-          gpg --list-secret-keys --keyid-format LONG
-          # Check the validity field (field 2) in colon-delimited output
-          # 'e' = expired, 'r' = revoked
-          VALIDITY=$(gpg --list-secret-keys --with-colons 2>/dev/null | awk -F: '/^sec/{print $2}')
-          if [ -z "$VALIDITY" ]; then
-            echo "::error::No GPG secret key found. Ensure OSSRH_GPG_SECRET_KEY is configured in the 'publish' environment."
-            exit 1
-          fi
-          if [ "$VALIDITY" = "e" ]; then
-            echo "::error::GPG signing key is expired. Generate a new key and update the OSSRH_GPG_SECRET_KEY secret."
-            exit 1
-          fi
-          echo "GPG key is valid (validity=$VALIDITY)."
-
-      - name: Extract version
-        id: version
-        run: |
-          INPUT_VERSION="${{ inputs.version || '' }}"
-          if [ -n "$INPUT_VERSION" ]; then
-            echo "version=$INPUT_VERSION" >> $GITHUB_OUTPUT
+          PAGES_DIR="$RUNNER_TEMP/java-pages"
+          echo "PAGES_DIR=$PAGES_DIR" >> "$GITHUB_ENV"
+          git ls-remote --heads origin refs/heads/gh-pages > "$RUNNER_TEMP/gh-pages-ref"
+          if [ -s "$RUNNER_TEMP/gh-pages-ref" ]; then
+            git fetch --no-tags --depth=1 origin gh-pages
+            git worktree add --detach "$PAGES_DIR" FETCH_HEAD
           else
-            echo "version=${GITHUB_REF#refs/tags/java-v}" >> $GITHUB_OUTPUT
-          fi
-
-      - name: Verify pom.xml version matches tag
-        run: |
-          POM_VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
-          TAG_VERSION=${{ steps.version.outputs.version }}
-          # Compare only first 3 components (major.minor.patch)
-          POM_BASE=$(echo "$POM_VERSION" | cut -d. -f1-3)
-          TAG_BASE=$(echo "$TAG_VERSION" | cut -d. -f1-3)
-          if [ "$POM_BASE" != "$TAG_BASE" ]; then
-            echo "Error: pom.xml version ($POM_VERSION) does not match tag version ($TAG_VERSION)"
-            exit 1
+            git worktree add --orphan -b gh-pages "$PAGES_DIR"
           fi
 
       - name: Check if already published
         id: check
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
         run: |
-          HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" https://repo1.maven.org/maven2/org/open-metadata/ai-sdk/${{ steps.version.outputs.version }}/ai-sdk-${{ steps.version.outputs.version }}.pom)
-          if [ "$HTTP_STATUS" = "200" ]; then
-            echo "Version ${{ steps.version.outputs.version }} already published to Maven Central. Skipping."
-            echo "published=true" >> $GITHUB_OUTPUT
+          if [ -d "$PAGES_DIR/maven/org/open-metadata/ai-sdk/$VERSION" ]; then
+            echo "Version $VERSION is already published. Redeploying the existing repository."
+            echo "published=true" >> "$GITHUB_OUTPUT"
           else
-            echo "published=false" >> $GITHUB_OUTPUT
+            echo "published=false" >> "$GITHUB_OUTPUT"
           fi
 
-      - name: Build and test
-        if: steps.check.outputs.published == 'false'
-        run: mvn clean verify
-
-      - name: Deploy to Maven Central
+      - name: Build, test, and stage Maven artifacts
         if: steps.check.outputs.published == 'false'
         run: |
-          mvn deploy -Prelease \
-            --no-transfer-progress \
-            --batch-mode \
-            -DskipTests \
-            -Dgpg.passphrase=${{ secrets.OSSRH_GPG_SECRET_KEY_PASSWORD }}
+          mvn clean deploy --batch-mode --no-transfer-progress \
+            "-DaltDeploymentRepository=github-pages::file:$PAGES_DIR/maven"
+
+      - name: Verify Maven artifacts
         env:
-          MAVEN_USERNAME: ${{ secrets.MAVEN_USERNAME }}
-          MAVEN_PASSWORD: ${{ secrets.MAVEN_MASTER_PASSWORD }}
-          MAVEN_GPG_PASSPHRASE: ${{ secrets.OSSRH_GPG_SECRET_KEY_PASSWORD }}
+          VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          for SUFFIX in .pom .jar -sources.jar -javadoc.jar; do
+            ARTIFACT="$PAGES_DIR/maven/org/open-metadata/ai-sdk/$VERSION/ai-sdk-$VERSION$SUFFIX"
+            test -s "$ARTIFACT"
+            test -s "$ARTIFACT.sha1"
+          done
+          test -s "$PAGES_DIR/maven/org/open-metadata/ai-sdk/maven-metadata.xml"
+
+      - name: Save published Maven repository
+        if: steps.check.outputs.published == 'false'
+        working-directory: .
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          cat > "$PAGES_DIR/index.html" <<'HTML'
+          <!doctype html>
+          <html lang="en">
+          <head>
+            <meta charset="utf-8">
+            <title>Java SDK Maven repository</title>
+          </head>
+          <body>
+            <h1>Java SDK Maven repository</h1>
+            <p><a href="https://github.com/open-metadata/ai-sdk/blob/main/java/README.md#installation">Maven and Gradle installation instructions</a></p>
+          </body>
+          </html>
+          HTML
+          git -C "$PAGES_DIR" config user.name "github-actions[bot]"
+          git -C "$PAGES_DIR" config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git -C "$PAGES_DIR" add maven index.html
+          git -C "$PAGES_DIR" commit -m "Publish Java SDK $VERSION"
+          git -C "$PAGES_DIR" push origin HEAD:refs/heads/gh-pages
+
+      # Deploy even on a retry where the branch push succeeded but Pages deployment failed.
+      - name: Upload GitHub Pages artifact
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: ${{ env.PAGES_DIR }}
+
+      - name: Deploy Maven repository to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+
+      - name: Verify anonymous Maven downloads
+        env:
+          PAGE_URL: ${{ steps.deployment.outputs.page_url }}
+          VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          ARTIFACT_PATH="maven/org/open-metadata/ai-sdk/$VERSION"
+          for EXTENSION in pom jar; do
+            ARTIFACT="ai-sdk-$VERSION.$EXTENSION"
+            curl --fail --silent --show-error --location --retry 5 --retry-all-errors \
+              "${PAGE_URL%/}/$ARTIFACT_PATH/$ARTIFACT" \
+              --output "$RUNNER_TEMP/$ARTIFACT"
+            cmp "$PAGES_DIR/$ARTIFACT_PATH/$ARTIFACT" "$RUNNER_TEMP/$ARTIFACT"
+          done
