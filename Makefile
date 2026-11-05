@@ -171,7 +171,7 @@ release:  ## Create a GitHub Release (usage: make release [B=branch])
 	@echo "Release v$(CURRENT_VERSION) created from branch '$(BRANCH)'! CI will now:"
 	@echo "  - Publish Python SDK to PyPI"
 	@echo "  - Publish TypeScript SDK to npm"
-	@echo "  - Publish Java SDK to Maven Central"
+	@echo "  - Publish Java SDK to the Maven repository on GitHub Pages"
 	@echo "  - Build CLI binaries and attach to release"
 
 # Development helpers

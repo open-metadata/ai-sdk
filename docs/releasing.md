@@ -6,7 +6,7 @@ This document explains how to release the AI SDK. A single release publishes all
 |-----------|----------|---------|
 | Python SDK | [PyPI](https://pypi.org/project/data-ai-sdk/) | `data-ai-sdk` |
 | TypeScript SDK | [npm](https://www.npmjs.com/package/@openmetadata/ai-sdk) | `@openmetadata/ai-sdk` |
-| Java SDK | [Maven Central](https://central.sonatype.com/) | `org.open-metadata:ai-sdk` |
+| Java SDK | [GitHub Pages Maven repository](../java/README.md#installation) | `org.open-metadata:ai-sdk` |
 | CLI | [GitHub Releases](https://github.com/open-metadata/ai-sdk/releases) | Pre-built binaries (6 platforms) |
 
 ## TL;DR
@@ -88,7 +88,7 @@ Creating the GitHub Release triggers the `ai-sdk-release.yml` workflow, which:
 2. **Publishes all SDKs in parallel:**
    - **Python** &rarr; builds wheel/sdist, runs tests, publishes to PyPI via trusted publishing (OIDC)
    - **TypeScript** &rarr; runs tests, builds, publishes to npm with `--provenance`
-   - **Java** &rarr; runs `mvn clean verify`, deploys to Maven Central with GPG signing
+   - **Java** &rarr; builds and tests with `mvn clean deploy`, saves the Maven repository to `gh-pages`, and deploys it to GitHub Pages
    - **CLI** &rarr; cross-compiles for 6 platforms, uploads binaries to the GitHub Release
 
 Monitor progress in the **Actions** tab of the repository.
@@ -152,10 +152,10 @@ GitHub Release published (tag: v0.3.0)
  Python   TypeScript    Java        CLI
   │         │           │           │
   │ tests   │ tests     │ verify    │ build (6 targets)
-  │ build   │ build     │ GPG sign  │ package
+  │ build   │ build     │ stage     │ package
   │         │           │           │
   ▼         ▼           ▼           ▼
- PyPI      npm     Maven Central  GitHub Release
+ PyPI      npm     GitHub Pages   GitHub Release
                                   (binary uploads)
 ```
 
@@ -179,19 +179,32 @@ If any version mismatch is detected, the workflow fails with a clear error messa
 | Secret | SDK | Notes |
 |--------|-----|-------|
 | `NPM_TOKEN` | TypeScript | npm access token with publish permission |
-| `OSSRH_USERNAME` | Java | Sonatype OSSRH username (org secret) |
-| `OSSRH_TOKEN` | Java | Sonatype OSSRH token (org secret) |
-| `OSSRH_GPG_SECRET_KEY` | Java | GPG private key for JAR signing (org secret) |
-| `OSSRH_GPG_SECRET_KEY_PASSWORD` | Java | GPG key passphrase (org secret) |
-| `MAVEN_MASTER_PASSWORD` | Java | Maven `settings-security.xml` master password (org secret) |
 
-`GITHUB_TOKEN` is provided automatically by GitHub Actions for CLI binary uploads.
+GitHub Actions provides `GITHUB_TOKEN` for CLI binary uploads and Java repository updates. Java Pages deployments also use GitHub's OIDC token. No personal access token, Sonatype credentials, or GPG key is required for Java publishing.
 
 The Python SDK uses **PyPI trusted publishing** (OIDC) and requires no secrets.
 
 ### GitHub Environment
 
-A GitHub environment named **`publish`** must exist (**Settings > Environments > New environment**). All release workflows run in this environment. You can optionally add required reviewers for release approval.
+A GitHub environment named **`publish`** must exist (**Settings > Environments > New environment**) for Python, TypeScript, and CLI releases. You can optionally add required reviewers for release approval.
+
+Java releases use the **`github-pages`** environment. Allow the `main` branch and the tag patterns `v*` and `java-v*` in its deployment rules.
+
+### Java Maven repository
+
+In **Settings > Pages > Build and deployment**, set **Source** to **GitHub Actions**.
+
+The Java workflow publishes to `https://open-metadata.github.io/ai-sdk/maven/`. Consumers add this URL to their Maven or Gradle repositories, then use `org.open-metadata:ai-sdk` as before. Downloads require no credentials. See the [Java installation instructions](../java/README.md#installation).
+
+The workflow creates the `gh-pages` branch on its first release. This branch stores every published version, including the POM, JAR, sources, Javadocs, checksums, and Maven metadata. Keep this branch to preserve older versions. Each deployment includes the complete repository.
+
+Java releases run one at a time across all versions. The release version must exactly match `java/pom.xml`; snapshots are rejected. Once a version exists, rerunning the workflow reuses its artifacts and redeploys Pages. This also recovers a failed Pages deployment after the branch update succeeds.
+
+After deployment, the workflow downloads the POM and JAR without credentials and compares them with the saved artifacts.
+
+To make the first Pages deployment after merging the workflow, run **Release AI SDK Java** from **Actions** on `main`, with the version currently in `java/pom.xml`. This publishes Java without rerunning the other SDK releases.
+
+Then run `./run.sh` from `cookbook/java-sdk` to verify that a fresh Maven consumer downloads and loads the published SDK without credentials. See the [Java SDK cookbook](../cookbook/java-sdk/) for API examples.
 
 ### PyPI Trusted Publisher
 

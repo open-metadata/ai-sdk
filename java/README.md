@@ -9,21 +9,43 @@ Java SDK for interacting with AI Agents.
 
 ## Installation
 
+The SDK is published to a public Maven repository on GitHub Pages. Downloads require no GitHub account or token.
+
 ### Maven
 
+Add the repository and dependency to your `pom.xml`:
+
 ```xml
-<dependency>
-    <groupId>org.open-metadata</groupId>
-    <artifactId>ai-sdk</artifactId>
-    <version>0.1.0</version>
-</dependency>
+<repositories>
+    <repository>
+        <id>openmetadata</id>
+        <url>https://open-metadata.github.io/ai-sdk/maven/</url>
+    </repository>
+</repositories>
+
+<dependencies>
+    <dependency>
+        <groupId>org.open-metadata</groupId>
+        <artifactId>ai-sdk</artifactId>
+        <version>0.3.0</version>
+    </dependency>
+</dependencies>
 ```
 
 ### Gradle
 
 ```groovy
-implementation 'org.open-metadata:ai-sdk:0.1.0'
+repositories {
+    maven { url = uri('https://open-metadata.github.io/ai-sdk/maven/') }
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'org.open-metadata:ai-sdk:0.3.0'
+}
 ```
+
+To verify anonymous downloads and run a complete example, use the [Java SDK cookbook](../cookbook/java-sdk/).
 
 ## Quick Start
 
