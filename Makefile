@@ -21,8 +21,10 @@
 VERSION_FILE := VERSION
 CLI_CARGO := cli/Cargo.toml
 PYTHON_PYPROJECT := python/pyproject.toml
+PYTHON_INIT := python/src/ai_sdk/__init__.py
 TS_PACKAGE := typescript/package.json
 JAVA_POM := java/pom.xml
+JAVA_EXAMPLE_POM := cookbook/java-sdk/pom.xml
 N8N_PACKAGE := n8n-nodes-metadata/package.json
 
 # Read current version from VERSION file
@@ -60,6 +62,14 @@ check-versions:  ## Validate all SDK versions match the VERSION file
 		ERRORS=1; \
 	fi; \
 	\
+	PY_RUNTIME_VER=$$(sed -n 's/^__version__ = "\(.*\)"/\1/p' $(PYTHON_INIT)); \
+	if [ "$$PY_RUNTIME_VER" = "$(CURRENT_VERSION)" ]; then \
+		echo "  [OK] Python runtime: $$PY_RUNTIME_VER"; \
+	else \
+		echo "  [MISMATCH] Python runtime: $$PY_RUNTIME_VER"; \
+		ERRORS=1; \
+	fi; \
+	\
 	TS_VER=$$(grep '"version"' $(TS_PACKAGE) | head -1 | sed 's/.*"version": "\(.*\)".*/\1/'); \
 	if [ "$$TS_VER" = "$(CURRENT_VERSION)" ]; then \
 		echo "  [OK] TypeScript:     $$TS_VER"; \
@@ -81,6 +91,22 @@ check-versions:  ## Validate all SDK versions match the VERSION file
 		echo "  [OK] n8n:            $$N8N_VER"; \
 	else \
 		echo "  [MISMATCH] n8n:            $$N8N_VER"; \
+		ERRORS=1; \
+	fi; \
+	\
+	N8N_SDK_VER=$$(sed -n '/"dependencies"/,/}/{s/.*"@openmetadata\/ai-sdk": "\(.*\)".*/\1/p;}' $(N8N_PACKAGE)); \
+	if [ "$$N8N_SDK_VER" = "^$(CURRENT_VERSION)" ]; then \
+		echo "  [OK] n8n SDK dependency: $$N8N_SDK_VER"; \
+	else \
+		echo "  [MISMATCH] n8n SDK dependency: $$N8N_SDK_VER"; \
+		ERRORS=1; \
+	fi; \
+	\
+	JAVA_EXAMPLE_VER=$$(sed -n 's/.*<ai-sdk.version>\(.*\)<\/ai-sdk.version>.*/\1/p' $(JAVA_EXAMPLE_POM)); \
+	if [ "$$JAVA_EXAMPLE_VER" = "$(CURRENT_VERSION)" ]; then \
+		echo "  [OK] Java example: $$JAVA_EXAMPLE_VER"; \
+	else \
+		echo "  [MISMATCH] Java example: $$JAVA_EXAMPLE_VER"; \
 		ERRORS=1; \
 	fi; \
 	\
@@ -115,15 +141,20 @@ sync-versions:  ## Sync all SDK versions to match VERSION file
 	@# Python - pyproject.toml
 	@sed -i.bak 's/^version = ".*"/version = "$(CURRENT_VERSION)"/' $(PYTHON_PYPROJECT) && rm -f $(PYTHON_PYPROJECT).bak
 	@echo "  Updated: $(PYTHON_PYPROJECT)"
+	@sed -i.bak 's/^__version__ = ".*"/__version__ = "$(CURRENT_VERSION)"/' $(PYTHON_INIT) && rm -f $(PYTHON_INIT).bak
+	@echo "  Updated: $(PYTHON_INIT)"
 	@# TypeScript - package.json (update first "version" occurrence)
 	@sed -i.bak 's/"version": ".*"/"version": "$(CURRENT_VERSION)"/' $(TS_PACKAGE) && rm -f $(TS_PACKAGE).bak
 	@echo "  Updated: $(TS_PACKAGE)"
 	@# Java - pom.xml (update version after artifactId line)
 	@sed -i.bak '/<artifactId>ai-sdk<\/artifactId>/{ n; s/<version>.*<\/version>/<version>$(CURRENT_VERSION)<\/version>/; }' $(JAVA_POM) && rm -f $(JAVA_POM).bak
 	@echo "  Updated: $(JAVA_POM)"
+	@sed -i.bak 's/<ai-sdk.version>.*<\/ai-sdk.version>/<ai-sdk.version>$(CURRENT_VERSION)<\/ai-sdk.version>/' $(JAVA_EXAMPLE_POM) && rm -f $(JAVA_EXAMPLE_POM).bak
+	@echo "  Updated: $(JAVA_EXAMPLE_POM)"
 	@# n8n - package.json
 	@sed -i.bak 's/"version": ".*"/"version": "$(CURRENT_VERSION)"/' $(N8N_PACKAGE) && rm -f $(N8N_PACKAGE).bak
 	@echo "  Updated: $(N8N_PACKAGE)"
+	@sed -i.bak '/"dependencies"/,/}/{s/"@openmetadata\/ai-sdk": ".*"/"@openmetadata\/ai-sdk": "^$(CURRENT_VERSION)"/;}' $(N8N_PACKAGE) && rm -f $(N8N_PACKAGE).bak
 	@echo ""
 	@$(MAKE) check-versions --no-print-directory
 

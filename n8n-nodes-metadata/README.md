@@ -77,6 +77,10 @@ To maintain conversation context across multiple agent calls:
 
 ## Local Development & Testing
 
+Local development links the TypeScript SDK in `../typescript`. Build that SDK
+before building this node. The published node depends on `@openmetadata/ai-sdk`
+version `^0.5.0`; publish the SDK before publishing the node.
+
 ### Prerequisites
 
 - Node.js 18+

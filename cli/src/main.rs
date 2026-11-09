@@ -369,7 +369,7 @@ async fn main() {
                             &name,
                             &description,
                             &persona,
-                            "chat", // Hardcoded mode
+                            "standalone",
                             display_name.as_deref(),
                             icon.as_deref(),
                             bot_name.as_deref(),

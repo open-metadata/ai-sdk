@@ -1,6 +1,7 @@
 package io.openmetadata.ai.models;
 
 import java.util.List;
+import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -11,6 +12,9 @@ public class InvokeResponse {
 
   @JsonProperty("conversationId")
   private String conversationId;
+
+  @JsonProperty("components")
+  private List<Map<String, Object>> components = java.util.Collections.emptyList();
 
   @JsonProperty("response")
   private String response;
@@ -45,6 +49,14 @@ public class InvokeResponse {
 
   public void setConversationId(String conversationId) {
     this.conversationId = conversationId;
+  }
+
+  public List<Map<String, Object>> getComponents() {
+    return components == null ? java.util.Collections.emptyList() : components;
+  }
+
+  public void setComponents(List<Map<String, Object>> components) {
+    this.components = components;
   }
 
   public String getResponse() {

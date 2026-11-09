@@ -152,9 +152,12 @@ This node uses the TypeScript SDK (`@openmetadata/ai-sdk`) from npm:
 
 ```json
 "dependencies": {
-  "@openmetadata/ai-sdk": "^0.1.0"
+  "@openmetadata/ai-sdk": "^0.5.0"
 }
 ```
+
+Local development uses the checkout in `../typescript` through the dev dependency.
+Publish the TypeScript SDK before publishing the community node.
 
 The SDK handles:
 - HTTP requests and authentication

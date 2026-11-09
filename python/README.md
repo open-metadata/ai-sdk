@@ -90,7 +90,7 @@ created = client.memories.create(CreateContextMemoryRequest(
 
 # Get / list (filter by entity FQN, optional limit)
 client.memories.get(created.id)
-client.memories.list(primary_entity_fqn="prod.warehouse.orders", limit=50)
+client.memories.list(primary_entity_id="11111111-1111-1111-1111-111111111111", limit=50)
 
 # Hybrid NLQ search — combines vector + keyword ranking over the contextMemory index.
 # Optional filters scope the search by indexed fields.
@@ -116,7 +116,7 @@ Every method has an `aXxx` counterpart when the client is constructed with `enab
 client = AISdk(host=..., token=..., enable_async=True)
 
 await client.memories.acreate(req)
-await client.memories.alist(primary_entity_fqn="prod.warehouse.orders")
+await client.memories.alist(primary_entity_id="11111111-1111-1111-1111-111111111111")
 await client.memories.aget(memory_id)
 await client.memories.asearch("explain customer churn")
 await client.memories.adelete(memory_id)

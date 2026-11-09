@@ -7,9 +7,9 @@ All models support both camelCase (API format) and snake_case (Python format).
 from __future__ import annotations
 
 from enum import Enum
-from typing import Any
+from typing import Any, Literal
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, model_validator
 from pydantic.alias_generators import to_camel
 
 
@@ -43,9 +43,7 @@ class InvokeRequest(BaseModel):
 
     def to_api_dict(self) -> dict[str, Any]:
         """Convert to API request format (camelCase keys)."""
-        d: dict[str, Any] = {}
-        if self.message is not None:
-            d["message"] = self.message
+        d: dict[str, Any] = {"message": self.message or ""}
         if self.conversation_id:
             d["conversationId"] = self.conversation_id
         if self.parameters:
@@ -87,6 +85,10 @@ class InvokeResponse(BaseModel):
         description="The conversation ID for multi-turn conversations",
     )
     response: str = Field(..., description="The agent's response text")
+    components: list[dict[str, Any]] = Field(
+        default_factory=list,
+        description="Structured tool output, including charts and entity references",
+    )
     tools_used: list[str] = Field(
         default_factory=list,
         description="List of tools used by the agent",
@@ -128,8 +130,6 @@ class StreamEvent(BaseModel):
         """Create from SSE event data.
 
         Maps raw SSE event type strings to EventType enum values.
-        Note: The fallback from 'message' to 'error' field is handled
-        in SSEIterator._parse_event, not here.
         """
         type_mapping: dict[str, EventType] = {
             "stream-start": EventType.START,
@@ -138,6 +138,7 @@ class StreamEvent(BaseModel):
             "stream-completed": EventType.END,
             "error": EventType.ERROR,
             "fatal-error": EventType.ERROR,
+            "stream-error": EventType.ERROR,
         }
         mapped_type = type_mapping.get(event_type, EventType.CONTENT)
 
@@ -146,7 +147,9 @@ class StreamEvent(BaseModel):
             content=data.get("content"),
             tool_name=data.get("toolName"),
             conversation_id=data.get("conversationId"),
-            error=data.get("error"),
+            error=(data.get("error") or data.get("message"))
+            if mapped_type == EventType.ERROR
+            else None,
         )
 
 
@@ -350,6 +353,15 @@ class CreatePersonaRequest(BaseModel):
         return d
 
 
+class PlannerDescription(BaseModel):
+    """Capabilities and instructions of a planner-dispatched worker."""
+
+    description: str
+    input: str
+    output: str
+    prompt: str | None = None
+
+
 class CreateAgentRequest(BaseModel):
     """Request to create a dynamic agent."""
 
@@ -358,7 +370,9 @@ class CreateAgentRequest(BaseModel):
     name: str = Field(..., description="Name of the agent")
     description: str = Field(..., description="Description of the agent")
     persona: str = Field(..., description="Name of the persona to use")
-    mode: str = Field(..., description="Agent mode: 'chat', 'agent', or 'both'")
+    mode: Literal["standalone", "worker"]
+    type: Literal["external", "internal"] = "external"
+    planner_description: PlannerDescription | None = None
     display_name: str | None = Field(
         default=None,
         description="Human-readable display name",
@@ -377,9 +391,6 @@ class CreateAgentRequest(BaseModel):
         description="Knowledge scope defining what data the agent can access",
     )
     prompt: str | None = Field(default=None, description="Workflow definition for the agent")
-    schedule: str | None = Field(
-        default=None, description="Cron expression for scheduled execution"
-    )
     api_enabled: bool = Field(
         default=False,
         description="Whether the agent is enabled for API access",
@@ -388,6 +399,14 @@ class CreateAgentRequest(BaseModel):
         default="user",
         description="Provider of the agent (e.g., 'system' or 'user')",
     )
+
+    @model_validator(mode="after")
+    def require_worker_instructions(self) -> CreateAgentRequest:
+        if self.mode == "worker" and (
+            self.planner_description is None or not (self.planner_description.prompt or "").strip()
+        ):
+            raise ValueError("worker agents require planner_description.prompt")
+        return self
 
     @classmethod
     def from_dict(cls, data: dict[str, Any]) -> CreateAgentRequest:
@@ -401,6 +420,7 @@ class CreateAgentRequest(BaseModel):
             "description": self.description,
             "persona": {"name": self.persona, "type": "persona"},  # EntityReference format
             "mode": self.mode,
+            "type": self.type,
             "apiEnabled": self.api_enabled,
             "provider": self.provider,
         }
@@ -416,8 +436,8 @@ class CreateAgentRequest(BaseModel):
             d["knowledge"] = self.knowledge.to_api_dict()
         if self.prompt is not None:
             d["prompt"] = self.prompt
-        if self.schedule is not None:
-            d["schedule"] = self.schedule
+        if self.planner_description is not None:
+            d["plannerDescription"] = self.planner_description.model_dump(exclude_none=True)
         return d
 
 
@@ -429,6 +449,7 @@ class MemoryType(str, Enum):
     NOTE = "Note"
     RUNBOOK = "Runbook"
     FAQ = "Faq"
+    LEARNING = "Learning"
 
 
 class MemoryScope(str, Enum):
@@ -444,6 +465,20 @@ class MemoryVisibility(str, Enum):
     PRIVATE = "Private"
     ENTITY = "Entity"
     SHARED = "Shared"
+    PUBLIC = "Public"
+
+
+class MemoryStatus(str, Enum):
+    """Lifecycle stage reported by Context Center."""
+
+    DRAFT = "Draft"
+    APPROVED = "Approved"
+    ARCHIVED = "Archived"
+    SUPERSEDED = "Superseded"
+    INVALIDATED = "Invalidated"
+    UNPROCESSED = "Unprocessed"
+    DEPRECATED = "Deprecated"
+    REJECTED = "Rejected"
 
 
 class CreateContextMemoryRequest(BaseModel):
@@ -454,6 +489,9 @@ class CreateContextMemoryRequest(BaseModel):
     name: str = Field(..., description="Stable system name for the memory")
     question: str = Field(..., description="Canonical question / instruction")
     answer: str = Field(..., description="Canonical answer / retained guidance")
+    entity_status: MemoryStatus | None = Field(
+        default=None, description="Initial lifecycle stage; server approval permissions apply"
+    )
     title: str | None = Field(default=None, description="Short title shown in Context Center")
     description: str | None = Field(default=None, description="Optional markdown description")
     memory_type: MemoryType = Field(
@@ -491,6 +529,8 @@ class CreateContextMemoryRequest(BaseModel):
             "memoryScope": self.memory_scope.value,
             "shareConfig": {"visibility": self.visibility.value},
         }
+        if self.entity_status is not None:
+            d["entityStatus"] = self.entity_status.value
         if self.title is not None:
             d["title"] = self.title
         if self.description is not None:
@@ -524,6 +564,8 @@ class ContextMemory(BaseModel):
 
     id: str = Field(..., description="Unique identifier")
     name: str = Field(..., description="Stable system name")
+    entity_status: MemoryStatus | None = None
+    status_reason: str | None = None
     fully_qualified_name: str | None = Field(
         default=None,
         description="Fully qualified name",

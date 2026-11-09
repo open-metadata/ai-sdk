@@ -18,6 +18,12 @@ public class CreateAgentRequest {
   @JsonProperty("persona")
   private EntityReference persona;
 
+  @JsonProperty("type")
+  private String type = "external";
+
+  @JsonProperty("plannerDescription")
+  private PlannerDescription plannerDescription;
+
   @JsonProperty("mode")
   private String mode;
 
@@ -39,9 +45,6 @@ public class CreateAgentRequest {
   @JsonProperty("prompt")
   private String prompt;
 
-  @JsonProperty("schedule")
-  private String schedule;
-
   @JsonProperty("apiEnabled")
   private boolean apiEnabled;
 
@@ -61,7 +64,6 @@ public class CreateAgentRequest {
       List<EntityReference> skills,
       KnowledgeScope knowledge,
       String prompt,
-      String schedule,
       boolean apiEnabled,
       String provider) {
     this.name = name;
@@ -74,7 +76,6 @@ public class CreateAgentRequest {
     this.skills = skills;
     this.knowledge = knowledge;
     this.prompt = prompt;
-    this.schedule = schedule;
     this.apiEnabled = apiEnabled;
     this.provider = provider;
   }
@@ -101,6 +102,22 @@ public class CreateAgentRequest {
 
   public void setPersona(EntityReference persona) {
     this.persona = persona;
+  }
+
+  public String getType() {
+    return type;
+  }
+
+  public void setType(String type) {
+    this.type = type;
+  }
+
+  public PlannerDescription getPlannerDescription() {
+    return plannerDescription;
+  }
+
+  public void setPlannerDescription(PlannerDescription plannerDescription) {
+    this.plannerDescription = plannerDescription;
   }
 
   public String getMode() {
@@ -159,14 +176,6 @@ public class CreateAgentRequest {
     this.prompt = prompt;
   }
 
-  public String getSchedule() {
-    return schedule;
-  }
-
-  public void setSchedule(String schedule) {
-    this.schedule = schedule;
-  }
-
   public boolean isApiEnabled() {
     return apiEnabled;
   }
@@ -193,13 +202,14 @@ public class CreateAgentRequest {
     private String description;
     private String personaName;
     private String mode;
+    private String type = "external";
+    private PlannerDescription plannerDescription;
     private String displayName;
     private String icon;
     private String botName;
     private List<String> skillNames;
     private KnowledgeScope knowledge;
     private String prompt;
-    private String schedule;
     private boolean apiEnabled = false;
     private String provider = "user";
 
@@ -216,6 +226,16 @@ public class CreateAgentRequest {
     /** Sets the persona by name. Will be resolved to ID when agent is created. */
     public Builder persona(String persona) {
       this.personaName = persona;
+      return this;
+    }
+
+    public Builder type(String type) {
+      this.type = type;
+      return this;
+    }
+
+    public Builder plannerDescription(PlannerDescription plannerDescription) {
+      this.plannerDescription = plannerDescription;
       return this;
     }
 
@@ -255,11 +275,6 @@ public class CreateAgentRequest {
       return this;
     }
 
-    public Builder schedule(String schedule) {
-      this.schedule = schedule;
-      return this;
-    }
-
     public Builder apiEnabled(boolean apiEnabled) {
       this.apiEnabled = apiEnabled;
       return this;
@@ -291,24 +306,33 @@ public class CreateAgentRequest {
       if (mode == null || mode.isEmpty()) {
         throw new IllegalArgumentException("mode is required");
       }
-      if (!mode.equals("chat") && !mode.equals("agent") && !mode.equals("both")) {
-        throw new IllegalArgumentException("mode must be one of: chat, agent, both");
+      if (!mode.equals("standalone") && !mode.equals("worker")) {
+        throw new IllegalArgumentException("mode must be one of: standalone, worker");
+      }
+      if (mode.equals("worker")
+          && (plannerDescription == null
+              || plannerDescription.prompt == null
+              || plannerDescription.prompt.isBlank())) {
+        throw new IllegalArgumentException("worker agents require plannerDescription.prompt");
       }
       // Create request with null references - they will be resolved by AISdk.createAgent()
-      return new CreateAgentRequest(
-          name,
-          description,
-          null,
-          mode,
-          displayName,
-          icon,
-          botName,
-          null,
-          knowledge,
-          prompt,
-          schedule,
-          apiEnabled,
-          provider);
+      CreateAgentRequest request =
+          new CreateAgentRequest(
+              name,
+              description,
+              null,
+              mode,
+              displayName,
+              icon,
+              botName,
+              null,
+              knowledge,
+              prompt,
+              apiEnabled,
+              provider);
+      request.setType(type);
+      request.setPlannerDescription(plannerDescription);
+      return request;
     }
 
     /**
@@ -327,23 +351,32 @@ public class CreateAgentRequest {
       if (mode == null || mode.isEmpty()) {
         throw new IllegalArgumentException("mode is required");
       }
-      if (!mode.equals("chat") && !mode.equals("agent") && !mode.equals("both")) {
-        throw new IllegalArgumentException("mode must be one of: chat, agent, both");
+      if (!mode.equals("standalone") && !mode.equals("worker")) {
+        throw new IllegalArgumentException("mode must be one of: standalone, worker");
       }
-      return new CreateAgentRequest(
-          name,
-          description,
-          persona,
-          mode,
-          displayName,
-          icon,
-          botName,
-          skills,
-          knowledge,
-          prompt,
-          schedule,
-          apiEnabled,
-          provider);
+      if (mode.equals("worker")
+          && (plannerDescription == null
+              || plannerDescription.prompt == null
+              || plannerDescription.prompt.isBlank())) {
+        throw new IllegalArgumentException("worker agents require plannerDescription.prompt");
+      }
+      CreateAgentRequest request =
+          new CreateAgentRequest(
+              name,
+              description,
+              persona,
+              mode,
+              displayName,
+              icon,
+              botName,
+              skills,
+              knowledge,
+              prompt,
+              apiEnabled,
+              provider);
+      request.setType(type);
+      request.setPlannerDescription(plannerDescription);
+      return request;
     }
   }
 
@@ -376,9 +409,6 @@ public class CreateAgentRequest {
         + knowledge
         + ", prompt='"
         + prompt
-        + '\''
-        + ", schedule='"
-        + schedule
         + '\''
         + ", apiEnabled="
         + apiEnabled

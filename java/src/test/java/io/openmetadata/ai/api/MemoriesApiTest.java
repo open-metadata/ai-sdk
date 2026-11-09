@@ -68,8 +68,8 @@ class MemoriesApiTest {
   }
 
   @Test
-  @DisplayName("list applies primaryEntityFqn filter param")
-  void listPassesPrimaryEntityFqn() {
+  @DisplayName("list applies primaryEntityId filter param")
+  void listPassesPrimaryEntityId() {
     Map<String, Object> empty = new LinkedHashMap<>();
     empty.put("data", new ArrayList<>());
     empty.put("paging", new LinkedHashMap<>());
@@ -80,7 +80,7 @@ class MemoriesApiTest {
     @SuppressWarnings("unchecked")
     ArgumentCaptor<Map<String, Object>> captor = ArgumentCaptor.forClass(Map.class);
     verify(http).getMap(eq("/"), captor.capture());
-    assertEquals("orders.fqn", captor.getValue().get("primaryEntityFqn"));
+    assertEquals("orders.fqn", captor.getValue().get("primaryEntityId"));
   }
 
   @Test

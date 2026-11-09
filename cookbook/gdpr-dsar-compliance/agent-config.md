@@ -178,7 +178,7 @@ agent = client.agents.create(CreateAgentRequest(
     name="GDPRComplianceAnalyzer",
     description="Handles GDPR deletion requests by searching for customer data, tracing lineage, and checking retention policies",
     persona="GDPRAnalyst",
-    mode="both",
+    mode="standalone",
     skills=["discoveryAndSearch", "dataLineageAndExploration", "dataQualityAndTesting"],
     knowledge=KnowledgeScope(entity_types=["table"], services=[jaffle_service]),
     api_enabled=True,
@@ -201,7 +201,7 @@ const agent = await client.agents.create({
   name: 'GDPRComplianceAnalyzer',
   description: 'Handles GDPR deletion requests by searching for customer data, tracing lineage, and checking retention policies',
   persona: 'GDPRAnalyst',
-  mode: 'both',
+  mode: 'standalone',
   skills: ['discoveryAndSearch', 'dataLineageAndExploration', 'dataQualityAndTesting'],
   knowledge: {
     entityTypes: ['table'],
@@ -234,7 +234,7 @@ CreateAgentRequest request = CreateAgentRequest.builder()
     .name("GDPRComplianceAnalyzer")
     .description("Handles GDPR deletion requests by searching for customer data, tracing lineage, and checking retention policies")
     .persona("GDPRAnalyst")
-    .mode("both")
+    .mode("standalone")
     .skills(List.of("discoveryAndSearch", "dataLineageAndExploration", "dataQualityAndTesting"))
     .knowledge(KnowledgeScope.builder()
         .entityTypes(List.of("table"))

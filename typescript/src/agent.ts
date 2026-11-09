@@ -24,6 +24,7 @@ export function mapInvokeResponse(data: ApiInvokeResponse): InvokeResponse {
   return {
     conversationId: data.conversationId,
     response: data.response,
+    components: data.components ?? [],
     toolsUsed: data.toolsUsed || [],
     thinkingSteps: data.thinkingSteps || [],
     usage: data.usage
@@ -112,7 +113,7 @@ export class AgentHandle {
    * ```
    */
   async invoke(message?: string, options?: InvokeOptions): Promise<InvokeResponse> {
-    const requestBody: InvokeRequestBody = {};
+    const requestBody: InvokeRequestBody = { message: message ?? '' };
 
     if (message !== undefined) {
       requestBody.message = message;
@@ -179,7 +180,7 @@ export class AgentHandle {
     message?: string,
     options?: InvokeOptions
   ): AsyncGenerator<StreamEvent, void, unknown> {
-    const requestBody: InvokeRequestBody = {};
+    const requestBody: InvokeRequestBody = { message: message ?? '' };
 
     if (message !== undefined) {
       requestBody.message = message;

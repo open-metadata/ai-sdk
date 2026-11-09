@@ -73,19 +73,19 @@ class TestList:
         mock_http.get.assert_called_once()
         path, kwargs = mock_http.get.call_args.args[0], mock_http.get.call_args.kwargs
         assert path == "/"
-        assert "primaryEntityFqn" not in kwargs.get("params", {})
+        assert "primaryEntityId" not in kwargs.get("params", {})
 
-    def test_list_with_primary_entity_fqn_filter(
+    def test_list_with_primary_entity_id_filter(
         self, memories: MemoriesAPI, mock_http: MagicMock
     ) -> None:
         mock_http.get.return_value = {
             "data": [_memory_payload("m1", primary_fqn="db.tbl")],
             "paging": {},
         }
-        result = memories.list(primary_entity_fqn="db.tbl")
+        result = memories.list(primary_entity_id="db.tbl")
         assert len(result) == 1
         params = mock_http.get.call_args.kwargs.get("params", {})
-        assert params.get("primaryEntityFqn") == "db.tbl"
+        assert params.get("primaryEntityId") == "db.tbl"
 
     def test_list_respects_limit(self, memories: MemoriesAPI, mock_http: MagicMock) -> None:
         mock_http.get.return_value = {

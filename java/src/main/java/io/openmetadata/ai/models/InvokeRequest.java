@@ -10,7 +10,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class InvokeRequest {
 
   @JsonProperty("message")
-  private String message;
+  private String message = "";
 
   @JsonProperty("conversationId")
   private String conversationId;
@@ -21,16 +21,16 @@ public class InvokeRequest {
   public InvokeRequest() {}
 
   public InvokeRequest(String message) {
-    this.message = message;
+    this.message = message == null ? "" : message;
   }
 
   public InvokeRequest(String message, String conversationId) {
-    this.message = message;
+    this.message = message == null ? "" : message;
     this.conversationId = conversationId;
   }
 
   public InvokeRequest(String message, String conversationId, Map<String, Object> parameters) {
-    this.message = message;
+    this.message = message == null ? "" : message;
     this.conversationId = conversationId;
     this.parameters = parameters;
   }
@@ -40,7 +40,7 @@ public class InvokeRequest {
   }
 
   public void setMessage(String message) {
-    this.message = message;
+    this.message = message == null ? "" : message;
   }
 
   public String getConversationId() {
@@ -65,12 +65,12 @@ public class InvokeRequest {
   }
 
   public static class Builder {
-    private String message;
+    private String message = "";
     private String conversationId;
     private Map<String, Object> parameters;
 
     public Builder message(String message) {
-      this.message = message;
+      this.message = message == null ? "" : message;
       return this;
     }
 

@@ -46,22 +46,20 @@ class TestInvokeRequest:
         assert "parameters" not in result
 
     def test_to_api_dict_without_message(self):
-        """to_api_dict excludes message when None."""
+        """to_api_dict sends an empty message when no prompt is supplied."""
         request = InvokeRequest(parameters={})
         result = request.to_api_dict()
 
-        assert result == {}
-        assert "message" not in result
+        assert result == {"message": ""}
         assert "conversationId" not in result
         assert "parameters" not in result
 
     def test_to_api_dict_with_only_conversation_id(self):
-        """to_api_dict includes conversationId without message."""
+        """A reused conversation still includes the required message field."""
         request = InvokeRequest(conversation_id="conv-123")
         result = request.to_api_dict()
 
-        assert result == {"conversationId": "conv-123"}
-        assert "message" not in result
+        assert result == {"message": "", "conversationId": "conv-123"}
 
     def test_message_is_optional(self):
         """InvokeRequest can be created without a message."""

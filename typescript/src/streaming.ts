@@ -22,6 +22,7 @@ function mapEventType(eventType: string | null): StreamEventType | null {
     'stream-completed': 'end',
     error: 'error',
     'fatal-error': 'error',
+    'stream-error': 'error',
   };
 
   return typeMapping[eventType] ?? null;

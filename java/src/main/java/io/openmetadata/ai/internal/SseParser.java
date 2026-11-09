@@ -180,6 +180,7 @@ public class SseParser {
         return StreamEvent.Type.END;
       case "error":
       case "fatal_error":
+      case "stream_error":
         return StreamEvent.Type.ERROR;
       default:
         return null;

@@ -252,8 +252,7 @@ pub struct CreateAgentRequest {
 #[derive(Debug, Clone, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct InvokeRequest {
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub message: Option<String>,
+    pub message: String,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub conversation_id: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -266,6 +265,8 @@ pub struct InvokeRequest {
 pub struct InvokeResponse {
     pub conversation_id: String,
     pub response: String,
+    #[serde(default)]
+    pub components: Vec<serde_json::Value>,
     #[serde(default)]
     pub tools_used: Vec<String>,
     #[serde(default)]
@@ -301,6 +302,8 @@ pub enum MemoryType {
     Runbook,
     #[serde(rename = "Faq")]
     Faq,
+    #[serde(rename = "Learning")]
+    Learning,
 }
 
 impl MemoryType {
@@ -312,8 +315,9 @@ impl MemoryType {
             "note" => Ok(MemoryType::Note),
             "runbook" => Ok(MemoryType::Runbook),
             "faq" => Ok(MemoryType::Faq),
+            "learning" => Ok(MemoryType::Learning),
             other => Err(format!(
-                "invalid memory type '{other}' (expected one of: preference, useCase, note, runbook, faq)"
+                "invalid memory type '{other}' (expected one of: preference, useCase, note, runbook, faq, learning)"
             )),
         }
     }
@@ -326,6 +330,7 @@ impl MemoryType {
             MemoryType::Note => "Note",
             MemoryType::Runbook => "Runbook",
             MemoryType::Faq => "Faq",
+            MemoryType::Learning => "Learning",
         }
     }
 }
@@ -367,6 +372,21 @@ pub enum MemoryVisibility {
     Entity,
     #[serde(rename = "Shared")]
     Shared,
+    #[serde(rename = "Public")]
+    Public,
+}
+
+/// Lifecycle stage of a Context Center memory.
+#[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq, clap::ValueEnum)]
+pub enum MemoryStatus {
+    Draft,
+    Approved,
+    Archived,
+    Superseded,
+    Invalidated,
+    Unprocessed,
+    Deprecated,
+    Rejected,
 }
 
 impl MemoryVisibility {
@@ -375,8 +395,9 @@ impl MemoryVisibility {
             "private" => Ok(MemoryVisibility::Private),
             "entity" => Ok(MemoryVisibility::Entity),
             "shared" => Ok(MemoryVisibility::Shared),
+            "public" => Ok(MemoryVisibility::Public),
             other => Err(format!(
-                "invalid visibility '{other}' (expected: private, entity, shared)"
+                "invalid visibility '{other}' (expected: private, entity, shared, public)"
             )),
         }
     }
@@ -386,6 +407,7 @@ impl MemoryVisibility {
             MemoryVisibility::Private => "Private",
             MemoryVisibility::Entity => "Entity",
             MemoryVisibility::Shared => "Shared",
+            MemoryVisibility::Public => "Public",
         }
     }
 }
@@ -428,6 +450,8 @@ pub struct CreateContextMemoryRequest {
     pub question: String,
     pub answer: String,
     #[serde(skip_serializing_if = "Option::is_none")]
+    pub entity_status: Option<MemoryStatus>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub title: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub description: Option<String>,
@@ -450,6 +474,10 @@ pub struct CreateContextMemoryRequest {
 pub struct ContextMemory {
     pub id: String,
     pub name: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub entity_status: Option<MemoryStatus>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub status_reason: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub fully_qualified_name: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -503,6 +531,10 @@ impl<'de> Deserialize<'de> for ContextMemory {
             id: String,
             name: String,
             #[serde(default)]
+            entity_status: Option<MemoryStatus>,
+            #[serde(default)]
+            status_reason: Option<String>,
+            #[serde(default)]
             fully_qualified_name: Option<String>,
             #[serde(default)]
             title: Option<String>,
@@ -532,6 +564,8 @@ impl<'de> Deserialize<'de> for ContextMemory {
         Ok(ContextMemory {
             id: raw.id,
             name: raw.name,
+            entity_status: raw.entity_status,
+            status_reason: raw.status_reason,
             fully_qualified_name: raw.fully_qualified_name,
             title: raw.title,
             question: raw.question,
@@ -765,7 +799,7 @@ impl AISdkClient {
     ) -> CliResult<InvokeResponse> {
         let encoded_name = encode(agent_name);
         let request = InvokeRequest {
-            message: message.map(String::from),
+            message: message.unwrap_or_default().to_string(),
             conversation_id: conversation_id.map(String::from),
             parameters: None,
         };
@@ -903,7 +937,7 @@ impl AISdkClient {
     ) -> CliResult<Response> {
         let encoded_name = encode(agent_name);
         let request = InvokeRequest {
-            message: message.map(String::from),
+            message: message.unwrap_or_default().to_string(),
             conversation_id: conversation_id.map(String::from),
             parameters: None,
         };
@@ -1217,11 +1251,11 @@ impl AISdkClient {
 
     /// List Context Center memories, paginating through all results.
     ///
-    /// `primary_entity_fqn` filters to memories attached to a given entity FQN.
+    /// `primary_entity_id` filters to memories attached to a given entity UUID.
     /// `limit` caps the total number returned; `None` returns everything.
     pub async fn list_memories(
         &self,
-        primary_entity_fqn: Option<&str>,
+        primary_entity_id: Option<&str>,
         limit: Option<usize>,
     ) -> CliResult<Vec<ContextMemory>> {
         const PAGE_SIZE: usize = 100;
@@ -1230,8 +1264,8 @@ impl AISdkClient {
 
         loop {
             let mut query = format!("?limit={PAGE_SIZE}");
-            if let Some(fqn) = primary_entity_fqn {
-                query.push_str(&format!("&primaryEntityFqn={}", encode(fqn)));
+            if let Some(id) = primary_entity_id {
+                query.push_str(&format!("&primaryEntityId={}", encode(id)));
             }
             if let Some(cursor) = &after {
                 query.push_str(&format!("&after={}", encode(cursor)));
@@ -1375,6 +1409,58 @@ mod default_agent_tests {
             timeout: 30,
         };
         AISdkClient::new(&config).expect("failed to build test client")
+    }
+
+    #[tokio::test]
+    async fn named_invocation_sends_message_and_preserves_components() {
+        use wiremock::matchers::body_partial_json;
+        let server = MockServer::start().await;
+        Mock::given(method("POST"))
+            .and(path("/api/v1/agents/dynamic/name/agent/invoke"))
+            .and(body_partial_json(json!({"message": ""})))
+            .respond_with(ResponseTemplate::new(200).set_body_json(json!({
+                "conversationId": "c1", "response": "",
+                "components": [{"type": "chart", "content": {"title": "Revenue"}}]
+            })))
+            .expect(1)
+            .mount(&server)
+            .await;
+        let response = make_client(&server.uri(), "test")
+            .invoke("agent", None, None)
+            .await
+            .unwrap();
+        assert_eq!(response.components[0]["type"], "chart");
+    }
+
+    #[tokio::test]
+    async fn memory_list_filters_by_uuid_and_accepts_current_values() {
+        use wiremock::matchers::query_param;
+        let server = MockServer::start().await;
+        Mock::given(method("GET"))
+            .and(path("/api/v1/contextCenter/memories"))
+            .and(query_param(
+                "primaryEntityId",
+                "11111111-1111-1111-1111-111111111111",
+            ))
+            .respond_with(ResponseTemplate::new(200).set_body_json(json!({
+                "data": [{"id": "m1", "name": "learning", "memoryType": "Learning",
+                    "shareConfig": {"visibility": "Public"}, "entityStatus": "Unprocessed",
+                    "statusReason": "Awaiting review"}]
+            })))
+            .expect(1)
+            .mount(&server)
+            .await;
+        let memories = make_client(&server.uri(), "test")
+            .list_memories(Some("11111111-1111-1111-1111-111111111111"), None)
+            .await
+            .unwrap();
+        assert_eq!(memories[0].memory_type, MemoryType::Learning);
+        assert_eq!(memories[0].visibility, MemoryVisibility::Public);
+        assert_eq!(memories[0].entity_status, Some(MemoryStatus::Unprocessed));
+        assert_eq!(
+            memories[0].status_reason.as_deref(),
+            Some("Awaiting review")
+        );
     }
 
     #[tokio::test]
@@ -1591,6 +1677,7 @@ mod memory_tests {
             name: "test".into(),
             question: "Q".into(),
             answer: "A".into(),
+            entity_status: None,
             title: None,
             description: None,
             memory_type: MemoryType::Note,

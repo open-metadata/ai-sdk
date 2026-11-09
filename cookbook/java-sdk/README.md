@@ -12,7 +12,7 @@ No GitHub account or personal access token is required to download the SDK.
 
 ## Verify the first Pages release
 
-After merging the publishing changes, run **Release AI SDK Java** from GitHub Actions on `main`, with version `0.3.0`. Wait for the workflow's anonymous download check to pass.
+After merging the publishing changes, run **Release AI SDK Java** from GitHub Actions on `main`, with version `0.5.0`. Wait for the workflow's anonymous download check to pass.
 
 From the repository root, run:
 
@@ -59,7 +59,7 @@ The [Java example](src/main/java/io/openmetadata/cookbook/JavaSdkExample.java) s
 Select a published SDK version:
 
 ```bash
-AI_SDK_VERSION=0.3.1 ./run.sh
+AI_SDK_VERSION=0.5.0 ./run.sh
 ```
 
 To test a staged repository served over HTTP, override its URL:

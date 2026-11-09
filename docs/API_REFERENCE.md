@@ -7,16 +7,16 @@ Comprehensive reference of all SDK methods, server endpoints, data models, and f
 | Endpoint | Method | Description |
 |----------|--------|-------------|
 | `/api/v1/agents/dynamic/` | GET/POST | List API-enabled agents / Create agent |
-| `/api/v1/agents/dynamic/{name}` | GET | Get agent info |
-| `/{agent_name}/invoke` | POST | Invoke agent (sync) |
-| `/{agent_name}/stream` | POST | Invoke agent (SSE streaming) |
+| `/api/v1/agents/dynamic/name/{name}` | GET | Get agent info |
+| `/api/v1/agents/dynamic/name/{agent_name}/invoke` | POST | Invoke agent (sync) |
+| `/api/v1/agents/dynamic/name/{agent_name}/stream` | POST | Invoke agent (SSE streaming) |
 | `/api/v1/bots/` | GET | List bots (paginated) |
 | `/api/v1/bots/name/{name}` | GET | Get bot by name |
 | `/api/v1/agents/personas/` | GET/POST | List / Create personas |
 | `/api/v1/agents/personas/name/{name}` | GET | Get persona by name |
 | `/api/v1/agents/skills/` | GET | List skills (paginated) |
 | `/api/v1/agents/skills/name/{name}` | GET | Get skill by name |
-| `/api/v1/contextCenter/memories/` | GET/POST | List / Create memories (paginated, optional `primaryEntityFqn` filter) |
+| `/api/v1/contextCenter/memories/` | GET/POST | List / Create memories (paginated, optional `primaryEntityId` filter) |
 | `/api/v1/contextCenter/memories/{id}` | GET/DELETE | Get / Delete memory by ID (`hardDelete=` query param on DELETE) |
 | `/api/v1/hybrid/nlq/search?index=contextMemory` | GET | Hybrid NLQ search over the memories index |
 | `/mcp` | POST | MCP JSON-RPC 2.0 (`tools/list`, `tools/call`) |
@@ -55,7 +55,7 @@ Entity CRUD lives on namespaces (`client.<entity>.<verb>()`). Each namespace exp
 | `personas.create(request) -> PersonaInfo` | `POST /api/v1/agents/personas/` | No | `personas.acreate()` |
 | `skills.list(limit?) -> list[SkillInfo]` | `GET /api/v1/agents/skills/` | No | `skills.alist()` |
 | `skills.get(name) -> SkillInfo` | `GET /api/v1/agents/skills/name/{name}` | No | `skills.aget()` |
-| `memories.list(primary_entity_fqn?, limit?) -> list[ContextMemory]` | `GET /api/v1/contextCenter/memories/` | No | `memories.alist()` |
+| `memories.list(primary_entity_id?, limit?) -> list[ContextMemory]` | `GET /api/v1/contextCenter/memories/` | No | `memories.alist()` |
 | `memories.get(id) -> ContextMemory` | `GET /api/v1/contextCenter/memories/{id}` | No | `memories.aget()` |
 | `memories.create(request) -> ContextMemory` | `POST /api/v1/contextCenter/memories/` | No | `memories.acreate()` |
 | `memories.delete(id, hard_delete=False) -> None` | `DELETE /api/v1/contextCenter/memories/{id}` | No | `memories.adelete()` |
@@ -70,9 +70,9 @@ agent = client.agent("DataQualityPlannerAgent")
 
 | Method | Endpoint | Streaming | Async |
 |--------|----------|-----------|-------|
-| `call(message?, conversation_id?, parameters?) -> InvokeResponse` | `POST /{agent}/invoke` | No | `acall()` |
-| `stream(message?, conversation_id?, parameters?) -> Iterable[StreamEvent]` | `POST /{agent}/stream` | Yes (SSE) | `astream()` |
-| `get_info() -> AgentInfo` | `GET /{agent}` | No | `aget_info()` |
+| `call(message?, conversation_id?, parameters?) -> InvokeResponse` | `POST /name/{agent}/invoke` | No | `acall()` |
+| `stream(message?, conversation_id?, parameters?) -> Iterable[StreamEvent]` | `POST /name/{agent}/stream` | Yes (SSE) | `astream()` |
+| `get_info() -> AgentInfo` | `GET /name/{agent}` | No | `aget_info()` |
 
 ### MCPClient (Python-only)
 
@@ -151,9 +151,9 @@ Entity CRUD lives on namespace fields (`client.<entity>.<verb>()`).
 
 | Method | Endpoint | Streaming |
 |--------|----------|-----------|
-| `invoke(message?, options?): Promise<InvokeResponse>` | `POST /{agent}/invoke` | No |
-| `stream(message?, options?): AsyncGenerator<StreamEvent>` | `POST /{agent}/stream` | Yes (SSE) |
-| `getInfo(): Promise<AgentInfo>` | `GET /{agent}` | No |
+| `invoke(message?, options?): Promise<InvokeResponse>` | `POST /name/{agent}/invoke` | No |
+| `stream(message?, options?): AsyncGenerator<StreamEvent>` | `POST /name/{agent}/stream` | Yes (SSE) |
+| `getInfo(): Promise<AgentInfo>` | `GET /name/{agent}` | No |
 
 ---
 
@@ -185,7 +185,7 @@ Entity CRUD lives on namespace accessor methods (`client.<entity>().<verb>()`).
 | `personas().create(request): PersonaInfo` | `POST /api/v1/agents/personas/` | No |
 | `skills().list() / skills().list(limit)` | `GET /api/v1/agents/skills/` | No |
 | `skills().get(name): SkillInfo` | `GET /api/v1/agents/skills/name/{name}` | No |
-| `memories().list() / memories().list(fqn, limit)` | `GET /api/v1/contextCenter/memories/` | No |
+| `memories().list() / memories().list(entityId, limit)` | `GET /api/v1/contextCenter/memories/` | No |
 | `memories().get(id): ContextMemory` | `GET /api/v1/contextCenter/memories/{id}` | No |
 | `memories().create(request): ContextMemory` | `POST /api/v1/contextCenter/memories/` | No |
 | `memories().delete(id) / delete(id, hardDelete)` | `DELETE /api/v1/contextCenter/memories/{id}` | No |
@@ -195,10 +195,10 @@ Entity CRUD lives on namespace accessor methods (`client.<entity>().<verb>()`).
 
 | Method | Endpoint | Streaming |
 |--------|----------|-----------|
-| `invoke() / invoke(message): InvokeResponse` | `POST /{agent}/invoke` | No |
-| `stream(Consumer) / stream(message, Consumer): void` | `POST /{agent}/stream` | Yes (SSE, callback) |
-| `streamIterator() / streamIterator(message): Stream<StreamEvent>` | `POST /{agent}/stream` | Yes (Java Stream) |
-| `info(): AgentInfo` | `GET /{agent}` | No |
+| `invoke() / invoke(message): InvokeResponse` | `POST /name/{agent}/invoke` | No |
+| `stream(Consumer) / stream(message, Consumer): void` | `POST /name/{agent}/stream` | Yes (SSE, callback) |
+| `streamIterator() / streamIterator(message): Stream<StreamEvent>` | `POST /name/{agent}/stream` | Yes (Java Stream) |
+| `info(): AgentInfo` | `GET /name/{agent}` | No |
 | `conversationId(id): AgentHandle` | -- (local) | -- |
 | `parameters(params): AgentHandle` | -- (local) | -- |
 
@@ -240,7 +240,7 @@ Entity CRUD lives on namespace accessor methods (`client.<entity>().<verb>()`).
 
 | Command | Endpoint |
 |---------|----------|
-| `memories list [--entity-fqn FQN] [--limit N] [--json]` | `GET /api/v1/contextCenter/memories/` |
+| `memories list [--entity-id UUID] [--limit N] [--json]` | `GET /api/v1/contextCenter/memories/` |
 | `memories get <id> [--json]` | `GET /api/v1/contextCenter/memories/{id}` |
 | `memories create --name N --question Q --answer A [...]` | `POST /api/v1/contextCenter/memories/` |
 | `memories delete <id> [--hard]` | `DELETE /api/v1/contextCenter/memories/{id}` |
@@ -252,9 +252,9 @@ Entity CRUD lives on namespace accessor methods (`client.<entity>().<verb>()`).
 
 | Command | Endpoint | Streaming |
 |---------|----------|-----------|
-| `invoke <agent> [message]` | `POST /{agent}/invoke` | No |
-| `invoke <agent> [message] --stream` | `POST /{agent}/stream` | Yes (SSE) |
-| `chat [agent]` | `POST /{agent}/invoke` or `/stream` | Interactive TUI |
+| `invoke <agent> [message]` | `POST /name/{agent}/invoke` | No |
+| `invoke <agent> [message] --stream` | `POST /name/{agent}/stream` | Yes (SSE) |
+| `chat [agent]` | `POST /name/{agent}/invoke` or `/stream` | Interactive TUI |
 
 **Invoke options:** `--stream`, `--json`, `-c <conversation-id>`, `-t` (thinking, requires `--stream`), `--debug`
 
@@ -287,6 +287,7 @@ ai-sdk configure list                # List all config
 {
   conversationId: string        // Conversation ID for follow-ups
   response: string              // Agent's response text
+  components: object[]          // Structured tool output
   toolsUsed: string[]           // Tools the agent used
   usage?: {
     promptTokens: number
@@ -378,13 +379,14 @@ ai-sdk configure list                # List all config
   name: string                  // Required: stable system name
   question: string              // Required: canonical question/instruction
   answer: string                // Required: canonical answer/guidance
+  entityStatus?: MemoryStatus   // Initial stage; server approval permissions apply
   title?: string                // Short title shown in Context Center
   description?: string          // Optional markdown description
-  memoryType?: 'Preference' | 'UseCase' | 'Note' | 'Runbook' | 'Faq'
+  memoryType?: 'Preference' | 'UseCase' | 'Note' | 'Runbook' | 'Faq' | 'Learning'
                                 // Default: 'Note'
   memoryScope?: 'UserGlobal' | 'EntityScoped'
                                 // Default: 'EntityScoped'
-  visibility?: 'Private' | 'Entity' | 'Shared'
+  visibility?: 'Private' | 'Entity' | 'Shared' | 'Public'
                                 // Default: 'Private'
   primaryEntity?: EntityReference
   relatedEntities?: EntityReference[]
@@ -398,6 +400,8 @@ ai-sdk configure list                # List all config
 {
   id: string
   name: string
+  entityStatus?: MemoryStatus
+  statusReason?: string
   fullyQualifiedName?: string
   title?: string
   question: string
@@ -412,6 +416,10 @@ ai-sdk configure list                # List all config
   deleted: boolean
 }
 ```
+
+`MemoryStatus` is `Draft`, `Approved`, `Archived`, `Superseded`, `Invalidated`,
+`Unprocessed`, `Deprecated`, or `Rejected`. Collate defaults new memories to
+`Unprocessed`; OpenMetadata defaults them to `Approved`.
 
 ### MemorySearchHit / MemorySearchResults
 
@@ -432,18 +440,33 @@ MemorySearchResults {
 ```python
 class MCPTool(StrEnum):
     SEARCH_METADATA = "search_metadata"
+    SEMANTIC_SEARCH = "semantic_search"
     GET_ENTITY_DETAILS = "get_entity_details"
     GET_ENTITY_LINEAGE = "get_entity_lineage"
-    CREATE_GLOSSARY = "create_glossary"
-    CREATE_GLOSSARY_TERM = "create_glossary_term"
+    GET_PERSONA_CONTEXT = "get_persona_context"
+    GET_USER_CONTEXT = "get_user_context"
+    FIND_CONTEXT = "find_context"
+    GET_CONCEPT_CONTEXT = "get_concept_context"
+    COMPANY_CONTEXT = "company_context"
+    CREATE_ENTITY = "create_entity"
+    DESCRIBE_ENTITY_TYPE = "describe_entity_type"
     CREATE_LINEAGE = "create_lineage"
+    SPARQL_QUERY = "sparql_query"
+    ENTITY_NEIGHBORHOOD = "entity_neighborhood"
+    FIND_BY_TAG = "find_by_tag"
+    SHACL_VALIDATE = "shacl_validate"
+    ONTOLOGY_DESCRIBE = "ontology_describe"
+    NLQ_SEARCH = "nlq_search"
     PATCH_ENTITY = "patch_entity"
+    GET_TEST_DEFINITIONS = "get_test_definitions"
+    CREATE_TEST_CASE = "create_test_case"
+    ROOT_CAUSE_ANALYSIS = "root_cause_analysis"
 
 @dataclass
 class ToolInfo:
-    name: MCPTool
+    name: str
     description: str
-    parameters: list[ToolParameter]
+    input_schema: dict
 
 @dataclass
 class ToolCallResult:
@@ -451,12 +474,6 @@ class ToolCallResult:
     data: dict | None
     error: str | None
 
-@dataclass
-class ToolParameter:
-    name: str
-    type: str                   # "string", "integer", "boolean", "array", "object"
-    description: str
-    required: bool
 ```
 
 ---
@@ -526,7 +543,7 @@ All SDKs auto-paginate by default. Pass an optional `limit` to cap results.
 Streaming endpoints use Server-Sent Events:
 
 ```
-POST /{agent}/stream
+POST /name/{agent}/stream
 Accept: text/event-stream
 
 event: start

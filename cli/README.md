@@ -262,7 +262,7 @@ Context Memories are reusable knowledge — preferences, use cases, runbooks, FA
 ai-sdk memories list
 
 # Filter by entity FQN; cap with --limit
-ai-sdk memories list --entity-fqn prod.warehouse.orders --limit 20
+ai-sdk memories list --entity-id 11111111-1111-1111-1111-111111111111 --limit 20
 
 # Get a specific memory by ID
 ai-sdk memories get <memory-id>

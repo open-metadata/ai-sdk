@@ -43,20 +43,20 @@ class MemoriesAPI:
 
     def list(
         self,
-        primary_entity_fqn: str | None = None,
+        primary_entity_id: str | None = None,
         limit: int | None = None,
     ) -> _MemoryList:
         """List Context Center memories.
 
         Args:
-            primary_entity_fqn: Filter to memories attached to this entity FQN.
+            primary_entity_id: Filter to memories attached to this entity UUID.
             limit: Maximum number of memories to return; None returns all.
         """
-        return _paginate(self._http, primary_entity_fqn=primary_entity_fqn, limit=limit)
+        return _paginate(self._http, primary_entity_id=primary_entity_id, limit=limit)
 
     async def alist(
         self,
-        primary_entity_fqn: str | None = None,
+        primary_entity_id: str | None = None,
         limit: int | None = None,
     ) -> _MemoryList:
         if self._async_http is None:
@@ -64,9 +64,7 @@ class MemoriesAPI:
                 "Async HTTP client not available. "
                 "Use AISdk with enable_async=True for async operations."
             )
-        return await _apaginate(
-            self._async_http, primary_entity_fqn=primary_entity_fqn, limit=limit
-        )
+        return await _apaginate(self._async_http, primary_entity_id=primary_entity_id, limit=limit)
 
     # ------------------------------------------------------------------
     # get / aget
@@ -167,13 +165,13 @@ class MemoriesAPI:
 
 
 def _build_list_params(
-    primary_entity_fqn: str | None,
+    primary_entity_id: str | None,
     after: str | None,
     page_size: int,
 ) -> dict[str, Any]:
     params: dict[str, Any] = {"limit": page_size}
-    if primary_entity_fqn is not None:
-        params["primaryEntityFqn"] = primary_entity_fqn
+    if primary_entity_id is not None:
+        params["primaryEntityId"] = primary_entity_id
     if after is not None:
         params["after"] = after
     return params
@@ -198,14 +196,14 @@ def _build_search_params(
 
 def _paginate(
     http: HTTPClient,
-    primary_entity_fqn: str | None,
+    primary_entity_id: str | None,
     limit: int | None,
     page_size: int = 100,
 ) -> list[ContextMemory]:
     results: list[ContextMemory] = []
     after: str | None = None
     while True:
-        params = _build_list_params(primary_entity_fqn, after, page_size)
+        params = _build_list_params(primary_entity_id, after, page_size)
         response = http.get("/", params=params)
         for item in response.get("data", []):
             results.append(ContextMemory.from_dict(item))
@@ -220,14 +218,14 @@ def _paginate(
 
 async def _apaginate(
     http: AsyncHTTPClient,
-    primary_entity_fqn: str | None,
+    primary_entity_id: str | None,
     limit: int | None,
     page_size: int = 100,
 ) -> list[ContextMemory]:
     results: list[ContextMemory] = []
     after: str | None = None
     while True:
-        params = _build_list_params(primary_entity_fqn, after, page_size)
+        params = _build_list_params(primary_entity_id, after, page_size)
         response = await http.get("/", params=params)
         for item in response.get("data", []):
             results.append(ContextMemory.from_dict(item))

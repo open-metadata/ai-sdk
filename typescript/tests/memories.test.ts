@@ -91,16 +91,16 @@ describe('MemoriesApi', () => {
       expect(memories[1].memoryType).toBe('Faq');
     });
 
-    it('passes primaryEntityFqn filter through', async () => {
+    it('passes primaryEntityId filter through', async () => {
       memoriesHttp.get.mockResolvedValueOnce({ data: [], paging: {} });
 
-      await api.list({ primaryEntityFqn: 'service.db.schema.tbl' });
+      await api.list({ primaryEntityId: 'service.db.schema.tbl' });
 
       expect(memoriesHttp.get).toHaveBeenCalledTimes(1);
       const [, params] = memoriesHttp.get.mock.calls[0];
       expect(params).toEqual({
         limit: 100,
-        primaryEntityFqn: 'service.db.schema.tbl',
+        primaryEntityId: 'service.db.schema.tbl',
       });
     });
 

@@ -44,15 +44,15 @@ public class MemoriesApi {
     return list(null, limit);
   }
 
-  /** List Context Center memories filtered to a primary entity FQN. */
-  public List<ContextMemory> list(String primaryEntityFqn, Integer limit) {
+  /** List Context Center memories filtered to a primary entity UUID. */
+  public List<ContextMemory> list(String primaryEntityId, Integer limit) {
     List<ContextMemory> results = new ArrayList<>();
     String after = null;
     while (true) {
       Map<String, Object> params = new LinkedHashMap<>();
       params.put("limit", DEFAULT_PAGE_SIZE);
-      if (primaryEntityFqn != null) {
-        params.put("primaryEntityFqn", primaryEntityFqn);
+      if (primaryEntityId != null) {
+        params.put("primaryEntityId", primaryEntityId);
       }
       if (after != null) {
         params.put("after", after);

@@ -88,7 +88,7 @@ client.personas.list()
 client.skills.get("DataQuality")
 
 # Context Center memories
-client.memories.list(primary_entity_fqn="db.tbl")
+client.memories.list(primary_entity_id="11111111-1111-1111-1111-111111111111")
 client.memories.create(CreateContextMemoryRequest(name="m1", question="...", answer="..."))
 results = client.memories.search("explain customer churn")
 ```

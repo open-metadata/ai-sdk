@@ -304,7 +304,7 @@ agent = client.agents.create(CreateAgentRequest(
     api_enabled=True,
     skills=["search", "query", "analyze"],
     prompt="Analyze user data and provide insights",
-    provider="openai",
+    provider="user",
     bot_name="my-bot",  # Bot for executing actions
 ))
 ```
@@ -320,12 +320,13 @@ agent = client.agents.create(CreateAgentRequest(
 | `api_enabled` | `bool` | No | Enable API access (default: False) |
 | `skills` | `list[str]` | No | List of skill names |
 | `prompt` | `str` | No | Default task/prompt |
-| `provider` | `str` | No | LLM provider |
+| `provider` | `str` | No | Entity provider: `system` or `user` |
 | `bot_name` | `str` | No | Bot for executing actions |
-| `mode` | `str` | No | Agent mode |
+| `mode` | `str` | Yes | `standalone` or `worker` |
+| `type` | `str` | No | `external` or `internal`; defaults to `external` |
+| `planner_description` | `PlannerDescription` | For workers | Description, input, output, and worker prompt |
 | `icon` | `str` | No | Icon URL or name |
 | `knowledge` | `list[str]` | No | Knowledge sources |
-| `schedule` | `str` | No | Cron schedule |
 
 ## Bot Operations
 
@@ -396,7 +397,7 @@ print(f"Created persona: {new_persona.name}")
 | `description` | `str` | Yes | Persona description |
 | `prompt` | `str` | Yes | System prompt defining behavior |
 | `display_name` | `str` | No | Human-readable name |
-| `provider` | `str` | No | LLM provider |
+| `provider` | `str` | No | Entity provider: `system` or `user` |
 
 ### PersonaInfo Fields
 

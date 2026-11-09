@@ -63,13 +63,13 @@ class TestCreateAgentRequest:
             name="MyAgent",
             description="A test agent",
             persona="DataAnalyst",
-            mode="chat",
+            mode="standalone",
         )
 
         assert request.name == "MyAgent"
         assert request.description == "A test agent"
         assert request.persona == "DataAnalyst"
-        assert request.mode == "chat"
+        assert request.mode == "standalone"
         assert request.api_enabled is False  # Default value
 
     def test_request_with_all_fields(self):
@@ -79,14 +79,13 @@ class TestCreateAgentRequest:
             name="FullAgent",
             description="Full featured agent",
             persona="DataAnalyst",
-            mode="agent",
+            mode="standalone",
             display_name="Full Featured Agent",
             icon="bot-icon",
             bot_name="my-bot",
             skills=["search", "analyze"],
             knowledge=knowledge,
             prompt="workflow: step1 -> step2",
-            schedule="0 0 * * *",
             api_enabled=True,
             provider="user",
         )
@@ -99,7 +98,6 @@ class TestCreateAgentRequest:
         assert request.knowledge is not None
         assert request.knowledge.entity_types == ["table", "database"]
         assert request.prompt == "workflow: step1 -> step2"
-        assert request.schedule == "0 0 * * *"
         assert request.api_enabled is True
         assert request.provider == "user"
 
@@ -109,7 +107,7 @@ class TestCreateAgentRequest:
             name="MyAgent",
             description="A test agent",
             persona="DataAnalyst",
-            mode="chat",
+            mode="standalone",
         )
 
         api_dict = request.to_api_dict()
@@ -120,7 +118,7 @@ class TestCreateAgentRequest:
             "name": "DataAnalyst",
             "type": "persona",
         }  # EntityReference format
-        assert api_dict["mode"] == "chat"
+        assert api_dict["mode"] == "standalone"
         assert api_dict["apiEnabled"] is False
         assert api_dict["provider"] == "user"
         # Optional fields should not be present
@@ -135,14 +133,13 @@ class TestCreateAgentRequest:
             name="FullAgent",
             description="Full agent",
             persona="Analyst",
-            mode="both",
+            mode="standalone",
             display_name="Full Agent",
             icon="robot",
             bot_name="test-bot",
             skills=["search"],
             knowledge=knowledge,
             prompt="workflow",
-            schedule="* * * * *",
             api_enabled=True,
         )
 
@@ -154,7 +151,6 @@ class TestCreateAgentRequest:
         assert api_dict["skills"] == ["search"]
         assert api_dict["knowledge"] == {"entityTypes": ["table"]}
         assert api_dict["prompt"] == "workflow"
-        assert api_dict["schedule"] == "* * * * *"
         assert api_dict["apiEnabled"] is True
 
 
@@ -184,7 +180,7 @@ class TestCreateAgent:
             name="MyTestAgent",
             description="An agent for testing",
             persona="DataAnalyst",
-            mode="chat",
+            mode="standalone",
         )
         result = client.agents.create(request)
 
@@ -236,14 +232,13 @@ class TestCreateAgent:
             name="FullAgent",
             description="An agent with all configuration options",
             persona="DataAnalyst",
-            mode="agent",
+            mode="standalone",
             display_name="Full Featured Agent",
             icon="bot-icon",
             bot_name="ingestion-bot",
             skills=["search_metadata", "analyze_quality", "create_tests"],
             knowledge=knowledge,
             prompt="analyze -> report",
-            schedule="0 */6 * * *",
             api_enabled=True,
         )
         result = client.agents.create(request)
@@ -276,7 +271,7 @@ class TestCreateAgent:
             name="TestAgent",
             description="Test description",
             persona="TestPersona",
-            mode="chat",
+            mode="standalone",
             api_enabled=True,
         )
         client.agents.create(request)
@@ -292,7 +287,7 @@ class TestCreateAgent:
         assert body["description"] == "Test description"
         # Persona should be resolved to EntityReference with ID
         assert body["persona"] == {"id": "persona-456", "type": "persona"}
-        assert body["mode"] == "chat"
+        assert body["mode"] == "standalone"
         assert body["apiEnabled"] is True
 
 
@@ -323,7 +318,7 @@ class TestAsyncCreateAgent:
             name="MyTestAgent",
             description="An agent for testing",
             persona="DataAnalyst",
-            mode="chat",
+            mode="standalone",
         )
         result = await async_client.agents.acreate(request)
 
@@ -338,7 +333,7 @@ class TestAsyncCreateAgent:
             name="TestAgent",
             description="Test",
             persona="TestPersona",
-            mode="chat",
+            mode="standalone",
         )
 
         with pytest.raises(RuntimeError) as exc_info:

@@ -53,7 +53,7 @@ describe.skipIf(!shouldRun)('Integration Tests', () => {
           name: agentName,
           description: 'Auto-created agent for integration testing',
           persona: personas[0].name,
-          mode: 'chat',
+          mode: 'standalone',
           skills: ['discoveryAndSearch'],
           apiEnabled: true,
         });
@@ -265,7 +265,7 @@ describe.skipIf(!shouldRun)('Integration Tests', () => {
         name: agentName,
         description: 'Integration test agent',
         persona: personas[0].name,
-        mode: 'chat',
+        mode: 'standalone',
         apiEnabled: true,
       });
 
@@ -294,7 +294,7 @@ describe.skipIf(!shouldRun)('Integration Tests', () => {
         name: agentName,
         description: 'Integration test agent with skills',
         persona: personas[0].name,
-        mode: 'agent',
+        mode: 'standalone',
         skills: skillNames,
         apiEnabled: true,
       });

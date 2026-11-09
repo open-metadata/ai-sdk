@@ -16,6 +16,7 @@ import type {
   MemorySearchHit,
   MemorySearchResults,
   MemoryType,
+  MemoryStatus,
   MemoryVisibility,
 } from '../types.js';
 
@@ -23,8 +24,8 @@ import type {
  * Options for {@link MemoriesApi.list}.
  */
 export interface MemoriesListOptions {
-  /** Filter to memories attached to this primary entity FQN. */
-  primaryEntityFqn?: string;
+  /** Filter to memories attached to this primary entity UUID. */
+  primaryEntityId?: string;
   /** Maximum number of memories to return. If omitted, returns all. */
   limit?: number;
 }
@@ -52,6 +53,8 @@ export interface MemoriesSearchOptions {
 interface ApiContextMemory {
   id: string;
   name: string;
+  entityStatus?: MemoryStatus;
+  statusReason?: string;
   fullyQualifiedName?: string;
   title?: string;
   question?: string;
@@ -87,6 +90,8 @@ function mapContextMemory(data: ApiContextMemory): ContextMemory {
   return {
     id: data.id,
     name: data.name,
+    entityStatus: data.entityStatus,
+    statusReason: data.statusReason,
     fullyQualifiedName: data.fullyQualifiedName,
     title: data.title,
     question: data.question ?? '',
@@ -111,6 +116,9 @@ function buildCreateBody(request: CreateContextMemoryRequest): Record<string, un
     memoryScope: request.memoryScope ?? 'EntityScoped',
     shareConfig: { visibility: request.visibility ?? 'Private' },
   };
+  if (request.entityStatus !== undefined) {
+    body.entityStatus = request.entityStatus;
+  }
   if (request.title !== undefined) {
     body.title = request.title;
   }
@@ -167,7 +175,7 @@ export class MemoriesApi {
   async list(options?: MemoriesListOptions): Promise<ContextMemory[]> {
     return paginateMemories(
       this.memoriesHttp,
-      options?.primaryEntityFqn,
+      options?.primaryEntityId,
       options?.limit
     );
   }
@@ -226,7 +234,7 @@ export class MemoriesApi {
  */
 async function paginateMemories(
   http: HttpClient,
-  primaryEntityFqn: string | undefined,
+  primaryEntityId: string | undefined,
   limit: number | undefined,
   pageSize: number = 100
 ): Promise<ContextMemory[]> {
@@ -236,8 +244,8 @@ async function paginateMemories(
   // eslint-disable-next-line no-constant-condition
   while (true) {
     const params: Record<string, string | number | boolean> = { limit: pageSize };
-    if (primaryEntityFqn !== undefined) {
-      params.primaryEntityFqn = primaryEntityFqn;
+    if (primaryEntityId !== undefined) {
+      params.primaryEntityId = primaryEntityId;
     }
     if (after) {
       params.after = after;

@@ -7,6 +7,8 @@ public class ContextMemory {
 
   private String id;
   private String name;
+  private MemoryStatus entityStatus;
+  private String statusReason;
   private String fullyQualifiedName;
   private String title;
   private String question;
@@ -28,6 +30,14 @@ public class ContextMemory {
 
   public void setId(String id) {
     this.id = id;
+  }
+
+  public MemoryStatus getEntityStatus() {
+    return entityStatus;
+  }
+
+  public String getStatusReason() {
+    return statusReason;
   }
 
   public String getName() {
@@ -160,6 +170,12 @@ public class ContextMemory {
     m.answer = data.get("answer") != null ? String.valueOf(data.get("answer")) : "";
     if (data.get("summary") != null) {
       m.summary = String.valueOf(data.get("summary"));
+    }
+    if (data.get("entityStatus") != null) {
+      m.entityStatus = MemoryStatus.fromValue(String.valueOf(data.get("entityStatus")));
+    }
+    if (data.get("statusReason") != null) {
+      m.statusReason = String.valueOf(data.get("statusReason"));
     }
     String memoryTypeStr =
         data.get("memoryType") != null ? String.valueOf(data.get("memoryType")) : "Note";

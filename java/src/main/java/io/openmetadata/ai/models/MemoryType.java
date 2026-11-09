@@ -9,7 +9,8 @@ public enum MemoryType {
   USE_CASE("UseCase"),
   NOTE("Note"),
   RUNBOOK("Runbook"),
-  FAQ("Faq");
+  FAQ("Faq"),
+  LEARNING("Learning");
 
   private final String value;
 

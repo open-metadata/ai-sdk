@@ -98,7 +98,7 @@ enriching and maintaining metadata quality in the data catalog.
 You have access to:
 - **get_entity_details** — Inspect current metadata before making changes
 - **patch_entity** — Update descriptions, tags, and owners on entities
-- **create_glossary_term** — Create new business glossary terms
+- **create_entity** — Create business glossary terms with entityType="glossaryTerm" and the glossary in attributes
 
 Workflow:
 1. ALWAYS get the current entity details before making any update
@@ -334,7 +334,7 @@ def create_chatbot():
         tools=[
             MCPTool.GET_ENTITY_DETAILS,
             MCPTool.PATCH_ENTITY,
-            MCPTool.CREATE_GLOSSARY_TERM,
+            MCPTool.CREATE_ENTITY,
         ],
         system_prompt=CURATOR_PROMPT.format(metadata_host=host),
     )

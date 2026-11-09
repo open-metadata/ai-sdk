@@ -2,7 +2,7 @@
 set -euo pipefail
 
 cd "$(dirname "${BASH_SOURCE[0]}")"
-sdk_version="${AI_SDK_VERSION:-0.3.0}"
+sdk_version="${AI_SDK_VERSION:-$(cat ../../VERSION)}"
 repository_url="${AI_SDK_MAVEN_REPOSITORY:-https://open-metadata.github.io/ai-sdk/maven/}"
 repository_url="${repository_url%/}"
 check_dir=$(mktemp -d)

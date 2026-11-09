@@ -93,15 +93,22 @@ export interface CreatePersonaRequest {
 /**
  * Request body for creating a new dynamic agent.
  */
-export interface CreateAgentRequest {
+export interface PlannerDescription {
+  description: string;
+  input: string;
+  output: string;
+  prompt?: string;
+}
+
+interface CreateAgentFields {
   /** Name of the agent (used as identifier) */
   name: string;
   /** Description of the agent's purpose */
   description: string;
   /** Name of the persona that defines the agent's behavior (required) */
   persona: string;
-  /** Operating mode of the agent (required) */
-  mode: 'chat' | 'agent' | 'both';
+  /** External agents accept user prompts; internal agents use a fixed contract. */
+  type?: 'external' | 'internal';
   /** Human-readable display name */
   displayName?: string;
   /** Icon identifier or URL for the agent */
@@ -114,13 +121,16 @@ export interface CreateAgentRequest {
   knowledge?: KnowledgeScope;
   /** Workflow definition prompt */
   prompt?: string;
-  /** Cron expression for scheduled execution */
-  schedule?: string;
   /** Whether the agent can be invoked via API (default: false) */
   apiEnabled?: boolean;
   /** Provider of the agent (default: "user") */
   provider?: string;
 }
+
+export type CreateAgentRequest = CreateAgentFields & (
+  | { mode: 'standalone'; plannerDescription?: PlannerDescription }
+  | { mode: 'worker'; plannerDescription: PlannerDescription & { prompt: string } }
+);
 
 /**
  * Information about a Skill.
@@ -147,7 +157,7 @@ export interface SkillInfo {
 /**
  * High-level type of a Context Center memory.
  */
-export type MemoryType = 'Preference' | 'UseCase' | 'Note' | 'Runbook' | 'Faq';
+export type MemoryType = 'Preference' | 'UseCase' | 'Note' | 'Runbook' | 'Faq' | 'Learning';
 
 /**
  * Scope where a memory applies.
@@ -157,7 +167,11 @@ export type MemoryScope = 'UserGlobal' | 'EntityScoped';
 /**
  * Visibility level for a memory.
  */
-export type MemoryVisibility = 'Private' | 'Entity' | 'Shared';
+export type MemoryVisibility = 'Private' | 'Entity' | 'Shared' | 'Public';
+
+export type MemoryStatus =
+  | 'Draft' | 'Approved' | 'Archived' | 'Superseded'
+  | 'Invalidated' | 'Unprocessed' | 'Deprecated' | 'Rejected';
 
 /**
  * Request body for creating a Context Center memory.
@@ -175,6 +189,8 @@ export interface CreateContextMemoryRequest {
   question: string;
   /** Canonical answer / retained guidance (required) */
   answer: string;
+  /** Initial lifecycle stage. The server enforces approval permissions. */
+  entityStatus?: MemoryStatus;
   /** Short title shown in Context Center */
   title?: string;
   /** Optional markdown description */
@@ -201,6 +217,8 @@ export interface ContextMemory {
   id: string;
   /** Stable system name */
   name: string;
+  entityStatus?: MemoryStatus;
+  statusReason?: string;
   /** Fully qualified name */
   fullyQualifiedName?: string;
   /** Short title */

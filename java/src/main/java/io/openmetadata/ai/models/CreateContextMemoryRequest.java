@@ -11,6 +11,7 @@ public class CreateContextMemoryRequest {
   private final String name;
   private final String question;
   private final String answer;
+  private final MemoryStatus entityStatus;
   private final String title;
   private final String description;
   private final MemoryType memoryType;
@@ -24,6 +25,7 @@ public class CreateContextMemoryRequest {
     this.name = b.name;
     this.question = b.question;
     this.answer = b.answer;
+    this.entityStatus = b.entityStatus;
     this.title = b.title;
     this.description = b.description;
     this.memoryType = b.memoryType;
@@ -44,6 +46,10 @@ public class CreateContextMemoryRequest {
 
   public String getAnswer() {
     return answer;
+  }
+
+  public MemoryStatus getEntityStatus() {
+    return entityStatus;
   }
 
   public String getTitle() {
@@ -84,6 +90,9 @@ public class CreateContextMemoryRequest {
     d.put("name", name);
     d.put("question", question);
     d.put("answer", answer);
+    if (entityStatus != null) {
+      d.put("entityStatus", entityStatus.getValue());
+    }
     d.put("memoryType", memoryType.getValue());
     d.put("memoryScope", memoryScope.getValue());
     Map<String, Object> shareConfig = new LinkedHashMap<>();
@@ -145,6 +154,7 @@ public class CreateContextMemoryRequest {
     private String name;
     private String question;
     private String answer;
+    private MemoryStatus entityStatus;
     private String title;
     private String description;
     private MemoryType memoryType = MemoryType.NOTE;
@@ -166,6 +176,11 @@ public class CreateContextMemoryRequest {
 
     public Builder answer(String answer) {
       this.answer = answer;
+      return this;
+    }
+
+    public Builder entityStatus(MemoryStatus entityStatus) {
+      this.entityStatus = entityStatus;
       return this;
     }
 

@@ -757,7 +757,7 @@ async fn run_wizard_loop(
                                                 &name,
                                                 &description,
                                                 &persona,
-                                                "chat",  // Hardcoded mode
+                                                "standalone",
                                                 None,    // display_name
                                                 None,    // icon
                                                 bot_name.as_deref(),

@@ -7,8 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+Prepared version: **0.5.0**, targeting OpenMetadata and Collate 2.1.
+See the [0.5.0 migration guide](docs/migrating-to-0.5.md).
+
 ### Added
 
+- Memory type `Learning`, visibility `Public`, and memory lifecycle fields across
+  the SDKs and CLI.
+- Structured `components` in synchronous invocation responses.
+- Current MCP tool names and complete JSON Schema in both framework adapters.
+- `scripts/check-server-contracts.py` to check calls against server Git revisions.
 - `client.memories` namespace with `list`, `get`, `create`, `delete`, and
   `search` (hybrid NLQ search over the `contextMemory` index) for Context
   Center memories. All methods support sync and async in Python and async in
@@ -19,6 +27,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - `CHANGELOG.md` for release notes.
 
 ### Changed (BREAKING)
+
+- Agent creation uses `standalone` or `worker`. Workers require a planner
+  description with instructions. The old modes and `schedule` field are removed.
+- Memory listing uses `primaryEntityId`, an entity UUID, instead of the ignored
+  `primaryEntityFqn` filter. The CLI flag is now `--entity-id`.
+- Python MCP discovery preserves server-advertised string names.
+  `ToolInfo.input_schema` replaces the flattened parameter model. Entity-specific
+  creation tools are replaced by `create_entity`.
+- The LangChain extra requires `langchain-core>=0.3.79`.
+- Calls without a message serialize an empty message, and terminal `stream-error`
+  events are surfaced as errors.
+- Version checks now include Python's runtime `__version__`.
+- The n8n package depends on the published 0.5 SDK and keeps its local checkout
+  dependency for development.
 
 **Ability is now Skill.** Collate renamed the entity server-side, so every SDK
 follows. There is no backwards-compatible alias — the old endpoints no longer

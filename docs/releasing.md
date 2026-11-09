@@ -12,8 +12,8 @@ This document explains how to release the AI SDK. A single release publishes all
 ## TL;DR
 
 ```bash
-make bump-version V=0.3.0
-git add -A && git commit -m "Bump version to 0.3.0"
+make bump-version V=0.5.0
+git add -A && git commit -m "Bump version to 0.5.0"
 git push
 make release              # release from current branch
 # or
@@ -27,7 +27,7 @@ That's it. CI handles the rest.
 ### 1. Bump the version
 
 ```bash
-make bump-version V=0.3.0
+make bump-version V=0.5.0
 ```
 
 This updates the `VERSION` file and propagates the new version to all SDK manifests:
@@ -37,11 +37,17 @@ This updates the `VERSION` file and propagates the new version to all SDK manife
 | `VERSION` | File contents |
 | `cli/Cargo.toml` | `version = "..."` |
 | `python/pyproject.toml` | `version = "..."` |
+| `python/src/ai_sdk/__init__.py` | Runtime `__version__` |
 | `typescript/package.json` | `"version": "..."` |
 | `java/pom.xml` | `<version>...</version>` |
 | `n8n-nodes-metadata/package.json` | `"version": "..."` |
+| `n8n-nodes-metadata/package.json` | Published `@openmetadata/ai-sdk` dependency |
 
 After running the command, it automatically calls `make check-versions` to verify all files are in sync.
+
+The n8n development dependency continues to link `../typescript`. Publish the
+TypeScript SDK before publishing the n8n node so its runtime dependency is
+available from npm.
 
 ### 2. Verify the changes
 
@@ -54,7 +60,7 @@ Review that only version strings changed across the expected files.
 ### 3. Commit and push
 
 ```bash
-git add -A && git commit -m "Bump version to 0.3.0"
+git add -A && git commit -m "Bump version to 0.5.0"
 git push
 ```
 
@@ -76,7 +82,7 @@ This command:
 
 1. Checks that `gh` (GitHub CLI) is installed
 2. Validates all SDK versions match via `make check-versions`
-3. Runs `gh release create "v0.3.0" --title "v0.3.0" --target <branch> --generate-notes`
+3. Runs `gh release create "v0.5.0" --title "v0.5.0" --target <branch> --generate-notes`
 
 The `--target` flag tells GitHub which branch (or commit) the tag should point to. The `--generate-notes` flag auto-generates release notes from commits since the last release.
 
@@ -114,8 +120,8 @@ For hotfixes or out-of-band releases of an individual SDK, push an SDK-specific 
 
 ```bash
 # Example: release only the Python SDK
-make tag-python          # Creates annotated tag: python-v0.3.0
-git push origin python-v0.3.0
+make tag-python          # Creates annotated tag: python-v0.5.0
+git push origin python-v0.5.0
 ```
 
 Each SDK workflow listens for its own tag pattern:
@@ -139,7 +145,7 @@ Note: SDK-specific tags are **not required** for a unified release. The `make re
 ## CI Workflow Architecture
 
 ```
-GitHub Release published (tag: v0.3.0)
+GitHub Release published (tag: v0.5.0)
          │
          ▼
 ┌─────────────────────┐
@@ -237,8 +243,8 @@ These are uploaded as assets to the GitHub Release.
 You forgot to bump the version before creating the release. Fix:
 
 ```bash
-make bump-version V=0.3.0
-git add -A && git commit -m "Bump version to 0.3.0"
+make bump-version V=0.5.0
+git add -A && git commit -m "Bump version to 0.5.0"
 git push
 ```
 
@@ -261,7 +267,7 @@ If one SDK fails while others succeed, you can re-trigger it by pushing its SDK-
 
 ```bash
 make tag-python
-git push origin python-v0.3.0
+git push origin python-v0.5.0
 ```
 
 ### `gh` CLI not installed
