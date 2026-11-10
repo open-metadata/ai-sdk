@@ -36,8 +36,8 @@ def _create_langchain_tool(mcp_client: MCPClient, info: ToolInfo) -> BaseTool:
     class MCPToolWrapper(BaseTool):
         name: str = info.name
         description: str = info.description
-        args_schema: dict[str, Any] = info.input_schema  # ty: ignore[invalid-mutable-override]
-        handle_tool_error: bool = True  # ty: ignore[invalid-mutable-override]
+        args_schema: dict[str, Any] = info.input_schema  # ty: ignore[incompatible-mutable-override]
+        handle_tool_error: bool = True  # ty: ignore[incompatible-mutable-override]
 
         def _run(self, **kwargs: Any) -> str:
             arguments = {k: v for k, v in kwargs.items() if v is not None}
