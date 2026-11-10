@@ -42,7 +42,7 @@ dev = [
     "pytest-asyncio>=0.21",
     "pytest-httpx>=0.30",
     "ruff>=0.8.0",
-    "ty>=0.0.1a7",
+    "ty>=0.0.99",
     "datamodel-code-generator>=0.25.0",
 ]
 all = [
@@ -102,7 +102,7 @@ python-version = "3.10"
 
 [tool.ty.rules]
 # Ignore unresolved imports for external packages (they're installed but ty can't find them in CI)
-unresolved-import = "ignore"
+import-not-found = "ignore"
 
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
