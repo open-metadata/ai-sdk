@@ -27,6 +27,10 @@ models:
         data_tests:
           - accepted_values:
               values: ['completed', 'pending', 'cancelled', 'shipped', 'processing', 'return_pending']
+      - name: tax_amount
+        description: Estimated tax at 8% of order total
+      - name: gross_total
+        description: Order total + shipping + tax - discounts
 
   - name: stg_jaffle_shop__order_items
     description: Order line items with calculated line totals
@@ -39,12 +43,14 @@ models:
         description: Quantity * unit price
 
   - name: stg_stripe__payments
-    description: Payment transactions with risk scoring
+    description: Payment transactions with risk scoring (test transactions excluded)
     columns:
       - name: payment_id
         data_tests:
           - unique
           - not_null
+      - name: currency
+        description: Payment currency (defaults to USD)
       - name: payment_status
         data_tests:
           - accepted_values:
