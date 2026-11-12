@@ -261,7 +261,7 @@ describe('AgentHandle', () => {
       expect(response.response).toBe('Response from configured prompt...');
 
       const requestBody = JSON.parse(mockFetch.mock.calls[0][1].body);
-      expect(requestBody.message).toBeUndefined();
+      expect(requestBody.message).toBe('');
     });
 
     it('should invoke agent without message but with options', async () => {
@@ -286,7 +286,7 @@ describe('AgentHandle', () => {
       });
 
       const requestBody = JSON.parse(mockFetch.mock.calls[0][1].body);
-      expect(requestBody.message).toBeUndefined();
+      expect(requestBody.message).toBe('');
       expect(requestBody.conversationId).toBe('existing-conv');
       expect(requestBody.parameters).toEqual({ key: 'value' });
     });
@@ -1157,7 +1157,7 @@ describe('Agent creation', () => {
         name: 'my-custom-agent',
         description: 'A custom agent for data analysis',
         persona: 'data-analyst',
-        mode: 'chat',
+        mode: 'standalone',
         displayName: 'My Custom Agent',
         skills: ['analyze', 'report'],
         apiEnabled: true,
@@ -1203,9 +1203,8 @@ describe('Agent creation', () => {
         name: 'test-agent',
         description: 'Test description',
         persona: 'my-persona',
-        mode: 'agent',
+        mode: 'standalone',
         botName: 'my-bot',
-        schedule: '0 0 * * *',
       });
 
       // The POST request is the second call (after persona GET)
@@ -1213,9 +1212,9 @@ describe('Agent creation', () => {
       expect(requestBody.name).toBe('test-agent');
       // Persona should be resolved to EntityReference with ID
       expect(requestBody.persona).toEqual({ id: 'persona-456', type: 'persona' });
-      expect(requestBody.mode).toBe('agent');
+      expect(requestBody.mode).toBe('standalone');
       expect(requestBody.botName).toBe('my-bot');
-      expect(requestBody.schedule).toBe('0 0 * * *');
+      expect(requestBody).not.toHaveProperty('schedule');
       expect(requestBody.apiEnabled).toBe(false);
       expect(requestBody.provider).toBe('user');
     });
@@ -1254,7 +1253,7 @@ describe('Agent creation', () => {
         name: 'test-agent',
         description: 'Test',
         persona: 'test-persona',
-        mode: 'both',
+        mode: 'standalone',
       });
 
       // The POST request is the second call (after persona GET)
@@ -1296,7 +1295,7 @@ describe('Agent creation', () => {
         name: 'test-agent',
         description: 'Test',
         persona: 'test-persona',
-        mode: 'chat',
+        mode: 'standalone',
         knowledge: {
           entityTypes: ['table', 'dashboard'],
           services: [{ id: 'svc-1', type: 'databaseService', name: 'my-db' }],

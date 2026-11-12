@@ -210,7 +210,7 @@ class AISdkTest {
   @DisplayName("InvokeRequest can be built with null message")
   void invokeRequestCanBeBuiltWithNullMessage() {
     InvokeRequest request = InvokeRequest.builder().build();
-    assertNull(request.getMessage());
+    assertEquals("", request.getMessage());
   }
 
   @Test
@@ -420,7 +420,7 @@ class AISdkTest {
             CreateAgentRequest.builder()
                 .description("A test agent")
                 .persona("test-persona")
-                .mode("chat")
+                .mode("standalone")
                 .build());
 
     // Missing description
@@ -430,7 +430,7 @@ class AISdkTest {
             CreateAgentRequest.builder()
                 .name("test-agent")
                 .persona("test-persona")
-                .mode("chat")
+                .mode("standalone")
                 .build());
 
     // Missing persona
@@ -440,7 +440,7 @@ class AISdkTest {
             CreateAgentRequest.builder()
                 .name("test-agent")
                 .description("A test agent")
-                .mode("chat")
+                .mode("standalone")
                 .build());
 
     // Missing mode
@@ -468,35 +468,17 @@ class AISdkTest {
   @Test
   @DisplayName("CreateAgentRequest builder accepts valid modes")
   void createAgentRequestBuilderAcceptsValidModes() {
-    // chat mode
-    CreateAgentRequest chatRequest =
-        CreateAgentRequest.builder()
-            .name("test-agent")
-            .description("A test agent")
-            .persona("test-persona")
-            .mode("chat")
-            .build();
-    assertEquals("chat", chatRequest.getMode());
-
-    // agent mode
-    CreateAgentRequest agentRequest =
-        CreateAgentRequest.builder()
-            .name("test-agent")
-            .description("A test agent")
-            .persona("test-persona")
-            .mode("agent")
-            .build();
-    assertEquals("agent", agentRequest.getMode());
-
-    // both mode
-    CreateAgentRequest bothRequest =
-        CreateAgentRequest.builder()
-            .name("test-agent")
-            .description("A test agent")
-            .persona("test-persona")
-            .mode("both")
-            .build();
-    assertEquals("both", bothRequest.getMode());
+    for (String mode : Arrays.asList("standalone", "worker")) {
+      CreateAgentRequest request =
+          CreateAgentRequest.builder()
+              .name("test-agent")
+              .description("A test agent")
+              .persona("test-persona")
+              .mode(mode)
+              .plannerDescription(new PlannerDescription("d", "i", "o", "instructions"))
+              .build();
+      assertEquals(mode, request.getMode());
+    }
   }
 
   @Test
@@ -510,26 +492,24 @@ class AISdkTest {
             .name("test-agent")
             .description("A test agent")
             .persona("test-persona")
-            .mode("agent")
+            .mode("standalone")
             .displayName("Test Agent")
             .icon("icon.png")
             .botName("test-bot")
             .skills(Arrays.asList("skill1", "skill2"))
             .knowledge(knowledge)
             .prompt("Custom prompt")
-            .schedule("0 0 * * *")
             .apiEnabled(true)
             .provider("user")
             .build();
 
     assertEquals("test-agent", request.getName());
     assertEquals("A test agent", request.getDescription());
-    assertEquals("agent", request.getMode());
+    assertEquals("standalone", request.getMode());
     assertEquals("Test Agent", request.getDisplayName());
     assertEquals("icon.png", request.getIcon());
     assertEquals("test-bot", request.getBotName());
     assertEquals("Custom prompt", request.getPrompt());
-    assertEquals("0 0 * * *", request.getSchedule());
     assertTrue(request.isApiEnabled());
     assertEquals("user", request.getProvider());
   }

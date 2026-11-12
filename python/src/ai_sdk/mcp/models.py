@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import sys
 from dataclasses import dataclass
+from typing import Any
 
 if sys.version_info >= (3, 11):
     from enum import StrEnum
@@ -17,10 +18,8 @@ else:
 class MCPTool(StrEnum):
     """Available MCP tools from OpenMetadata.
 
-    Values mirror the tool names published by the OpenMetadata 2.0 MCP server
-    (``openmetadata-mcp`` ``tools.json``). Unknown server tools are ignored by
-    the client (see ``MCPClient._parse_tool_info``), so this enum is the
-    allowlist the SDK exposes to LangChain / OpenAI adapters.
+    Convenience names for the OpenMetadata and Collate 2.1 tools.
+    Discovery and invocation also accept server-provided string names.
     """
 
     # Search & discovery
@@ -29,26 +28,20 @@ class MCPTool(StrEnum):
     GET_ENTITY_DETAILS = "get_entity_details"
     GET_ENTITY_LINEAGE = "get_entity_lineage"
 
-    # AI Context (Context Profiles) — 2.0
-    GET_ASSET_CONTEXT = "get_asset_context"
     GET_PERSONA_CONTEXT = "get_persona_context"
+    GET_USER_CONTEXT = "get_user_context"
     FIND_CONTEXT = "find_context"
-    GET_KNOWLEDGE_CONTENT = "get_knowledge_content"
-
-    # Company context — 2.0
-    GET_COMPANY_CONTEXT = "get_company_context"
-    SEARCH_COMPANY_CONTEXT = "search_company_context"
-
-    # Authoring — 2.0
-    CREATE_CLASSIFICATION = "create_classification"
-    CREATE_TAG = "create_tag"
-    CREATE_DOMAIN = "create_domain"
-    CREATE_DATA_PRODUCT = "create_data_product"
-    CREATE_METRIC = "create_metric"
-    CREATE_CONTEXT_MEMORY = "create_context_memory"
-    CREATE_GLOSSARY = "create_glossary"
-    CREATE_GLOSSARY_TERM = "create_glossary_term"
+    GET_CONCEPT_CONTEXT = "get_concept_context"
+    COMPANY_CONTEXT = "company_context"
+    CREATE_ENTITY = "create_entity"
+    DESCRIBE_ENTITY_TYPE = "describe_entity_type"
     CREATE_LINEAGE = "create_lineage"
+    SPARQL_QUERY = "sparql_query"
+    ENTITY_NEIGHBORHOOD = "entity_neighborhood"
+    FIND_BY_TAG = "find_by_tag"
+    SHACL_VALIDATE = "shacl_validate"
+    ONTOLOGY_DESCRIBE = "ontology_describe"
+    NLQ_SEARCH = "nlq_search"
 
     # Governance & data quality
     PATCH_ENTITY = "patch_entity"
@@ -58,22 +51,12 @@ class MCPTool(StrEnum):
 
 
 @dataclass
-class ToolParameter:
-    """Schema for a tool parameter."""
-
-    name: str
-    type: str  # "string", "integer", "boolean", "array", "object"
-    description: str
-    required: bool
-
-
-@dataclass
 class ToolInfo:
     """Metadata about an MCP tool."""
 
-    name: MCPTool
+    name: str
     description: str
-    parameters: list[ToolParameter]
+    input_schema: dict[str, Any]
 
 
 @dataclass

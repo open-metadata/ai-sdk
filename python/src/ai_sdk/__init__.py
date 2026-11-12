@@ -119,7 +119,7 @@ Import Guide:
 
 from __future__ import annotations
 
-__version__ = "0.1.2"
+__version__ = "0.5.0"
 
 # Re-export main classes for convenient imports
 from ai_sdk.client import AISdk
@@ -148,9 +148,11 @@ from ai_sdk.models import (
     MemoryScope,
     MemorySearchHit,
     MemorySearchResults,
+    MemoryStatus,
     MemoryType,
     MemoryVisibility,
     PersonaInfo,
+    PlannerDescription,
     SkillInfo,
 )
 
@@ -175,10 +177,12 @@ __all__ = [
     "MemoryScope",
     "MemorySearchHit",
     "MemorySearchResults",
+    "MemoryStatus",
     "MemoryType",
     "MemoryVisibility",
     "PersonaInfo",
     "PersonaNotFoundError",
+    "PlannerDescription",
     "RateLimitError",
     "SkillInfo",
     "SkillNotFoundError",

@@ -27,7 +27,7 @@ Add the repository and dependency to your `pom.xml`:
     <dependency>
         <groupId>org.open-metadata</groupId>
         <artifactId>ai-sdk</artifactId>
-        <version>0.3.0</version>
+        <version>0.5.0</version>
     </dependency>
 </dependencies>
 ```
@@ -41,7 +41,7 @@ repositories {
 }
 
 dependencies {
-    implementation 'org.open-metadata:ai-sdk:0.3.0'
+    implementation 'org.open-metadata:ai-sdk:0.5.0'
 }
 ```
 
@@ -306,7 +306,7 @@ ContextMemory fetched = client.memories().get(created.getId());
 
 // List (optional FQN filter, optional limit)
 List<ContextMemory> all = client.memories().list();
-List<ContextMemory> forTable = client.memories().list("prod.warehouse.orders", 50);
+List<ContextMemory> forTable = client.memories().list("11111111-1111-1111-1111-111111111111", 50);
 for (ContextMemory m : forTable) {
     System.out.println(m.getTitle());
 }

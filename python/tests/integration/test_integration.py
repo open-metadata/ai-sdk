@@ -84,7 +84,7 @@ def test_agent_name(client: AISdk) -> str | None:
             name=agent_name,
             description="Auto-created agent for integration testing",
             persona=personas[0].name,
-            mode="chat",
+            mode="standalone",
             skills=["discoveryAndSearch"],
             api_enabled=True,
         )
@@ -390,7 +390,7 @@ class TestAgentCRUDOperations:
             name=agent_name,
             description="Integration test agent",
             persona=personas[0].name,
-            mode="chat",
+            mode="standalone",
             api_enabled=True,
         )
 
@@ -417,7 +417,7 @@ class TestAgentCRUDOperations:
             name=agent_name,
             description="Integration test agent with skills",
             persona=personas[0].name,
-            mode="agent",
+            mode="standalone",
             skills=skill_names,
             api_enabled=True,
         )
@@ -440,7 +440,7 @@ class TestAgentCRUDOperations:
             name=agent_name,
             description="Async integration test agent",
             persona=personas[0].name,
-            mode="chat",
+            mode="standalone",
             api_enabled=True,
         )
 

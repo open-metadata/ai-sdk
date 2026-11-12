@@ -56,6 +56,8 @@ export interface InvokeResponse {
   conversationId: string;
   /** The agent's response text */
   response: string;
+  /** Structured tool output, including charts and entity references. */
+  components: Record<string, unknown>[];
   /** List of tools used by the agent during execution */
   toolsUsed: string[];
   /** Intermediate reasoning steps emitted by the agent (Sender.SYSTEM messages) */
@@ -106,7 +108,7 @@ export interface AgentInfo {
  * @internal
  */
 export interface InvokeRequestBody {
-  message?: string;
+  message: string;
   conversationId?: string;
   parameters?: Record<string, unknown>;
 }
@@ -158,6 +160,7 @@ export function mapAgentInfo(data: ApiAgentInfo): AgentInfo {
 export interface ApiInvokeResponse {
   conversationId: string;
   response: string;
+  components?: Record<string, unknown>[];
   toolsUsed?: string[];
   thinkingSteps?: string[];
   usage?: {

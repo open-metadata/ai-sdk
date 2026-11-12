@@ -264,7 +264,7 @@ def ensure_agent(
                     "Handles GDPR requests within the Jaffle Shop PostgreSQL catalog"
                 ),
                 persona=PERSONA_NAME,
-                mode="both",
+                mode="standalone",
                 skills=AGENT_SKILLS,
                 knowledge=knowledge,
                 api_enabled=True,

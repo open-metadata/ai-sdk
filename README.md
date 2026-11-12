@@ -58,6 +58,8 @@ Agents support **streaming**, **multi-turn conversations**, and **async** out of
 
 ## Quick Start
 
+Version 0.5.0 targets OpenMetadata and Collate 2.1. See the [migration guide](docs/migrating-to-0.5.md) when upgrading.
+
 ### Python
 
 ```bash
@@ -136,7 +138,7 @@ Add the public Maven repository and dependency to your `pom.xml`. No GitHub toke
   <dependency>
     <groupId>org.open-metadata</groupId>
     <artifactId>ai-sdk</artifactId>
-    <version>0.3.0</version>
+    <version>0.5.0</version>
   </dependency>
 </dependencies>
 ```
@@ -206,7 +208,7 @@ created = client.memories.create(CreateContextMemoryRequest(
 ))
 
 # List memories attached to that asset
-for m in client.memories.list(primary_entity_fqn="prod.warehouse.orders"):
+for m in client.memories.list(primary_entity_id="11111111-1111-1111-1111-111111111111"):
     print(m.title)
 
 # Hybrid NLQ search
@@ -231,7 +233,7 @@ const created = await client.memories.create({
   primaryEntity: { id: '<table-uuid>', type: 'table' },
 });
 
-for (const m of await client.memories.list({ primaryEntityFqn: 'prod.warehouse.orders' })) {
+for (const m of await client.memories.list({ primaryEntityId: '11111111-1111-1111-1111-111111111111' })) {
   console.log(m.title);
 }
 
@@ -260,7 +262,7 @@ ContextMemory created = client.memories().create(
         .build()
 );
 
-for (ContextMemory m : client.memories().list("prod.warehouse.orders", null)) {
+for (ContextMemory m : client.memories().list("11111111-1111-1111-1111-111111111111", null)) {
     System.out.println(m.getTitle());
 }
 
@@ -288,7 +290,7 @@ ai-sdk memories create \
   --primary-entity-id <table-uuid> --primary-entity-type table
 
 # List by entity
-ai-sdk memories list --entity-fqn prod.warehouse.orders
+ai-sdk memories list --entity-id 11111111-1111-1111-1111-111111111111
 
 # Hybrid NLQ search (use --json to pipe into jq)
 ai-sdk memories search "how do we measure order volume" --size 5 --json

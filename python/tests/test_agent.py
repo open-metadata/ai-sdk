@@ -82,7 +82,7 @@ class TestAgentHandleCall:
 
         request = httpx_mock.get_request()
         body = json.loads(request.content)
-        assert "message" not in body
+        assert body["message"] == ""
 
     def test_call_with_none_message_and_parameters(self, agent, httpx_mock: HTTPXMock):
         """call() sends parameters but not message when message is None."""
@@ -95,7 +95,7 @@ class TestAgentHandleCall:
 
         request = httpx_mock.get_request()
         body = json.loads(request.content)
-        assert "message" not in body
+        assert body["message"] == ""
         assert body["parameters"] == {"key": "value"}
 
     def test_call_401_raises_authentication_error(self, agent, httpx_mock: HTTPXMock):
@@ -183,7 +183,7 @@ class TestAgentHandleStream:
 
         request = httpx_mock.get_request()
         body = json.loads(request.content)
-        assert "message" not in body
+        assert body["message"] == ""
 
 
 class TestAgentHandleStreamContent:

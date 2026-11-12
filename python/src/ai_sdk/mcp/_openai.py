@@ -8,7 +8,7 @@ if TYPE_CHECKING:
     from ai_sdk.mcp._client import MCPClient
 
 from ai_sdk.exceptions import MCPToolExecutionError
-from ai_sdk.mcp.models import MCPTool, ToolInfo
+from ai_sdk.mcp.models import ToolInfo
 
 
 def build_openai_tools(tools: list[ToolInfo]) -> list[dict]:
@@ -18,27 +18,12 @@ def build_openai_tools(tools: list[ToolInfo]) -> list[dict]:
 
 def _to_openai_schema(info: ToolInfo) -> dict:
     """Convert single ToolInfo to OpenAI function schema."""
-    properties = {}
-    required = []
-
-    for param in info.parameters:
-        properties[param.name] = {
-            "type": param.type,
-            "description": param.description,
-        }
-        if param.required:
-            required.append(param.name)
-
     return {
         "type": "function",
         "function": {
-            "name": info.name.value,
+            "name": info.name,
             "description": info.description,
-            "parameters": {
-                "type": "object",
-                "properties": properties,
-                "required": required,
-            },
+            "parameters": info.input_schema,
         },
     }
 
@@ -47,10 +32,9 @@ def create_tool_executor(mcp_client: MCPClient):
     """Create executor function for OpenAI tool calls."""
 
     def execute(tool_name: str, arguments: dict) -> dict:
-        tool = MCPTool(tool_name)
         cleaned = {k: v for k, v in arguments.items() if v is not None}
         try:
-            result = mcp_client.call_tool(tool, cleaned)
+            result = mcp_client.call_tool(tool_name, cleaned)
         except MCPToolExecutionError as exc:
             return {"error": str(exc)}
         return result.data or {}

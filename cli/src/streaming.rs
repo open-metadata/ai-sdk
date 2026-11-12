@@ -109,6 +109,8 @@ pub struct MessageData {
 #[serde(rename_all = "camelCase")]
 pub struct SSEPayload {
     #[serde(default)]
+    pub message: Option<String>,
+    #[serde(default)]
     pub conversation_id: Option<String>,
     #[serde(default)]
     pub data: Option<MessageData>,
@@ -121,6 +123,7 @@ pub enum SSEEventType {
     StreamStart,
     Message,
     StreamCompleted,
+    StreamError,
     Unknown(String),
 }
 
@@ -130,6 +133,7 @@ impl From<&str> for SSEEventType {
             "stream-start" => SSEEventType::StreamStart,
             "message" => SSEEventType::Message,
             "stream-completed" => SSEEventType::StreamCompleted,
+            "stream-error" | "error" | "fatal-error" => SSEEventType::StreamError,
             other => SSEEventType::Unknown(other.to_string()),
         }
     }
@@ -256,6 +260,13 @@ where
             buffer = buffer[pos + 2..].to_string();
 
             if let Some((event_type, payload)) = parse_event(&event_str) {
+                if event_type == SSEEventType::StreamError {
+                    return Err(CliError::Other(
+                        payload
+                            .message
+                            .unwrap_or_else(|| "Agent stream failed".to_string()),
+                    ));
+                }
                 event_count += 1;
                 if let Some(w) = debug_writer.as_mut() {
                     let _ = writeln!(w, "[DEBUG] Event #{event_count}: {event_type:?}");
@@ -291,6 +302,13 @@ where
     // Process any remaining buffer content
     if !buffer.trim().is_empty() {
         if let Some((event_type, payload)) = parse_event(&buffer) {
+            if event_type == SSEEventType::StreamError {
+                return Err(CliError::Other(
+                    payload
+                        .message
+                        .unwrap_or_else(|| "Agent stream failed".to_string()),
+                ));
+            }
             event_count += 1;
             if let Some(w) = debug_writer.as_mut() {
                 let _ = writeln!(w, "[DEBUG] Final Event #{event_count}: {event_type:?}");
@@ -417,6 +435,27 @@ data: {"conversationId":"conv-1","data":{"message":{"sender":"assistant","conten
         let message = payload.data.unwrap().message.unwrap();
         let tools = message.tools_used();
         assert_eq!(tools, vec!["searchMetadata"]);
+    }
+
+    #[tokio::test]
+    async fn terminal_errors_fail_even_without_a_final_delimiter() {
+        use wiremock::matchers::{method, path};
+        use wiremock::{Mock, MockServer, ResponseTemplate};
+
+        for ending in ["\n\n", ""] {
+            let server = MockServer::start().await;
+            let body = format!(
+                "event: stream-error\ndata: {{\"message\":\"run failed\",\"severity\":\"fatal\"}}{ending}"
+            );
+            Mock::given(method("GET"))
+                .and(path("/sse"))
+                .respond_with(ResponseTemplate::new(200).set_body_string(body))
+                .mount(&server)
+                .await;
+            let response = reqwest::get(format!("{}/sse", server.uri())).await.unwrap();
+            let error = process_stream(response, |_| {}).await.unwrap_err();
+            assert!(error.to_string().contains("run failed"));
+        }
     }
 
     #[tokio::test]

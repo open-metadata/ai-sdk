@@ -104,6 +104,7 @@ pub async fn run_stream(
         let response = InvokeResponse {
             conversation_id: final_conversation_id.unwrap_or_default(),
             response: full_content,
+            components: Vec::new(),
             tools_used,
             thinking_steps: Vec::new(),
             usage: None,

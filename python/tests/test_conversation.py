@@ -99,7 +99,7 @@ class TestConversationSend:
 
         request = httpx_mock.get_request()
         body = json.loads(request.content)
-        assert "message" not in body
+        assert body["message"] == ""
 
     def test_send_without_message_does_not_add_to_history(self, client, httpx_mock: HTTPXMock):
         """send() without message does not add entry to history."""

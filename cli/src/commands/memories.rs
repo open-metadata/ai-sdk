@@ -2,7 +2,7 @@
 
 use crate::client::{
     AISdkClient, ContextMemory, CreateContextMemoryRequest, EntityReference, MemoryScope,
-    MemorySearchResults, MemoryType, MemoryVisibility, ShareConfig, TagLabel,
+    MemorySearchResults, MemoryStatus, MemoryType, MemoryVisibility, ShareConfig, TagLabel,
 };
 use crate::config::ResolvedConfig;
 use crate::error::{CliError, CliResult};
@@ -15,9 +15,9 @@ use colored::Colorize;
 pub enum MemoriesCommand {
     /// List Context Center memories
     List {
-        /// Filter to memories attached to this primary-entity FQN
-        #[arg(long = "entity-fqn")]
-        entity_fqn: Option<String>,
+        /// Filter to memories attached to this primary-entity UUID
+        #[arg(long = "entity-id")]
+        entity_id: Option<String>,
 
         /// Maximum number of memories to return
         #[arg(short, long)]
@@ -52,6 +52,10 @@ pub enum MemoriesCommand {
         #[arg(long)]
         answer: String,
 
+        /// Initial lifecycle stage. The server enforces approval permissions.
+        #[arg(long, value_enum)]
+        entity_status: Option<MemoryStatus>,
+
         /// Short title shown in the Context Center
         #[arg(long)]
         title: Option<String>,
@@ -60,7 +64,7 @@ pub enum MemoriesCommand {
         #[arg(long)]
         description: Option<String>,
 
-        /// Memory type (preference, useCase, note, runbook, faq)
+        /// Memory type (preference, useCase, note, runbook, faq, learning)
         #[arg(long = "memory-type", default_value = "note")]
         memory_type: String,
 
@@ -68,7 +72,7 @@ pub enum MemoriesCommand {
         #[arg(long = "memory-scope", default_value = "entityScoped")]
         memory_scope: String,
 
-        /// Visibility level (private, entity, shared)
+        /// Visibility level (private, entity, shared, public)
         #[arg(long, default_value = "private")]
         visibility: String,
 
@@ -129,15 +133,16 @@ pub async fn run(profile: &str, cmd: MemoriesCommand) -> CliResult<()> {
 
     match cmd {
         MemoriesCommand::List {
-            entity_fqn,
+            entity_id,
             limit,
             json,
-        } => run_list(&client, entity_fqn.as_deref(), limit, json).await,
+        } => run_list(&client, entity_id.as_deref(), limit, json).await,
         MemoriesCommand::Get { id, json } => run_get(&client, &id, json).await,
         MemoriesCommand::Create {
             name,
             question,
             answer,
+            entity_status,
             title,
             description,
             memory_type,
@@ -155,6 +160,7 @@ pub async fn run(profile: &str, cmd: MemoriesCommand) -> CliResult<()> {
                     name,
                     question,
                     answer,
+                    entity_status,
                     title,
                     description,
                     memory_type,
@@ -184,6 +190,7 @@ struct CreateArgs {
     name: String,
     question: String,
     answer: String,
+    entity_status: Option<MemoryStatus>,
     title: Option<String>,
     description: Option<String>,
     memory_type: String,
@@ -197,11 +204,11 @@ struct CreateArgs {
 
 async fn run_list(
     client: &AISdkClient,
-    entity_fqn: Option<&str>,
+    entity_id: Option<&str>,
     limit: Option<usize>,
     json: bool,
 ) -> CliResult<()> {
-    let memories = client.list_memories(entity_fqn, limit).await?;
+    let memories = client.list_memories(entity_id, limit).await?;
 
     if json {
         println!(
@@ -264,6 +271,7 @@ async fn run_create(client: &AISdkClient, args: CreateArgs, json: bool) -> CliRe
         name: args.name,
         question: args.question,
         answer: args.answer,
+        entity_status: args.entity_status,
         title: args.title,
         description: args.description,
         memory_type,
@@ -386,6 +394,9 @@ fn print_memory_summary(memory: &ContextMemory) {
     println!("  {} {}", "*".cyan(), display.bold());
     println!("    Name: {}", memory.name.dimmed());
     println!("    ID: {}", memory.id.dimmed());
+    if let Some(status) = memory.entity_status {
+        println!("    Status: {status:?}");
+    }
     println!(
         "    Type: {} | Scope: {} | Visibility: {}",
         memory.memory_type.as_wire().dimmed(),
@@ -409,6 +420,12 @@ fn print_memory_detail(memory: &ContextMemory) {
     println!();
     println!("  {} {}", "Name:".cyan(), memory.name);
     println!("  {} {}", "ID:".cyan(), memory.id);
+    if let Some(status) = memory.entity_status {
+        println!("  {} {status:?}", "Status:".cyan());
+    }
+    if let Some(reason) = &memory.status_reason {
+        println!("  {} {}", "Status reason:".cyan(), reason);
+    }
     if let Some(fqn) = &memory.fully_qualified_name {
         println!("  {} {}", "FQN:".cyan(), fqn);
     }

@@ -71,7 +71,7 @@ public class IntegrationTest {
                   .name(agentName)
                   .description("Auto-created agent for integration testing")
                   .persona(personaName)
-                  .mode("chat")
+                  .mode("standalone")
                   .apiEnabled(true) // Enable API access for invoke/stream
                   .skills(Arrays.asList("discoveryAndSearch"));
           client.agents().create(builder);
@@ -424,7 +424,7 @@ public class IntegrationTest {
               .name(agentName)
               .description("Integration test agent")
               .persona(personas.get(0).getName())
-              .mode("chat")
+              .mode("standalone")
               .apiEnabled(true);
 
       AgentInfo created = client.agents().create(builder);
@@ -461,7 +461,7 @@ public class IntegrationTest {
               .name(agentName)
               .description("Integration test agent with skills")
               .persona(personas.get(0).getName())
-              .mode("agent")
+              .mode("standalone")
               .skills(skillNames)
               .apiEnabled(true);
 

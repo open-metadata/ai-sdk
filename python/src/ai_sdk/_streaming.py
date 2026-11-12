@@ -116,6 +116,7 @@ def _map_event_type(event_type: str | None) -> EventType:
         "stream-completed": EventType.END,
         "error": EventType.ERROR,
         "fatal-error": EventType.ERROR,
+        "stream-error": EventType.ERROR,
     }
 
     return type_mapping.get(event_type, EventType.CONTENT)

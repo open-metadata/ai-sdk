@@ -119,7 +119,7 @@ const newAgent = await client.agents.create({
   name: 'MyCustomAgent',
   description: 'A custom agent for data analysis',
   persona: 'DataAnalyst',
-  mode: 'chat',
+  mode: 'standalone',
   apiEnabled: true,
   skills: ['search', 'query'],
 });
@@ -184,7 +184,7 @@ const memories = await client.memories.list();
 
 // Filter by primary entity
 const tableMemories = await client.memories.list({
-  primaryEntityFqn: 'service.db.schema.tbl',
+  primaryEntityId: '11111111-1111-1111-1111-111111111111',
 });
 
 // Get one

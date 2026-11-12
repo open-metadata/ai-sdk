@@ -13,8 +13,8 @@ OpenMetadata exposes an MCP server at the `/mcp` endpoint that provides tools fo
 | `search_metadata` | Search across your metadata catalog |
 | `get_entity_details` | Get detailed information about an entity |
 | `get_entity_lineage` | Get lineage information for an entity |
-| `create_glossary` | Create a new glossary |
-| `create_glossary_term` | Create a new glossary term |
+| `create_entity` | Create entities, including glossaries and glossary terms |
+| `describe_entity_type` | Inspect the creation schema for an entity type |
 | `create_lineage` | Create lineage between entities |
 | `patch_entity` | Update an entity's metadata |
 
@@ -142,7 +142,7 @@ Exclude mutation tools:
 ```python
 # Exclude tools that modify data
 tools = client.mcp.as_langchain_tools(
-    exclude=[MCPTool.PATCH_ENTITY, MCPTool.CREATE_GLOSSARY, MCPTool.CREATE_GLOSSARY_TERM]
+    exclude=[MCPTool.PATCH_ENTITY, MCPTool.CREATE_ENTITY]
 )
 ```
 
@@ -276,12 +276,27 @@ from ai_sdk.mcp.models import MCPTool
 
 class MCPTool(StrEnum):
     SEARCH_METADATA = "search_metadata"
+    SEMANTIC_SEARCH = "semantic_search"
     GET_ENTITY_DETAILS = "get_entity_details"
     GET_ENTITY_LINEAGE = "get_entity_lineage"
-    CREATE_GLOSSARY = "create_glossary"
-    CREATE_GLOSSARY_TERM = "create_glossary_term"
+    GET_PERSONA_CONTEXT = "get_persona_context"
+    GET_USER_CONTEXT = "get_user_context"
+    FIND_CONTEXT = "find_context"
+    GET_CONCEPT_CONTEXT = "get_concept_context"
+    COMPANY_CONTEXT = "company_context"
+    CREATE_ENTITY = "create_entity"
+    DESCRIBE_ENTITY_TYPE = "describe_entity_type"
     CREATE_LINEAGE = "create_lineage"
+    SPARQL_QUERY = "sparql_query"
+    ENTITY_NEIGHBORHOOD = "entity_neighborhood"
+    FIND_BY_TAG = "find_by_tag"
+    SHACL_VALIDATE = "shacl_validate"
+    ONTOLOGY_DESCRIBE = "ontology_describe"
+    NLQ_SEARCH = "nlq_search"
     PATCH_ENTITY = "patch_entity"
+    GET_TEST_DEFINITIONS = "get_test_definitions"
+    CREATE_TEST_CASE = "create_test_case"
+    ROOT_CAUSE_ANALYSIS = "root_cause_analysis"
 ```
 
 ### MCPClient Methods
@@ -299,9 +314,9 @@ class MCPTool(StrEnum):
 ```python
 @dataclass
 class ToolInfo:
-    name: MCPTool           # Tool identifier
+    name: str           # Tool identifier
     description: str        # Human-readable description
-    parameters: list[ToolParameter]  # Input parameters
+    input_schema: dict  # Complete server JSON Schema
 ```
 
 ### ToolCallResult

@@ -1,0 +1,28 @@
+{
+  "openmetadata_revision": "a39ba9d5f2bb5b3f080d31f88b28fb15bfcda88c",
+  "collate_revision": "9d56e721e6f21aa86590c8fd154b87c829119358",
+  "tools": [
+    "company_context",
+    "create_entity",
+    "create_lineage",
+    "create_test_case",
+    "describe_entity_type",
+    "entity_neighborhood",
+    "find_by_tag",
+    "find_context",
+    "get_concept_context",
+    "get_entity_details",
+    "get_entity_lineage",
+    "get_persona_context",
+    "get_test_definitions",
+    "get_user_context",
+    "nlq_search",
+    "ontology_describe",
+    "patch_entity",
+    "root_cause_analysis",
+    "search_metadata",
+    "semantic_search",
+    "shacl_validate",
+    "sparql_query"
+  ]
+}

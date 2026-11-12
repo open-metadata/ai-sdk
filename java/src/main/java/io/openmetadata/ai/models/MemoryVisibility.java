@@ -7,7 +7,8 @@ import com.fasterxml.jackson.annotation.JsonValue;
 public enum MemoryVisibility {
   PRIVATE("Private"),
   ENTITY("Entity"),
-  SHARED("Shared");
+  SHARED("Shared"),
+  PUBLIC("Public");
 
   private final String value;
 

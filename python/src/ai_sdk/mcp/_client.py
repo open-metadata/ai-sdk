@@ -13,13 +13,13 @@ if TYPE_CHECKING:
 
 from ai_sdk._http import HTTPClient
 from ai_sdk.exceptions import AISdkError, MCPError, MCPToolExecutionError
-from ai_sdk.mcp.models import MCPTool, ToolCallResult, ToolInfo, ToolParameter
+from ai_sdk.mcp.models import MCPTool, ToolCallResult, ToolInfo
 
 
 def _filter_tools(
     tools: list[ToolInfo],
-    include: list[MCPTool] | None,
-    exclude: list[MCPTool] | None,
+    include: list[MCPTool | str] | None,
+    exclude: list[MCPTool | str] | None,
 ) -> list[ToolInfo]:
     """
     Filter tools by include/exclude lists.
@@ -99,14 +99,14 @@ class MCPClient:
         """Fetch available tools from MCP server."""
         result = self._make_jsonrpc_request("tools/list")
         tools_data = result.get("tools", [])
-        parsed = [self._parse_tool_info(t) for t in tools_data]
-        return [t for t in parsed if t is not None]
+        return [self._parse_tool_info(t) for t in tools_data]
 
-    def call_tool(self, name: MCPTool, arguments: dict) -> ToolCallResult:
+    def call_tool(self, name: MCPTool | str, arguments: dict) -> ToolCallResult:
         """Execute a tool via MCP protocol."""
+        tool_name = name.value if isinstance(name, MCPTool) else name
         result = self._make_jsonrpc_request(
             "tools/call",
-            {"name": name.value, "arguments": arguments},
+            {"name": tool_name, "arguments": arguments},
         )
 
         is_error = result.get("isError", False)
@@ -120,7 +120,7 @@ class MCPClient:
 
         if is_error:
             raise MCPToolExecutionError(
-                tool=name.value,
+                tool=tool_name,
                 message=text or "Tool execution failed",
             )
 
@@ -133,45 +133,18 @@ class MCPClient:
 
         return ToolCallResult(success=True, data={}, error=None)
 
-    def _parse_tool_info(self, data: dict) -> ToolInfo | None:
-        """Parse tool info from MCP response.
-
-        Returns None for tools not recognized by the SDK, allowing
-        graceful handling of new server-side tools.
-        """
-        try:
-            name = MCPTool(data["name"])
-        except ValueError:
-            return None
-        description = data.get("description", "")
-        parameters = self._parse_parameters(data.get("inputSchema", {}))
-        return ToolInfo(name=name, description=description, parameters=parameters)
-
-    def _parse_parameters(self, schema: dict) -> list[ToolParameter]:
-        """Parse parameters from JSON schema."""
-        if schema.get("type") != "object":
-            return []
-
-        properties = schema.get("properties", {})
-        required = set(schema.get("required", []))
-        parameters = []
-
-        for name, prop in properties.items():
-            parameters.append(
-                ToolParameter(
-                    name=name,
-                    type=prop.get("type", "string"),
-                    description=prop.get("description", ""),
-                    required=name in required,
-                )
-            )
-
-        return parameters
+    def _parse_tool_info(self, data: dict) -> ToolInfo:
+        """Preserve the server's tool name and complete JSON Schema."""
+        return ToolInfo(
+            name=data["name"],
+            description=data.get("description", ""),
+            input_schema=data.get("inputSchema", {"type": "object", "properties": {}}),
+        )
 
     def as_openai_tools(
         self,
-        include: list[MCPTool] | None = None,
-        exclude: list[MCPTool] | None = None,
+        include: list[MCPTool | str] | None = None,
+        exclude: list[MCPTool | str] | None = None,
     ) -> list[dict]:
         """
         Get tools formatted for OpenAI function calling.
@@ -202,8 +175,8 @@ class MCPClient:
 
     def as_langchain_tools(
         self,
-        include: list[MCPTool] | None = None,
-        exclude: list[MCPTool] | None = None,
+        include: list[MCPTool | str] | None = None,
+        exclude: list[MCPTool | str] | None = None,
     ) -> list:
         """
         Get tools formatted for LangChain.

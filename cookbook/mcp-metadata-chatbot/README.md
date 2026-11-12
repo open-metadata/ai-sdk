@@ -35,7 +35,7 @@ Common questions that are hard to answer today:
    |  Discovery Agent    | | Lineage     | |  Curator Agent  |
    |                     | | Agent       | |                 |
    | - semantic_search   | | - lineage   | | - patch_entity  |
-   | - search_metadata   | | - details   | | - glossary_term |
+   | - search_metadata   | | - details   | | - create_entity |
    | - get_details       | |             | | - get_details   |
    +----------+----------+ +------+------+ +--------+--------+
               |                    |                 |
@@ -59,7 +59,7 @@ The chatbot uses a **two-tier agent architecture**:
 2. **Specialist Agents** — Each is a full LangChain agent with its own system prompt and MCP tools:
    - **Discovery Agent** — `semantic_search`, `search_metadata`, `get_entity_details`
    - **Lineage Agent** — `get_entity_lineage`, `get_entity_details`
-   - **Curator Agent** — `patch_entity`, `create_glossary_term`, `get_entity_details`
+   - **Curator Agent** — `patch_entity`, `create_entity`, `get_entity_details`
 
 When the orchestrator calls `discover_metadata("tables related to payments")`, it invokes the Discovery agent, which performs its own multi-step tool-calling loop (search, get details, synthesize). The result flows back to the orchestrator, which can then pass it to the Lineage or Curator agent for the next step.
 

@@ -68,12 +68,11 @@ class TestMCPClientListTools:
         assert len(tools) == 1
         assert tools[0].name == MCPTool.SEARCH_METADATA
         assert tools[0].description == "Search for metadata"
-        assert len(tools[0].parameters) == 1
-        assert tools[0].parameters[0].name == "query"
-        assert tools[0].parameters[0].required is True
+        assert tools[0].input_schema["properties"]["query"]["type"] == "string"
+        assert tools[0].input_schema["required"] == ["query"]
 
-    def test_list_tools_skips_unknown_tools(self, client, httpx_mock: HTTPXMock):
-        """list_tools gracefully skips tools not in MCPTool enum."""
+    def test_list_tools_preserves_server_defined_tools(self, client, httpx_mock: HTTPXMock):
+        """list_tools preserves tools added by the server."""
         httpx_mock.add_response(
             url="https://metadata.example.com/mcp",
             method="POST",
@@ -112,7 +111,8 @@ class TestMCPClientListTools:
         mcp = MCPClient(client._host, client._auth, client._http)
         tools = mcp.list_tools()
 
-        assert len(tools) == 1
+        assert len(tools) == 2
+        assert tools[1].name == "some_future_tool"
         assert tools[0].name == MCPTool.SEARCH_METADATA
 
     def test_list_tools_parses_ai_context_tools(self, client, httpx_mock: HTTPXMock):
@@ -126,7 +126,7 @@ class TestMCPClientListTools:
                 "result": {
                     "tools": [
                         {
-                            "name": "get_asset_context",
+                            "name": "get_entity_details",
                             "description": "Get the full AI Context for a data asset.",
                             "inputSchema": {
                                 "type": "object",
@@ -164,14 +164,12 @@ class TestMCPClientListTools:
         mcp = MCPClient(client._host, client._auth, client._http)
         tools = {tool.name: tool for tool in mcp.list_tools()}
 
-        assert MCPTool.GET_ASSET_CONTEXT in tools
+        assert MCPTool.GET_ENTITY_DETAILS in tools
         assert MCPTool.GET_PERSONA_CONTEXT in tools
 
-        asset = tools[MCPTool.GET_ASSET_CONTEXT]
-        params = {param.name: param for param in asset.parameters}
-        assert params["entityType"].required is True
-        assert params["fqn"].required is True
-        assert params["query"].required is False
+        asset = tools[MCPTool.GET_ENTITY_DETAILS]
+        assert asset.input_schema["required"] == ["entityType", "fqn"]
+        assert "query" in asset.input_schema["properties"]
 
 
 class TestMCPClientCallTool:
@@ -467,17 +465,17 @@ class TestMCPClientFiltering:
             ToolInfo(
                 name=MCPTool.SEARCH_METADATA,
                 description="Search",
-                parameters=[],
+                input_schema={"type": "object", "properties": {}},
             ),
             ToolInfo(
                 name=MCPTool.GET_ENTITY_DETAILS,
                 description="Get entity",
-                parameters=[],
+                input_schema={"type": "object", "properties": {}},
             ),
             ToolInfo(
                 name=MCPTool.PATCH_ENTITY,
                 description="Patch entity",
-                parameters=[],
+                input_schema={"type": "object", "properties": {}},
             ),
         ]
 
